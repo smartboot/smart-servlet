@@ -23,7 +23,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+/**
+ * @author 三刀
+ * @version V1.0 , 2020/11/14
+ */
 public class ApplicationFilterRegistration
         implements FilterRegistration.Dynamic {
 

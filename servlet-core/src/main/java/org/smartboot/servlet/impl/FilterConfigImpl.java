@@ -16,7 +16,10 @@ import javax.servlet.ServletContext;
 import java.util.Collections;
 import java.util.Enumeration;
 
-
+/**
+ * @author 三刀
+ * @version V1.0 , 2020/11/14
+ */
 public class FilterConfigImpl implements FilterConfig {
 
     private final FilterInfo filterInfo;

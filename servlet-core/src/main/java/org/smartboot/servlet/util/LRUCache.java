@@ -13,6 +13,10 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * @author 三刀
+ * @version V1.0 , 2020/11/14
+ */
 public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
     private static final float DEFAULT_LOAD_FACTOR = 0.75f;

@@ -14,7 +14,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * @author 三刀
+ * @version V1.0 , 2020/11/14
+ */
 public class FilterInfo {
 
     private final Map<String, String> initParams = new HashMap<>();
