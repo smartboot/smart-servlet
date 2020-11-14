@@ -43,7 +43,7 @@ public final class HandlePipeline extends Handler implements Pipeline {
     }
 
     @Override
-    public void handleRequest(HandlerContext handlerContext) throws Exception {
+    public void handleRequest(HandlerContext handlerContext) {
         nextHandle.handleRequest(handlerContext);
     }
 }

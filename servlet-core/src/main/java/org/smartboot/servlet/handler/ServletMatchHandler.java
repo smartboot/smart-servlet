@@ -35,7 +35,7 @@ public class ServletMatchHandler extends Handler {
     private final HttpServlet defaultServlet = new DefaultServlet();
 
     @Override
-    public void handleRequest(HandlerContext handlerContext) throws Exception {
+    public void handleRequest(HandlerContext handlerContext) {
         //匹配Servlet
         Servlet servlet = null;
         ServletContext servletContext = handlerContext.getServletContext();

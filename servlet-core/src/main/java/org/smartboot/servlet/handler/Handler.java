@@ -29,7 +29,7 @@ public abstract class Handler {
      * @param handlerContext
      * @throws Exception
      */
-    public abstract void handleRequest(HandlerContext handlerContext) throws Exception;
+    public abstract void handleRequest(HandlerContext handlerContext);
 
     /**
      * 执行下一层处理器
@@ -37,7 +37,7 @@ public abstract class Handler {
      * @param handlerContext
      * @throws Exception
      */
-    protected final void doNext(HandlerContext handlerContext) throws Exception {
+    protected final void doNext(HandlerContext handlerContext) {
         if (nextHandle != null) {
             nextHandle.handleRequest(handlerContext);
         }

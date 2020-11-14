@@ -14,6 +14,7 @@ import org.smartboot.http.HttpResponse;
 import org.smartboot.http.enums.HttpStatus;
 import org.smartboot.http.server.handle.HttpHandle;
 import org.smartboot.http.utils.StringUtils;
+import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
 import org.smartboot.servlet.handler.HandlePipeline;
 import org.smartboot.servlet.handler.ServletMatchHandler;
@@ -87,6 +88,8 @@ public class ServletHttpHandle extends HttpHandle {
 
             // just do it
             pipeline.handleRequest(handlerContext);
+        } catch (WrappedRuntimeException e) {
+            e.getThrowable().printStackTrace();
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

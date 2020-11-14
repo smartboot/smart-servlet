@@ -25,7 +25,7 @@ import java.util.logging.Level;
 public class ServletRequestListenerHandler extends Handler {
 
     @Override
-    public void handleRequest(HandlerContext handlerContext) throws Exception {
+    public void handleRequest(HandlerContext handlerContext) {
         ServletContext servletContext = handlerContext.getServletContext();
         ServletRequestEvent servletRequestEvent = new ServletRequestEvent(servletContext, handlerContext.getRequest());
         List<ServletRequestListener> servletRequestListeners = handlerContext.getServletContext().getDeploymentInfo().getServletRequestListeners();

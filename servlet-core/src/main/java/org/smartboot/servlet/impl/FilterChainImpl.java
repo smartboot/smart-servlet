@@ -9,8 +9,6 @@
 
 package org.smartboot.servlet.impl;
 
-import org.smartboot.servlet.handler.FilterChainCallback;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -26,12 +24,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class FilterChainImpl implements FilterChain {
     private final List<Filter> filters;
-    private final FilterChainCallback function;
+    private final Runnable runnable;
     private final ThreadLocal<AtomicInteger> location = ThreadLocal.withInitial(() -> new AtomicInteger(0));
 
-    public FilterChainImpl(List<Filter> filters, FilterChainCallback function) {
+    public FilterChainImpl(List<Filter> filters, Runnable runnable) {
         this.filters = filters;
-        this.function = function;
+        this.runnable = runnable;
     }
 
     @Override
@@ -40,11 +38,7 @@ public class FilterChainImpl implements FilterChain {
         if (index < filters.size()) {
             filters.get(index).doFilter(request, response, this);
         } else {
-            try {
-                function.callback();
-            } catch (Exception e) {
-                throw new ServletException(e);
-            }
+            runnable.run();
         }
     }
 

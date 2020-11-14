@@ -12,8 +12,11 @@ package org.smartboot.servlet.handler;
 import org.smartboot.http.enums.HttpStatus;
 import org.smartboot.http.exception.HttpException;
 import org.smartboot.servlet.HandlerContext;
+import org.smartboot.servlet.exception.WrappedRuntimeException;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import java.io.IOException;
 
 /**
  * 匹配并执行符合当前请求的Servlet
@@ -24,12 +27,16 @@ import javax.servlet.Servlet;
 public class ServletServiceHandler extends Handler {
 
     @Override
-    public void handleRequest(HandlerContext handlerContext) throws Exception {
+    public void handleRequest(HandlerContext handlerContext) {
         Servlet servlet = handlerContext.getServlet();
         if (servlet == null) {
             throw new HttpException(HttpStatus.NOT_FOUND);
         }
-        servlet.service(handlerContext.getRequest(), handlerContext.getResponse());
+        try {
+            servlet.service(handlerContext.getRequest(), handlerContext.getResponse());
+        } catch (ServletException | IOException e) {
+            throw new WrappedRuntimeException(e);
+        }
         doNext(handlerContext);
     }
 }
