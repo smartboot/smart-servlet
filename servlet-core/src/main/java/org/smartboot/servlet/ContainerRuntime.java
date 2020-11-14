@@ -125,7 +125,10 @@ public class ContainerRuntime {
     }
 
     public void stop() {
-
+        servletContext.getDeploymentInfo().getServletContextListeners().forEach(servletContextListener -> {
+            ServletContextEvent event = new ServletContextEvent(servletContext);
+            servletContextListener.contextDestroyed(event);
+        });
     }
 
     public boolean isStarted() {

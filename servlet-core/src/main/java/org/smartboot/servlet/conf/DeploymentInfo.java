@@ -57,48 +57,46 @@ public class DeploymentInfo {
         this.classLoader = classLoader;
     }
 
-    public DeploymentInfo addServletContainerInitializer(final ServletContainerInitializer servletContainerInitializer) {
+    public void addServletContainerInitializer(final ServletContainerInitializer servletContainerInitializer) {
         if (servletContainerInitializer != null) {
             servletContainerInitializers.add(servletContainerInitializer);
         }
-        return this;
     }
 
     public List<ServletContainerInitializer> getServletContainerInitializers() {
         return servletContainerInitializers;
     }
 
-    public DeploymentInfo addServlet(final ServletInfo servlet) {
+    public void addServlet(final ServletInfo servlet) {
         servlets.put(servlet.getServletName(), servlet);
-        return this;
     }
 
     public Map<String, ServletInfo> getServlets() {
         return servlets;
     }
 
-    public DeploymentInfo addFilter(final FilterInfo filter) {
+    public void addFilter(final FilterInfo filter) {
         filters.put(filter.getFilterName(), filter);
-        return this;
     }
 
-    public DeploymentInfo addEventListener(final String listenerInfo) {
+    public void addEventListener(final String listenerInfo) {
         eventListeners.add(listenerInfo);
-        return this;
     }
 
     public List<String> getEventListeners() {
         return eventListeners;
     }
 
-    public DeploymentInfo addServletContextListener(ServletContextListener contextListener) {
+    public void addServletContextListener(ServletContextListener contextListener) {
         servletContextListeners.add(contextListener);
-        return this;
     }
 
-    public DeploymentInfo addServletRequestListener(ServletRequestListener requestListener) {
+    public List<ServletContextListener> getServletContextListeners() {
+        return servletContextListeners;
+    }
+
+    public void addServletRequestListener(ServletRequestListener requestListener) {
         servletRequestListeners.add(requestListener);
-        return this;
     }
 
     public List<ServletRequestListener> getServletRequestListeners() {
@@ -121,22 +119,20 @@ public class DeploymentInfo {
         return contextPath;
     }
 
-    public DeploymentInfo setContextPath(final String contextPath) {
+    public void setContextPath(final String contextPath) {
         if (StringUtils.isBlank(contextPath)) {
             this.contextPath = "/";
         } else {
             this.contextPath = contextPath;
         }
-        return this;
     }
 
     public Map<String, String> getInitParameters() {
         return initParameters;
     }
 
-    public DeploymentInfo addInitParameter(final String name, final String value) {
+    public void addInitParameter(final String name, final String value) {
         initParameters.put(name, value);
-        return this;
     }
 
     public String getDisplayName() {
