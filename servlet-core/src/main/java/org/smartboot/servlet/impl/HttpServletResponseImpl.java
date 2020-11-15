@@ -38,7 +38,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     private List<Cookie> cookies;
     private String contentType;
     private PrintWriter writer;
-    private ServletOutputStream servletOutputStream;
+    private ServletOutputStreamImpl servletOutputStream;
 
     public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response) {
         this.request = request;
@@ -210,7 +210,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     @Override
     public PrintWriter getWriter() throws IOException {
         if (writer == null) {
-            writer = new PrintWriter(new ServletPrintWrite(getOutputStream(), getCharacterEncoding()));
+            writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
         }
         return writer;
     }
@@ -227,12 +227,17 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public int getBufferSize() {
-        throw new UnsupportedOperationException();
+        return servletOutputStream == null ? 0 : servletOutputStream.getBufferSize();
     }
 
     @Override
     public void setBufferSize(int size) {
-        throw new UnsupportedOperationException();
+        if (servletOutputStream != null && (servletOutputStream.getCount() > 0 || servletOutputStream.isCommitted())) {
+            throw new IllegalStateException();
+        }
+        if (servletOutputStream != null) {
+            servletOutputStream.updateBufferSize(size);
+        }
     }
 
     @Override
@@ -242,17 +247,34 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void resetBuffer() {
-        throw new IllegalStateException();
+        if (servletOutputStream == null) {
+            return;
+        }
+        if (servletOutputStream.isCommitted()) {
+            throw new IllegalStateException();
+        }
+        servletOutputStream.resetBuffer();
     }
 
     @Override
     public boolean isCommitted() {
-        return true;
+        return servletOutputStream != null && servletOutputStream.isCommitted();
     }
 
     @Override
     public void reset() {
-        throw new IllegalStateException();
+        if (isCommitted()) {
+            throw new IllegalStateException();
+        }
+        response.getHeaderNames().forEach(headerName -> response.setHeader(headerName, null));
+        setContentLength(-1);
+        setContentType(null);
+        setCharacterEncoding(null);
+        response.setHttpStatus(null);
+        writer = null;
+        if (servletOutputStream != null) {
+            servletOutputStream.resetBuffer();
+        }
     }
 
     @Override

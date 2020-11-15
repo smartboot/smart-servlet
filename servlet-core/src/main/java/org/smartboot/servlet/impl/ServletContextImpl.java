@@ -188,9 +188,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public String getInitParameter(String name) {
-        String value = deploymentInfo.getInitParameters().get(name);
-//        System.out.println("context param:" + name + " value:" + value);
-        return value;
+        return deploymentInfo.getInitParameters().get(name);
     }
 
     @Override

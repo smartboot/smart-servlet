@@ -17,11 +17,10 @@ import java.io.Writer;
  * @author 三刀
  * @version V1.0 , 2020/11/10
  */
-public class ServletPrintWrite extends Writer {
+public class ServletPrintWriter extends Writer {
     private final OutputStream outputStream;
     private final String charset;
-
-    public ServletPrintWrite(OutputStream outputStream, String charset) {
+    public ServletPrintWriter(OutputStream outputStream, String charset) {
         super(outputStream);
         this.outputStream = outputStream;
         this.charset = charset;
