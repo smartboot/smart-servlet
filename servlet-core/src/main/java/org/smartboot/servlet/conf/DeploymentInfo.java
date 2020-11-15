@@ -11,10 +11,10 @@ package org.smartboot.servlet.conf;
 
 import org.smartboot.http.utils.StringUtils;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,11 +36,12 @@ public class DeploymentInfo {
     private final List<ServletContextListener> servletContextListeners = new ArrayList<>();
     private final List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
     private final List<ServletContainerInitializer> servletContainerInitializers = new ArrayList<>();
-    private File welcomeFile;
+    private String welcomeFile;
     private ClassLoader classLoader;
     private String contextPath;
     private String displayName;
     private URL contextUrl;
+    private Servlet defaultServlet;
 
 
     public URL getContextUrl() {
@@ -145,11 +146,19 @@ public class DeploymentInfo {
         this.displayName = displayName;
     }
 
-    public File getWelcomeFile() {
+    public String getWelcomeFile() {
         return welcomeFile;
     }
 
-    public void setWelcomeFile(File welcomeFile) {
-        this.welcomeFile = welcomeFile;
+    public void setWelcomeFile(String welcomeFile) {
+        this.welcomeFile = welcomeFile.startsWith("/") ? welcomeFile : "/" + welcomeFile;
+    }
+
+    public Servlet getDefaultServlet() {
+        return defaultServlet;
+    }
+
+    public void setDefaultServlet(Servlet defaultServlet) {
+        this.defaultServlet = defaultServlet;
     }
 }

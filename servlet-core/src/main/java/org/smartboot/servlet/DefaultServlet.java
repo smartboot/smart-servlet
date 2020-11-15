@@ -69,9 +69,6 @@ public class DefaultServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String fileName = request.getRequestURI();
         String method = request.getMethod();
-        if (StringUtils.endsWith(fileName, "/")) {
-            fileName += "index.html";
-        }
         RunLogger.getLogger().log(Level.FINEST, "请求URL:" + fileName);
         URL url = request.getServletContext().getResource(fileName);
         File file = null;

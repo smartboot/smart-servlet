@@ -52,16 +52,17 @@ import java.util.logging.Level;
  * @version V1.0 , 2019/12/11
  */
 public class HttpServletRequestImpl implements HttpServletRequest {
-    private HttpRequest request;
-    private ServletContext servletContext;
+    private final HttpRequest request;
+    private final ServletContext servletContext;
+    private final SessionManager sessionManager;
+    private final DispatcherType dispatcherType;
     private String characterEncoding;
     private Map<String, Object> attributes;
     private HttpSession httpSession;
-    private SessionManager sessionManager;
     private Cookie[] cookies;
     private String servletPath;
     private String pathInfo;
-    private DispatcherType dispatcherType;
+    private String requestUri;
 
     public HttpServletRequestImpl(HttpRequest request, ContainerRuntime runtime, DispatcherType dispatcherType) {
         this.request = request;
@@ -145,7 +146,6 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public String getPathInfo() {
-//        return "/" + StringUtils.substringAfter(getRequestURI(), getContextPath() + servletPath);
         return pathInfo;
     }
 
@@ -191,7 +191,11 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        return request.getRequestURI();
+        return requestUri;
+    }
+
+    public void setRequestUri(String requestUri) {
+        this.requestUri = requestUri;
     }
 
     @Override

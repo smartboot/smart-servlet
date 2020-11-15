@@ -11,6 +11,7 @@ package org.smartboot.servlet.war;
 
 import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.DefaultServlet;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 
@@ -83,13 +84,17 @@ public class WebContextRuntime {
             System.out.println(contextFile.toURI().toURL());
             deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 
+            //默认页面
             for (String welcomeFile : webAppInfo.getWelcomeFileList()) {
                 File file = new File(contextFile, welcomeFile);
                 if (file.isFile()) {
-                    deploymentInfo.setWelcomeFile(file);
+                    deploymentInfo.setWelcomeFile(welcomeFile);
                     break;
                 }
             }
+            //默认Servlet
+            deploymentInfo.setDefaultServlet(new DefaultServlet());
+
 
             //自定义ClassLoader
             ContainerClassLoader webContextClassLoader = new ContainerClassLoader(location);

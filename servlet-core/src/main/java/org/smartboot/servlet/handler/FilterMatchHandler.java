@@ -19,6 +19,7 @@ import org.smartboot.servlet.impl.FilterChainImpl;
 import org.smartboot.servlet.util.ServletPathMatcher;
 
 import javax.servlet.Filter;
+import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,14 +41,14 @@ public class FilterMatchHandler extends Handler {
     /**
      * 缓存Servlet关联的过滤器
      */
-    private final Map<Servlet, FilterChainImpl> filterChainCacheMap = new ConcurrentHashMap<>();
+    private final Map<Servlet, List<Filter>> filterChainCacheMap = new ConcurrentHashMap<>();
 
     @Override
     public void handleRequest(HandlerContext handlerContext) {
-        FilterChainImpl filterChain = filterChainCacheMap.get(handlerContext.getServlet());
-        if (filterChain != null) {
-            //重置标志位
-            filterChain.reset();
+
+        List<Filter> cacheFilters = filterChainCacheMap.get(handlerContext.getServlet());
+        if (cacheFilters != null) {
+            FilterChain filterChain = new FilterChainImpl(cacheFilters, () -> FilterMatchHandler.this.doNext(handlerContext));
             try {
                 filterChain.doFilter(handlerContext.getRequest(), handlerContext.getResponse());
             } catch (IOException | ServletException e) {
@@ -55,6 +56,7 @@ public class FilterMatchHandler extends Handler {
             }
             return;
         }
+
         HttpServletRequest request = handlerContext.getRequest();
         String contextPath = handlerContext.getServletContext().getContextPath();
         //匹配Filter
@@ -75,9 +77,8 @@ public class FilterMatchHandler extends Handler {
             }
         });
 
-        filterChain = new FilterChainImpl(filters, () -> FilterMatchHandler.this.doNext(handlerContext));
         //cache for performance
-        filterChainCacheMap.put(handlerContext.getServlet(), filterChain);
+        filterChainCacheMap.put(handlerContext.getServlet(), filters);
         handleRequest(handlerContext);
     }
 }

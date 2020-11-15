@@ -175,9 +175,13 @@ class WebXmlParseEngine {
      * @param rootElement
      */
     private void parseWelcomeFile(WebAppInfo webAppInfo, Element rootElement) {
-        List<Element> welcomeFileElementList = rootElement.elements("welcome-file-list");
-        for (Element element : welcomeFileElementList) {
-            webAppInfo.addWelcomeFile(element.elementTextTrim("welcome-file"));
+        Element welcomeFileListElement = rootElement.element("welcome-file-list");
+        if (welcomeFileListElement == null) {
+            return;
+        }
+        List<Element> welcomeFileElement = welcomeFileListElement.elements("welcome-file");
+        for (Element element : welcomeFileElement) {
+            webAppInfo.addWelcomeFile(element.getTextTrim());
         }
     }
 }

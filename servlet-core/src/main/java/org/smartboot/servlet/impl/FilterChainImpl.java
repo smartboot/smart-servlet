@@ -16,7 +16,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author 三刀
@@ -25,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FilterChainImpl implements FilterChain {
     private final List<Filter> filters;
     private final Runnable runnable;
-    private final ThreadLocal<AtomicInteger> location = ThreadLocal.withInitial(() -> new AtomicInteger(0));
+    private int location = 0;
 
     public FilterChainImpl(List<Filter> filters, Runnable runnable) {
         this.filters = filters;
@@ -34,7 +33,7 @@ public class FilterChainImpl implements FilterChain {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
-        int index = location.get().getAndIncrement();
+        int index = location++;
         if (index < filters.size()) {
             filters.get(index).doFilter(request, response, this);
         } else {
@@ -42,10 +41,4 @@ public class FilterChainImpl implements FilterChain {
         }
     }
 
-    /**
-     * 重置标志位
-     */
-    public void reset() {
-        location.get().set(0);
-    }
 }

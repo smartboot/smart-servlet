@@ -14,6 +14,7 @@ import org.smartboot.http.HttpResponse;
 import org.smartboot.http.enums.HttpStatus;
 import org.smartboot.http.server.handle.HttpHandle;
 import org.smartboot.http.utils.StringUtils;
+import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
 import org.smartboot.servlet.handler.HandlePipeline;
@@ -83,6 +84,19 @@ public class ServletHttpHandle extends HttpHandle {
 
             //封装上下文对象
             HttpServletRequestImpl servletRequest = new HttpServletRequestImpl(request, runtime, DispatcherType.REQUEST);
+            DeploymentInfo deploymentInfo = runtime.getServletContext().getDeploymentInfo();
+            if (StringUtils.isBlank(deploymentInfo.getWelcomeFile())) {
+                servletRequest.setRequestUri(request.getRequestURI());
+            } else {
+                int i = request.getRequestURI().length() - runtime.getServletContext().getContextPath().length();
+                if (i == 0) {
+                    servletRequest.setRequestUri(request.getRequestURI() + runtime.getServletContext().getDeploymentInfo().getWelcomeFile());
+                } else if (i == 1 && request.getRequestURI().charAt(request.getRequestURI().length() - 1) == '/') {
+                    servletRequest.setRequestUri(request.getRequestURI().substring(0, request.getRequestURI().length() - 1) + runtime.getServletContext().getDeploymentInfo().getWelcomeFile());
+                } else {
+                    servletRequest.setRequestUri(request.getRequestURI());
+                }
+            }
             HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext());
 

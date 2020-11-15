@@ -11,16 +11,14 @@ package org.smartboot.servlet.handler;
 
 import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.StringUtils;
-import org.smartboot.servlet.DefaultServlet;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
+import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.ServletPathMatcher;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -32,13 +30,12 @@ import java.util.logging.Level;
  */
 public class ServletMatchHandler extends Handler {
     private static final ServletPathMatcher PATH_MATCHER = new ServletPathMatcher();
-    private final HttpServlet defaultServlet = new DefaultServlet();
 
     @Override
     public void handleRequest(HandlerContext handlerContext) {
         //匹配Servlet
         Servlet servlet = null;
-        ServletContext servletContext = handlerContext.getServletContext();
+        ServletContextImpl servletContext = handlerContext.getServletContext();
         String contextPath = servletContext.getContextPath();
         Map<String, ServletInfo> servletInfoMap = handlerContext.getServletContext().getDeploymentInfo().getServlets();
         HttpServletRequestImpl request = handlerContext.getRequest();
@@ -58,7 +55,7 @@ public class ServletMatchHandler extends Handler {
             }
         }
         if (servlet == null) {
-            servlet = defaultServlet;
+            servlet = servletContext.getDeploymentInfo().getDefaultServlet();
         }
         handlerContext.setServlet(servlet);
         doNext(handlerContext);
