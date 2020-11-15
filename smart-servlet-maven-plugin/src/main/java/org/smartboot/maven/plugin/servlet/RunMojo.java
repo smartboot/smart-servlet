@@ -42,8 +42,11 @@ public class RunMojo extends AbstractMojo {
     /**
      * 编译后的存放目录
      */
-    @Parameter(defaultValue = "${project.build.directory}/${project.build.finalName}")
+    @Parameter(defaultValue = "${project.build.directory}/")
     private File configurationDir;
+
+    @Parameter(defaultValue = "${project.packaging}", required = true, readonly = true)
+    private String packaging;
 
     @Parameter(defaultValue = "8080")
     private int port;
@@ -64,8 +67,16 @@ public class RunMojo extends AbstractMojo {
             urlList.toArray(urls);
             URLClassLoader classLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
             Thread.currentThread().setContextClassLoader(classLoader);
+            File webFile = null;
+            for (File file : configurationDir.listFiles()) {
+                System.out.println("file: " + file.getAbsolutePath());
+                if (file.getName().endsWith(".war")) {
+                    webFile = new File(configurationDir, file.getName().substring(0, file.getName().length() - 4));
+                    break;
+                }
+            }
             Class<?> clazz = classLoader.loadClass("org.smartboot.maven.plugin.servlet.Starter");
-            clazz.getConstructor(String.class, int.class).newInstance(configurationDir.getAbsolutePath(), port);
+            clazz.getConstructor(String.class, int.class).newInstance(webFile.getAbsolutePath(), port);
         } catch (Exception e) {
             e.printStackTrace();
             throw new MojoExecutionException(e.getMessage());

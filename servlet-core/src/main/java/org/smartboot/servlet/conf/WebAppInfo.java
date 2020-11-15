@@ -30,18 +30,20 @@ public class WebAppInfo {
     /**
      * web.xml中的Filter配置
      */
-    private Map<String, FilterInfo> filters = new HashMap<>();
+    private final Map<String, FilterInfo> filters = new HashMap<>();
 
     /**
      * web.xml中的Filter映射信息配置
      */
-    private List<FilterMappingInfo> filterMappings = new ArrayList<>();
+    private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
 
-    private List<String> listeners = new ArrayList<>();
+    private final List<String> listeners = new ArrayList<>();
 
-    private Map<String, String> contextParams = new HashMap<>();
+    private final Map<String, String> contextParams = new HashMap<>();
 
-    private Map<Integer, ErrorPageInfo> errorPages = new HashMap<>();
+    private final Map<Integer, ErrorPageInfo> errorPages = new HashMap<>();
+
+    private final List<String> welcomeFileList = new ArrayList<>();
 
     private int sessionTimeout = 0;
 
@@ -103,5 +105,13 @@ public class WebAppInfo {
 
     public Map<Integer, ErrorPageInfo> getErrorPages() {
         return errorPages;
+    }
+
+    public void addWelcomeFile(String file) {
+        welcomeFileList.add(file);
+    }
+
+    public List<String> getWelcomeFileList() {
+        return welcomeFileList;
     }
 }

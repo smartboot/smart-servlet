@@ -56,7 +56,6 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     private ServletContext servletContext;
     private String characterEncoding;
     private Map<String, Object> attributes;
-    private ContainerRuntime runtime;
     private HttpSession httpSession;
     private SessionManager sessionManager;
     private Cookie[] cookies;

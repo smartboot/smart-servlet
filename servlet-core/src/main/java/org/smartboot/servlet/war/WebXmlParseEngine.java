@@ -57,6 +57,7 @@ class WebXmlParseEngine {
 
         parseSessionConfig(webAppInfo, rootElement);
 
+        parseWelcomeFile(webAppInfo, rootElement);
         return webAppInfo;
     }
 
@@ -165,5 +166,18 @@ class WebXmlParseEngine {
             paramMap.put(element.elementTextTrim("param-name"), element.elementTextTrim("param-value"));
         }
         return paramMap;
+    }
+
+    /**
+     * 解析 <welcome-file-list/>
+     *
+     * @param webAppInfo
+     * @param rootElement
+     */
+    private void parseWelcomeFile(WebAppInfo webAppInfo, Element rootElement) {
+        List<Element> welcomeFileElementList = rootElement.elements("welcome-file-list");
+        for (Element element : welcomeFileElementList) {
+            webAppInfo.addWelcomeFile(element.elementTextTrim("welcome-file"));
+        }
     }
 }

@@ -23,10 +23,10 @@ import java.io.IOException;
  * @version V1.0 , 2019/12/13
  */
 public class WebContextRuntime {
-    private volatile boolean started = false;
-    private ContainerRuntime servletRuntime;
     private final String location;
     private final String contextPath;
+    private volatile boolean started = false;
+    private ContainerRuntime servletRuntime;
 
     public WebContextRuntime(String location, String contextPath) throws Exception {
         this.location = location;
@@ -82,6 +82,14 @@ public class WebContextRuntime {
 
             System.out.println(contextFile.toURI().toURL());
             deploymentInfo.setContextUrl(contextFile.toURI().toURL());
+
+            for (String welcomeFile : webAppInfo.getWelcomeFileList()) {
+                File file = new File(contextFile, welcomeFile);
+                if (file.isFile()) {
+                    deploymentInfo.setWelcomeFile(file);
+                    break;
+                }
+            }
 
             //自定义ClassLoader
             ContainerClassLoader webContextClassLoader = new ContainerClassLoader(location);

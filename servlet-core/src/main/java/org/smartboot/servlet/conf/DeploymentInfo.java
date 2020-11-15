@@ -14,6 +14,7 @@ import org.smartboot.http.utils.StringUtils;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class DeploymentInfo {
     private final List<ServletContextListener> servletContextListeners = new ArrayList<>();
     private final List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
     private final List<ServletContainerInitializer> servletContainerInitializers = new ArrayList<>();
+    private File welcomeFile;
     private ClassLoader classLoader;
     private String contextPath;
     private String displayName;
@@ -141,5 +143,13 @@ public class DeploymentInfo {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public File getWelcomeFile() {
+        return welcomeFile;
+    }
+
+    public void setWelcomeFile(File welcomeFile) {
+        this.welcomeFile = welcomeFile;
     }
 }
