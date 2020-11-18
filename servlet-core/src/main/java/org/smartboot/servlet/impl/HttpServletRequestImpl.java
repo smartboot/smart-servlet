@@ -55,7 +55,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     private final HttpRequest request;
     private final ServletContext servletContext;
     private final SessionManager sessionManager;
-    private final DispatcherType dispatcherType;
+    private DispatcherType dispatcherType;
     private String characterEncoding;
     private Map<String, Object> attributes;
     private HttpSession httpSession;

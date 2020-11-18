@@ -20,9 +20,18 @@ import java.io.IOException;
  * @version V1.0 , 2019/12/11
  */
 public class RequestDispatcherImpl implements RequestDispatcher {
+    private final ServletContextImpl servletContext;
+
+    public RequestDispatcherImpl(ServletContextImpl servletContext) {
+        this.servletContext = servletContext;
+    }
+
     @Override
     public void forward(ServletRequest request, ServletResponse response) throws ServletException, IOException {
-        throw new UnsupportedOperationException();
+        if (response.isCommitted()) {
+            throw new IllegalStateException();
+        }
+        servletContext.getPipeline().handleRequest(null);
     }
 
     @Override

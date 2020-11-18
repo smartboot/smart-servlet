@@ -14,7 +14,6 @@ import org.smartboot.http.HttpResponse;
 import org.smartboot.http.enums.HttpStatus;
 import org.smartboot.http.server.handle.HttpHandle;
 import org.smartboot.http.utils.StringUtils;
-import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
 import org.smartboot.servlet.handler.HandlePipeline;
@@ -23,6 +22,7 @@ import org.smartboot.servlet.handler.ServletRequestListenerHandler;
 import org.smartboot.servlet.handler.ServletServiceHandler;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
+import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.LRUCache;
 
 import javax.servlet.DispatcherType;
@@ -35,7 +35,6 @@ import java.util.List;
  * @version V1.0 , 2019/12/11
  */
 public class ServletHttpHandle extends HttpHandle {
-    private final HandlePipeline pipeline = new HandlePipeline();
     private final List<ContainerRuntime> runtimes = new ArrayList<>();
     /**
      * 请求映射的Servlet运行环境
@@ -48,12 +47,14 @@ public class ServletHttpHandle extends HttpHandle {
             return;
         }
         started = true;
+        HandlePipeline pipeline = new HandlePipeline();
         pipeline.next(new ServletRequestListenerHandler())
                 .next(new ServletMatchHandler())
                 .next(new FilterMatchHandler())
                 .next(new ServletServiceHandler());
         //启动运行环境
         runtimes.forEach(runtime -> {
+            runtime.getServletContext().setPipeline(pipeline);
             ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(runtime.getServletContext().getClassLoader());
             try {
@@ -80,28 +81,16 @@ public class ServletHttpHandle extends HttpHandle {
                 response.setHttpStatus(HttpStatus.NOT_FOUND);
                 return;
             }
-            Thread.currentThread().setContextClassLoader(runtime.getServletContext().getClassLoader());
+            ServletContextImpl servletContext = runtime.getServletContext();
+            Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
 
             //封装上下文对象
             HttpServletRequestImpl servletRequest = new HttpServletRequestImpl(request, runtime, DispatcherType.REQUEST);
-            DeploymentInfo deploymentInfo = runtime.getServletContext().getDeploymentInfo();
-            if (StringUtils.isBlank(deploymentInfo.getWelcomeFile())) {
-                servletRequest.setRequestUri(request.getRequestURI());
-            } else {
-                int i = request.getRequestURI().length() - runtime.getServletContext().getContextPath().length();
-                if (i == 0) {
-                    servletRequest.setRequestUri(request.getRequestURI() + runtime.getServletContext().getDeploymentInfo().getWelcomeFile());
-                } else if (i == 1 && request.getRequestURI().charAt(request.getRequestURI().length() - 1) == '/') {
-                    servletRequest.setRequestUri(request.getRequestURI().substring(0, request.getRequestURI().length() - 1) + runtime.getServletContext().getDeploymentInfo().getWelcomeFile());
-                } else {
-                    servletRequest.setRequestUri(request.getRequestURI());
-                }
-            }
             HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext());
 
             // just do it
-            pipeline.handleRequest(handlerContext);
+            servletContext.getPipeline().handleRequest(handlerContext);
         } catch (WrappedRuntimeException e) {
             e.getThrowable().printStackTrace();
         } catch (Exception e) {

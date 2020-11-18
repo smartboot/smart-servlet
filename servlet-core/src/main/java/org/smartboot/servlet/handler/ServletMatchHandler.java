@@ -12,6 +12,7 @@ package org.smartboot.servlet.handler;
 import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
+import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
@@ -39,6 +40,21 @@ public class ServletMatchHandler extends Handler {
         String contextPath = servletContext.getContextPath();
         Map<String, ServletInfo> servletInfoMap = handlerContext.getServletContext().getDeploymentInfo().getServlets();
         HttpServletRequestImpl request = handlerContext.getRequest();
+
+        //默认地址改写
+        DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
+        if (StringUtils.isBlank(deploymentInfo.getWelcomeFile())) {
+            request.setRequestUri(request.getRequestURI());
+        } else {
+            int i = request.getRequestURI().length() - servletContext.getContextPath().length();
+            if (i == 0) {
+                request.setRequestUri(request.getRequestURI() + deploymentInfo.getWelcomeFile());
+            } else if (i == 1 && request.getRequestURI().charAt(request.getRequestURI().length() - 1) == '/') {
+                request.setRequestUri(request.getRequestURI().substring(0, request.getRequestURI().length() - 1) + servletContext.getDeploymentInfo().getWelcomeFile());
+            } else {
+                request.setRequestUri(request.getRequestURI());
+            }
+        }
 
         for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
             final ServletInfo servletInfo = entry.getValue();

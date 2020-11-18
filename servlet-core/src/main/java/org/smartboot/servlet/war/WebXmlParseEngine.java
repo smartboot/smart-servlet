@@ -112,12 +112,13 @@ class WebXmlParseEngine {
             String filterName = element.elementTextTrim("filter-name");
             String urlPattern = element.elementTextTrim("url-pattern");
             String servletName = element.elementTextTrim("servlet-name");
-            String dispatcher = element.elementTextTrim("dispatcher");
-            if (StringUtils.isBlank(dispatcher)) {
-                dispatcher = DispatcherType.REQUEST.name();
-            }
+            List<Element> dispatcher = element.elements("dispatcher");
             Set<DispatcherType> dispatcherTypes = new HashSet<>();
-            dispatcherTypes.add(DispatcherType.valueOf(dispatcher));
+            if (dispatcher == null || dispatcher.size() == 0) {
+                dispatcherTypes.add(DispatcherType.REQUEST);
+            } else {
+                dispatcher.forEach(dispatcherElement -> dispatcherTypes.add(DispatcherType.valueOf(dispatcherElement.getTextTrim())));
+            }
             FilterMappingInfo filterInfo = new FilterMappingInfo(filterName
                     , StringUtils.isBlank(urlPattern) ? FilterMappingType.SERVLET : FilterMappingType.URL,
                     StringUtils.isBlank(urlPattern) ? servletName : urlPattern,

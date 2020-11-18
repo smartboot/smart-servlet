@@ -16,6 +16,7 @@ import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.enums.ServletContextPathType;
+import org.smartboot.servlet.handler.HandlePipeline;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
@@ -51,6 +52,10 @@ public class ServletContextImpl implements ServletContext {
     private final DeploymentInfo deploymentInfo = new DeploymentInfo();
     private SessionCookieConfig sessionCookieConfig = new SessionCookieConfigImpl();
     private ServletContextPathType pathType = ServletContextPathType.PATH;
+    /**
+     * 请求执行管道
+     */
+    private HandlePipeline pipeline;
 
     @Override
     public String getContextPath() {
@@ -137,22 +142,22 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public RequestDispatcher getNamedDispatcher(String name) {
         System.out.println("getNamedDispatcher:" + name);
-        return new RequestDispatcherImpl();
+        return new RequestDispatcherImpl(this);
     }
 
     @Override
     public Servlet getServlet(String name) throws ServletException {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public Enumeration<Servlet> getServlets() {
-        throw new UnsupportedOperationException();
+        return Collections.emptyEnumeration();
     }
 
     @Override
     public Enumeration<String> getServletNames() {
-        throw new UnsupportedOperationException();
+        return Collections.emptyEnumeration();
     }
 
     @Override
@@ -373,5 +378,13 @@ public class ServletContextImpl implements ServletContext {
 
     public DeploymentInfo getDeploymentInfo() {
         return deploymentInfo;
+    }
+
+    public HandlePipeline getPipeline() {
+        return pipeline;
+    }
+
+    public void setPipeline(HandlePipeline pipeline) {
+        this.pipeline = pipeline;
     }
 }
