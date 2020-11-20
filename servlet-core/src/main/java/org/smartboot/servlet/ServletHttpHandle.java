@@ -115,7 +115,9 @@ public class ServletHttpHandle extends HttpHandle {
             return runtime;
         }
         for (ContainerRuntime matchRuntime : runtimes) {
-            if (StringUtils.startsWith(servletPath, matchRuntime.getServletContext().getDeploymentInfo().getContextPath())) {
+            //todo 兼容 请求 uri 为 servletPath结尾不带 '/' 的情况
+            String contextPath = matchRuntime.getServletContext().getDeploymentInfo().getContextPath();
+            if (StringUtils.startsWith(servletPath, contextPath) || servletPath.equals(contextPath.substring(0, contextPath.length() - 1))) {
                 runtime = matchRuntime;
                 contextCache.put(servletPath, runtime);
                 break;
