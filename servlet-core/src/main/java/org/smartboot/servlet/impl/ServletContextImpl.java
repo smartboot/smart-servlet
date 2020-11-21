@@ -165,7 +165,7 @@ public class ServletContextImpl implements ServletContext {
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException("");
         }
-        return null;
+        return new RequestDispatcherImpl(this, null, path);
     }
 
     /**
@@ -186,7 +186,7 @@ public class ServletContextImpl implements ServletContext {
         if (servletInfo == null) {
             return null;
         }
-        return new RequestDispatcherImpl(this);
+        return new RequestDispatcherImpl(this, servletInfo, null);
     }
 
     @Override

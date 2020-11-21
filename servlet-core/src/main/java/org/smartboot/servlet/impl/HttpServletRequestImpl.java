@@ -55,7 +55,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     private final HttpRequest request;
     private final ServletContext servletContext;
     private final SessionManager sessionManager;
-    private DispatcherType dispatcherType;
+    private final DispatcherType dispatcherType;
     private String characterEncoding;
     private Map<String, Object> attributes;
     private HttpSession httpSession;
@@ -69,8 +69,6 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         this.dispatcherType = dispatcherType;
         this.servletContext = runtime.getServletContext();
         this.sessionManager = runtime.getSessionManager();
-        //todo 设置初始uri
-        this.requestUri = request.getRequestURI();
     }
 
     @Override

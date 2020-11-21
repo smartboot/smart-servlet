@@ -10,7 +10,9 @@
 package org.smartboot.servlet.impl;
 
 import org.smartboot.servlet.HandlerContext;
+import org.smartboot.servlet.conf.ServletInfo;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -28,9 +30,19 @@ import java.io.IOException;
 public class RequestDispatcherImpl implements RequestDispatcher {
     private final ServletContextImpl servletContext;
     private boolean named;
+    private ServletInfo dispatcherServlet;
+    private String dispatcherURL;
 
-    public RequestDispatcherImpl(ServletContextImpl servletContext) {
+    public RequestDispatcherImpl(ServletContextImpl servletContext, ServletInfo dispatcherServlet, String dispatcherURL) {
+        if (dispatcherServlet == null && dispatcherURL == null) {
+            throw new IllegalArgumentException();
+        }
+        if (dispatcherServlet != null && dispatcherURL != null) {
+            throw new IllegalArgumentException();
+        }
         this.servletContext = servletContext;
+        this.dispatcherServlet = dispatcherServlet;
+        this.dispatcherURL = dispatcherURL;
     }
 
     @Override
@@ -41,40 +53,58 @@ public class RequestDispatcherImpl implements RequestDispatcher {
         response.resetBuffer();
         ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, false);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, false);
-        servletContext.getPipeline().handleRequest(null);
+        HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
+        Object requestUri = requestImpl.getRequestURI();
+        Object contextPath = requestImpl.getContextPath();
+        Object servletPath = requestImpl.getServletPath();
+        Object pathInfo = requestImpl.getPathInfo();
+        Object queryString = requestImpl.getQueryString();
+        if (requestUri != null) {
+            requestWrapper.setAttribute(FORWARD_REQUEST_URI, requestUri);
+        }
+        if (contextPath != null) {
+            requestWrapper.setAttribute(FORWARD_CONTEXT_PATH, contextPath);
+        }
+        if (servletPath != null) {
+            requestWrapper.setAttribute(FORWARD_SERVLET_PATH, servletPath);
+        }
+        if (pathInfo != null) {
+            requestWrapper.setAttribute(FORWARD_PATH_INFO, pathInfo);
+        }
+        if (queryString != null) {
+            requestWrapper.setAttribute(FORWARD_QUERY_STRING, queryString);
+        }
+        HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext);
+        servletContext.getPipeline().handleRequest(handlerContext);
     }
 
     @Override
     public void include(ServletRequest request, ServletResponse response) throws ServletException, IOException {
         ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, true);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, true);
-        Object requestUri = null;
-        Object contextPath = null;
-        Object servletPath = null;
-        Object pathInfo = null;
-        Object queryString = null;
-        if (named) {
-            requestUri = request.getAttribute(INCLUDE_REQUEST_URI);
-            contextPath = request.getAttribute(INCLUDE_CONTEXT_PATH);
-            servletPath = request.getAttribute(INCLUDE_SERVLET_PATH);
-            pathInfo = request.getAttribute(INCLUDE_PATH_INFO);
-            queryString = request.getAttribute(INCLUDE_QUERY_STRING);
-        } else {
-
+        HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
+        Object requestUri = requestImpl.getRequestURI();
+        Object contextPath = requestImpl.getContextPath();
+        Object servletPath = requestImpl.getServletPath();
+        Object pathInfo = requestImpl.getPathInfo();
+        Object queryString = requestImpl.getQueryString();
+        if (requestUri != null) {
+            requestWrapper.setAttribute(INCLUDE_REQUEST_URI, requestUri);
         }
-        HandlerContext handlerContext = new HandlerContext(null, null, servletContext);
+        if (contextPath != null) {
+            requestWrapper.setAttribute(INCLUDE_CONTEXT_PATH, contextPath);
+        }
+        if (servletPath != null) {
+            requestWrapper.setAttribute(INCLUDE_PATH_INFO, servletPath);
+        }
+        if (pathInfo != null) {
+            requestWrapper.setAttribute(INCLUDE_PATH_INFO, pathInfo);
+        }
+        if (queryString != null) {
+            requestWrapper.setAttribute(INCLUDE_QUERY_STRING, queryString);
+        }
+        HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext);
         servletContext.getPipeline().handleRequest(handlerContext);
-        try {
-
-        } finally {
-            if (!named) {
-                request.setAttribute(INCLUDE_REQUEST_URI, requestUri);
-                request.setAttribute(INCLUDE_CONTEXT_PATH, contextPath);
-                request.setAttribute(INCLUDE_SERVLET_PATH, servletPath);
-                request.setAttribute(INCLUDE_PATH_INFO, pathInfo);
-                request.setAttribute(INCLUDE_QUERY_STRING, queryString);
-            }
-        }
     }
 
     private ServletRequestDispatcherWrapper wrapperRequest(final ServletRequest request, boolean included) {
@@ -85,7 +115,7 @@ public class RequestDispatcherImpl implements RequestDispatcher {
         if (!(current instanceof HttpServletRequestImpl)) {
             throw new IllegalArgumentException("invalid request object: " + current);
         }
-        return new ServletRequestDispatcherWrapper((HttpServletRequestImpl) current);
+        return new ServletRequestDispatcherWrapper((HttpServletRequestImpl) current, included ? DispatcherType.INCLUDE : DispatcherType.FORWARD);
     }
 
     private ServletResponseDispatcherWrapper wrapperResponse(final ServletResponse response, boolean included) {
