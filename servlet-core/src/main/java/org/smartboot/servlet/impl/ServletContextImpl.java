@@ -104,7 +104,8 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public Set<String> getResourcePaths(String path) {
-        throw new UnsupportedOperationException();
+        //todo 暂时 返回 null 使org.apache.jasper.servlet.JasperInitializer#onStartup 可以执行
+        return null;
     }
 
     @Override
@@ -120,6 +121,12 @@ public class ServletContextImpl implements ServletContext {
 
         URL url = new URL(deploymentInfo.getContextUrl(), path.substring(1));
         RunLogger.getLogger().log(Level.SEVERE, "path:" + url + " ，url:" + deploymentInfo.getContextUrl());
+        //todo 资源不存在时,返回空,参考实现org.apache.jasper.servlet.JspCServletContext#getResource
+        try (InputStream is = url.openStream()) {
+        } catch (Throwable t) {
+            RunLogger.getLogger().log(Level.SEVERE, "path:" + url + " ，Err:" + t.getMessage());
+            url = null;
+        }
         return url;
     }
 
@@ -213,7 +220,9 @@ public class ServletContextImpl implements ServletContext {
     public String getRealPath(String path) {
         try {
             URL url = getResource(path);
-            return new File(url.toURI()).getAbsolutePath();
+            if (url != null) {
+                return new File(url.toURI()).getAbsolutePath();
+            }
         } catch (MalformedURLException | URISyntaxException e) {
             e.printStackTrace();
         }
@@ -392,7 +401,8 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public JspConfigDescriptor getJspConfigDescriptor() {
-        throw new UnsupportedOperationException();
+        //todo 暂时 返回 null 使org.apache.jasper.servlet.JasperInitializer#onStartup 可以执行
+        return null;
     }
 
     @Override

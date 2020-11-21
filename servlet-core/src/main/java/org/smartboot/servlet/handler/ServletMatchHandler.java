@@ -47,8 +47,11 @@ public class ServletMatchHandler extends Handler {
             request.setRequestUri(request.getRequestURI());
         } else {
             int i = request.getRequestURI().length() - servletContext.getContextPath().length();
-            if (i == 0) {
+            //todo 兼容 请求 uri 为 servletPath结尾不带 '/' 的情况
+            if(i == -1){
                 request.setRequestUri(request.getRequestURI() + deploymentInfo.getWelcomeFile());
+            }else if (i == 0) {
+                request.setRequestUri(request.getRequestURI() + deploymentInfo.getWelcomeFile().substring(1));
             } else if (i == 1 && request.getRequestURI().charAt(request.getRequestURI().length() - 1) == '/') {
                 request.setRequestUri(request.getRequestURI().substring(0, request.getRequestURI().length() - 1) + servletContext.getDeploymentInfo().getWelcomeFile());
             } else {

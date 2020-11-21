@@ -129,6 +129,9 @@ public class ContainerRuntime {
             ServletContextEvent event = new ServletContextEvent(servletContext);
             servletContextListener.contextDestroyed(event);
         });
+        servletContext.getDeploymentInfo().getServlets().values().forEach(servletInfo -> {
+            servletInfo.getServlet().destroy();
+        });
     }
 
     public boolean isStarted() {

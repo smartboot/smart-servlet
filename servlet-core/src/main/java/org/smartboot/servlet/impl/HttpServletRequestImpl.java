@@ -69,6 +69,8 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         this.dispatcherType = dispatcherType;
         this.servletContext = runtime.getServletContext();
         this.sessionManager = runtime.getSessionManager();
+        //todo 设置初始uri
+        this.requestUri = request.getRequestURI();
     }
 
     @Override
