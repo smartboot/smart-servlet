@@ -134,14 +134,48 @@ public class ServletContextImpl implements ServletContext {
         }
     }
 
+    /**
+     * <pre>
+     * 《Servlet3.1规范中文版》9.1获得一个RequestDispatcher
+     * getRequestDispatcher 方法需要一个 String 类型的参数􏰁述在 ServletContext 作用域内的路径。
+     * 这个路径必须 是相对于 ServletContext 的根路径，并且以‟/‟开头，或者为空。
+     * 该方法根据这个路径使用 servlet 路径匹配规 则(见第 12 章，请求映射到 servlet)来查找 servlet，
+     * 把它包装成 RequestDispatcher 对象并返回。
+     * 如果基于 给定的路径没有找到相应的 servlet，那么􏰀供一个返回那个路径内容的 RequestDispatcher。
+     * </pre>
+     *
+     * @param path
+     * @return
+     */
     @Override
     public RequestDispatcher getRequestDispatcher(String path) {
-        throw new UnsupportedOperationException();
+        if (path == null) {
+            return null;
+        }
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException("");
+        }
+        return null;
     }
 
+    /**
+     * <pre>
+     * 《Servlet3.1规范中文版》9.1获得一个RequestDispatcher
+     * getNamedDispatcher 方法使用一个 ServletContext 知道的 servlet 名称作为参数。
+     * 如果找到一个 servlet，则把 它包装成 RequestDispatcher 对象，并返回该对象。
+     * 如果没有与给定名字相关的 servlet，该方法必须返回 null。
+     * </pre>
+     *
+     * @param name
+     * @return
+     */
     @Override
     public RequestDispatcher getNamedDispatcher(String name) {
         System.out.println("getNamedDispatcher:" + name);
+        ServletInfo servletInfo = deploymentInfo.getServlets().get(name);
+        if (servletInfo == null) {
+            return null;
+        }
         return new RequestDispatcherImpl(this);
     }
 
