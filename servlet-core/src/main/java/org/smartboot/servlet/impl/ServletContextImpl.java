@@ -119,14 +119,17 @@ public class ServletContextImpl implements ServletContext {
             path = "/" + path;
         }
 
-        URL url = new URL(deploymentInfo.getContextUrl(), path.substring(1));
-        RunLogger.getLogger().log(Level.SEVERE, "path:" + url + " ，url:" + deploymentInfo.getContextUrl());
-        //todo 资源不存在时,返回空,参考实现org.apache.jasper.servlet.JspCServletContext#getResource
-        try (InputStream is = url.openStream()) {
-        } catch (Throwable t) {
-            RunLogger.getLogger().log(Level.SEVERE, "path:" + url + " ，Err:" + t.getMessage());
-            url = null;
+        URL pathUrl = new URL(deploymentInfo.getContextUrl(), path.substring(1));
+        //todo 判断文件是否存在
+        URL url = null;
+        try {
+            if(new File(pathUrl.toURI()).exists()){
+                url = pathUrl;
+            }
+        } catch (URISyntaxException e) {
+            RunLogger.getLogger().log(Level.SEVERE, "path:" + pathUrl + " ，URISyntaxException:" + e.getMessage());
         }
+        RunLogger.getLogger().log(Level.SEVERE, "path" +((url==null)?"(404):":":") + pathUrl + " ，url:" + deploymentInfo.getContextUrl());
         return url;
     }
 
