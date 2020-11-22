@@ -21,7 +21,7 @@ import java.util.Locale;
 public class ServletResponseDispatcherWrapper extends HttpServletResponseWrapper {
 
     private final HttpServletResponseImpl response;
-    private boolean included = false;
+    private boolean included;
 
     /**
      * Constructs a response adaptor wrapping the given response.

@@ -9,6 +9,8 @@
 
 package org.smartboot.servlet.impl;
 
+import org.smartboot.http.utils.HttpUtils;
+import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
 
 import javax.servlet.DispatcherType;
@@ -20,6 +22,8 @@ import javax.servlet.ServletRequestWrapper;
 import javax.servlet.ServletResponse;
 import javax.servlet.ServletResponseWrapper;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 《Servlet3.1规范中文版》第9章 分派请求
@@ -29,9 +33,9 @@ import java.io.IOException;
  */
 public class RequestDispatcherImpl implements RequestDispatcher {
     private final ServletContextImpl servletContext;
-    private boolean named;
-    private Servlet dispatcherServlet;
-    private String dispatcherURL;
+    private final boolean named;
+    private final Servlet dispatcherServlet;
+    private final String dispatcherURL;
 
     public RequestDispatcherImpl(ServletContextImpl servletContext, Servlet dispatcherServlet, String dispatcherURL) {
         if (dispatcherServlet == null && dispatcherURL == null) {
@@ -75,6 +79,21 @@ public class RequestDispatcherImpl implements RequestDispatcher {
         if (queryString != null) {
             requestWrapper.setAttribute(FORWARD_QUERY_STRING, queryString);
         }
+
+        //《Servlet3.1规范中文版》9.4 forward 方法
+        //request 对象暴露给目标 servlet 的路径元素(path elements)必须反映获得 RequestDispatcher 使用的路径。
+        // 唯一例外的是，如果 RequestDispatcher 是通过 getNamedDispatcher 方法获得。这种情况下，request 对象的路径元素必须反映这些原始请求。
+        if (named) {
+            return;
+        }
+        String[] array = StringUtils.split(dispatcherURL, "?");
+        requestWrapper.setRequestURI(array[0]);
+        Map<String, String[]> parameters = new HashMap<>();
+        if (array.length > 1) {
+            HttpUtils.decodeParamString(array[1], parameters);
+            requestWrapper.setParamaters(parameters);
+        }
+
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
         if (dispatcherServlet != null) {
             handlerContext.setServlet(dispatcherServlet);
@@ -87,32 +106,36 @@ public class RequestDispatcherImpl implements RequestDispatcher {
         ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, true);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, true);
         HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
+
+        //《Servlet3.1规范中文版》9.3.1 包含(include)的请求参数
+        //这些属性可以通过包含的 servlet 的 request 对象的 getAttribute 方法访问，
+        // 它们的值必须分别与被包含 servlet 的请求 RUI、上下文路径、servlet 路径、路径信息、查询字符串相等。
+        // 如果包含后续请求，那么这些属性 会被后面包含请求的相应属性值替换。
+        //如果通过 getNamedDispatcher 方法获得包含的 servlet，那么不能设置这些属性。
+
         Object requestUri = requestImpl.getRequestURI();
         Object contextPath = requestImpl.getContextPath();
         Object servletPath = requestImpl.getServletPath();
         Object pathInfo = requestImpl.getPathInfo();
         Object queryString = requestImpl.getQueryString();
-        if (requestUri != null) {
-            requestWrapper.setAttribute(INCLUDE_REQUEST_URI, requestUri);
-        }
-        if (contextPath != null) {
-            requestWrapper.setAttribute(INCLUDE_CONTEXT_PATH, contextPath);
-        }
-        if (servletPath != null) {
-            requestWrapper.setAttribute(INCLUDE_PATH_INFO, servletPath);
-        }
-        if (pathInfo != null) {
-            requestWrapper.setAttribute(INCLUDE_PATH_INFO, pathInfo);
-        }
-        if (queryString != null) {
-            requestWrapper.setAttribute(INCLUDE_QUERY_STRING, queryString);
-        }
-        //《Servlet3.1规范中文版》9.4 forward 方法
-        //request 对象暴露给目标 servlet 的路径元素(path elements)必须反映获得 RequestDispatcher 使用的路径。
-        // 唯一例外的是，如果 RequestDispatcher 是通过 getNamedDispatcher 方法获得。这种情况下，request 对象的路径元素必须反映这些原始请求。
         if (!named) {
-//            requestWrapper.set
+            if (requestUri != null) {
+                requestWrapper.setAttribute(INCLUDE_REQUEST_URI, requestUri);
+            }
+            if (contextPath != null) {
+                requestWrapper.setAttribute(INCLUDE_CONTEXT_PATH, contextPath);
+            }
+            if (servletPath != null) {
+                requestWrapper.setAttribute(INCLUDE_PATH_INFO, servletPath);
+            }
+            if (pathInfo != null) {
+                requestWrapper.setAttribute(INCLUDE_PATH_INFO, pathInfo);
+            }
+            if (queryString != null) {
+                requestWrapper.setAttribute(INCLUDE_QUERY_STRING, queryString);
+            }
         }
+
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
         if (dispatcherServlet != null) {
             handlerContext.setServlet(dispatcherServlet);

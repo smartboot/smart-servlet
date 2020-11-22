@@ -17,6 +17,7 @@ import org.smartboot.http.utils.HttpHeaderConstant;
 import org.smartboot.http.utils.Mimetypes;
 import org.smartboot.http.utils.StringUtils;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -80,6 +82,14 @@ public class DefaultServlet extends HttpServlet {
         //404
         if (file == null || !file.isFile()) {
             RunLogger.getLogger().log(Level.WARNING, "file:" + request.getRequestURI() + " not found!");
+            //《Servlet3.1规范中文版》9.3 include 方法
+            //如果默认的 servlet 是 RequestDispatch.include()的目标 servlet，
+            // 而且请求的资源不存在，那么默认的 servlet 必须抛出 FileNotFoundException 异常。
+            // 如果这个异常没有被捕获和处理，以及响应还未􏰀交，则响应状态 码必须被设置为 500。
+            if (request.getDispatcherType() == DispatcherType.INCLUDE) {
+                response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+                throw new FileNotFoundException();
+            }
             response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
             response.setHeader(HttpHeaderConstant.Names.CONTENT_TYPE, "text/html; charset=utf-8");
 

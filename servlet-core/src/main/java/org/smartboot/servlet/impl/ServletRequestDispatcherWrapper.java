@@ -9,10 +9,15 @@
 
 package org.smartboot.servlet.impl;
 
+import org.smartboot.http.utils.HttpHeaderConstant;
 import org.smartboot.servlet.SmartHttpServletRequest;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpSession;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * @author 三刀
@@ -20,18 +25,49 @@ import javax.servlet.http.HttpServletRequestWrapper;
  */
 public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implements SmartHttpServletRequest {
     private final HttpServletRequestImpl request;
-
     private final DispatcherType dispatcherType;
     private final boolean named;
+    private HttpServletResponseImpl response;
     private String servletPath;
     private String pathInfo;
     private String requestUri;
+    private Map<String, String[]> paramaters;
 
     public ServletRequestDispatcherWrapper(HttpServletRequestImpl request, DispatcherType dispatcherType, boolean named) {
         super(request);
         this.request = request;
         this.dispatcherType = dispatcherType;
         this.named = named;
+    }
+
+    @Override
+    public String getParameter(String name) {
+        if (paramaters == null) {
+            return null;
+        }
+        String[] values = paramaters.get(name);
+        return values == null || values.length == 0 ? null : values[0];
+    }
+
+    @Override
+    public Map<String, String[]> getParameterMap() {
+        return paramaters == null ? Collections.emptyMap() : paramaters;
+    }
+
+    @Override
+    public Enumeration<String> getParameterNames() {
+        if (paramaters == null) {
+            return null;
+        }
+        return Collections.enumeration(paramaters.keySet());
+    }
+
+    @Override
+    public String[] getParameterValues(String name) {
+        if (paramaters == null) {
+            return null;
+        }
+        return paramaters.get(name);
     }
 
     @Override
@@ -47,6 +83,11 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     @Override
     public String getRequestURI() {
         return named ? super.getRequestURI() : this.requestUri;
+    }
+
+    @Override
+    public void setRequestURI(String requestURI) {
+        this.requestUri = requestURI;
     }
 
     @Override
@@ -69,8 +110,27 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
         this.servletPath = servletPath;
     }
 
+    public void setParamaters(Map<String, String[]> paramaters) {
+        this.paramaters = paramaters;
+    }
+
     @Override
-    public void setRequestURI(String requestURI) {
-        this.requestUri = requestURI;
+    public HttpSession getSession(boolean create) {
+        if (dispatcherType == DispatcherType.INCLUDE && response.containsHeader(HttpHeaderConstant.Names.COOKIE)) {
+            throw new IllegalStateException();
+        }
+        return super.getSession(create);
+    }
+
+    @Override
+    public HttpSession getSession() {
+        if (dispatcherType == DispatcherType.INCLUDE && response.containsHeader(HttpHeaderConstant.Names.COOKIE)) {
+            throw new IllegalStateException();
+        }
+        return super.getSession();
+    }
+
+    public void setResponse(HttpServletResponseImpl response) {
+        this.response = response;
     }
 }
