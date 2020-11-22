@@ -10,10 +10,10 @@
 package org.smartboot.servlet.impl;
 
 import org.smartboot.servlet.HandlerContext;
-import org.smartboot.servlet.conf.ServletInfo;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
@@ -30,10 +30,10 @@ import java.io.IOException;
 public class RequestDispatcherImpl implements RequestDispatcher {
     private final ServletContextImpl servletContext;
     private boolean named;
-    private ServletInfo dispatcherServlet;
+    private Servlet dispatcherServlet;
     private String dispatcherURL;
 
-    public RequestDispatcherImpl(ServletContextImpl servletContext, ServletInfo dispatcherServlet, String dispatcherURL) {
+    public RequestDispatcherImpl(ServletContextImpl servletContext, Servlet dispatcherServlet, String dispatcherURL) {
         if (dispatcherServlet == null && dispatcherURL == null) {
             throw new IllegalArgumentException();
         }
@@ -75,6 +75,9 @@ public class RequestDispatcherImpl implements RequestDispatcher {
             requestWrapper.setAttribute(FORWARD_QUERY_STRING, queryString);
         }
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext);
+        if (dispatcherServlet != null) {
+            handlerContext.setServlet(dispatcherServlet);
+        }
         servletContext.getPipeline().handleRequest(handlerContext);
     }
 
@@ -104,6 +107,9 @@ public class RequestDispatcherImpl implements RequestDispatcher {
             requestWrapper.setAttribute(INCLUDE_QUERY_STRING, queryString);
         }
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext);
+        if (dispatcherServlet != null) {
+            handlerContext.setServlet(dispatcherServlet);
+        }
         servletContext.getPipeline().handleRequest(handlerContext);
     }
 

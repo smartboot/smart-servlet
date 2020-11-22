@@ -123,13 +123,13 @@ public class ServletContextImpl implements ServletContext {
         //todo 判断文件是否存在
         URL url = null;
         try {
-            if(new File(pathUrl.toURI()).exists()){
+            if (new File(pathUrl.toURI()).exists()) {
                 url = pathUrl;
             }
         } catch (URISyntaxException e) {
             RunLogger.getLogger().log(Level.SEVERE, "path:" + pathUrl + " ，URISyntaxException:" + e.getMessage());
         }
-        RunLogger.getLogger().log(Level.SEVERE, "path" +((url==null)?"(404):":":") + pathUrl + " ，url:" + deploymentInfo.getContextUrl());
+        RunLogger.getLogger().log(Level.SEVERE, "path" + ((url == null) ? "(404):" : ":") + pathUrl + " ，url:" + deploymentInfo.getContextUrl());
         return url;
     }
 
@@ -186,7 +186,7 @@ public class ServletContextImpl implements ServletContext {
         if (servletInfo == null) {
             return null;
         }
-        return new RequestDispatcherImpl(this, servletInfo, null);
+        return new RequestDispatcherImpl(this, servletInfo.getServlet(), null);
     }
 
     @Override
