@@ -34,8 +34,8 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
 | springboot starter  | :white_check_mark: |:white_check_mark:| 继Tomcat、Undertow、Jetty之后的第四个spring-boot-starter-web包 |
 | 多应用部署 | :x: |:white_check_mark:| 通过类加载器的隔离机制，实现单Web容器部署多应用 |
 | JSP页面支持 | :x: |:white_check_mark:| ***暂未实现*** |
-| Session规范 | :white_check_mark: |:white_check_mark:| ***暂未实现*** |
-| Cookie规范 | :white_check_mark: |:white_check_mark:| ***暂未实现*** |
+| Session规范 | :white_check_mark: |:white_check_mark:| ***开发中*** |
+| Cookie规范 | :white_check_mark: |:white_check_mark:| ***开发中*** |
 | 服务配置维护 | 默认 |自定义| 社区版采用了默认的服务配置，仅适合本地项目的开发、调试。如需应用到生产环境，需要购买企业版以作服务配置调优。 |
 | 价格 | 免费 |订阅制| *具体方案待定* |
 
@@ -67,8 +67,6 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
 ### 开发团队
 
 - 三刀
-
-
 
 ## Part 2. 操作手册
 
@@ -149,3 +147,9 @@ smart-servlet 还未正式发布，如需体验需要通过本地编译来使用
 ## 特别说明
 
 本项目还处于研发阶段，还未完成所有 Servlet 标准的兑现。如若在使用过程中发现问题可提 [Issues](https://gitee.com/smartboot/smart-servlet/issues) 反馈，我们会尽快安排处理，感谢您的理解和支持！
+
+## 项目推荐
+- [smart-socket](https://gitee.com/smartboot/smart-socket)
+    极简、易用、高性能的AIO通信框架，5G时代的通信微内核，适用于IM、RPC、IoT等诸多领域
+- [smart-http](https://gitee.com/smartboot/smart-http)
+    基于smart-socket实现的轻量级http服务器
