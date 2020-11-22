@@ -222,7 +222,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         }
         httpSession = sessionManager.getSession(this);
         if (create && httpSession == null) {
-            httpSession = sessionManager.createSession();
+            httpSession = sessionManager.createSession(servletContext);
         }
         return httpSession;
     }

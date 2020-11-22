@@ -11,9 +11,13 @@ package org.smartboot.servlet.session;
 
 import org.smartboot.servlet.impl.HttpSessionImpl;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionContext;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,10 +25,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author 三刀
  * @version V1.0 , 2019/12/21
  */
-public class MemorySessionManager implements SessionManager {
+public class MemorySessionManager implements SessionManager, HttpSessionContext {
 
-    private Map<String, HttpSession> sessionMap = new ConcurrentHashMap<>();
-
+    /**
+     * 会话检查周期
+     */
+    private static final int SESSION_TIME_CHECK_STEP = 2000;
+    private final Map<String, HttpSessionImpl> sessionMap = new ConcurrentHashMap<>();
+    private final int maxInactiveInterval = 60 * 30;
+    private long lastTime;
 
     @Override
     public HttpSession getSession(HttpServletRequest request) {
@@ -41,13 +50,35 @@ public class MemorySessionManager implements SessionManager {
         if (sessionId == null) {
             sessionId = request.getParameter(SessionManager.DEFAULT_SESSION_PARAMETER_NAME);
         }
-        return sessionId == null ? null : sessionMap.get(sessionId);
+        HttpSessionImpl session = sessionId == null ? null : sessionMap.get(sessionId);
+        if (session != null) {
+            session.setLastAccessed(System.currentTimeMillis());
+        }
+        return session;
     }
 
     @Override
-    public HttpSession createSession() {
-        HttpSession session = new HttpSessionImpl(String.valueOf(System.currentTimeMillis()));
+    public HttpSession createSession(ServletContext servletContext) {
+        HttpSessionImpl session = new HttpSessionImpl(this, String.valueOf(System.currentTimeMillis()), servletContext);
+        session.setMaxInactiveInterval(maxInactiveInterval);
         sessionMap.put(session.getId(), session);
         return session;
+    }
+
+    @Override
+    public HttpSession getSession(String sessionId) {
+        return sessionMap.get(sessionId);
+    }
+
+    @Override
+    public Enumeration<String> getIds() {
+        return Collections.enumeration(sessionMap.keySet());
+    }
+
+    private void removeTimeoutSession() {
+        if (lastTime + SESSION_TIME_CHECK_STEP > System.currentTimeMillis()) {
+            return;
+        }
+//        sessionMap
     }
 }

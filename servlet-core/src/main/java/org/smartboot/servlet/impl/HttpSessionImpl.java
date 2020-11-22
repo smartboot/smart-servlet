@@ -9,8 +9,6 @@
 
 package org.smartboot.servlet.impl;
 
-import org.smartboot.servlet.ContainerRuntime;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
@@ -26,15 +24,18 @@ import java.util.Map;
 public class HttpSessionImpl implements HttpSession {
 
     private final long creationTime = System.currentTimeMillis();
-    private Map<String, Object> attributes = new HashMap<>();
+    private final Map<String, Object> attributes = new HashMap<>();
+    private final String sessionId;
+    private final ServletContext servletContext;
+    private final HttpSessionContext sessionContext;
     private volatile long lastAccessed;
     private volatile int maxInactiveInterval;
-    private String sessionId;
     private volatile boolean invalid;
-    private ContainerRuntime runtime;
 
-    public HttpSessionImpl(String sessionId) {
+    public HttpSessionImpl(HttpSessionContext sessionContext, String sessionId, ServletContext servletContext) {
+        this.sessionContext = sessionContext;
         this.sessionId = sessionId;
+        this.servletContext = servletContext;
     }
 
     @Override
@@ -49,12 +50,17 @@ public class HttpSessionImpl implements HttpSession {
 
     @Override
     public long getLastAccessedTime() {
+        checkState();
         return lastAccessed;
+    }
+
+    public void setLastAccessed(long lastAccessed) {
+        this.lastAccessed = lastAccessed;
     }
 
     @Override
     public ServletContext getServletContext() {
-        return null;
+        return servletContext;
     }
 
     @Override
@@ -69,56 +75,73 @@ public class HttpSessionImpl implements HttpSession {
 
     @Override
     public HttpSessionContext getSessionContext() {
-        return null;
+        return sessionContext;
     }
 
     @Override
     public Object getAttribute(String name) {
+        checkState();
         return attributes.get(name);
     }
 
     @Override
     public Object getValue(String name) {
+        checkState();
         return getAttribute(name);
     }
 
     @Override
     public Enumeration<String> getAttributeNames() {
+        checkState();
         return Collections.enumeration(attributes.keySet());
     }
 
     @Override
     public String[] getValueNames() {
-        return new String[0];
+        checkState();
+        return attributes.keySet().toArray(new String[0]);
     }
 
     @Override
     public void setAttribute(String name, Object value) {
+        checkState();
         attributes.put(name, value);
     }
 
     @Override
     public void putValue(String name, Object value) {
+        checkState();
         setAttribute(name, value);
     }
 
     @Override
     public void removeAttribute(String name) {
+        checkState();
         attributes.remove(name);
     }
 
     @Override
     public void removeValue(String name) {
+        checkState();
         removeAttribute(name);
     }
 
     @Override
     public void invalidate() {
+        checkState();
+        invalid = true;
 
     }
 
     @Override
     public boolean isNew() {
+        checkState();
         return false;
+    }
+
+    private void checkState() {
+        if (invalid) {
+            throw new IllegalStateException();
+        }
     }
 }

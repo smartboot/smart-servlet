@@ -9,6 +9,7 @@
 
 package org.smartboot.servlet.session;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -23,5 +24,5 @@ public interface SessionManager {
 
     public HttpSession getSession(HttpServletRequest request);
 
-    public HttpSession createSession();
+    public HttpSession createSession(ServletContext servletContext);
 }
