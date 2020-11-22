@@ -12,14 +12,17 @@ package org.smartboot.servlet.handler;
 import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
+import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
-import org.smartboot.servlet.impl.HttpServletRequestImpl;
+import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.ServletPathMatcher;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -39,45 +42,59 @@ public class ServletMatchHandler extends Handler {
         ServletContextImpl servletContext = handlerContext.getServletContext();
         String contextPath = servletContext.getContextPath();
         Map<String, ServletInfo> servletInfoMap = handlerContext.getServletContext().getDeploymentInfo().getServlets();
-        HttpServletRequestImpl request = handlerContext.getRequest();
+        SmartHttpServletRequest request = handlerContext.getRequest();
 
         //默认地址改写
-        DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
-        if (StringUtils.isBlank(deploymentInfo.getWelcomeFile())) {
-            request.setRequestUri(request.getRequestURI());
+        resetWelcomeURI(servletContext, request);
+        //通过ServletContext.getNamedDispatcher触发的请求已经指定了Servlet
+        if (handlerContext.isNamedDispatcher()) {
+            if (handlerContext.getServlet() == null) {
+                throw new WrappedRuntimeException(new ServletException("servlet is null"));
+            }
         } else {
-            int i = request.getRequestURI().length() - servletContext.getContextPath().length();
-            //todo 兼容 请求 uri 为 servletPath结尾不带 '/' 的情况
-            if(i == -1){
-                request.setRequestUri(request.getRequestURI() + deploymentInfo.getWelcomeFile());
-            }else if (i == 0) {
-                request.setRequestUri(request.getRequestURI() + deploymentInfo.getWelcomeFile().substring(1));
-            } else if (i == 1 && request.getRequestURI().charAt(request.getRequestURI().length() - 1) == '/') {
-                request.setRequestUri(request.getRequestURI().substring(0, request.getRequestURI().length() - 1) + servletContext.getDeploymentInfo().getWelcomeFile());
-            } else {
-                request.setRequestUri(request.getRequestURI());
+            if (handlerContext.getServlet() != null) {
+                throw new WrappedRuntimeException(new ServletException("servlet is not null"));
             }
         }
-
-        for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
-            final ServletInfo servletInfo = entry.getValue();
-            for (ServletMappingInfo path : servletInfo.getMappings()) {
-                RunLogger.getLogger().log(Level.SEVERE, "servlet match: " + (contextPath + path.getMapping()) + " requestURI: " + request.getRequestURI());
-                if ("/".equals(path.getMapping()) || PATH_MATCHER.matches(contextPath + path.getMapping(), request.getRequestURI())) {
-                    servlet = servletInfo.getServlet();
-                    setServletInfo(request, path);
+        if (handlerContext.getServlet() != null) {
+            for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
+                final ServletInfo servletInfo = entry.getValue();
+                for (ServletMappingInfo path : servletInfo.getMappings()) {
+                    RunLogger.getLogger().log(Level.SEVERE, "servlet match: " + (contextPath + path.getMapping()) + " requestURI: " + request.getRequestURI());
+                    if ("/".equals(path.getMapping()) || PATH_MATCHER.matches(contextPath + path.getMapping(), request.getRequestURI())) {
+                        servlet = servletInfo.getServlet();
+                        setServletInfo(request, path);
+                        break;
+                    }
+                }
+                if (servlet != null) {
                     break;
                 }
             }
-            if (servlet != null) {
-                break;
-            }
         }
-        if (servlet == null) {
+        if (servlet == null && request.getDispatcherType() == DispatcherType.REQUEST) {
             servlet = servletContext.getDeploymentInfo().getDefaultServlet();
         }
         handlerContext.setServlet(servlet);
         doNext(handlerContext);
+    }
+
+    private void resetWelcomeURI(ServletContextImpl servletContext, SmartHttpServletRequest request) {
+        DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
+        if (StringUtils.isBlank(deploymentInfo.getWelcomeFile())) {
+            return;
+        }
+        int i = request.getRequestURI().length() - servletContext.getContextPath().length();
+        //todo 兼容 请求 uri 为 servletPath结尾不带 '/' 的情况
+        if (i == -1) {
+            request.setRequestURI(request.getRequestURI() + deploymentInfo.getWelcomeFile());
+        } else if (i == 0) {
+            request.setRequestURI(request.getRequestURI() + deploymentInfo.getWelcomeFile().substring(1));
+        } else if (i == 1 && request.getRequestURI().charAt(request.getRequestURI().length() - 1) == '/') {
+            request.setRequestURI(request.getRequestURI().substring(0, request.getRequestURI().length() - 1) + servletContext.getDeploymentInfo().getWelcomeFile());
+        } else {
+            request.setRequestURI(request.getRequestURI());
+        }
     }
 
     /**
@@ -86,7 +103,7 @@ public class ServletMatchHandler extends Handler {
      * @param request
      * @param path
      */
-    private void setServletInfo(HttpServletRequestImpl request, ServletMappingInfo path) {
+    private void setServletInfo(SmartHttpServletRequest request, ServletMappingInfo path) {
         String servletPath = null;
         String pathInfo = null;
         switch (path.getMappingType()) {

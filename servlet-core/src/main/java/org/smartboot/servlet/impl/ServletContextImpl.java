@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * @author 三刀
@@ -191,17 +192,18 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public Servlet getServlet(String name) throws ServletException {
-        return null;
+        ServletInfo servletInfo = deploymentInfo.getServlets().get(name);
+        return servletInfo == null ? null : servletInfo.getServlet();
     }
 
     @Override
     public Enumeration<Servlet> getServlets() {
-        return Collections.emptyEnumeration();
+        return Collections.enumeration(deploymentInfo.getServlets().values().stream().map(ServletInfo::getServlet).collect(Collectors.toList()));
     }
 
     @Override
     public Enumeration<String> getServletNames() {
-        return Collections.emptyEnumeration();
+        return Collections.enumeration(deploymentInfo.getServlets().keySet());
     }
 
     @Override

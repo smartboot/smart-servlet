@@ -18,6 +18,7 @@ import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.FilterChainImpl;
 import org.smartboot.servlet.util.ServletPathMatcher;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
@@ -25,6 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,16 +39,21 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class FilterMatchHandler extends Handler {
     private static final ServletPathMatcher PATH_MATCHER = new ServletPathMatcher();
-
     /**
      * 缓存Servlet关联的过滤器
      */
-    private final Map<Servlet, List<Filter>> filterChainCacheMap = new ConcurrentHashMap<>();
+    private final Map<DispatcherType, Map<Servlet, List<Filter>>> dispatcherFilterChainMap = new HashMap<>();
+
+    {
+        for (DispatcherType value : DispatcherType.values()) {
+            dispatcherFilterChainMap.put(value, new ConcurrentHashMap<>());
+        }
+    }
 
     @Override
     public void handleRequest(HandlerContext handlerContext) {
-
-        List<Filter> cacheFilters = filterChainCacheMap.get(handlerContext.getServlet());
+        Map<Servlet, List<Filter>> filterChainMap = dispatcherFilterChainMap.get(handlerContext.getRequest().getDispatcherType());
+        List<Filter> cacheFilters = filterChainMap.get(handlerContext.getServlet());
         if (cacheFilters != null) {
             FilterChain filterChain = new FilterChainImpl(cacheFilters, () -> FilterMatchHandler.this.doNext(handlerContext));
             try {
@@ -63,22 +70,25 @@ public class FilterMatchHandler extends Handler {
         List<Filter> filters = new ArrayList<>();
         List<FilterMappingInfo> filterMappings = handlerContext.getServletContext().getDeploymentInfo().getFilterMappings();
         Map<String, FilterInfo> allFilters = handlerContext.getServletContext().getDeploymentInfo().getFilters();
-        filterMappings.forEach(filterInfo -> {
-            if (filterInfo.getMappingType() == FilterMappingType.URL) {
-                if (PATH_MATCHER.matches(contextPath + filterInfo.getMapping(), request.getRequestURI())) {
-                    filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
-                }
-            } else if (filterInfo.getMappingType() == FilterMappingType.SERVLET) {
-                if (StringUtils.equals(filterInfo.getMapping(), handlerContext.getServlet().getServletConfig().getServletName())) {
-                    filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
-                }
-            } else {
-                throw new UnsupportedOperationException();
-            }
-        });
+        filterMappings.stream()
+                .filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType()))
+                .forEach(filterInfo -> {
+                    if (filterInfo.getMappingType() == FilterMappingType.URL) {
+                        if (PATH_MATCHER.matches(contextPath + filterInfo.getMapping(), request.getRequestURI())) {
+                            filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
+                        }
+                    } else if (filterInfo.getMappingType() == FilterMappingType.SERVLET) {
+                        if (StringUtils.equals(filterInfo.getMapping(), handlerContext.getServlet().getServletConfig().getServletName())) {
+                            filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
+                        }
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+                });
 
         //cache for performance
-        filterChainCacheMap.put(handlerContext.getServlet(), filters);
+        filterChainMap.put(handlerContext.getServlet(), filters);
         handleRequest(handlerContext);
     }
+
 }

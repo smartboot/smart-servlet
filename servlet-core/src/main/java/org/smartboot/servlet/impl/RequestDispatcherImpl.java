@@ -43,6 +43,7 @@ public class RequestDispatcherImpl implements RequestDispatcher {
         this.servletContext = servletContext;
         this.dispatcherServlet = dispatcherServlet;
         this.dispatcherURL = dispatcherURL;
+        this.named = dispatcherServlet != null;
     }
 
     @Override
@@ -74,7 +75,7 @@ public class RequestDispatcherImpl implements RequestDispatcher {
         if (queryString != null) {
             requestWrapper.setAttribute(FORWARD_QUERY_STRING, queryString);
         }
-        HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext);
+        HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
         if (dispatcherServlet != null) {
             handlerContext.setServlet(dispatcherServlet);
         }
@@ -106,7 +107,13 @@ public class RequestDispatcherImpl implements RequestDispatcher {
         if (queryString != null) {
             requestWrapper.setAttribute(INCLUDE_QUERY_STRING, queryString);
         }
-        HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext);
+        //《Servlet3.1规范中文版》9.4 forward 方法
+        //request 对象暴露给目标 servlet 的路径元素(path elements)必须反映获得 RequestDispatcher 使用的路径。
+        // 唯一例外的是，如果 RequestDispatcher 是通过 getNamedDispatcher 方法获得。这种情况下，request 对象的路径元素必须反映这些原始请求。
+        if (!named) {
+//            requestWrapper.set
+        }
+        HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
         if (dispatcherServlet != null) {
             handlerContext.setServlet(dispatcherServlet);
         }
@@ -121,7 +128,7 @@ public class RequestDispatcherImpl implements RequestDispatcher {
         if (!(current instanceof HttpServletRequestImpl)) {
             throw new IllegalArgumentException("invalid request object: " + current);
         }
-        return new ServletRequestDispatcherWrapper((HttpServletRequestImpl) current, included ? DispatcherType.INCLUDE : DispatcherType.FORWARD);
+        return new ServletRequestDispatcherWrapper((HttpServletRequestImpl) current, included ? DispatcherType.INCLUDE : DispatcherType.FORWARD, named);
     }
 
     private ServletResponseDispatcherWrapper wrapperResponse(final ServletResponse response, boolean included) {

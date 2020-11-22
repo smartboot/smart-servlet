@@ -15,6 +15,7 @@ import org.smartboot.http.server.Cookies;
 import org.smartboot.http.utils.HttpHeaderConstant;
 import org.smartboot.http.utils.NumberUtils;
 import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.session.SessionManager;
 import org.smartboot.servlet.util.DateUtil;
 
@@ -27,7 +28,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
@@ -51,7 +51,7 @@ import java.util.logging.Level;
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
-public class HttpServletRequestImpl implements HttpServletRequest {
+public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private final HttpRequest request;
     private final ServletContext servletContext;
     private final SessionManager sessionManager;
@@ -62,7 +62,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     private Cookie[] cookies;
     private String servletPath;
     private String pathInfo;
-    private String requestUri;
+    private String requestURI;
 
     public HttpServletRequestImpl(HttpRequest request, ContainerRuntime runtime, DispatcherType dispatcherType) {
         this.request = request;
@@ -149,6 +149,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         return pathInfo;
     }
 
+    @Override
     public void setPathInfo(String pathInfo) {
         this.pathInfo = pathInfo;
     }
@@ -191,11 +192,12 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        return requestUri;
+        return requestURI;
     }
 
-    public void setRequestUri(String requestUri) {
-        this.requestUri = requestUri;
+    @Override
+    public void setRequestURI(String requestURI) {
+        this.requestURI = requestURI;
     }
 
     @Override
@@ -208,6 +210,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         return servletPath;
     }
 
+    @Override
     public void setServletPath(String servletPath) {
         this.servletPath = servletPath;
     }
