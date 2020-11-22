@@ -149,7 +149,7 @@ smart-servlet 还未正式发布，如需体验需要通过本地编译来使用
 本项目还处于研发阶段，还未完成所有 Servlet 标准的兑现。如若在使用过程中发现问题可提 [Issues](https://gitee.com/smartboot/smart-servlet/issues) 反馈，我们会尽快安排处理，感谢您的理解和支持！
 
 ## 项目推荐
-- [smart-socket](https://gitee.com/smartboot/smart-socket)
+- [smart-socket](https://gitee.com/smartboot/smart-socket)  
     极简、易用、高性能的AIO通信框架，5G时代的通信微内核，适用于IM、RPC、IoT等诸多领域
-- [smart-http](https://gitee.com/smartboot/smart-http)
+- [smart-http](https://gitee.com/smartboot/smart-http)  
     基于smart-socket实现的轻量级http服务器
