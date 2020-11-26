@@ -15,7 +15,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -25,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author 三刀
  * @version V1.0 , 2019/12/21
  */
-public class MemorySessionManager implements SessionManager, HttpSessionContext {
+public class MemorySessionManager implements SessionManager {
 
     /**
      * 会话检查周期
@@ -34,6 +33,7 @@ public class MemorySessionManager implements SessionManager, HttpSessionContext 
     private final Map<String, HttpSessionImpl> sessionMap = new ConcurrentHashMap<>();
     private final int maxInactiveInterval = 60 * 30;
     private long lastTime;
+
 
     @Override
     public HttpSession getSession(HttpServletRequest request) {
@@ -66,6 +66,11 @@ public class MemorySessionManager implements SessionManager, HttpSessionContext 
     }
 
     @Override
+    public void removeSession(String sessionId) {
+        sessionMap.remove(sessionId);
+    }
+
+    @Override
     public HttpSession getSession(String sessionId) {
         return sessionMap.get(sessionId);
     }
@@ -79,6 +84,7 @@ public class MemorySessionManager implements SessionManager, HttpSessionContext 
         if (lastTime + SESSION_TIME_CHECK_STEP > System.currentTimeMillis()) {
             return;
         }
-//        sessionMap
+        sessionMap.values().forEach(session -> {
+        });
     }
 }
