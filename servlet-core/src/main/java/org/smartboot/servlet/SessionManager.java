@@ -2,12 +2,12 @@
  * Copyright (c) 2017-2020, org.smartboot. All rights reserved.
  * project name: smart-servlet
  * file name: SessionManager.java
- * Date: 2020-11-14
+ * Date: 2020-11-28
  * Author: sandao (zhengjunweimail@163.com)
  *
  */
 
-package org.smartboot.servlet.session;
+package org.smartboot.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;

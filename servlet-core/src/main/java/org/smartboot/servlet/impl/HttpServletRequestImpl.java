@@ -15,8 +15,8 @@ import org.smartboot.http.server.Cookies;
 import org.smartboot.http.utils.HttpHeaderConstant;
 import org.smartboot.http.utils.NumberUtils;
 import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.SessionManager;
 import org.smartboot.servlet.SmartHttpServletRequest;
-import org.smartboot.servlet.session.SessionManager;
 import org.smartboot.servlet.util.DateUtil;
 
 import javax.servlet.AsyncContext;

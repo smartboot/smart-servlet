@@ -9,9 +9,9 @@
 
 package org.smartboot.servlet.sandbox;
 
+import org.smartboot.servlet.SessionManager;
 import org.smartboot.servlet.plugins.PluginException;
 import org.smartboot.servlet.provider.SessionProvider;
-import org.smartboot.servlet.session.SessionManager;
 
 /**
  * @author 三刀

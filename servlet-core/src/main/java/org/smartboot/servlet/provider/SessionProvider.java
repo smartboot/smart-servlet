@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.provider;
 
-import org.smartboot.servlet.session.SessionManager;
+import org.smartboot.servlet.SessionManager;
 
 /**
  * @author 三刀
