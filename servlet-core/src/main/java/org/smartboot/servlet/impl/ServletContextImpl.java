@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 public class ServletContextImpl implements ServletContext {
     //    private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextImpl.class);
     private final ConcurrentMap<String, Object> attributes = new ConcurrentHashMap<>();
+    private final ContainerRuntime containerRuntime;
     private final DeploymentInfo deploymentInfo;
     private SessionCookieConfig sessionCookieConfig = new SessionCookieConfigImpl();
     private ServletContextPathType pathType = ServletContextPathType.PATH;
@@ -58,8 +59,9 @@ public class ServletContextImpl implements ServletContext {
      */
     private HandlePipeline pipeline;
 
-    public ServletContextImpl(DeploymentInfo deploymentInfo) {
-        this.deploymentInfo = deploymentInfo;
+    public ServletContextImpl(ContainerRuntime containerRuntime) {
+        this.containerRuntime = containerRuntime;
+        this.deploymentInfo = containerRuntime.getDeploymentInfo();
     }
 
     @Override
@@ -164,7 +166,7 @@ public class ServletContextImpl implements ServletContext {
      */
     @Override
     public RequestDispatcher getRequestDispatcher(String path) {
-        return deploymentInfo.getDispatcherProvider().getRequestDispatcher(this, path);
+        return containerRuntime.getDispatcherProvider().getRequestDispatcher(this, path);
     }
 
     /**
@@ -180,7 +182,7 @@ public class ServletContextImpl implements ServletContext {
      */
     @Override
     public RequestDispatcher getNamedDispatcher(String name) {
-        return deploymentInfo.getDispatcherProvider().getNamedDispatcher(this, name);
+        return containerRuntime.getDispatcherProvider().getNamedDispatcher(this, name);
     }
 
     @Override

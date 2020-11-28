@@ -47,7 +47,7 @@ public class SessionPlugin extends Plugin {
     public void startContainer(ContainerRuntime containerRuntime) {
         SessionProviderImpl sessionManager = new SessionProviderImpl();
         runtimeMap.put(sessionManager, containerRuntime);
-        containerRuntime.getDeploymentInfo().setSessionProvider(sessionManager);
+        containerRuntime.setSessionProvider(sessionManager);
     }
 
     @Override

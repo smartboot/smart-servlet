@@ -15,6 +15,10 @@ import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.FilterConfigImpl;
 import org.smartboot.servlet.impl.ServletConfigImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
+import org.smartboot.servlet.provider.DispatcherProvider;
+import org.smartboot.servlet.provider.SessionProvider;
+import org.smartboot.servlet.sandbox.MockDispatcherProvider;
+import org.smartboot.servlet.sandbox.MockSessionProvider;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -37,8 +41,16 @@ import java.util.logging.Level;
  */
 public class ContainerRuntime {
 
+    /**
+     * 容器部署信息
+     */
     private final DeploymentInfo deploymentInfo = new DeploymentInfo();
-    private final ServletContextImpl servletContext = new ServletContextImpl(deploymentInfo);
+    /**
+     * 服务上下文
+     */
+    private final ServletContextImpl servletContext = new ServletContextImpl(this);
+    private DispatcherProvider dispatcherProvider = new MockDispatcherProvider();
+    private SessionProvider sessionProvider = new MockSessionProvider();
     private volatile boolean started = false;
 
     public ServletContextImpl getServletContext() {
@@ -138,4 +150,19 @@ public class ContainerRuntime {
     }
 
 
+    public DispatcherProvider getDispatcherProvider() {
+        return dispatcherProvider;
+    }
+
+    public void setDispatcherProvider(DispatcherProvider dispatcherProvider) {
+        this.dispatcherProvider = dispatcherProvider;
+    }
+
+    public SessionProvider getSessionProvider() {
+        return sessionProvider;
+    }
+
+    public void setSessionProvider(SessionProvider sessionProvider) {
+        this.sessionProvider = sessionProvider;
+    }
 }

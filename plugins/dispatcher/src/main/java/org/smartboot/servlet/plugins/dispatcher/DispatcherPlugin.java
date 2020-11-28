@@ -25,7 +25,7 @@ public class DispatcherPlugin extends Plugin {
 
     @Override
     public void startContainer(ContainerRuntime containerRuntime) {
-        containerRuntime.getDeploymentInfo().setDispatcherProvider(new DispatcherProviderImpl());
+        containerRuntime.setDispatcherProvider(new DispatcherProviderImpl());
     }
 
     @Override
