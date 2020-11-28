@@ -68,7 +68,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         this.request = request;
         this.dispatcherType = dispatcherType;
         this.servletContext = runtime.getServletContext();
-        this.sessionManager = runtime.getSessionManager();
+        this.sessionManager = runtime.getDeploymentInfo().getSessionManager();
     }
 
     @Override

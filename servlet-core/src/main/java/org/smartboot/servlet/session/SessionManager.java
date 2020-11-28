@@ -20,17 +20,16 @@ import javax.servlet.http.HttpSessionContext;
  */
 public interface SessionManager extends HttpSessionContext {
 
-    public static final String DEFAULT_SESSION_COOKIE_NAME = "JSESSIONID";
-    public static final String DEFAULT_SESSION_PARAMETER_NAME = "jsessionid";
+    String DEFAULT_SESSION_COOKIE_NAME = "JSESSIONID";
+    String DEFAULT_SESSION_PARAMETER_NAME = "jsessionid";
 
-    public HttpSession getSession(HttpServletRequest request);
+    HttpSession getSession(HttpServletRequest request);
 
-    public HttpSession createSession(ServletContext servletContext);
+    HttpSession createSession(ServletContext servletContext);
 
     /**
-     * 移除会话
-     *
-     * @param sessionId
+     * 移除过期会话
      */
-    void removeSession(String sessionId);
+    void clearExpireSession();
+
 }

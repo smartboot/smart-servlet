@@ -23,12 +23,14 @@ import org.smartboot.servlet.handler.ServletServiceHandler;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
+import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.util.LRUCache;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * @author 三刀
@@ -40,6 +42,7 @@ public class ServletHttpHandle extends HttpHandle {
      * 请求映射的Servlet运行环境
      */
     private final LRUCache<String, ContainerRuntime> contextCache = new LRUCache<>();
+    private final List<Plugin> plugins = new ArrayList<>();
     private volatile boolean started = false;
 
     public void start() {
@@ -52,6 +55,17 @@ public class ServletHttpHandle extends HttpHandle {
                 .next(new ServletMatchHandler())
                 .next(new FilterMatchHandler())
                 .next(new ServletServiceHandler());
+        //扫描插件
+        for (Plugin plugin : ServiceLoader.load(Plugin.class)) {
+            System.out.println("扫描插件 -- " + plugin.pluginName());
+            plugins.add(plugin);
+        }
+        //安装插件
+        plugins.forEach(plugin -> {
+            System.out.println("安装插件 -- " + plugin.pluginName());
+            plugin.install();
+        });
+
         //启动运行环境
         runtimes.forEach(runtime -> {
             runtime.getServletContext().setPipeline(pipeline);
@@ -59,12 +73,18 @@ public class ServletHttpHandle extends HttpHandle {
             Thread.currentThread().setContextClassLoader(runtime.getServletContext().getClassLoader());
             try {
                 runtime.start();
+                plugins.forEach(plugin -> {
+                    System.out.println("启动插件 - " + plugin.pluginName());
+                    plugin.startContainer(runtime);
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 Thread.currentThread().setContextClassLoader(originalClassLoader);
             }
         });
+
+
     }
 
     public void addRuntime(ContainerRuntime runtime) {

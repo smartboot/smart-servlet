@@ -27,7 +27,7 @@ public class Starter extends HttpHandle {
 
     public Starter(String path, int port) throws Exception {
         System.out.println("hahaha:" + Starter.class.getClassLoader());
-        WebContextRuntime webContextRuntime = new WebContextRuntime(path,"/");
+        WebContextRuntime webContextRuntime = new WebContextRuntime(path, "/");
         httpHandle = new ServletHttpHandle();
         httpHandle.addRuntime(webContextRuntime.getServletRuntime());
         httpHandle.start();

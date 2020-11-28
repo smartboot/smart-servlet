@@ -1,13 +1,15 @@
 /*
  * Copyright (c) 2017-2020, org.smartboot. All rights reserved.
  * project name: smart-servlet
- * file name: ServletResponseIncludeWrapper.java
- * Date: 2020-11-19
+ * file name: ServletResponseDispatcherWrapper.java
+ * Date: 2020-11-27
  * Author: sandao (zhengjunweimail@163.com)
  *
  */
 
-package org.smartboot.servlet.impl;
+package org.smartboot.servlet.plugins.dispatcher;
+
+import org.smartboot.servlet.impl.HttpServletResponseImpl;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -18,7 +20,7 @@ import java.util.Locale;
  * @author 三刀
  * @version V1.0 , 2020/11/19
  */
-public class ServletResponseDispatcherWrapper extends HttpServletResponseWrapper {
+class ServletResponseDispatcherWrapper extends HttpServletResponseWrapper {
 
     private final HttpServletResponseImpl response;
     private boolean included;

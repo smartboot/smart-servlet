@@ -10,6 +10,11 @@
 package org.smartboot.servlet.conf;
 
 import org.smartboot.http.utils.StringUtils;
+import org.smartboot.servlet.provider.DispatcherProvider;
+import org.smartboot.servlet.provider.SessionProvider;
+import org.smartboot.servlet.sandbox.MockDispatcherProvider;
+import org.smartboot.servlet.sandbox.MockSessionProvider;
+import org.smartboot.servlet.session.SessionManager;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
@@ -42,7 +47,24 @@ public class DeploymentInfo {
     private String displayName;
     private URL contextUrl;
     private Servlet defaultServlet;
+    private DispatcherProvider dispatcherProvider = new MockDispatcherProvider();
+    private SessionProvider sessionProvider = new MockSessionProvider();
 
+    public SessionManager getSessionManager() {
+        return sessionProvider.getSessionManager();
+    }
+
+    public void setSessionProvider(SessionProvider sessionProvider) {
+        this.sessionProvider = sessionProvider;
+    }
+
+    public DispatcherProvider getDispatcherProvider() {
+        return dispatcherProvider;
+    }
+
+    public void setDispatcherProvider(DispatcherProvider dispatcherProvider) {
+        this.dispatcherProvider = dispatcherProvider;
+    }
 
     public URL getContextUrl() {
         return contextUrl;

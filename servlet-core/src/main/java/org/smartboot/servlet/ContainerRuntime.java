@@ -15,8 +15,6 @@ import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.FilterConfigImpl;
 import org.smartboot.servlet.impl.ServletConfigImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
-import org.smartboot.servlet.session.MemorySessionManager;
-import org.smartboot.servlet.session.SessionManager;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -38,16 +36,17 @@ import java.util.logging.Level;
  * @version V1.0 , 2019/12/11
  */
 public class ContainerRuntime {
-    private final ServletContextImpl servletContext = new ServletContextImpl();
-    private final SessionManager sessionManager = new MemorySessionManager();
+
+    private final DeploymentInfo deploymentInfo = new DeploymentInfo();
+    private final ServletContextImpl servletContext = new ServletContextImpl(deploymentInfo);
     private volatile boolean started = false;
 
     public ServletContextImpl getServletContext() {
         return servletContext;
     }
 
-    public SessionManager getSessionManager() {
-        return sessionManager;
+    public DeploymentInfo getDeploymentInfo() {
+        return deploymentInfo;
     }
 
     /**
@@ -137,4 +136,6 @@ public class ContainerRuntime {
     public boolean isStarted() {
         return started;
     }
+
+
 }

@@ -131,9 +131,13 @@ public class HttpSessionImpl implements HttpSession {
     @Override
     public void invalidate() {
         checkState();
-        invalid = true;
-        sessionManager.removeSession(sessionId);
+        invalid();
     }
+
+    public void invalid() {
+        invalid = true;
+    }
+
 
     @Override
     public boolean isNew() {

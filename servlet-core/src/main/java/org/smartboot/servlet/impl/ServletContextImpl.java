@@ -50,13 +50,17 @@ import java.util.stream.Collectors;
 public class ServletContextImpl implements ServletContext {
     //    private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextImpl.class);
     private final ConcurrentMap<String, Object> attributes = new ConcurrentHashMap<>();
-    private final DeploymentInfo deploymentInfo = new DeploymentInfo();
+    private final DeploymentInfo deploymentInfo;
     private SessionCookieConfig sessionCookieConfig = new SessionCookieConfigImpl();
     private ServletContextPathType pathType = ServletContextPathType.PATH;
     /**
      * 请求执行管道
      */
     private HandlePipeline pipeline;
+
+    public ServletContextImpl(DeploymentInfo deploymentInfo) {
+        this.deploymentInfo = deploymentInfo;
+    }
 
     @Override
     public String getContextPath() {
@@ -160,13 +164,7 @@ public class ServletContextImpl implements ServletContext {
      */
     @Override
     public RequestDispatcher getRequestDispatcher(String path) {
-        if (path == null) {
-            return null;
-        }
-        if (!path.startsWith("/")) {
-            throw new IllegalArgumentException("");
-        }
-        return new RequestDispatcherImpl(this, null, path);
+        return deploymentInfo.getDispatcherProvider().getRequestDispatcher(this, path);
     }
 
     /**
@@ -182,12 +180,7 @@ public class ServletContextImpl implements ServletContext {
      */
     @Override
     public RequestDispatcher getNamedDispatcher(String name) {
-        System.out.println("getNamedDispatcher:" + name);
-        ServletInfo servletInfo = deploymentInfo.getServlets().get(name);
-        if (servletInfo == null) {
-            return null;
-        }
-        return new RequestDispatcherImpl(this, servletInfo.getServlet(), null);
+        return deploymentInfo.getDispatcherProvider().getNamedDispatcher(this, name);
     }
 
     @Override

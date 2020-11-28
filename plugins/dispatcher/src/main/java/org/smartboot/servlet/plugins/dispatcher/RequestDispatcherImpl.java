@@ -2,16 +2,19 @@
  * Copyright (c) 2017-2020, org.smartboot. All rights reserved.
  * project name: smart-servlet
  * file name: RequestDispatcherImpl.java
- * Date: 2020-11-14
+ * Date: 2020-11-27
  * Author: sandao (zhengjunweimail@163.com)
  *
  */
 
-package org.smartboot.servlet.impl;
+package org.smartboot.servlet.plugins.dispatcher;
 
 import org.smartboot.http.utils.HttpUtils;
 import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
+import org.smartboot.servlet.impl.HttpServletResponseImpl;
+import org.smartboot.servlet.impl.ServletContextImpl;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
@@ -31,7 +34,7 @@ import java.util.Map;
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
-public class RequestDispatcherImpl implements RequestDispatcher {
+class RequestDispatcherImpl implements RequestDispatcher {
     private final ServletContextImpl servletContext;
     private final boolean named;
     private final Servlet dispatcherServlet;

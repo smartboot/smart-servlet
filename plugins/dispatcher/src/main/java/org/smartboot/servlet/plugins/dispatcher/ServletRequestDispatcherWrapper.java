@@ -1,16 +1,18 @@
 /*
  * Copyright (c) 2017-2020, org.smartboot. All rights reserved.
  * project name: smart-servlet
- * file name: SmartServletRequestWrapper.java
- * Date: 2020-11-20
+ * file name: ServletRequestDispatcherWrapper.java
+ * Date: 2020-11-27
  * Author: sandao (zhengjunweimail@163.com)
  *
  */
 
-package org.smartboot.servlet.impl;
+package org.smartboot.servlet.plugins.dispatcher;
 
 import org.smartboot.http.utils.HttpHeaderConstant;
 import org.smartboot.servlet.SmartHttpServletRequest;
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
+import org.smartboot.servlet.impl.HttpServletResponseImpl;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -23,7 +25,7 @@ import java.util.Map;
  * @author 三刀
  * @version V1.0 , 2020/11/20
  */
-public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implements SmartHttpServletRequest {
+class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implements SmartHttpServletRequest {
     private final HttpServletRequestImpl request;
     private final DispatcherType dispatcherType;
     private final boolean named;
