@@ -19,7 +19,7 @@ import javax.servlet.RequestDispatcher;
  * @author 三刀
  * @version V1.0 , 2020/11/27
  */
-public class MockDispatcherProvider implements DispatcherProvider {
+class MockDispatcherProvider implements DispatcherProvider {
     @Override
     public RequestDispatcher getRequestDispatcher(ServletContextImpl servletContext, String path) {
         throw new PluginException("Please install the [dispatcher] plugin to enable the [getRequestDispatcher] function");

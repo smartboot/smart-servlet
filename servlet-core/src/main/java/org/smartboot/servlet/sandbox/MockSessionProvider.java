@@ -19,7 +19,7 @@ import javax.servlet.http.HttpSession;
  * @author 三刀
  * @version V1.0 , 2020/11/27
  */
-public class MockSessionProvider implements SessionProvider {
+class MockSessionProvider implements SessionProvider {
 
 
     @Override

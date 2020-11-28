@@ -17,8 +17,7 @@ import org.smartboot.servlet.impl.ServletConfigImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.provider.DispatcherProvider;
 import org.smartboot.servlet.provider.SessionProvider;
-import org.smartboot.servlet.sandbox.MockDispatcherProvider;
-import org.smartboot.servlet.sandbox.MockSessionProvider;
+import org.smartboot.servlet.sandbox.SandBox;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -52,11 +51,11 @@ public class ContainerRuntime {
     /**
      * Dispatcher服务提供者
      */
-    private DispatcherProvider dispatcherProvider = new MockDispatcherProvider();
+    private DispatcherProvider dispatcherProvider = SandBox.INSTANCE.getDispatcherProvider();
     /**
      * Session服务提供者
      */
-    private SessionProvider sessionProvider = new MockSessionProvider();
+    private SessionProvider sessionProvider = SandBox.INSTANCE.getSessionProvider();
 
     public ServletContextImpl getServletContext() {
         return servletContext;
