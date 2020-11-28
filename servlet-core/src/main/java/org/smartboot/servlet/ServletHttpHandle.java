@@ -122,7 +122,8 @@ public class ServletHttpHandle extends HttpHandle {
     }
 
     public void stop() {
-
+        runtimes.forEach(ContainerRuntime::stop);
+        plugins.forEach(Plugin::uninstall);
     }
 
     public boolean isStarted() {

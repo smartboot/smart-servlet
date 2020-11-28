@@ -57,7 +57,6 @@ public class ContainerRuntime {
      * Session服务提供者
      */
     private SessionProvider sessionProvider = new MockSessionProvider();
-    private volatile boolean started = false;
 
     public ServletContextImpl getServletContext() {
         return servletContext;
@@ -69,8 +68,6 @@ public class ContainerRuntime {
 
     /**
      * 启动容器
-     *
-     * @throws Exception
      */
     public void start() throws Exception {
         DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
@@ -116,7 +113,6 @@ public class ContainerRuntime {
                     servlet = (Servlet) Thread.currentThread().getContextClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
                     servletInfo.setServlet(servlet);
                 }
-//                LOGGER.info("init servlet:{}", servlet);
                 servlet.init(servletConfig);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -127,7 +123,7 @@ public class ContainerRuntime {
         deploymentInfo.getFilters().values().forEach(filterInfo -> {
             try {
                 FilterConfig filterConfig = new FilterConfigImpl(filterInfo, servletContext);
-                Filter filter = null;
+                Filter filter;
                 if (filterInfo.isDynamic()) {
                     filter = filterInfo.getFilter();
                 } else {
@@ -142,19 +138,12 @@ public class ContainerRuntime {
     }
 
     public void stop() {
-        servletContext.getDeploymentInfo().getServlets().values().forEach(servletInfo -> {
-            servletInfo.getServlet().destroy();
-        });
+        servletContext.getDeploymentInfo().getServlets().values().forEach(servletInfo -> servletInfo.getServlet().destroy());
         servletContext.getDeploymentInfo().getServletContextListeners().forEach(servletContextListener -> {
             ServletContextEvent event = new ServletContextEvent(servletContext);
             servletContextListener.contextDestroyed(event);
         });
     }
-
-    public boolean isStarted() {
-        return started;
-    }
-
 
     public DispatcherProvider getDispatcherProvider() {
         return dispatcherProvider;
