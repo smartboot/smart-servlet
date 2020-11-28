@@ -10,7 +10,6 @@
 package org.smartboot.servlet.conf;
 
 import org.smartboot.http.utils.StringUtils;
-import org.smartboot.servlet.SessionManager;
 import org.smartboot.servlet.provider.DispatcherProvider;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.sandbox.MockDispatcherProvider;
@@ -50,8 +49,9 @@ public class DeploymentInfo {
     private DispatcherProvider dispatcherProvider = new MockDispatcherProvider();
     private SessionProvider sessionProvider = new MockSessionProvider();
 
-    public SessionManager getSessionManager() {
-        return sessionProvider.getSessionManager();
+
+    public SessionProvider getSessionProvider() {
+        return sessionProvider;
     }
 
     public void setSessionProvider(SessionProvider sessionProvider) {

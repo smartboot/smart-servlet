@@ -15,8 +15,8 @@ import org.smartboot.http.server.Cookies;
 import org.smartboot.http.utils.HttpHeaderConstant;
 import org.smartboot.http.utils.NumberUtils;
 import org.smartboot.servlet.ContainerRuntime;
-import org.smartboot.servlet.SessionManager;
 import org.smartboot.servlet.SmartHttpServletRequest;
+import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.util.DateUtil;
 
 import javax.servlet.AsyncContext;
@@ -54,8 +54,8 @@ import java.util.logging.Level;
 public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private final HttpRequest request;
     private final ServletContext servletContext;
-    private final SessionManager sessionManager;
     private final DispatcherType dispatcherType;
+    private final SessionProvider sessionProvider;
     private String characterEncoding;
     private Map<String, Object> attributes;
     private HttpSession httpSession;
@@ -68,7 +68,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         this.request = request;
         this.dispatcherType = dispatcherType;
         this.servletContext = runtime.getServletContext();
-        this.sessionManager = runtime.getDeploymentInfo().getSessionManager();
+        this.sessionProvider = runtime.getDeploymentInfo().getSessionProvider();
     }
 
     @Override
@@ -220,10 +220,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (httpSession != null) {
             return httpSession;
         }
-        httpSession = sessionManager.getSession(this);
-        if (create && httpSession == null) {
-            httpSession = sessionManager.createSession(servletContext);
-        }
+        httpSession = sessionProvider.getSession(this, create);
         return httpSession;
     }
 

@@ -9,12 +9,14 @@
 
 package org.smartboot.servlet.provider;
 
-import org.smartboot.servlet.SessionManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/11/27
  */
 public interface SessionProvider {
-    SessionManager getSessionManager();
+
+    HttpSession getSession(HttpServletRequest request, boolean create);
 }

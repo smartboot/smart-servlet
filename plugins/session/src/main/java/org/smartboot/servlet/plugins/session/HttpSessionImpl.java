@@ -9,8 +9,6 @@
 
 package org.smartboot.servlet.plugins.session;
 
-import org.smartboot.servlet.SessionManager;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
@@ -29,13 +27,13 @@ class HttpSessionImpl implements HttpSession {
     private final Map<String, Object> attributes = new HashMap<>();
     private final String sessionId;
     private final ServletContext servletContext;
-    private final SessionManager sessionManager;
+    private final HttpSessionContext httpSessionContext;
     private volatile long lastAccessed;
     private volatile int maxInactiveInterval;
     private volatile boolean invalid;
 
-    public HttpSessionImpl(SessionManager sessionManager, String sessionId, ServletContext servletContext) {
-        this.sessionManager = sessionManager;
+    public HttpSessionImpl(HttpSessionContext httpSessionContext, String sessionId, ServletContext servletContext) {
+        this.httpSessionContext = httpSessionContext;
         this.sessionId = sessionId;
         this.servletContext = servletContext;
     }
@@ -77,7 +75,7 @@ class HttpSessionImpl implements HttpSession {
 
     @Override
     public HttpSessionContext getSessionContext() {
-        return sessionManager;
+        return httpSessionContext;
     }
 
     @Override
