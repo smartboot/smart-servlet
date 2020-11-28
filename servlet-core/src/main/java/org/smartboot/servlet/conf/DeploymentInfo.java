@@ -42,6 +42,10 @@ public class DeploymentInfo {
     private String displayName;
     private URL contextUrl;
     private Servlet defaultServlet;
+    /**
+     * 会话超时时间
+     */
+    private int sessionTimeout;
 
     public URL getContextUrl() {
         return contextUrl;
@@ -159,5 +163,13 @@ public class DeploymentInfo {
 
     public void setDefaultServlet(Servlet defaultServlet) {
         this.defaultServlet = defaultServlet;
+    }
+
+    public int getSessionTimeout() {
+        return sessionTimeout;
+    }
+
+    public void setSessionTimeout(int sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
     }
 }

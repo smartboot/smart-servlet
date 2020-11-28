@@ -55,8 +55,9 @@ public class WebContextRuntime {
 
             //new runtime object
             this.servletRuntime = new ContainerRuntime();
-            DeploymentInfo deploymentInfo = servletRuntime.getServletContext().getDeploymentInfo();
-
+            DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
+            //set session timeout
+            deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
             //register Servlet into deploymentInfo
 //            ServletInfo servletInfo = new ServletInfo();
 //            servletInfo.addMapping("*.jsp");

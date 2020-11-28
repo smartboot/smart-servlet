@@ -12,8 +12,8 @@ package org.smartboot.servlet.plugins.session;
 import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.plugins.Plugin;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SessionPlugin extends Plugin {
 
-    private final Map<SessionProviderImpl, ContainerRuntime> runtimeMap = new HashMap<>();
-
+    private final List<SessionProviderImpl> providerList = new ArrayList<>();
 
     @Override
     public void install() {
@@ -36,18 +35,20 @@ public class SessionPlugin extends Plugin {
             thread.setDaemon(true);
             return thread;
         });
-        executorService.scheduleWithFixedDelay(() -> runtimeMap.forEach((sessionManager, runtime) -> {
+        executorService.scheduleWithFixedDelay(() -> providerList.forEach(sessionProvider -> {
                     System.out.println("clear expire session...");
-                    sessionManager.clearExpireSession();
+                    sessionProvider.clearExpireSession();
                 })
                 , 1, 1, TimeUnit.SECONDS);
+        installed = true;
     }
 
     @Override
     public void startContainer(ContainerRuntime containerRuntime) {
-        SessionProviderImpl sessionManager = new SessionProviderImpl();
-        runtimeMap.put(sessionManager, containerRuntime);
-        containerRuntime.setSessionProvider(sessionManager);
+        SessionProviderImpl sessionProvider = new SessionProviderImpl();
+        sessionProvider.setMaxInactiveInterval(containerRuntime.getDeploymentInfo().getSessionTimeout());
+        containerRuntime.setSessionProvider(sessionProvider);
+        providerList.add(sessionProvider);
     }
 
     @Override

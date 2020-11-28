@@ -27,15 +27,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version V1.0 , 2019/12/21
  */
 class SessionProviderImpl implements SessionProvider, HttpSessionContext {
-    /**
-     * 会话检查周期
-     */
-    private static final int SESSION_TIME_CHECK_STEP = 2000;
     private static final String DEFAULT_SESSION_PARAMETER_NAME = "jsessionid";
     private static final String DEFAULT_SESSION_COOKIE_NAME = "JSESSIONID";
+    /**
+     * 默认超时时间：30分钟
+     */
+    private static final int DEFAULT_MAX_INACTIVE_INTERVAL = 30 * 60;
+    /**
+     * 当前会话集合
+     */
     private final Map<String, HttpSessionImpl> sessionMap = new ConcurrentHashMap<>();
-    private final int maxInactiveInterval = 60 * 30;
-    private long lastTime;
+    /**
+     * 会话超时时间
+     */
+    private int maxInactiveInterval = DEFAULT_MAX_INACTIVE_INTERVAL;
 
 
     public void clearExpireSession() {
@@ -92,5 +97,9 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
             session.setLastAccessed(System.currentTimeMillis());
         }
         return session;
+    }
+
+    public void setMaxInactiveInterval(int maxInactiveInterval) {
+        this.maxInactiveInterval = maxInactiveInterval;
     }
 }

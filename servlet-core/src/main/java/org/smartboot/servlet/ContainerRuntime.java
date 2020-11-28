@@ -49,7 +49,13 @@ public class ContainerRuntime {
      * 服务上下文
      */
     private final ServletContextImpl servletContext = new ServletContextImpl(this);
+    /**
+     * Dispatcher服务提供者
+     */
     private DispatcherProvider dispatcherProvider = new MockDispatcherProvider();
+    /**
+     * Session服务提供者
+     */
     private SessionProvider sessionProvider = new MockSessionProvider();
     private volatile boolean started = false;
 
