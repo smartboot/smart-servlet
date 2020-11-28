@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author 三刀
  * @version V1.0 , 2019/12/21
  */
-public class MemorySessionManager implements SessionManager {
+class MemorySessionManager implements SessionManager {
 
     /**
      * 会话检查周期

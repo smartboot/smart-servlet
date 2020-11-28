@@ -45,8 +45,7 @@ public class SessionPlugin extends Plugin {
 
     @Override
     public void startContainer(ContainerRuntime containerRuntime) {
-        MemorySessionManager sessionManager = new MemorySessionManager();
-        containerRuntime.getDeploymentInfo().setSessionProvider(() -> sessionManager);
+        containerRuntime.getDeploymentInfo().setSessionProvider(new SessionProviderImpl());
         runtimes.add(containerRuntime);
     }
 
