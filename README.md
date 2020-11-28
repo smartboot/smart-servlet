@@ -1,7 +1,7 @@
 # smart-servlet
 smart-servlet 是一款实现了Servlet 3.1规范，支持多应用隔离部署的的 Web 容器。
-除此之外，smart-servlet还是一款插件化容器，基于内置的沙箱环境确保smart-servlet拥有最精简的运行能力，
-用户还可以通过自定义插件增加容器的服务能力。
+除此之外，smart-servlet还是一款插件化容器，基于内置的沙箱环境确保 smart-servlet 拥有最精简的运行能力，
+用户还可以通过自定义插件扩展容器的服务能力。
 
 <img src="smart-servlet-servlet-container.png" height="50%" width="50%"/>
 
@@ -59,6 +59,12 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
 
   采用订阅制模式收取一定费用，为了更好的建设、发展该项目。
 
+### 插件化
+
+|  插件清单 | 社区版  | 企业版 | 说明 |
+|  :---  | :--:  |  :--:  |  ----  |
+| Session | :white_check_mark:|:white_check_mark:||
+| Dispatcher | :x: |:white_check_mark:||
 ### 如何购买
 
 - 目前项目还处于研发期，仅开放**社区版**供大家**免费下载**体验。
