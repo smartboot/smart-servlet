@@ -10,13 +10,12 @@
 package org.smartboot.servlet.handler;
 
 import org.smartboot.servlet.HandlerContext;
-import org.smartboot.servlet.Pipeline;
 
 /**
  * @author 三刀
  * @version V1.0 , 2019/11/3
  */
-public final class HandlePipeline extends Handler implements Pipeline {
+public final class HandlePipeline extends Handler {
     /**
      * 管道尾
      */
@@ -28,8 +27,7 @@ public final class HandlePipeline extends Handler implements Pipeline {
      * @param handle 尾部handle
      * @return 当前管道对象
      */
-    @Override
-    public Pipeline next(Handler handle) {
+    public HandlePipeline next(Handler handle) {
         if (nextHandle == null) {
             nextHandle = tailHandle = handle;
             return this;
