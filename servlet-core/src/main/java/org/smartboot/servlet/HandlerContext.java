@@ -2,7 +2,7 @@
  * Copyright (c) 2017-2020, org.smartboot. All rights reserved.
  * project name: smart-servlet
  * file name: HandlerContext.java
- * Date: 2020-11-14
+ * Date: 2020-11-28
  * Author: sandao (zhengjunweimail@163.com)
  *
  */
@@ -33,12 +33,11 @@ public class HandlerContext {
      * 匹配的Servlet上下文
      */
     private final ServletContextImpl servletContext;
+    private final boolean namedDispatcher;
     /**
      * 匹配的Servlet处理器
      */
     private Servlet servlet;
-
-    private boolean namedDispatcher;
 
     public HandlerContext(SmartHttpServletRequest request, HttpServletResponse response, ServletContextImpl servletContext, boolean namedDispatcher) {
         this.request = request;
