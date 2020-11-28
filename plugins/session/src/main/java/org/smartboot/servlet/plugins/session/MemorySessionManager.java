@@ -9,7 +9,6 @@
 
 package org.smartboot.servlet.plugins.session;
 
-import org.smartboot.servlet.impl.HttpSessionImpl;
 import org.smartboot.servlet.session.SessionManager;
 
 import javax.servlet.ServletContext;

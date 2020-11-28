@@ -20,5 +20,5 @@ import javax.servlet.RequestDispatcher;
 public interface DispatcherProvider {
     RequestDispatcher getRequestDispatcher(ServletContextImpl servletContext, String path);
 
-    public RequestDispatcher getNamedDispatcher(ServletContextImpl servletContext, String name);
+    RequestDispatcher getNamedDispatcher(ServletContextImpl servletContext, String name);
 }

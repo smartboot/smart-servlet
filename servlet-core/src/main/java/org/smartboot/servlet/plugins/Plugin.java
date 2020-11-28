@@ -16,6 +16,7 @@ import org.smartboot.servlet.ContainerRuntime;
  * @version V1.0 , 2020/11/27
  */
 public abstract class Plugin {
+
     /**
      * 是否已安装
      */

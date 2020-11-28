@@ -10,6 +10,7 @@
 package org.smartboot.servlet.sandbox;
 
 import org.smartboot.servlet.impl.ServletContextImpl;
+import org.smartboot.servlet.plugins.PluginException;
 import org.smartboot.servlet.provider.DispatcherProvider;
 
 import javax.servlet.RequestDispatcher;
@@ -21,11 +22,11 @@ import javax.servlet.RequestDispatcher;
 public class MockDispatcherProvider implements DispatcherProvider {
     @Override
     public RequestDispatcher getRequestDispatcher(ServletContextImpl servletContext, String path) {
-        return null;
+        throw new PluginException("Please install the [dispatcher] plugin to enable the [getRequestDispatcher] function");
     }
 
     @Override
     public RequestDispatcher getNamedDispatcher(ServletContextImpl servletContext, String name) {
-        return null;
+        throw new PluginException("Please install the [dispatcher] plugin to enable the [getNamedDispatcher] function");
     }
 }

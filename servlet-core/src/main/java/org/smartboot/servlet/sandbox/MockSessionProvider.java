@@ -9,6 +9,7 @@
 
 package org.smartboot.servlet.sandbox;
 
+import org.smartboot.servlet.plugins.PluginException;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.session.SessionManager;
 
@@ -17,10 +18,9 @@ import org.smartboot.servlet.session.SessionManager;
  * @version V1.0 , 2020/11/27
  */
 public class MockSessionProvider implements SessionProvider {
-    private final SessionManager sessionManager = new MockSessionManager();
 
     @Override
     public SessionManager getSessionManager() {
-        return sessionManager;
+        throw new PluginException("Please install the [session] plugin to enable the [getSessionManager] function");
     }
 }
