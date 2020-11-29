@@ -48,6 +48,12 @@ class DispatcherProviderImpl implements DispatcherProvider {
             return getRequestDispatcher(request.getServletContext(), path);
         }
         int lastIndex = request.getRequestURI().lastIndexOf("/");
-        return getRequestDispatcher(request.getServletContext(), request.getRequestURI().substring(0, lastIndex) + "/" + path);
+        //  "/doc"
+        if (lastIndex == 0) {
+            return getRequestDispatcher(request.getServletContext(), request.getRequestURI() + "/" + path);
+        } else {
+            // "/doc/"
+            return getRequestDispatcher(request.getServletContext(), request.getRequestURI().substring(0, lastIndex) + "/" + path);
+        }
     }
 }

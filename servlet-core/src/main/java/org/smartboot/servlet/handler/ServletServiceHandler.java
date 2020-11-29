@@ -36,8 +36,13 @@ public class ServletServiceHandler extends Handler {
             Servlet servlet = handlerContext.getServlet();
             if (servlet == handlerContext.getServletContext().getDeploymentInfo().getDefaultServlet()) {
                 String welcome = forwardWelcome(handlerContext);
+
                 if (welcome != null) {
-                    handlerContext.getRequest().getRequestDispatcher(welcome).forward(handlerContext.getRequest(), handlerContext.getResponse());
+                    if (welcome.endsWith("/")) {
+                        handlerContext.getResponse().sendRedirect(welcome);
+                    } else {
+                        handlerContext.getRequest().getRequestDispatcher(welcome).forward(handlerContext.getRequest(), handlerContext.getResponse());
+                    }
                     return;
                 }
             }
@@ -62,6 +67,9 @@ public class ServletServiceHandler extends Handler {
             }
         }
         if (!requestUri.endsWith("/")) {
+            if (servletContext.getResource(requestUri.substring(handlerContext.getRequest().getContextPath().length())) != null) {
+                return null;
+            }
             return requestUri + "/";
         } else {
             for (String file : welcomeFiles) {

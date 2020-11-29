@@ -22,6 +22,7 @@
             <groupId>org.smartboot.servlet</groupId>
             <artifactId>plugin-dispatcher</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <systemPath>${project.basedir}/plugins/plugin-dispatcher-1.0.0-SNAPSHOT.jar</systemPath>
         </dependency>
     </dependencies>
     <build>

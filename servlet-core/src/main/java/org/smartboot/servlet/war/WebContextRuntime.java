@@ -18,6 +18,7 @@ import org.smartboot.servlet.conf.WebAppInfo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author 三刀
@@ -95,7 +96,12 @@ public class WebContextRuntime {
                     throw new IllegalArgumentException("invalid welcome file " + welcomeFile + " is endWith /");
                 }
             }
-            deploymentInfo.setWelcomeFiles(webAppInfo.getWelcomeFileList());
+            if (webAppInfo.getWelcomeFileList() == null || webAppInfo.getWelcomeFileList().size() == 0) {
+                deploymentInfo.setWelcomeFiles(Arrays.asList("index.html", "index.jsp"));
+            } else {
+                deploymentInfo.setWelcomeFiles(webAppInfo.getWelcomeFileList());
+            }
+
 
             //默认Servlet
             deploymentInfo.setDefaultServlet(new DefaultServlet());

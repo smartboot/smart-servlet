@@ -126,7 +126,7 @@ public class ServletContextImpl implements ServletContext {
         //todo 判断文件是否存在
         URL url = null;
         try {
-            if (new File(pathUrl.toURI()).exists()) {
+            if (new File(pathUrl.toURI()).isFile()) {
                 url = pathUrl;
             }
         } catch (URISyntaxException e) {

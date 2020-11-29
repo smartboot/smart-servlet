@@ -78,21 +78,6 @@ public class ServletMatchHandler extends Handler {
         doNext(handlerContext);
     }
 
-//    private void resetWelcomeUri(ServletContextImpl servletContext, SmartHttpServletRequest request) {
-//        DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
-//        if (deploymentInfo.getWelcomeFiles().size() == 0) {
-//            return;
-//        }
-//        int i = request.getRequestURI().length() - servletContext.getContextPath().length();
-//        if (i < 0) {
-//            throw new IllegalStateException("requestURI: " + request.getRequestURI() + " but contxtPath is: " + servletContext.getContextPath());
-//        }
-//        if (i == 0) {
-//            request.setRequestURI(request.getRequestURI() + deploymentInfo.getWelcomeFile());
-//        } else if (i == 1 && request.getRequestURI().charAt(request.getRequestURI().length() - 1) == '/') {
-//            request.setRequestURI(request.getRequestURI().substring(0, request.getRequestURI().length() - 1) + servletContext.getDeploymentInfo().getWelcomeFile());
-//        }
-//    }
 
     /**
      * 《Servlet3.1规范中文版》3.5请求路径元素

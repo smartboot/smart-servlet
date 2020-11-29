@@ -18,9 +18,6 @@ public class Bootstrap {
         File file = new File(webapps);
         if (file.isDirectory()) {
             for (File path : file.listFiles()) {
-                if (!path.getName().equals("examples")) {
-                    continue;
-                }
                 System.out.println("start load: " + path.getAbsolutePath());
                 WebContextRuntime webContextRuntime = new WebContextRuntime(path.getAbsolutePath(), "/" + path.getName());
                 httpHandle.addRuntime(webContextRuntime.getServletRuntime());
