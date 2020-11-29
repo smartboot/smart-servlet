@@ -47,6 +47,9 @@ class DispatcherProviderImpl implements DispatcherProvider {
         if (path.startsWith("/")) {
             return getRequestDispatcher(request.getServletContext(), path);
         }
+        if ("/".equals(request.getRequestURI())) {
+            return getRequestDispatcher(request.getServletContext(), request.getRequestURI() + path);
+        }
         int lastIndex = request.getRequestURI().lastIndexOf("/");
         //  "/doc"
         if (lastIndex == 0) {
