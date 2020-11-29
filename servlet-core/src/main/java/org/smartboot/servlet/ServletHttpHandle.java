@@ -114,6 +114,9 @@ public class ServletHttpHandle extends HttpHandle {
                 Thread.currentThread().setContextClassLoader(originalClassLoader);
             }
         });
+        //按contextPath长度倒序,防止被"/"优先匹配
+        runtimes.sort((o1, o2) -> o2.getDeploymentInfo().getContextPath().length() - o1.getDeploymentInfo().getContextPath().length());
+
         System.out.println(BANNER + "\r\n :: smart-servlet :: (" + VERSION + ")");
 
     }

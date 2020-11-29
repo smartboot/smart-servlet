@@ -72,6 +72,7 @@ public class WelcomeFileHandler extends Handler {
             }
         }
         if (!requestUri.endsWith("/")) {
+            // 例如: /abc/d.html ,由于d.html不存在而走到该分支
             if (requestUri.indexOf(".") > 0) {
                 return null;
             }

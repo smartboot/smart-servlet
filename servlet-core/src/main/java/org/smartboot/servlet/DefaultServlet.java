@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.MappedByteBuffer;
@@ -74,18 +75,22 @@ public class DefaultServlet extends HttpServlet {
         RunLogger.getLogger().log(Level.FINEST, "请求URL:" + fileName);
         URL url = request.getServletContext().getResource(fileName.substring(request.getContextPath().length()));
         File file = null;
+        boolean systemResource = false;
         if (url == null && fileName.endsWith("favicon.ico")) {
             url = ClassLoader.getSystemResource("favicon.ico");
+            systemResource = true;
         }
+
         try {
-            if (url != null) {
+            if (url != null && !systemResource) {
+                RunLogger.getLogger().log(Level.FINE, url.toURI().toString());
                 file = new File(url.toURI());
             }
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
         //404
-        if (file == null || !file.isFile()) {
+        if (!systemResource && (file == null || !file.isFile())) {
             RunLogger.getLogger().log(Level.WARNING, "file:" + request.getRequestURI() + " not found!");
             //《Servlet3.1规范中文版》9.3 include 方法
             //如果默认的 servlet 是 RequestDispatch.include()的目标 servlet，
@@ -101,6 +106,15 @@ public class DefaultServlet extends HttpServlet {
             if (!HttpMethodEnum.HEAD.getMethod().equals(method)) {
                 response.getOutputStream().write(URL_404.getBytes());
             }
+            return;
+        }
+        if (systemResource) {
+            InputStream inputStream = url.openStream();
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.read(bytes);
+            response.setContentType("image/x-icon");
+            response.setContentLength(bytes.length);
+            response.getOutputStream().write(bytes);
             return;
         }
         //304
