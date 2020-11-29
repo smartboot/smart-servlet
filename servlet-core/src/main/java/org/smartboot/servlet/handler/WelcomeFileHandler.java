@@ -46,7 +46,8 @@ public class WelcomeFileHandler extends Handler {
             //尝试跳转welcome文件
             String welcome = forwardWelcome(handlerContext);
             if (welcome == null) {
-                //无welcome file，执行下一步触发 404
+                //无welcome file，触发 404
+                handlerContext.setServlet(servletContext.getDeploymentInfo().getDefaultServlet());
                 doNext(handlerContext);
             } else if (welcome.endsWith("/")) {
                 // 以"/"通过302跳转触发 welcome file逻辑
@@ -71,6 +72,9 @@ public class WelcomeFileHandler extends Handler {
             }
         }
         if (!requestUri.endsWith("/")) {
+            if (requestUri.indexOf(".") > 0) {
+                return null;
+            }
             if (servletContext.getResource(requestUri.substring(handlerContext.getRequest().getContextPath().length())) != null) {
                 return null;
             }

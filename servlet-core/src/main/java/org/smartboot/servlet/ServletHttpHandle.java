@@ -56,6 +56,7 @@ public class ServletHttpHandle extends HttpHandle {
     private final LRUCache<String, ContainerRuntime> contextCache = new LRUCache<>();
     private final List<Plugin> plugins = new ArrayList<>();
     private volatile boolean started = false;
+    private String defaultContext = null;
 
     public void start() {
         if (started) {
@@ -110,6 +111,11 @@ public class ServletHttpHandle extends HttpHandle {
         try {
             //识别请求对应的运行时环境
             ContainerRuntime runtime = matchRuntime(request.getRequestURI());
+            ContainerRuntime defaultRuntime = null;
+            if (runtime == null) {
+                defaultRuntime = matchDefaultRuntime(request.getRequestURI());
+                runtime = defaultRuntime;
+            }
             if (runtime == null) {
                 response.setHttpStatus(HttpStatus.NOT_FOUND);
                 return;
@@ -121,7 +127,11 @@ public class ServletHttpHandle extends HttpHandle {
             HttpServletRequestImpl servletRequest = new HttpServletRequestImpl(request, runtime, DispatcherType.REQUEST);
             HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
-
+            if (defaultRuntime != null) {
+                servletRequest.setRequestURI(defaultRuntime.getDeploymentInfo().getContextPath() + servletRequest.getRequestURI());
+            } else if (!servletRequest.getRequestURI().startsWith(runtime.getDeploymentInfo().getContextPath())) {
+                servletRequest.setRequestURI(runtime.getDeploymentInfo().getContextPath() + servletRequest.getRequestURI());
+            }
             // just do it
             servletContext.getPipeline().handleRequest(handlerContext);
         } catch (WrappedRuntimeException e) {
@@ -143,20 +153,36 @@ public class ServletHttpHandle extends HttpHandle {
         return started;
     }
 
-    public ContainerRuntime matchRuntime(String servletPath) {
-        ContainerRuntime runtime = contextCache.get(servletPath);
+    public ContainerRuntime matchRuntime(String requestUri) {
+        ContainerRuntime runtime = contextCache.get(requestUri);
         if (runtime != null) {
             return runtime;
         }
         for (ContainerRuntime matchRuntime : runtimes) {
             //todo 兼容 请求 uri 为 servletPath结尾不带 '/' 的情况
             String contextPath = matchRuntime.getServletContext().getDeploymentInfo().getContextPath();
-            if (StringUtils.startsWith(servletPath, contextPath) || servletPath.equals(contextPath.substring(0, contextPath.length() - 1))) {
+            if (StringUtils.startsWith(requestUri, contextPath) || requestUri.equals(contextPath.substring(0, contextPath.length() - 1))) {
                 runtime = matchRuntime;
-                contextCache.put(servletPath, runtime);
+                contextCache.put(requestUri, runtime);
                 break;
             }
         }
         return runtime;
+    }
+
+    public ContainerRuntime matchDefaultRuntime(String requestUri) {
+        if (defaultContext == null) {
+            return null;
+        }
+
+        ContainerRuntime containerRuntime = runtimes.stream().filter(runtime -> runtime.getDeploymentInfo().getContextPath().equals(defaultContext)).findFirst().orElse(null);
+        if (containerRuntime != null) {
+            contextCache.put(requestUri, containerRuntime);
+        }
+        return containerRuntime;
+    }
+
+    public void setDefaultContext(String defaultContext) {
+        this.defaultContext = defaultContext;
     }
 }

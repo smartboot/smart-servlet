@@ -74,8 +74,13 @@ public class DefaultServlet extends HttpServlet {
         RunLogger.getLogger().log(Level.FINEST, "请求URL:" + fileName);
         URL url = request.getServletContext().getResource(fileName.substring(request.getContextPath().length()));
         File file = null;
+        if (url == null && fileName.endsWith("favicon.ico")) {
+            url = ClassLoader.getSystemResource("favicon.ico");
+        }
         try {
-            file = new File(url.toURI());
+            if (url != null) {
+                file = new File(url.toURI());
+            }
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

@@ -24,7 +24,7 @@ public class Bootstrap {
                 System.out.println("load " + path.getName() + " success!");
             }
         }
-
+        httpHandle.setDefaultContext("/examples");
         httpHandle.start();
         HttpBootstrap bootstrap = new HttpBootstrap();
         bootstrap.pipeline().next(httpHandle);
