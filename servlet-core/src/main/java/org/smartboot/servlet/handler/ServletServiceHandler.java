@@ -55,16 +55,24 @@ public class ServletServiceHandler extends Handler {
         ServletContextImpl servletContext = handlerContext.getServletContext();
         List<String> welcomeFiles = servletContext.getDeploymentInfo().getWelcomeFiles();
         String requestUri = handlerContext.getRequest().getRequestURI();
+        //已经是以welcomeFile结尾的不再进行匹配
         for (String file : welcomeFiles) {
             if (requestUri.endsWith(file)) {
                 return null;
             }
-            String uri = requestUri.substring(handlerContext.getRequest().getContextPath().length());
-            URL welcomeUrl = servletContext.getResource(uri.endsWith("/") ? uri + file : uri + "/" + file);
-            if (welcomeUrl != null) {
-                return file;
+        }
+        if (!requestUri.endsWith("/")) {
+            return requestUri + "/";
+        } else {
+            for (String file : welcomeFiles) {
+                String uri = requestUri.substring(handlerContext.getRequest().getContextPath().length());
+                URL welcomeUrl = servletContext.getResource(uri + file);
+                if (welcomeUrl != null) {
+                    return file;
+                }
             }
         }
+
         return null;
     }
 }

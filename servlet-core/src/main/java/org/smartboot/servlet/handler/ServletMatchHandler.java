@@ -55,7 +55,7 @@ public class ServletMatchHandler extends Handler {
                 throw new WrappedRuntimeException(new ServletException("servlet is not null"));
             }
         }
-        if (handlerContext.getServlet() != null) {
+        if (handlerContext.getServlet() == null) {
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
                 final ServletInfo servletInfo = entry.getValue();
                 for (ServletMappingInfo path : servletInfo.getMappings()) {

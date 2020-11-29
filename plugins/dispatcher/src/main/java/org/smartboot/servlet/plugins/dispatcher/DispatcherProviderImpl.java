@@ -44,6 +44,9 @@ class DispatcherProviderImpl implements DispatcherProvider {
 
     @Override
     public RequestDispatcher getRequestDispatcher(HttpServletRequestImpl request, String path) {
+        if (path.startsWith("/")) {
+            return getRequestDispatcher(request.getServletContext(), path);
+        }
         int lastIndex = request.getRequestURI().lastIndexOf("/");
         return getRequestDispatcher(request.getServletContext(), request.getRequestURI().substring(0, lastIndex) + "/" + path);
     }
