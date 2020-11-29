@@ -86,13 +86,17 @@ public class WebContextRuntime {
             deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 
             //默认页面
+            //《Servlet3.1规范中文版》10.10 欢迎文件
+            // 欢迎文件列表是一个没有尾随或前导/的局部 URL 有序列表
             for (String welcomeFile : webAppInfo.getWelcomeFileList()) {
-                File file = new File(contextFile, welcomeFile);
-                if (file.isFile()) {
-                    deploymentInfo.setWelcomeFile(welcomeFile);
-                    break;
+                if (welcomeFile.startsWith("/")) {
+                    throw new IllegalArgumentException("invalid welcome file " + welcomeFile + " is startWith /");
+                } else if (welcomeFile.endsWith("/")) {
+                    throw new IllegalArgumentException("invalid welcome file " + welcomeFile + " is endWith /");
                 }
             }
+            deploymentInfo.setWelcomeFiles(webAppInfo.getWelcomeFileList());
+
             //默认Servlet
             deploymentInfo.setDefaultServlet(new DefaultServlet());
 

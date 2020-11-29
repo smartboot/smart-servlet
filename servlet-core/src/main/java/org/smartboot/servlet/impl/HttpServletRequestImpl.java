@@ -22,7 +22,6 @@ import org.smartboot.servlet.util.DateUtil;
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
@@ -53,9 +52,10 @@ import java.util.logging.Level;
  */
 public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private final HttpRequest request;
-    private final ServletContext servletContext;
+    private final ServletContextImpl servletContext;
     private final DispatcherType dispatcherType;
     private final SessionProvider sessionProvider;
+    private final ContainerRuntime runtime;
     private String characterEncoding;
     private Map<String, Object> attributes;
     private HttpSession httpSession;
@@ -69,6 +69,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         this.dispatcherType = dispatcherType;
         this.servletContext = runtime.getServletContext();
         this.sessionProvider = runtime.getSessionProvider();
+        this.runtime = runtime;
+        this.requestURI = request.getRequestURI();
     }
 
     @Override
@@ -411,7 +413,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public RequestDispatcher getRequestDispatcher(String path) {
-        throw new UnsupportedOperationException();
+        return runtime.getDispatcherProvider().getRequestDispatcher(this, path);
     }
 
     @Override
@@ -447,7 +449,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     }
 
     @Override
-    public ServletContext getServletContext() {
+    public ServletContextImpl getServletContext() {
         return servletContext;
     }
 

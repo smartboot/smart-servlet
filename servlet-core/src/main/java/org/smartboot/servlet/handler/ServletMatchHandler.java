@@ -13,7 +13,6 @@ import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.SmartHttpServletRequest;
-import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
@@ -45,7 +44,7 @@ public class ServletMatchHandler extends Handler {
         SmartHttpServletRequest request = handlerContext.getRequest();
 
         //默认地址改写
-        resetWelcomeURI(servletContext, request);
+//        resetWelcomeUri(servletContext, request);
         //通过ServletContext.getNamedDispatcher触发的请求已经指定了Servlet
         if (handlerContext.isNamedDispatcher()) {
             if (handlerContext.getServlet() == null) {
@@ -72,30 +71,28 @@ public class ServletMatchHandler extends Handler {
                 }
             }
         }
-        if (servlet == null && request.getDispatcherType() == DispatcherType.REQUEST) {
+        if (servlet == null && (request.getDispatcherType() == DispatcherType.REQUEST || request.getDispatcherType() == DispatcherType.FORWARD)) {
             servlet = servletContext.getDeploymentInfo().getDefaultServlet();
         }
         handlerContext.setServlet(servlet);
         doNext(handlerContext);
     }
 
-    private void resetWelcomeURI(ServletContextImpl servletContext, SmartHttpServletRequest request) {
-        DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
-        if (StringUtils.isBlank(deploymentInfo.getWelcomeFile())) {
-            return;
-        }
-        int i = request.getRequestURI().length() - servletContext.getContextPath().length();
-        //todo 兼容 请求 uri 为 servletPath结尾不带 '/' 的情况
-        if (i == -1) {
-            request.setRequestURI(request.getRequestURI() + deploymentInfo.getWelcomeFile());
-        } else if (i == 0) {
-            request.setRequestURI(request.getRequestURI() + deploymentInfo.getWelcomeFile().substring(1));
-        } else if (i == 1 && request.getRequestURI().charAt(request.getRequestURI().length() - 1) == '/') {
-            request.setRequestURI(request.getRequestURI().substring(0, request.getRequestURI().length() - 1) + servletContext.getDeploymentInfo().getWelcomeFile());
-        } else {
-            request.setRequestURI(request.getRequestURI());
-        }
-    }
+//    private void resetWelcomeUri(ServletContextImpl servletContext, SmartHttpServletRequest request) {
+//        DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
+//        if (deploymentInfo.getWelcomeFiles().size() == 0) {
+//            return;
+//        }
+//        int i = request.getRequestURI().length() - servletContext.getContextPath().length();
+//        if (i < 0) {
+//            throw new IllegalStateException("requestURI: " + request.getRequestURI() + " but contxtPath is: " + servletContext.getContextPath());
+//        }
+//        if (i == 0) {
+//            request.setRequestURI(request.getRequestURI() + deploymentInfo.getWelcomeFile());
+//        } else if (i == 1 && request.getRequestURI().charAt(request.getRequestURI().length() - 1) == '/') {
+//            request.setRequestURI(request.getRequestURI().substring(0, request.getRequestURI().length() - 1) + servletContext.getDeploymentInfo().getWelcomeFile());
+//        }
+//    }
 
     /**
      * 《Servlet3.1规范中文版》3.5请求路径元素

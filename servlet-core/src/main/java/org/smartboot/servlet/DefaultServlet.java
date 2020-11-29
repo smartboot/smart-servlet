@@ -72,7 +72,7 @@ public class DefaultServlet extends HttpServlet {
         String fileName = request.getRequestURI();
         String method = request.getMethod();
         RunLogger.getLogger().log(Level.FINEST, "请求URL:" + fileName);
-        URL url = request.getServletContext().getResource(fileName);
+        URL url = request.getServletContext().getResource(fileName.substring(request.getContextPath().length()));
         File file = null;
         try {
             file = new File(url.toURI());

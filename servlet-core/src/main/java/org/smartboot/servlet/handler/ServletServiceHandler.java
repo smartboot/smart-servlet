@@ -13,10 +13,14 @@ import org.smartboot.http.enums.HttpStatus;
 import org.smartboot.http.exception.HttpException;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
+import org.smartboot.servlet.impl.ServletContextImpl;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
 
 /**
  * 匹配并执行符合当前请求的Servlet
@@ -28,15 +32,39 @@ public class ServletServiceHandler extends Handler {
 
     @Override
     public void handleRequest(HandlerContext handlerContext) {
-        Servlet servlet = handlerContext.getServlet();
-        if (servlet == null) {
-            throw new HttpException(HttpStatus.NOT_FOUND);
-        }
         try {
+            Servlet servlet = handlerContext.getServlet();
+            if (servlet == handlerContext.getServletContext().getDeploymentInfo().getDefaultServlet()) {
+                String welcome = forwardWelcome(handlerContext);
+                if (welcome != null) {
+                    handlerContext.getRequest().getRequestDispatcher(welcome).forward(handlerContext.getRequest(), handlerContext.getResponse());
+                    return;
+                }
+            }
+            if (servlet == null) {
+                throw new HttpException(HttpStatus.NOT_FOUND);
+            }
             servlet.service(handlerContext.getRequest(), handlerContext.getResponse());
         } catch (ServletException | IOException e) {
             throw new WrappedRuntimeException(e);
         }
         doNext(handlerContext);
+    }
+
+    private String forwardWelcome(HandlerContext handlerContext) throws MalformedURLException {
+        ServletContextImpl servletContext = handlerContext.getServletContext();
+        List<String> welcomeFiles = servletContext.getDeploymentInfo().getWelcomeFiles();
+        String requestUri = handlerContext.getRequest().getRequestURI();
+        for (String file : welcomeFiles) {
+            if (requestUri.endsWith(file)) {
+                return null;
+            }
+            String uri = requestUri.substring(handlerContext.getRequest().getContextPath().length());
+            URL welcomeUrl = servletContext.getResource(uri.endsWith("/") ? uri + file : uri + "/" + file);
+            if (welcomeUrl != null) {
+                return file;
+            }
+        }
+        return null;
     }
 }

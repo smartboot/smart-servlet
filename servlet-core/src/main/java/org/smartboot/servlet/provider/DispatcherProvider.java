@@ -9,6 +9,7 @@
 
 package org.smartboot.servlet.provider;
 
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 
 import javax.servlet.RequestDispatcher;
@@ -21,4 +22,6 @@ public interface DispatcherProvider {
     RequestDispatcher getRequestDispatcher(ServletContextImpl servletContext, String path);
 
     RequestDispatcher getNamedDispatcher(ServletContextImpl servletContext, String name);
+
+    RequestDispatcher getRequestDispatcher(HttpServletRequestImpl request, String path);
 }

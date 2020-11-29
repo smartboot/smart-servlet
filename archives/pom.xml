@@ -18,6 +18,11 @@
             <artifactId>servlet-core</artifactId>
             <version>${smartservlet.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.smartboot.servlet</groupId>
+            <artifactId>plugin-dispatcher</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

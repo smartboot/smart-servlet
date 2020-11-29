@@ -10,6 +10,7 @@
 package org.smartboot.servlet.plugins.dispatcher;
 
 import org.smartboot.servlet.conf.ServletInfo;
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.provider.DispatcherProvider;
 
@@ -39,5 +40,11 @@ class DispatcherProviderImpl implements DispatcherProvider {
             return null;
         }
         return new RequestDispatcherImpl(servletContext, servletInfo.getServlet(), null);
+    }
+
+    @Override
+    public RequestDispatcher getRequestDispatcher(HttpServletRequestImpl request, String path) {
+        int lastIndex = request.getRequestURI().lastIndexOf("/");
+        return getRequestDispatcher(request.getServletContext(), request.getRequestURI().substring(0, lastIndex) + "/" + path);
     }
 }

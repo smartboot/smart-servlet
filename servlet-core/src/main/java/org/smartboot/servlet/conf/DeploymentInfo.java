@@ -36,7 +36,7 @@ public class DeploymentInfo {
     private final List<ServletContextListener> servletContextListeners = new ArrayList<>();
     private final List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
     private final List<ServletContainerInitializer> servletContainerInitializers = new ArrayList<>();
-    private String welcomeFile;
+    private List<String> welcomeFiles;
     private ClassLoader classLoader;
     private String contextPath;
     private String displayName;
@@ -149,12 +149,12 @@ public class DeploymentInfo {
         this.displayName = displayName;
     }
 
-    public String getWelcomeFile() {
-        return welcomeFile;
+    public List<String> getWelcomeFiles() {
+        return welcomeFiles;
     }
 
-    public void setWelcomeFile(String welcomeFile) {
-        this.welcomeFile = welcomeFile.startsWith("/") ? welcomeFile : "/" + welcomeFile;
+    public void setWelcomeFiles(List<String> welcomeFiles) {
+        this.welcomeFiles = welcomeFiles;
     }
 
     public Servlet getDefaultServlet() {

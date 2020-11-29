@@ -2,16 +2,32 @@ package org.smartboot.servlet.starter;
 
 import org.smartboot.http.HttpBootstrap;
 import org.smartboot.servlet.ServletHttpHandle;
+import org.smartboot.servlet.war.WebContextRuntime;
 
-import java.net.MalformedURLException;
+import java.io.File;
 
 /**
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
 public class Bootstrap {
-    public static void main(String[] args) throws MalformedURLException {
+    public static void main(String[] args) throws Exception {
+//        String webapps = System.getProperty("webapps.dir");
+        String webapps = "/Users/zhengjunwei/IdeaProjects/smart-servlet/archives/webapps";
         ServletHttpHandle httpHandle = new ServletHttpHandle();
+        File file = new File(webapps);
+        if (file.isDirectory()) {
+            for (File path : file.listFiles()) {
+                if (!path.getName().equals("examples")) {
+                    continue;
+                }
+                System.out.println("start load: " + path.getAbsolutePath());
+                WebContextRuntime webContextRuntime = new WebContextRuntime(path.getAbsolutePath(), "/" + path.getName());
+                httpHandle.addRuntime(webContextRuntime.getServletRuntime());
+                System.out.println("load " + path.getName() + " success!");
+            }
+        }
+
         httpHandle.start();
         HttpBootstrap bootstrap = new HttpBootstrap();
         bootstrap.pipeline().next(httpHandle);
