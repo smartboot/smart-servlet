@@ -19,7 +19,6 @@ import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.ServletPathMatcher;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.util.Map;
@@ -43,17 +42,13 @@ public class ServletMatchHandler extends Handler {
         Map<String, ServletInfo> servletInfoMap = handlerContext.getServletContext().getDeploymentInfo().getServlets();
         SmartHttpServletRequest request = handlerContext.getRequest();
 
-        //默认地址改写
-//        resetWelcomeUri(servletContext, request);
         //通过ServletContext.getNamedDispatcher触发的请求已经指定了Servlet
         if (handlerContext.isNamedDispatcher()) {
             if (handlerContext.getServlet() == null) {
                 throw new WrappedRuntimeException(new ServletException("servlet is null"));
             }
-        } else {
-            if (handlerContext.getServlet() != null) {
-                throw new WrappedRuntimeException(new ServletException("servlet is not null"));
-            }
+        } else if (handlerContext.getServlet() != null) {
+            throw new WrappedRuntimeException(new ServletException("servlet is not null"));
         }
         if (handlerContext.getServlet() == null) {
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
@@ -71,9 +66,7 @@ public class ServletMatchHandler extends Handler {
                 }
             }
         }
-        if (servlet == null && (request.getDispatcherType() == DispatcherType.REQUEST || request.getDispatcherType() == DispatcherType.FORWARD)) {
-            servlet = servletContext.getDeploymentInfo().getDefaultServlet();
-        }
+
         handlerContext.setServlet(servlet);
         doNext(handlerContext);
     }

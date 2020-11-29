@@ -20,6 +20,7 @@ import org.smartboot.servlet.handler.HandlePipeline;
 import org.smartboot.servlet.handler.ServletMatchHandler;
 import org.smartboot.servlet.handler.ServletRequestListenerHandler;
 import org.smartboot.servlet.handler.ServletServiceHandler;
+import org.smartboot.servlet.handler.WelcomeFileHandler;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
@@ -64,6 +65,7 @@ public class ServletHttpHandle extends HttpHandle {
         HandlePipeline pipeline = new HandlePipeline();
         pipeline.next(new ServletRequestListenerHandler())
                 .next(new ServletMatchHandler())
+                .next(new WelcomeFileHandler())
                 .next(new FilterMatchHandler())
                 .next(new ServletServiceHandler());
         //扫描插件
