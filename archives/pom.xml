@@ -5,11 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.smartboot.servlet</groupId>
-    <artifactId>example</artifactId>
+    <artifactId>archives</artifactId>
     <version>1.0.0</version>
 
     <properties>
-        <!--<smartsocket.version>1.4.4</smartsocket.version>-->
         <smartservlet.version>1.0.0-SNAPSHOT</smartservlet.version>
     </properties>
 
@@ -18,16 +17,6 @@
             <groupId>org.smartboot.servlet</groupId>
             <artifactId>servlet-core</artifactId>
             <version>${smartservlet.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.smartboot.servlet</groupId>
-            <artifactId>plugin-session</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.smartboot.servlet</groupId>
-            <artifactId>plugin-dispatcher</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>

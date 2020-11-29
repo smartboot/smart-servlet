@@ -34,6 +34,7 @@
                 <include>/conf/**</include>
                 <include>logs</include>
                 <include>webapps/**</include>
+                <include>plugins/**</include>
             </includes>
         </fileSet>
 

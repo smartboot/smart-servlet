@@ -37,6 +37,17 @@ import java.util.ServiceLoader;
  * @version V1.0 , 2019/12/11
  */
 public class ServletHttpHandle extends HttpHandle {
+    /**
+     * http://patorjk.com/software/taag/
+     * Font Name: Puffy
+     */
+    private static final String BANNER = "                               _                                 _           _   \n" +
+            "                              ( )_                              (_ )        ( )_ \n" +
+            "  ___   ___ ___     _ _  _ __ | ,_)     ___    __   _ __  _   _  | |    __  | ,_)\n" +
+            "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" +
+            "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" +
+            "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
+    private static final String VERSION = "1.0.0-SNAPSHOT";
     private final List<ContainerRuntime> runtimes = new ArrayList<>();
     /**
      * 请求映射的Servlet运行环境
@@ -83,7 +94,7 @@ public class ServletHttpHandle extends HttpHandle {
                 Thread.currentThread().setContextClassLoader(originalClassLoader);
             }
         });
-
+        System.out.println(BANNER + "\r\n :: smart-servlet :: (" + VERSION + ")");
 
     }
 
