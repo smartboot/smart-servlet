@@ -12,9 +12,11 @@ import java.io.File;
  */
 public class Bootstrap {
     public static void main(String[] args) throws Exception {
-//        String webapps = System.getProperty("webapps.dir");
+        String webapps = System.getProperty("webapps.dir");
         long start = System.currentTimeMillis();
-        String webapps = "/Users/zhengjunwei/IdeaProjects/smart-servlet/archives/webapps";
+        if (webapps == null) {
+            webapps = new File("archives/webapps").getAbsolutePath();
+        }
         ServletHttpHandle httpHandle = new ServletHttpHandle();
         File file = new File(webapps);
         if (file.isDirectory()) {
