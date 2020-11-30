@@ -13,7 +13,7 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
 
 - binary distributions
 
-  二进制软件包，可将 War 包部署到指定目录下以启动服务。类似：apache-tomcat-x.xx.xx.tar.gz
+  二进制软件包，可将 War 包部署到指定目录下以启动服务，类似：apache-tomcat-x.xx.xx.tar.gz。体验包[下载地址](https://gitee.com/smartboot/smart-servlet/attach_files)
 
 - maven plugin
 
