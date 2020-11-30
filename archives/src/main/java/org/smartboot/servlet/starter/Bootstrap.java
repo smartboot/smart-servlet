@@ -13,6 +13,7 @@ import java.io.File;
 public class Bootstrap {
     public static void main(String[] args) throws Exception {
 //        String webapps = System.getProperty("webapps.dir");
+        long start = System.currentTimeMillis();
         String webapps = "/Users/zhengjunwei/IdeaProjects/smart-servlet/archives/webapps";
         ServletHttpHandle httpHandle = new ServletHttpHandle();
         File file = new File(webapps);
@@ -29,6 +30,6 @@ public class Bootstrap {
         bootstrap.pipeline().next(httpHandle);
         bootstrap.setBannerEnabled(false);
         bootstrap.setReadBufferSize(1024 * 1024).setPort(8080).start();
-        System.out.println("启动成功");
+        System.out.println("启动成功,耗时：" + (System.currentTimeMillis() - start) + "ms");
     }
 }

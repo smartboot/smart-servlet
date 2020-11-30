@@ -18,18 +18,14 @@ import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.FilterChainImpl;
 import org.smartboot.servlet.util.ServletPathMatcher;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 匹配并执行符合当前请求的Filter
@@ -39,30 +35,32 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class FilterMatchHandler extends Handler {
     private static final ServletPathMatcher PATH_MATCHER = new ServletPathMatcher();
+
     /**
      * 缓存Servlet关联的过滤器
      */
-    private final Map<DispatcherType, Map<Servlet, List<Filter>>> dispatcherFilterChainMap = new HashMap<>();
+//    private final Map<DispatcherType, Map<Servlet, List<Filter>>> dispatcherFilterChainMap = new HashMap<>();
 
-    {
-        for (DispatcherType value : DispatcherType.values()) {
-            dispatcherFilterChainMap.put(value, new ConcurrentHashMap<>());
-        }
-    }
-
+//    {
+//        for (DispatcherType value : DispatcherType.values()) {
+//            dispatcherFilterChainMap.put(value, new ConcurrentHashMap<>());
+//        }
+//    }
     @Override
     public void handleRequest(HandlerContext handlerContext) {
-        Map<Servlet, List<Filter>> filterChainMap = dispatcherFilterChainMap.get(handlerContext.getRequest().getDispatcherType());
-        List<Filter> cacheFilters = filterChainMap.get(handlerContext.getServlet());
-        if (cacheFilters != null) {
-            FilterChain filterChain = new FilterChainImpl(cacheFilters, () -> FilterMatchHandler.this.doNext(handlerContext));
-            try {
-                filterChain.doFilter(handlerContext.getRequest(), handlerContext.getResponse());
-            } catch (IOException | ServletException e) {
-                throw new WrappedRuntimeException(e);
-            }
-            return;
-        }
+        //begin 暂时不缓存,实时匹配
+//        Map<Servlet, List<Filter>> filterChainMap = dispatcherFilterChainMap.get(handlerContext.getRequest().getDispatcherType());
+//        List<Filter> cacheFilters = filterChainMap.get(handlerContext.getServlet());
+//        if (cacheFilters != null) {
+//            FilterChain filterChain = new FilterChainImpl(cacheFilters, () -> FilterMatchHandler.this.doNext(handlerContext));
+//            try {
+//                filterChain.doFilter(handlerContext.getRequest(), handlerContext.getResponse());
+//            } catch (IOException | ServletException e) {
+//                throw new WrappedRuntimeException(e);
+//            }
+//            return;
+//        }
+        //end 暂时不缓存,实时匹配
 
         HttpServletRequest request = handlerContext.getRequest();
         String contextPath = handlerContext.getServletContext().getContextPath();
@@ -78,7 +76,7 @@ public class FilterMatchHandler extends Handler {
                             filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
                         }
                     } else if (filterInfo.getMappingType() == FilterMappingType.SERVLET) {
-                        if (StringUtils.equals(filterInfo.getMapping(), handlerContext.getServlet().getServletConfig().getServletName())) {
+                        if (handlerContext.getServlet() != null && StringUtils.equals(filterInfo.getMapping(), handlerContext.getServlet().getServletConfig().getServletName())) {
                             filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
                         }
                     } else {
@@ -86,9 +84,18 @@ public class FilterMatchHandler extends Handler {
                     }
                 });
 
+        //begin 暂时不缓存,实时匹配
         //cache for performance
-        filterChainMap.put(handlerContext.getServlet(), filters);
-        handleRequest(handlerContext);
+//        filterChainMap.put(handlerContext.getServlet(), filters);
+//        handleRequest(handlerContext);
+        //end 暂时不缓存,实时匹配
+
+        FilterChain filterChain = new FilterChainImpl(filters, () -> FilterMatchHandler.this.doNext(handlerContext));
+        try {
+            filterChain.doFilter(handlerContext.getRequest(), handlerContext.getResponse());
+        } catch (IOException | ServletException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 
 }

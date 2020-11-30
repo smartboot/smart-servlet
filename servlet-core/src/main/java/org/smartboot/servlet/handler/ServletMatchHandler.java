@@ -54,7 +54,7 @@ public class ServletMatchHandler extends Handler {
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
                 final ServletInfo servletInfo = entry.getValue();
                 for (ServletMappingInfo path : servletInfo.getMappings()) {
-                    RunLogger.getLogger().log(Level.SEVERE, "servlet match: " + (contextPath + path.getMapping()) + " requestURI: " + request.getRequestURI());
+//                    RunLogger.getLogger().log(Level.SEVERE, "servlet match: " + (contextPath + path.getMapping()) + " requestURI: " + request.getRequestURI());
                     if ("/".equals(path.getMapping()) || PATH_MATCHER.matches(contextPath + path.getMapping(), request.getRequestURI())) {
                         servlet = servletInfo.getServlet();
                         setServletInfo(request, path);
