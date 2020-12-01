@@ -51,7 +51,7 @@ public class DefaultServlet extends HttpServlet {
                     "</head>" +
                     "<body><h1>smart-http 找不到你所请求的地址资源，404</h1></body>" +
                     "</html>";
-    private ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
+    private final ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
         @Override
         protected SimpleDateFormat initialValue() {
             return new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);

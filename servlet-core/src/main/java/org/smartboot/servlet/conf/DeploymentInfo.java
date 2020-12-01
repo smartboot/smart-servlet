@@ -17,6 +17,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class DeploymentInfo {
     private final List<ServletContextListener> servletContextListeners = new ArrayList<>();
     private final List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
     private final List<ServletContainerInitializer> servletContainerInitializers = new ArrayList<>();
-    private List<String> welcomeFiles;
+    private List<String> welcomeFiles = Collections.emptyList();
     private ClassLoader classLoader;
     private String contextPath;
     private String displayName;

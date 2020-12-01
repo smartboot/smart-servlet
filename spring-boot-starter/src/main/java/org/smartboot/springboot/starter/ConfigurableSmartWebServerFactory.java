@@ -29,7 +29,6 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
 
     @Override
     public WebServer getWebServer(ServletContextInitializer... initializers) {
-        System.out.println("aaa");
         File root = getValidDocumentRoot();
         File docBase = (root != null) ? root : createTempDir("smart-servlet");
         System.out.println(docBase.getAbsoluteFile());

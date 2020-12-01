@@ -113,7 +113,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public URL getResource(String path) throws MalformedURLException {
-        if (path == null) {
+        if (path == null || deploymentInfo.getContextUrl() == null) {
             return null;
         }
         if (path.length() == 0) {

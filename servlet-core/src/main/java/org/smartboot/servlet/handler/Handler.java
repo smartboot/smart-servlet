@@ -17,7 +17,7 @@ import org.smartboot.servlet.HandlerContext;
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
-public abstract class Handler {
+abstract class Handler {
     /**
      * 持有下一个处理器的句柄
      */
