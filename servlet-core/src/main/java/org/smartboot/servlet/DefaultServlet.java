@@ -44,6 +44,7 @@ import java.util.logging.Level;
  */
 public class DefaultServlet extends HttpServlet {
     private static final int READ_BUFFER = 1024 * 1024;
+    private static final String FAVICON_NAME = "favicon.ico";
     private static final String URL_404 =
             "<html>" +
                     "<head>" +
@@ -76,8 +77,8 @@ public class DefaultServlet extends HttpServlet {
         URL url = request.getServletContext().getResource(fileName.substring(request.getContextPath().length()));
         File file = null;
         boolean systemResource = false;
-        if (url == null && fileName.endsWith("favicon.ico")) {
-            url = ClassLoader.getSystemResource("favicon.ico");
+        if (url == null && fileName.endsWith(FAVICON_NAME)) {
+            url = ClassLoader.getSystemResource(FAVICON_NAME);
             systemResource = true;
         }
 

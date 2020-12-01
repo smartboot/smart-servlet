@@ -90,7 +90,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
             return;
         }
         String[] array = StringUtils.split(dispatcherURL, "?");
-        requestWrapper.setRequestURI(array[0]);
+        requestWrapper.setRequestUri(array[0]);
         Map<String, String[]> parameters = new HashMap<>();
         if (array.length > 1) {
             HttpUtils.decodeParamString(array[1], parameters);

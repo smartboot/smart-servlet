@@ -33,13 +33,12 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
         File docBase = (root != null) ? root : createTempDir("smart-servlet");
         System.out.println(docBase.getAbsoluteFile());
         SmartContainerInitializer initializer = new SmartContainerInitializer(initializers);
-        ContainerRuntime servletRuntime = new ContainerRuntime();
+        ContainerRuntime servletRuntime = new ContainerRuntime(getContextPath());
         DeploymentInfo deployment = servletRuntime.getServletContext().getDeploymentInfo();
         deployment.setClassLoader(getServletClassLoader());
-        deployment.setContextPath(getContextPath());
         deployment.setDisplayName(getDisplayName());
         try {
-            deployment.setContextUrl(docBase.toURL());
+            deployment.setContextUrl(docBase.toURI().toURL());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

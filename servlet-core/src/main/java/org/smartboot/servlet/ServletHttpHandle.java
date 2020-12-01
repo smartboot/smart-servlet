@@ -27,11 +27,8 @@ import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.util.LRUCache;
 
 import javax.servlet.DispatcherType;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.ServiceLoader;
 
 /**
@@ -57,12 +54,6 @@ public class ServletHttpHandle extends HttpHandle {
     private final LRUCache<String, ContainerRuntime> contextCache = new LRUCache<>();
     private final List<Plugin> plugins = new ArrayList<>();
     private volatile boolean started = false;
-    private ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-        }
-    };
 
     public void start() {
         if (started) {
@@ -86,13 +77,7 @@ public class ServletHttpHandle extends HttpHandle {
         });
 
         //必须有一个 contextPath 为 "/" 的环境
-        if (runtimes.stream().noneMatch(runtime -> "/".equals(runtime.getDeploymentInfo().getContextPath()))) {
-            ContainerRuntime runtime = new ContainerRuntime();
-            DeploymentInfo deploymentInfo = runtime.getDeploymentInfo();
-            deploymentInfo.setContextPath("/");
-            deploymentInfo.setDefaultServlet(new DefaultServlet());
-            runtimes.add(runtime);
-        }
+        initRootContainer();
         //启动运行环境
         runtimes.forEach(runtime -> {
             runtime.getServletContext().setPipeline(pipeline);
@@ -111,22 +96,40 @@ public class ServletHttpHandle extends HttpHandle {
             }
         });
         //按contextPath长度倒序,防止被"/"优先匹配
-        runtimes.sort((o1, o2) -> o2.getDeploymentInfo().getContextPath().length() - o1.getDeploymentInfo().getContextPath().length());
+        runtimes.sort((o1, o2) -> o2.getContextPath().length() - o1.getContextPath().length());
 
         System.out.println(BANNER + "\r\n :: smart-servlet :: (" + VERSION + ")");
 
     }
 
+    /**
+     * 若不存在根级容器，则初始化一个
+     */
+    private void initRootContainer() {
+        if (runtimes.stream().noneMatch(runtime -> "/".equals(runtime.getContextPath()))) {
+            ContainerRuntime runtime = new ContainerRuntime("/");
+            DeploymentInfo deploymentInfo = runtime.getDeploymentInfo();
+            deploymentInfo.setDefaultServlet(new DefaultServlet());
+            runtimes.add(runtime);
+        }
+    }
+
     public void addRuntime(ContainerRuntime runtime) {
+        if (runtimes.stream().anyMatch(containerRuntime -> containerRuntime.getContextPath().equals(runtime.getContextPath()))) {
+            throw new IllegalArgumentException("contextPath: " + runtime.getContextPath() + " is already exists!");
+        }
         runtimes.add(runtime);
     }
 
     @Override
-    public void doHandle(HttpRequest request, HttpResponse response) throws IOException {
+    public void doHandle(HttpRequest request, HttpResponse response) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
             //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
             ContainerRuntime runtime = matchRuntime(request.getRequestURI());
+            if (!runtime.isStarted()) {
+                throw new IllegalStateException("container is not started");
+            }
             ServletContextImpl servletContext = runtime.getServletContext();
             Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
 
@@ -162,7 +165,7 @@ public class ServletHttpHandle extends HttpHandle {
         }
         for (ContainerRuntime matchRuntime : runtimes) {
             //todo 兼容 请求 uri 为 servletPath结尾不带 '/' 的情况
-            String contextPath = matchRuntime.getServletContext().getDeploymentInfo().getContextPath();
+            String contextPath = matchRuntime.getServletContext().getContextPath();
             if (StringUtils.startsWith(requestUri, contextPath) || requestUri.equals(contextPath.substring(0, contextPath.length() - 1))) {
                 runtime = matchRuntime;
                 contextCache.put(requestUri, runtime);

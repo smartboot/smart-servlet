@@ -10,7 +10,9 @@
 package org.smartboot.servlet;
 
 import org.smartboot.http.logging.RunLogger;
+import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.conf.DeploymentInfo;
+import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.FilterConfigImpl;
 import org.smartboot.servlet.impl.ServletConfigImpl;
@@ -23,12 +25,15 @@ import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequestListener;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EventListener;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -39,7 +44,6 @@ import java.util.logging.Level;
  * @version V1.0 , 2019/12/11
  */
 public class ContainerRuntime {
-
     /**
      * 容器部署信息
      */
@@ -49,6 +53,10 @@ public class ContainerRuntime {
      */
     private final ServletContextImpl servletContext = new ServletContextImpl(this);
     /**
+     * 上下文路径
+     */
+    private final String contextPath;
+    /**
      * Dispatcher服务提供者
      */
     private DispatcherProvider dispatcherProvider = SandBox.INSTANCE.getDispatcherProvider();
@@ -57,13 +65,16 @@ public class ContainerRuntime {
      */
     private SessionProvider sessionProvider = SandBox.INSTANCE.getSessionProvider();
 
-    public ServletContextImpl getServletContext() {
-        return servletContext;
+    private boolean started = false;
+
+    public ContainerRuntime(String contextPath) {
+        if (StringUtils.isBlank(contextPath)) {
+            this.contextPath = "/";
+        } else {
+            this.contextPath = contextPath;
+        }
     }
 
-    public DeploymentInfo getDeploymentInfo() {
-        return deploymentInfo;
-    }
 
     /**
      * 启动容器
@@ -74,15 +85,8 @@ public class ContainerRuntime {
         Map<String, String> params = deploymentInfo.getInitParameters();
         params.forEach(servletContext::setInitParameter);
 
-
         //初始化容器
-        deploymentInfo.getServletContainerInitializers().forEach(servletContainerInitializer -> {
-            try {
-                servletContainerInitializer.onStartup(null, servletContext);
-            } catch (ServletException e) {
-                e.printStackTrace();
-            }
-        });
+        initContainer(deploymentInfo);
 
         //启动Listener
         for (String eventListenerInfo : deploymentInfo.getEventListeners()) {
@@ -102,38 +106,63 @@ public class ContainerRuntime {
         }
 
         //启动Servlet
-        deploymentInfo.getServlets().values().stream().sorted(Comparator.comparingInt(ServletInfo::getLoadOnStartup)).forEach(servletInfo -> {
-            try {
-                Servlet servlet;
-                ServletConfig servletConfig = new ServletConfigImpl(servletInfo, servletContext);
-                if (servletInfo.isDynamic()) {
-                    servlet = servletInfo.getServlet();
-                } else {
-                    servlet = (Servlet) Thread.currentThread().getContextClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
-                    servletInfo.setServlet(servlet);
-                }
-                servlet.init(servletConfig);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        initServlet(deploymentInfo);
 
         //启动Filter
-        deploymentInfo.getFilters().values().forEach(filterInfo -> {
-            try {
-                FilterConfig filterConfig = new FilterConfigImpl(filterInfo, servletContext);
-                Filter filter;
-                if (filterInfo.isDynamic()) {
-                    filter = filterInfo.getFilter();
-                } else {
-                    filter = (Filter) Thread.currentThread().getContextClassLoader().loadClass(filterInfo.getFilterClass()).newInstance();
-                    filterInfo.setFilter(filter);
-                }
-                filter.init(filterConfig);
-            } catch (Exception e) {
-                e.printStackTrace();
+        initFilter(deploymentInfo);
+        started = true;
+    }
+
+    /**
+     * 初始化容器
+     *
+     * @param deploymentInfo 部署信息
+     */
+    private void initContainer(DeploymentInfo deploymentInfo) throws ServletException {
+        for (ServletContainerInitializer servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
+            servletContainerInitializer.onStartup(null, servletContext);
+        }
+    }
+
+    /**
+     * 初始化Servlet
+     *
+     * @param deploymentInfo 部署信息
+     */
+    private void initServlet(DeploymentInfo deploymentInfo) throws Exception {
+        List<ServletInfo> servletInfoList = new ArrayList<>(deploymentInfo.getServlets().values());
+        servletInfoList.sort(Comparator.comparingInt(ServletInfo::getLoadOnStartup));
+
+        for (ServletInfo servletInfo : servletInfoList) {
+            Servlet servlet;
+            ServletConfig servletConfig = new ServletConfigImpl(servletInfo, servletContext);
+            if (servletInfo.isDynamic()) {
+                servlet = servletInfo.getServlet();
+            } else {
+                servlet = (Servlet) Thread.currentThread().getContextClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
+                servletInfo.setServlet(servlet);
             }
-        });
+            servlet.init(servletConfig);
+        }
+    }
+
+    /**
+     * 初始化Filter
+     *
+     * @param deploymentInfo 部署信息
+     */
+    private void initFilter(DeploymentInfo deploymentInfo) throws Exception {
+        for (FilterInfo filterInfo : deploymentInfo.getFilters().values()) {
+            FilterConfig filterConfig = new FilterConfigImpl(filterInfo, servletContext);
+            Filter filter;
+            if (filterInfo.isDynamic()) {
+                filter = filterInfo.getFilter();
+            } else {
+                filter = (Filter) Thread.currentThread().getContextClassLoader().loadClass(filterInfo.getFilterClass()).newInstance();
+                filterInfo.setFilter(filter);
+            }
+            filter.init(filterConfig);
+        }
     }
 
     public void stop() {
@@ -158,5 +187,21 @@ public class ContainerRuntime {
 
     public void setSessionProvider(SessionProvider sessionProvider) {
         this.sessionProvider = sessionProvider;
+    }
+
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public ServletContextImpl getServletContext() {
+        return servletContext;
+    }
+
+    public DeploymentInfo getDeploymentInfo() {
+        return deploymentInfo;
+    }
+
+    public boolean isStarted() {
+        return started;
     }
 }

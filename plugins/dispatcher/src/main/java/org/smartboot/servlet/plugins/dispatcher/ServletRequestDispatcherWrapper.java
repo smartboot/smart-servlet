@@ -88,7 +88,7 @@ class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implemen
     }
 
     @Override
-    public void setRequestURI(String requestURI) {
+    public void setRequestUri(String requestURI) {
         this.requestUri = requestURI;
     }
 

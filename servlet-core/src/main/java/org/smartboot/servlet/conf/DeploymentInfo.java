@@ -9,8 +9,6 @@
 
 package org.smartboot.servlet.conf;
 
-import org.smartboot.http.utils.StringUtils;
-
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextListener;
@@ -39,7 +37,6 @@ public class DeploymentInfo {
     private final List<ServletContainerInitializer> servletContainerInitializers = new ArrayList<>();
     private List<String> welcomeFiles = Collections.emptyList();
     private ClassLoader classLoader;
-    private String contextPath;
     private String displayName;
     private URL contextUrl;
     private Servlet defaultServlet;
@@ -120,18 +117,6 @@ public class DeploymentInfo {
 
     public List<FilterMappingInfo> getFilterMappings() {
         return filterMappings;
-    }
-
-    public String getContextPath() {
-        return contextPath;
-    }
-
-    public void setContextPath(final String contextPath) {
-        if (StringUtils.isBlank(contextPath)) {
-            this.contextPath = "/";
-        } else {
-            this.contextPath = contextPath;
-        }
     }
 
     public Map<String, String> getInitParameters() {

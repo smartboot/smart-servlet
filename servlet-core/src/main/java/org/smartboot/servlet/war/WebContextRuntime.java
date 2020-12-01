@@ -27,17 +27,12 @@ import java.util.Arrays;
 public class WebContextRuntime {
     private final String location;
     private final String contextPath;
-    private volatile boolean started = false;
     private ContainerRuntime servletRuntime;
 
     public WebContextRuntime(String location, String contextPath) throws Exception {
         this.location = location;
         this.contextPath = contextPath;
         start();
-    }
-
-    public WebContextRuntime(String location) throws Exception {
-        this(location, null);
     }
 
     public ContainerRuntime getServletRuntime() {
@@ -55,7 +50,7 @@ public class WebContextRuntime {
             WebAppInfo webAppInfo = webXmlParse.load(webXmlInputStream);
 
             //new runtime object
-            this.servletRuntime = new ContainerRuntime();
+            this.servletRuntime = new ContainerRuntime(StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
             DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
             //set session timeout
             deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
@@ -72,16 +67,11 @@ public class WebContextRuntime {
             webAppInfo.getContextParams().forEach(deploymentInfo::addInitParameter);
 
             //register ServletContextListener into deploymentInfo
-            webAppInfo.getListeners().forEach(value -> deploymentInfo.addEventListener(value));
+            webAppInfo.getListeners().forEach(deploymentInfo::addEventListener);
 
             //register filterMapping into deploymentInfo
-            webAppInfo.getFilterMappings().forEach(filterMappingInfo -> deploymentInfo.addFilterMapping(filterMappingInfo));
+            webAppInfo.getFilterMappings().forEach(deploymentInfo::addFilterMapping);
 
-            if (StringUtils.isBlank(contextPath)) {
-                deploymentInfo.setContextPath("/" + contextFile.getName());
-            } else {
-                deploymentInfo.setContextPath(contextPath);
-            }
 
             System.out.println(contextFile.toURI().toURL());
             deploymentInfo.setContextUrl(contextFile.toURI().toURL());

@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  * @version V1.0 , 2020/11/22
  */
 public interface SmartHttpServletRequest extends HttpServletRequest {
-    void setRequestURI(String requestURI);
+    void setRequestUri(String requestUri);
 
     void setServletPath(String servletPath);
 

@@ -198,7 +198,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     }
 
     @Override
-    public void setRequestURI(String requestURI) {
+    public void setRequestUri(String requestURI) {
         this.requestURI = requestURI;
     }
 
