@@ -27,7 +27,6 @@ public class SmartServletServer implements WebServer {
 
 
     public SmartServletServer(ContainerRuntime runtime) {
-        System.out.println("aaaaaaaaa2222");
         httpHandle = new ServletHttpHandle();
         try {
             httpHandle.addRuntime(runtime);
