@@ -38,7 +38,7 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
 
 ### 准备工作
 
-smart-servlet 还未正式发布，如需体验需要从本仓库下载源码并导入 IDE 完成工程编译。请按一下顺序执行代码编译：
+smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导入 IDE 完成工程编译，编译执行顺序如下：
 
 1. 路径：smart-servlet/pom.xml，执行`mvn install`。当控制台出现以下信息时，说明编译成功。
 
