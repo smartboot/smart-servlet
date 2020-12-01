@@ -18,7 +18,6 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 
 import java.io.File;
-import java.net.MalformedURLException;
 
 /**
  * @author 三刀
@@ -34,14 +33,14 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
         System.out.println(docBase.getAbsoluteFile());
         SmartContainerInitializer initializer = new SmartContainerInitializer(initializers);
         ContainerRuntime servletRuntime = new ContainerRuntime(getContextPath());
-        DeploymentInfo deployment = servletRuntime.getServletContext().getDeploymentInfo();
+        DeploymentInfo deployment = servletRuntime.getDeploymentInfo();
         deployment.setClassLoader(getServletClassLoader());
         deployment.setDisplayName(getDisplayName());
-        try {
-            deployment.setContextUrl(docBase.toURI().toURL());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            deployment.setContextUrl(docBase.toURI().toURL());
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        }
 //        if (isRegisterDefaultServlet()) {
 //            ServletInfo servletInfo = new ServletInfo();
 //            servletInfo.setServletName("default");

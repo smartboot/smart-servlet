@@ -27,9 +27,11 @@ public class SmartServletServer implements WebServer {
 
 
     public SmartServletServer(ContainerRuntime runtime) {
+        System.out.println("aaaaaaaaa2222");
         httpHandle = new ServletHttpHandle();
         try {
             httpHandle.addRuntime(runtime);
+            httpHandle.start();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -42,10 +44,10 @@ public class SmartServletServer implements WebServer {
                 return;
             }
             try {
-                httpHandle.start();
                 if (this.bootstrap == null) {
                     this.bootstrap = new HttpBootstrap();
                     bootstrap.pipeline().next(httpHandle);
+                    bootstrap.setBannerEnabled(false);
                     bootstrap.setReadBufferSize(1024 * 1024).setPort(8080).start();
                     System.out.println("启动成功");
                 }
@@ -58,11 +60,17 @@ public class SmartServletServer implements WebServer {
 
     @Override
     public void stop() throws WebServerException {
-
+        synchronized (this.monitor) {
+            if (!this.started) {
+                return;
+            }
+            this.started = false;
+            this.httpHandle.stop();
+        }
     }
 
     @Override
     public int getPort() {
-        return 0;
+        return 8080;
     }
 }
