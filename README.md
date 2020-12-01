@@ -85,7 +85,7 @@ smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导
 
 1. 完成前面的工程编译后，运行archives模块中的`org.smartboot.servlet.starter.Bootstrap`启动服务器。
 
-2. 若启动过程无任何异常，打开浏览器访问 [http://127.0.0.1:8080](http:127.0.0.1:8080)。
+2. 若启动过程无任何异常，打开浏览器访问 [http://127.0.0.1:8080/examples](http:127.0.0.1:8080/examples)。
 
    
 
