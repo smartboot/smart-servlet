@@ -81,11 +81,11 @@ smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导
 
 ### 2.1 示例演示
 
-> 特别说明：smart-servlet 提供的演示文件来自Tomcat的示例，存放于`smart-servlet/archives/webapps`目录下。
+> 特别说明：smart-servlet 提供的演示文件来自 Tomcat 的示例，存放于`smart-servlet/archives/webapps`目录下。
 
 1. 完成前面的工程编译后，运行archives模块中的`org.smartboot.servlet.starter.Bootstrap`启动服务器。
 
-2. 若启动过程无任何异常，打开浏览器访问[http://127.0.0.1:8080](http:127.0.0.1:8080)。
+2. 若启动过程无任何异常，打开浏览器访问 [http://127.0.0.1:8080](http:127.0.0.1:8080)。
 
    
 
@@ -95,7 +95,7 @@ smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导
 
 - maven plugin
 
-  适用于传统的 Servlet 或者 Spring MVC 工程，且必须是maven工程。需要在 web 模块所在的pom.xml中加入以下配置，若存在端口冲突自行调整。完成配置后通过：`mvn smart-servlet:run` 启动服务。
+  适用于传统的 Servlet 或者 Spring MVC 工程，且必须是 maven 工程。需要在 web 模块所在的 pom.xml 中加入以下配置，若存在端口冲突自行调整。完成配置后通过：`mvn smart-servlet:run` 启动服务。
   ```xml
   <!-- pom.xml -->
   <project>
@@ -128,7 +128,7 @@ smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导
 
 - springboot starter
 
-  对于Springboot提供的集成方式，替换原 spring-boot-starter-web 默认绑定的 Servlet 容器。
+  对于 Springboot 提供的集成方式，替换原 spring-boot-starter-web 默认绑定的 Servlet 容器。
 
   ```xml
    <!-- pom.xml -->
