@@ -18,8 +18,10 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
@@ -46,7 +48,7 @@ public class ServletServiceHandler extends Handler {
 
             ServletContextImpl servletContext = handlerContext.getServletContext();
             //requestURI为本地资源文件
-            if (servletContext.getResource(request.getRequestURI().substring(request.getContextPath().length())) != null) {
+            if (isFile(servletContext.getResource(request.getRequestURI().substring(request.getContextPath().length())))) {
                 RunLogger.getLogger().log(Level.FINE, "加载资源文件...");
                 servletContext.getDeploymentInfo().getDefaultServlet().service(request, response);
                 return;
@@ -66,12 +68,12 @@ public class ServletServiceHandler extends Handler {
                 RunLogger.getLogger().log(Level.FINE, "执行 welcome 服务端跳转...");
                 handlerContext.getRequest().getRequestDispatcher(welcome).forward(handlerContext.getRequest(), handlerContext.getResponse());
             }
-        } catch (ServletException | IOException e) {
+        } catch (ServletException | URISyntaxException | IOException e) {
             throw new WrappedRuntimeException(e);
         }
     }
 
-    private String forwardWelcome(HandlerContext handlerContext) throws MalformedURLException {
+    private String forwardWelcome(HandlerContext handlerContext) throws MalformedURLException, URISyntaxException {
         ServletContextImpl servletContext = handlerContext.getServletContext();
         List<String> welcomeFiles = servletContext.getDeploymentInfo().getWelcomeFiles();
         String requestUri = handlerContext.getRequest().getRequestURI();
@@ -86,7 +88,7 @@ public class ServletServiceHandler extends Handler {
             if (requestUri.indexOf(".") > 0) {
                 return null;
             }
-            if (servletContext.getResource(requestUri.substring(handlerContext.getRequest().getContextPath().length())) != null) {
+            if (isFile(servletContext.getResource(requestUri.substring(handlerContext.getRequest().getContextPath().length())))) {
                 return null;
             }
             return requestUri + "/";
@@ -101,5 +103,9 @@ public class ServletServiceHandler extends Handler {
         }
 
         return null;
+    }
+
+    private boolean isFile(URL url) throws URISyntaxException {
+        return url != null && new File(url.toURI()).isFile();
     }
 }
