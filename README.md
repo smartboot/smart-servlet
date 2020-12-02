@@ -110,12 +110,12 @@ smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导
          </configuration>
          <dependencies>
            <dependency>
-             <groupId>org.smartboot.servlet.plugins</groupId>
+             <groupId>org.smartboot.servlet</groupId>
              <artifactId>plugin-session</artifactId>
              <version>1.0.0-SNAPSHOT</version>
            </dependency>
            <dependency>
-             <groupId>org.smartboot.servlet.plugins</groupId>
+             <groupId>org.smartboot.servlet</groupId>
              <artifactId>plugin-dispatcher</artifactId>
              <version>1.0.0-SNAPSHOT</version>
            </dependency>

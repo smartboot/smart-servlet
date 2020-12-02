@@ -18,7 +18,9 @@ import org.smartboot.servlet.conf.WebAppInfo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author 三刀
@@ -79,17 +81,26 @@ public class WebContextRuntime {
             //默认页面
             //《Servlet3.1规范中文版》10.10 欢迎文件
             // 欢迎文件列表是一个没有尾随或前导/的局部 URL 有序列表
-            for (String welcomeFile : webAppInfo.getWelcomeFileList()) {
-                if (welcomeFile.startsWith("/")) {
-                    throw new IllegalArgumentException("invalid welcome file " + welcomeFile + " is startWith /");
-                } else if (welcomeFile.endsWith("/")) {
-                    throw new IllegalArgumentException("invalid welcome file " + welcomeFile + " is endWith /");
-                }
-            }
+//            for (String welcomeFile : webAppInfo.getWelcomeFileList()) {
+//                if (welcomeFile.startsWith("/")) {
+//                    throw new IllegalArgumentException("invalid welcome file " + welcomeFile + " is startWith /");
+//                } else if (welcomeFile.endsWith("/")) {
+//                    throw new IllegalArgumentException("invalid welcome file " + welcomeFile + " is endWith /");
+//                }
+//            }
             if (webAppInfo.getWelcomeFileList() == null || webAppInfo.getWelcomeFileList().size() == 0) {
                 deploymentInfo.setWelcomeFiles(Arrays.asList("index.html", "index.jsp"));
             } else {
-                deploymentInfo.setWelcomeFiles(webAppInfo.getWelcomeFileList());
+                //实际使用中存在"/"开头的情况，将其矫正过来
+                List<String> welcomeFiles = new ArrayList<>(webAppInfo.getWelcomeFileList().size());
+                webAppInfo.getWelcomeFileList().forEach(file -> {
+                    if (file.startsWith("/")) {
+                        welcomeFiles.add(file.substring(1));
+                    } else {
+                        welcomeFiles.add(file);
+                    }
+                });
+                deploymentInfo.setWelcomeFiles(welcomeFiles);
             }
 
 
