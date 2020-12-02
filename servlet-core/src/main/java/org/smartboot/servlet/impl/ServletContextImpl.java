@@ -121,12 +121,11 @@ public class ServletContextImpl implements ServletContext {
         } else if (path.charAt(0) != '/') {
             path = "/" + path;
         }
-
         URL pathUrl = new URL(deploymentInfo.getContextUrl(), path.substring(1));
         //todo 判断文件是否存在
         URL url = null;
         try {
-            if (new File(pathUrl.toURI()).isFile()) {
+            if (new File(pathUrl.toURI()).exists()) {
                 url = pathUrl;
             }
         } catch (URISyntaxException e) {

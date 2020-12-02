@@ -23,7 +23,7 @@ import java.io.IOException;
  * @version V1.0 , 2020/11/4
  */
 public class Starter extends HttpHandle {
-    private ServletHttpHandle httpHandle;
+    private final ServletHttpHandle httpHandle;
 
     public Starter(String path, int port) throws Exception {
         System.out.println("hahaha:" + Starter.class.getClassLoader());
