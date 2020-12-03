@@ -11,8 +11,6 @@ package org.smartboot.servlet.impl;
 
 import org.smartboot.http.HttpRequest;
 import org.smartboot.http.logging.RunLogger;
-import org.smartboot.http.server.Cookies;
-import org.smartboot.http.utils.HttpHeaderConstant;
 import org.smartboot.http.utils.NumberUtils;
 import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.SmartHttpServletRequest;
@@ -41,7 +39,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
@@ -80,34 +77,19 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public Cookie[] getCookies() {
+
         if (cookies != null) {
             return cookies;
         }
-        Map<String, org.smartboot.http.Cookie> cookieMap = Cookies.parseRequestCookies(false,
-                request.getHeader(HttpHeaderConstant.Names.COOKIE));
-
-        if (cookieMap.isEmpty()) {
-            return null;
+        org.smartboot.http.server.Cookie[] cookie = request.getCookies();
+        if (cookie == null) {
+            cookies = new Cookie[0];
+        } else {
+            cookies = new Cookie[cookie.length];
+            for (int i = 0; i < cookie.length; i++) {
+                cookies[i] = new Cookie(cookie[i].getName(), cookie[i].getValue());
+            }
         }
-        List<Cookie> cookieList = new ArrayList<>(cookieMap.size());
-        cookieMap.values().forEach(cookie -> {
-            Cookie cookie1 = new Cookie(cookie.getName(), cookie.getValue());
-            cookieList.add(cookie1);
-            if (cookie.getDomain() != null) {
-                cookie1.setDomain(cookie.getDomain());
-            }
-            cookie1.setHttpOnly(cookie.isHttpOnly());
-            if (cookie.getMaxAge() != null) {
-                cookie1.setMaxAge(cookie.getMaxAge());
-            }
-            if (cookie.getPath() != null) {
-                cookie1.setPath(cookie.getPath());
-            }
-            cookie1.setSecure(cookie.isSecure());
-            cookie1.setVersion(cookie.getVersion());
-        });
-        cookies = new Cookie[cookieList.size()];
-        cookieList.toArray(cookies);
         return cookies;
     }
 

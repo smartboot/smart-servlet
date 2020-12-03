@@ -9,19 +9,20 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
 
 ![](smart-servlet.png)
 
-为了更好融入现有的 Java 技术生态，尤其是 Spring 生态，我们在应用层面做了很多便利的设计：
+**产品特色**
+- 零学习成本，素未谋面，却已相知。保留用户原有的 Tomcat、Undertow 使用习惯。
+- 朴实无华，用最初级的设计手法打造专业级服务器。
+- 实现 Servlet 核心规范：request、response、session、cookie、dispatcher、servletContext。
+- 插件化设计，自由 DIY 服务器。
+- 延续一贯的极简、易用、高性能设计风格。
+- 开箱即用，运行程序包、maven本地开发/调试插件、springboot starter 一应俱全，满足你的开发、部署需求。
 
-- binary distributions
-
-  二进制软件包，可将 War 包部署到指定目录下以启动服务，类似：apache-tomcat-x.xx.xx.tar.gz。体验包[下载地址](https://gitee.com/smartboot/smart-servlet/attach_files)
-
-- maven plugin
-
-  通过maven插件的形式集成 smart-servlet，用于本地项目开发调试。类似于：tomcat7-maven-plugin。
-
-- springboot starter
-
-  类似于： spring-boot-starter-tomcat、spring-boot-starter-undertow、spring-boot-starter-jetty。
+**有所不为**
+有些规范我们默认不会提供实现方案，毕竟时代不一样了。
+很多东西在当下已经过时或有了更好的替代方案，我们认为是时候跟过去告别了。
+- JNDI
+- Security Role
+- JSP
 
 ### 工程模块
 

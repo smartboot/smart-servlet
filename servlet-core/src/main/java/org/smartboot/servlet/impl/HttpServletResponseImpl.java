@@ -22,9 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -35,7 +33,6 @@ import java.util.logging.Level;
 public class HttpServletResponseImpl implements HttpServletResponse {
     private final HttpResponse response;
     private final HttpServletRequest request;
-    private List<Cookie> cookies;
     private String contentType;
     private PrintWriter writer;
     private ServletOutputStreamImpl servletOutputStream;
@@ -47,10 +44,15 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void addCookie(Cookie cookie) {
-        if (cookies == null) {
-            cookies = new ArrayList<>();
-        }
-        cookies.add(cookie);
+        org.smartboot.http.server.Cookie httpCookie = new org.smartboot.http.server.Cookie(cookie.getName(), cookie.getValue());
+        httpCookie.setComment(cookie.getComment());
+        httpCookie.setDomain(cookie.getDomain());
+        httpCookie.setHttpOnly(cookie.isHttpOnly());
+        httpCookie.setPath(cookie.getPath());
+        httpCookie.setMaxAge(cookie.getMaxAge());
+        httpCookie.setSecure(cookie.getSecure());
+        httpCookie.setVersion(cookie.getVersion());
+        response.addCookie(httpCookie);
     }
 
     @Override
