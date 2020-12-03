@@ -60,6 +60,8 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         committed = true;
         if (count > 0) {
             outputStream.write(buffer, 0, count);
+            //禁用buffer
+            buffer = null;
             count = 0;
         }
         outputStream.write(b, off, len);
