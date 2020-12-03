@@ -19,6 +19,7 @@ import java.io.OutputStream;
  * @version V1.0 , 2020/10/19
  */
 public class ServletOutputStreamImpl extends ServletOutputStream {
+    private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[1024]);
     private final OutputStream outputStream;
     private boolean committed = false;
     private byte[] buffer;
@@ -26,6 +27,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     public ServletOutputStreamImpl(OutputStream outputStream) {
         this.outputStream = outputStream;
+        this.buffer = FIRST_BUFFER.get();
     }
 
     @Override

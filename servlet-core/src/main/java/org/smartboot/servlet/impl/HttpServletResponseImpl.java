@@ -213,8 +213,6 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     public PrintWriter getWriter() throws IOException {
         if (writer == null) {
             writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
-            //todo
-            servletOutputStream.updateBufferSize(1024);
         }
         return writer;
     }
