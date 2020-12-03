@@ -10,6 +10,7 @@
 package org.smartboot.servlet.provider;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -18,5 +19,5 @@ import javax.servlet.http.HttpSession;
  */
 public interface SessionProvider {
 
-    HttpSession getSession(HttpServletRequest request, boolean create);
+    HttpSession getSession(HttpServletRequest request, HttpServletResponse response, boolean create);
 }

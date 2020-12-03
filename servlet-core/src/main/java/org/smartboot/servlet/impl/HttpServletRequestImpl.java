@@ -60,6 +60,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private String servletPath;
     private String pathInfo;
     private String requestURI;
+    private HttpServletResponse httpServletResponse;
 
     public HttpServletRequestImpl(HttpRequest request, ContainerRuntime runtime, DispatcherType dispatcherType) {
         this.request = request;
@@ -68,6 +69,10 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         this.sessionProvider = runtime.getSessionProvider();
         this.runtime = runtime;
         this.requestURI = request.getRequestURI();
+    }
+
+    public void setHttpServletResponse(HttpServletResponse httpServletResponse) {
+        this.httpServletResponse = httpServletResponse;
     }
 
     @Override
@@ -204,7 +209,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (httpSession != null) {
             return httpSession;
         }
-        httpSession = sessionProvider.getSession(this, create);
+        httpSession = sessionProvider.getSession(this, httpServletResponse, create);
         return httpSession;
     }
 

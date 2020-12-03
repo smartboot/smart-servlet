@@ -13,6 +13,7 @@ import org.smartboot.servlet.provider.SessionProvider;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 import java.util.ArrayList;
@@ -68,11 +69,14 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
 
 
     @Override
-    public HttpSession getSession(HttpServletRequest request, boolean create) {
+    public HttpSession getSession(HttpServletRequest request, HttpServletResponse response, boolean create) {
         HttpSessionImpl httpSession = getSession(request);
         if (create && httpSession == null) {
             httpSession = new HttpSessionImpl(this, String.valueOf(System.currentTimeMillis()), request.getServletContext());
             httpSession.setMaxInactiveInterval(maxInactiveInterval);
+            Cookie cookie = new Cookie(DEFAULT_SESSION_COOKIE_NAME, httpSession.getId());
+            cookie.setPath(httpSession.getServletContext().getContextPath());
+            response.addCookie(cookie);
             sessionMap.put(httpSession.getId(), httpSession);
         }
         return httpSession;

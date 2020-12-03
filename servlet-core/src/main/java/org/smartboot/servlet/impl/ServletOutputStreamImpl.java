@@ -91,7 +91,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         if (committed || count > 0) {
             return;
         }
-        buffer = bufferSize > 0 ? null : new byte[bufferSize];
+        buffer = bufferSize > 0 ? new byte[bufferSize] : null;
     }
 
     public int getCount() {

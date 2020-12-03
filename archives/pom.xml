@@ -25,6 +25,13 @@
             <systemPath>${project.basedir}/plugins/plugin-dispatcher-1.0.0-SNAPSHOT.jar</systemPath>
             <scope>system</scope>
         </dependency>
+        <dependency>
+            <groupId>org.smartboot.servlet</groupId>
+            <artifactId>plugin-session</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <systemPath>${project.basedir}/plugins/plugin-session-1.0.0-SNAPSHOT.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

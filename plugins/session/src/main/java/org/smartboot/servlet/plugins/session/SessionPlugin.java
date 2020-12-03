@@ -36,7 +36,7 @@ public class SessionPlugin extends Plugin {
             return thread;
         });
         executorService.scheduleWithFixedDelay(() -> providerList.forEach(sessionProvider -> {
-                    System.out.println("clear expire session...");
+//                    System.out.println("clear expire session...");
                     sessionProvider.clearExpireSession();
                 })
                 , 1, 1, TimeUnit.SECONDS);
