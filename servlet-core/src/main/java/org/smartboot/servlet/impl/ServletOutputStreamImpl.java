@@ -19,15 +19,18 @@ import java.io.OutputStream;
  * @version V1.0 , 2020/10/19
  */
 public class ServletOutputStreamImpl extends ServletOutputStream {
-    private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[1024]);
+    //    private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[1024]);
     private final OutputStream outputStream;
     private boolean committed = false;
+    /**
+     * tomcat会默认为每个response分配8kb缓存,出于性能考虑smart-servlet默认不启用
+     */
     private byte[] buffer;
     private int count;
 
     public ServletOutputStreamImpl(OutputStream outputStream) {
         this.outputStream = outputStream;
-        this.buffer = FIRST_BUFFER.get();
+//        this.buffer = FIRST_BUFFER.get();
     }
 
     @Override
@@ -62,7 +65,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         committed = true;
         if (count > 0) {
             outputStream.write(buffer, 0, count);
-            //禁用buffer
+            //默认buffer只能用一次,毕竟使用buffer存在一次内存拷贝
             buffer = null;
             count = 0;
         }

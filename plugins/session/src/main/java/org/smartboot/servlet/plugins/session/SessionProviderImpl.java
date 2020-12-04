@@ -72,6 +72,13 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
     public HttpSession getSession(HttpServletRequest request, HttpServletResponse response, boolean create) {
         HttpSessionImpl httpSession = getSession(request);
         if (create && httpSession == null) {
+            /**
+             * javax.servlet.http.HttpServletRequest#getSession(boolean)接口规范：
+             * If the container is using cookies to maintain session integrity and is asked to create a new session when the response is committed, an IllegalStateException is thrown.
+             */
+            if (response.isCommitted()) {
+                throw new IllegalStateException("response has already committed!");
+            }
             httpSession = new HttpSessionImpl(this, String.valueOf(System.currentTimeMillis()), request.getServletContext());
             httpSession.setMaxInactiveInterval(maxInactiveInterval);
             Cookie cookie = new Cookie(DEFAULT_SESSION_COOKIE_NAME, httpSession.getId());

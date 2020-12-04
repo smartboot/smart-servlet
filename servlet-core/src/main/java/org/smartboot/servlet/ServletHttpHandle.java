@@ -46,7 +46,7 @@ public class ServletHttpHandle extends HttpHandle {
             "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" +
             "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" +
             "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
-    private static final String VERSION = "1.0.0-SNAPSHOT";
+    private static final String VERSION = "0.1.0-SNAPSHOT";
     private final List<ContainerRuntime> runtimes = new ArrayList<>();
     /**
      * 请求映射的Servlet运行环境
