@@ -19,7 +19,8 @@ import java.io.OutputStream;
  * @version V1.0 , 2020/10/19
  */
 public class ServletOutputStreamImpl extends ServletOutputStream {
-    private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[1024]);
+    private static final int DEFAULT_BUFFER_SIZE = 512;
+    private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[DEFAULT_BUFFER_SIZE]);
     private final OutputStream outputStream;
     private boolean committed = false;
     /**
@@ -30,7 +31,6 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     public ServletOutputStreamImpl(OutputStream outputStream) {
         this.outputStream = outputStream;
-        this.buffer = FIRST_BUFFER.get();
     }
 
     @Override
@@ -56,6 +56,15 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
             return;
         }
         //继续缓存数据
+        if (buffer == null) {
+            if (len >= DEFAULT_BUFFER_SIZE) {
+                committed = true;
+                outputStream.write(b, off, len);
+                return;
+            } else {
+                buffer = FIRST_BUFFER.get();
+            }
+        }
         if (len < buffer.length - count - 1) {
             System.arraycopy(b, off, buffer, count, len);
             count += len;
@@ -78,11 +87,11 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     @Override
     public void flush() throws IOException {
+        committed = true;
         if (count > 0) {
             outputStream.write(buffer, 0, count);
             buffer = null;
         }
-        committed = true;
         outputStream.flush();
     }
 
