@@ -19,7 +19,7 @@ public class Bootstrap {
         if (webapps == null) {
             webapps = new File("archives/webapps").getAbsolutePath();
         }
-        ServletHttpHandle httpHandle = new ServletHttpHandle();
+        final ServletHttpHandle httpHandle = new ServletHttpHandle();
         File file = new File(webapps);
         if (file.isDirectory()) {
             for (File path : file.listFiles()) {
@@ -31,10 +31,17 @@ public class Bootstrap {
             }
         }
         httpHandle.start();
-        HttpBootstrap bootstrap = new HttpBootstrap();
+        final HttpBootstrap bootstrap = new HttpBootstrap();
         bootstrap.pipeline().next(httpHandle);
         bootstrap.setBannerEnabled(false);
         bootstrap.setReadBufferSize(1024 * 1024).setPort(8080).start();
         System.out.println("启动成功,耗时：" + (System.currentTimeMillis() - start) + "ms");
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                httpHandle.stop();
+                bootstrap.shutdown();
+            }
+        }));
     }
 }
