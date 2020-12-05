@@ -57,7 +57,7 @@ public class RunMojo extends AbstractMojo {
             List<URL> urlList = new ArrayList<>();
             pluginArtifacts.forEach(artifact -> {
                 try {
-                    System.out.println("plugin: " + artifact.getFile().getAbsolutePath());
+//                    System.out.println("plugin: " + artifact.getFile().getAbsolutePath());
                     urlList.add(artifact.getFile().toURI().toURL());
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -82,13 +82,13 @@ public class RunMojo extends AbstractMojo {
             throw new MojoExecutionException(e.getMessage());
         }
         getLog().info("smart-servlet start success");
-        Object lock = new Object();
-        synchronized (lock) {
-            try {
-                lock.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        Object lock = new Object();
+//        synchronized (lock) {
+//            try {
+//                lock.wait();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 }

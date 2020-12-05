@@ -26,16 +26,23 @@ public class Starter extends HttpHandle {
     private final ServletHttpHandle httpHandle;
 
     public Starter(String path, int port) throws Exception {
-        System.out.println("hahaha:" + Starter.class.getClassLoader());
         WebContextRuntime webContextRuntime = new WebContextRuntime(path, "/");
         httpHandle = new ServletHttpHandle();
         httpHandle.addRuntime(webContextRuntime.getServletRuntime());
         httpHandle.start();
         HttpBootstrap bootstrap = new HttpBootstrap();
+        bootstrap.setBannerEnabled(false);
         bootstrap
                 .setReadBufferSize(1024 * 1024)
                 .pipeline().next(httpHandle);
         bootstrap.setPort(port).start();
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                httpHandle.stop();
+                bootstrap.shutdown();
+            }
+        }));
     }
 
     @Override
