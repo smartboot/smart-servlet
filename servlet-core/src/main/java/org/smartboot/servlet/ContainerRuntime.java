@@ -17,6 +17,7 @@ import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.FilterConfigImpl;
 import org.smartboot.servlet.impl.ServletConfigImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
+import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.provider.DispatcherProvider;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.sandbox.SandBox;
@@ -31,6 +32,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequestListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventListener;
 import java.util.List;
@@ -65,6 +67,11 @@ public class ContainerRuntime {
      */
     private SessionProvider sessionProvider = SandBox.INSTANCE.getSessionProvider();
 
+    /**
+     * 关联至本运行环境的插件集合
+     */
+    private List<Plugin> plugins = Collections.emptyList();
+
     private boolean started = false;
 
     public ContainerRuntime(String contextPath) {
@@ -75,11 +82,22 @@ public class ContainerRuntime {
         }
     }
 
+    public List<Plugin> getPlugins() {
+        return plugins;
+    }
+
+    public void setPlugins(List<Plugin> plugins) {
+        this.plugins = plugins;
+    }
 
     /**
      * 启动容器
      */
     public void start() throws Exception {
+        plugins.forEach(plugin -> {
+            plugin.willStartContainer(this);
+        });
+
         DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
         //设置ServletContext参数
         Map<String, String> params = deploymentInfo.getInitParameters();
@@ -111,6 +129,10 @@ public class ContainerRuntime {
         //启动Filter
         initFilter(deploymentInfo);
         started = true;
+
+        plugins.forEach(plugin -> {
+            plugin.onContainerStartSuccess(this);
+        });
     }
 
     /**
@@ -166,10 +188,17 @@ public class ContainerRuntime {
     }
 
     public void stop() {
+        plugins.forEach(plugin -> {
+            plugin.willStopContainer(this);
+        });
         servletContext.getDeploymentInfo().getServlets().values().forEach(servletInfo -> servletInfo.getServlet().destroy());
         servletContext.getDeploymentInfo().getServletContextListeners().forEach(servletContextListener -> {
             ServletContextEvent event = new ServletContextEvent(servletContext);
             servletContextListener.contextDestroyed(event);
+        });
+
+        plugins.forEach(plugin -> {
+            plugin.onContainerStopped(this);
         });
     }
 

@@ -18,18 +18,9 @@ import org.smartboot.servlet.plugins.Plugin;
  */
 public class DispatcherPlugin extends Plugin {
 
-    @Override
-    public void install() {
-        checkSate();
-    }
 
     @Override
-    public void startContainer(ContainerRuntime containerRuntime) {
+    public void onContainerStartSuccess(ContainerRuntime containerRuntime) {
         containerRuntime.setDispatcherProvider(new DispatcherProviderImpl());
-    }
-
-    @Override
-    public void uninstall() {
-
     }
 }

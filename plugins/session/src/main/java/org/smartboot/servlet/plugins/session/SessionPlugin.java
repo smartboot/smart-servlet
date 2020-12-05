@@ -27,32 +27,23 @@ public class SessionPlugin extends Plugin {
     private final List<SessionProviderImpl> providerList = new ArrayList<>();
 
     @Override
-    public void install() {
-        checkSate();
+    public void initPlugin() {
         //Session定期清理
         ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1, r -> {
             Thread thread = new Thread(r, "SessionMonitor");
             thread.setDaemon(true);
             return thread;
         });
-        executorService.scheduleWithFixedDelay(() -> providerList.forEach(sessionProvider -> {
-//                    System.out.println("clear expire session...");
-                    sessionProvider.clearExpireSession();
-                })
+        executorService.scheduleWithFixedDelay(() -> providerList.forEach(SessionProviderImpl::clearExpireSession)
                 , 1, 1, TimeUnit.SECONDS);
-        installed = true;
     }
 
     @Override
-    public void startContainer(ContainerRuntime containerRuntime) {
+    public void willStartContainer(ContainerRuntime containerRuntime) {
         SessionProviderImpl sessionProvider = new SessionProviderImpl();
         sessionProvider.setMaxInactiveInterval(containerRuntime.getDeploymentInfo().getSessionTimeout());
         containerRuntime.setSessionProvider(sessionProvider);
         providerList.add(sessionProvider);
     }
 
-    @Override
-    public void uninstall() {
-
-    }
 }

@@ -11,6 +11,7 @@ package org.smartboot.servlet;
 
 import org.smartboot.http.HttpRequest;
 import org.smartboot.http.HttpResponse;
+import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.server.handle.HttpHandle;
 import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.conf.DeploymentInfo;
@@ -30,6 +31,7 @@ import javax.servlet.DispatcherType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
 
 /**
  * @author 三刀
@@ -67,12 +69,12 @@ public class ServletHttpHandle extends HttpHandle {
                 .next(new ServletServiceHandler());
         //扫描插件
         for (Plugin plugin : ServiceLoader.load(Plugin.class)) {
-            System.out.println("扫描插件 -- " + plugin.pluginName());
+            RunLogger.getLogger().log(Level.FINE, "load plugin: " + plugin.pluginName());
             plugins.add(plugin);
         }
         //安装插件
         plugins.forEach(plugin -> {
-            System.out.println("安装插件 -- " + plugin.pluginName());
+            RunLogger.getLogger().log(Level.FINE, "install plugin: " + plugin.pluginName());
             plugin.install();
         });
 
@@ -81,16 +83,14 @@ public class ServletHttpHandle extends HttpHandle {
         //启动运行环境
         runtimes.forEach(runtime -> {
             runtime.getServletContext().setPipeline(pipeline);
+            runtime.setPlugins(plugins);
             ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(runtime.getServletContext().getClassLoader());
             try {
                 runtime.start();
-                plugins.forEach(plugin -> {
-                    System.out.println("启动插件 - " + plugin.pluginName());
-                    plugin.startContainer(runtime);
-                });
             } catch (Exception e) {
                 e.printStackTrace();
+                runtime.getPlugins().forEach(plugin -> plugin.whenContainerStartError(runtime, e));
             } finally {
                 Thread.currentThread().setContextClassLoader(originalClassLoader);
             }
@@ -152,6 +152,7 @@ public class ServletHttpHandle extends HttpHandle {
 
     public void stop() {
         runtimes.forEach(ContainerRuntime::stop);
+        //卸载插件
         plugins.forEach(Plugin::uninstall);
     }
 

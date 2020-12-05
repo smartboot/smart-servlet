@@ -74,8 +74,6 @@ public class WebContextRuntime {
             //register filterMapping into deploymentInfo
             webAppInfo.getFilterMappings().forEach(deploymentInfo::addFilterMapping);
 
-
-            System.out.println(contextFile.toURI().toURL());
             deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 
             //默认页面

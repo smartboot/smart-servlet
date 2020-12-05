@@ -1,10 +1,12 @@
 package org.smartboot.servlet.starter;
 
 import org.smartboot.http.HttpBootstrap;
+import org.smartboot.http.logging.RunLogger;
 import org.smartboot.servlet.ServletHttpHandle;
 import org.smartboot.servlet.war.WebContextRuntime;
 
 import java.io.File;
+import java.util.logging.Level;
 
 /**
  * @author 三刀
@@ -21,11 +23,11 @@ public class Bootstrap {
         File file = new File(webapps);
         if (file.isDirectory()) {
             for (File path : file.listFiles()) {
-                System.out.println("start load: " + path.getAbsolutePath());
+                RunLogger.getLogger().log(Level.FINE, "start load: " + path.getAbsolutePath());
 //                WebContextRuntime webContextRuntime = new WebContextRuntime(path.getAbsolutePath(), "examples".equals(path.getName()) ? "/" : "/" + path.getName());
                 WebContextRuntime webContextRuntime = new WebContextRuntime(path.getAbsolutePath(), "/" + path.getName());
                 httpHandle.addRuntime(webContextRuntime.getServletRuntime());
-                System.out.println("load " + path.getName() + " success!");
+                RunLogger.getLogger().log(Level.FINE, "load /" + path.getName() + " success!");
             }
         }
         httpHandle.start();

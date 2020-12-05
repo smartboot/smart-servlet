@@ -9,7 +9,10 @@
 
 package org.smartboot.servlet.plugins;
 
+import org.smartboot.http.logging.RunLogger;
 import org.smartboot.servlet.ContainerRuntime;
+
+import java.util.logging.Level;
 
 /**
  * @author 三刀
@@ -20,7 +23,7 @@ public abstract class Plugin {
     /**
      * 是否已安装
      */
-    protected boolean installed;
+    private boolean installed;
     /**
      * 插件名称
      */
@@ -39,15 +42,85 @@ public abstract class Plugin {
     }
 
 
-    public abstract void install();
+    /**
+     * 安装插件,需要在servlet服务启动前调用
+     */
+    public final void install() {
+        checkSate();
+        initPlugin();
+        installed = true;
+    }
 
-    public abstract void startContainer(ContainerRuntime containerRuntime);
+    /**
+     * 初始化插件
+     */
+    protected void initPlugin() {
+        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing when initPlugin!");
+    }
 
-    public abstract void uninstall();
+    /**
+     * servlet容器被启动成功之后被调用
+     *
+     * @param containerRuntime 当前启动成功的子容器
+     */
+    public void onContainerStartSuccess(ContainerRuntime containerRuntime) {
+        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start success!");
+    }
 
-    protected void checkSate() {
+
+    /**
+     * servlet子容器启动前被调用
+     *
+     * @param containerRuntime 当前即将被启动的子容器
+     */
+    public void willStartContainer(ContainerRuntime containerRuntime) {
+        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " before start!");
+    }
+
+    /**
+     * servlet子容器启动失败时被调用
+     *
+     * @param containerRuntime 当前启动失败的子容器
+     */
+    public void whenContainerStartError(ContainerRuntime containerRuntime, Throwable throwable) {
+        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start error!");
+    }
+
+    /**
+     * 即将消耗子容器
+     *
+     * @param containerRuntime 即将被消耗的子容器
+     */
+    public void willStopContainer(ContainerRuntime containerRuntime) {
+        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "]do nothing for container: " + containerRuntime.getContextPath() + " before stop!");
+    }
+
+    /**
+     * 子容器已销毁
+     *
+     * @param containerRuntime 当前被消耗的子容器
+     */
+    public void onContainerStopped(ContainerRuntime containerRuntime) {
+        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when stop!");
+    }
+
+    /**
+     * 卸载插件,在容器服务停止前调用
+     */
+    public final void uninstall() {
+        destroyPlugin();
+    }
+
+    /**
+     * 销毁插件
+     */
+    protected void destroyPlugin() {
+        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing when destroyPlugin!");
+    }
+
+    private void checkSate() {
         if (installed) {
-            throw new IllegalStateException("plugin [ " + pluginName + " ] has installed!");
+            throw new IllegalStateException("plugin [ " + pluginName() + " ] has installed!");
         }
     }
 }
