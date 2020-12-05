@@ -11,6 +11,7 @@ package org.smartboot.servlet.conf;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
 import java.net.URL;
@@ -35,6 +36,7 @@ public class DeploymentInfo {
     private final List<ServletContextListener> servletContextListeners = new ArrayList<>();
     private final List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
     private final List<ServletContainerInitializer> servletContainerInitializers = new ArrayList<>();
+    private final List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
     private List<String> welcomeFiles = Collections.emptyList();
     private ClassLoader classLoader;
     private String displayName;
@@ -101,6 +103,14 @@ public class DeploymentInfo {
 
     public void addServletRequestListener(ServletRequestListener requestListener) {
         servletRequestListeners.add(requestListener);
+    }
+
+    public void addServletContextAttributeListener(ServletContextAttributeListener attributeListener) {
+        servletContextAttributeListeners.add(attributeListener);
+    }
+
+    public List<ServletContextAttributeListener> getServletContextAttributeListeners() {
+        return servletContextAttributeListeners;
     }
 
     public List<ServletRequestListener> getServletRequestListeners() {

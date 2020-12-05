@@ -27,6 +27,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
@@ -118,6 +119,9 @@ public class ContainerRuntime {
             } else if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
                 deploymentInfo.addServletRequestListener((ServletRequestListener) listener);
                 RunLogger.getLogger().log(Level.FINE, "ServletRequestListener listener:" + listener);
+            } else if (ServletContextAttributeListener.class.isAssignableFrom(listener.getClass())) {
+                deploymentInfo.addServletContextAttributeListener((ServletContextAttributeListener) listener);
+                RunLogger.getLogger().log(Level.FINE, "ServletContextAttributeListener listener:" + listener);
             } else {
                 throw new RuntimeException(listener.toString());
             }

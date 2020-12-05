@@ -23,6 +23,8 @@ import javax.servlet.FilterRegistration;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextAttributeEvent;
+import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import javax.servlet.SessionCookieConfig;
@@ -36,6 +38,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -261,20 +264,33 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public void setAttribute(String name, Object object) {
         if (object == null) {
-            //todo 补充ServletContextAttributeListener#attributeRemoved
-            Object existing = attributes.remove(name);
-        } else {
-            Object existing = attributes.put(name, object);
-            //todo 补充ServletContextAttributeListener#attributeReplaced 或 attributeAdded
+            removeAttribute(name);
+            return;
         }
-//        throw new UnsupportedOperationException();
+
+        Object oldValue = attributes.put(name, object);
+
+        List<ServletContextAttributeListener> listeners = deploymentInfo.getServletContextAttributeListeners();
+        if (listeners.size() > 0) {
+            ServletContextAttributeEvent event = new ServletContextAttributeEvent(this, name, object);
+            deploymentInfo.getServletContextAttributeListeners().forEach(listener -> {
+                if (oldValue == null) {
+                    listener.attributeAdded(event);
+                } else {
+                    listener.attributeReplaced(event);
+                }
+            });
+        }
     }
 
     @Override
     public void removeAttribute(String name) {
-        Object exiting = attributes.remove(name);
-        //todo 补充ServletContextAttributeListener#attributeRemoved
-        throw new UnsupportedOperationException();
+        Object value = attributes.remove(name);
+        List<ServletContextAttributeListener> listeners = deploymentInfo.getServletContextAttributeListeners();
+        if (listeners.size() > 0) {
+            ServletContextAttributeEvent event = new ServletContextAttributeEvent(this, name, value);
+            listeners.forEach(listener -> listener.attributeRemoved(event));
+        }
     }
 
     @Override
