@@ -82,13 +82,13 @@ public class RunMojo extends AbstractMojo {
             throw new MojoExecutionException(e.getMessage());
         }
         getLog().info("smart-servlet start success");
-//        Object lock = new Object();
-//        synchronized (lock) {
-//            try {
-//                lock.wait();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        Object lock = new Object();
+        synchronized (lock) {
+            try {
+                lock.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
