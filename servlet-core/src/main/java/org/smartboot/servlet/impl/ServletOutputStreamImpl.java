@@ -19,18 +19,18 @@ import java.io.OutputStream;
  * @version V1.0 , 2020/10/19
  */
 public class ServletOutputStreamImpl extends ServletOutputStream {
-    //    private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[1024]);
+    private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[1024]);
     private final OutputStream outputStream;
     private boolean committed = false;
     /**
-     * tomcat会默认为每个response分配8kb缓存,出于性能考虑smart-servlet默认不启用
+     * buffer仅用于提供response.resetBuffer能力,commit之后即失效
      */
     private byte[] buffer;
     private int count;
 
     public ServletOutputStreamImpl(OutputStream outputStream) {
         this.outputStream = outputStream;
-//        this.buffer = FIRST_BUFFER.get();
+        this.buffer = FIRST_BUFFER.get();
     }
 
     @Override
@@ -45,30 +45,29 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     }
 
     @Override
-    public void write(int b) throws IOException {
-        committed = true;
-        outputStream.write(b);
+    public void write(int b) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        if (buffer == null) {
-            committed = true;
+        if (committed) {
             outputStream.write(b, off, len);
             return;
         }
+        //继续缓存数据
         if (len < buffer.length - count - 1) {
             System.arraycopy(b, off, buffer, count, len);
             count += len;
             return;
         }
         committed = true;
+        //buffer中存在缓存数据，先输出
         if (count > 0) {
             outputStream.write(buffer, 0, count);
-            //默认buffer只能用一次,毕竟使用buffer存在一次内存拷贝
-            buffer = null;
             count = 0;
         }
+        buffer = null;
         outputStream.write(b, off, len);
     }
 
@@ -81,6 +80,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     public void flush() throws IOException {
         if (count > 0) {
             outputStream.write(buffer, 0, count);
+            buffer = null;
         }
         committed = true;
         outputStream.flush();

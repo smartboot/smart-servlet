@@ -242,6 +242,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         }
     }
 
+    public int unWriteSize() {
+        return servletOutputStream == null ? 0 : servletOutputStream.getCount();
+    }
+
     @Override
     public void flushBuffer() throws IOException {
         getOutputStream().flush();

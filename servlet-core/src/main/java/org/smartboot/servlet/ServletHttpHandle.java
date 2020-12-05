@@ -140,6 +140,10 @@ public class ServletHttpHandle extends HttpHandle {
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
             // just do it
             servletContext.getPipeline().handleRequest(handlerContext);
+            //输出buffer中的数据
+            if (servletResponse.unWriteSize() > 0) {
+                servletResponse.flushBuffer();
+            }
         } catch (WrappedRuntimeException e) {
             e.getThrowable().printStackTrace();
         } catch (Exception e) {
