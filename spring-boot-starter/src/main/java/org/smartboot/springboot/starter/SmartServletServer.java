@@ -65,6 +65,7 @@ public class SmartServletServer implements WebServer {
             }
             this.started = false;
             this.httpHandle.stop();
+            bootstrap.shutdown();
         }
     }
 
