@@ -79,6 +79,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
             if (response.isCommitted()) {
                 throw new IllegalStateException("response has already committed!");
             }
+            //该sessionId生成策略缺乏安全性，后续重新设计
             httpSession = new HttpSessionImpl(this, String.valueOf(System.currentTimeMillis()), request.getServletContext());
             httpSession.setMaxInactiveInterval(maxInactiveInterval);
             Cookie cookie = new Cookie(DEFAULT_SESSION_COOKIE_NAME, httpSession.getId());

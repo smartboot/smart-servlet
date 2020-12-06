@@ -9,7 +9,6 @@
 
 package org.smartboot.servlet.handler;
 
-import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.SmartHttpServletRequest;
@@ -22,7 +21,6 @@ import org.smartboot.servlet.util.ServletPathMatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * 匹配并执行符合当前请求的Servlet
@@ -102,6 +100,6 @@ public class ServletMatchHandler extends Handler {
         }
         request.setServletPath(servletPath);
         request.setPathInfo(pathInfo);
-        RunLogger.getLogger().log(Level.SEVERE, "contextPath: " + request.getContextPath() + " , servletPath: " + request.getServletPath() + " ,pathInfo: " + request.getPathInfo());
+//        RunLogger.getLogger().log(Level.SEVERE, "contextPath: " + request.getContextPath() + " , servletPath: " + request.getServletPath() + " ,pathInfo: " + request.getPathInfo());
     }
 }
