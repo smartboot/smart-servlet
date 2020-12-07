@@ -80,7 +80,7 @@ public class FilterMatchHandler extends Handler {
                             filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
                         }
                     } else {
-                        throw new UnsupportedOperationException();
+                        throw new IllegalStateException();
                     }
                 });
 

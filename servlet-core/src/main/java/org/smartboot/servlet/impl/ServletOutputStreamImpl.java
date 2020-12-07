@@ -9,10 +9,13 @@
 
 package org.smartboot.servlet.impl;
 
+import org.smartboot.http.BufferOutputStream;
+import org.smartboot.socket.buffer.VirtualBuffer;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 /**
  * @author 三刀
@@ -21,7 +24,7 @@ import java.io.OutputStream;
 public class ServletOutputStreamImpl extends ServletOutputStream {
     private static final int DEFAULT_BUFFER_SIZE = 512;
     private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[DEFAULT_BUFFER_SIZE]);
-    private final OutputStream outputStream;
+    private final BufferOutputStream outputStream;
     private boolean committed = false;
     /**
      * buffer仅用于提供response.resetBuffer能力,commit之后即失效
@@ -29,7 +32,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     private byte[] buffer;
     private int count;
 
-    public ServletOutputStreamImpl(OutputStream outputStream) {
+    public ServletOutputStreamImpl(BufferOutputStream outputStream) {
         this.outputStream = outputStream;
     }
 
@@ -78,6 +81,14 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         }
         buffer = null;
         outputStream.write(b, off, len);
+    }
+
+    public void write(ByteBuffer buffer) throws IOException {
+        outputStream.write(buffer);
+    }
+
+    public void write(VirtualBuffer buffer) throws IOException {
+        outputStream.write(buffer);
     }
 
     @Override

@@ -27,19 +27,23 @@ public class ServletRequestListenerHandler extends Handler {
     @Override
     public void handleRequest(HandlerContext handlerContext) {
         ServletContext servletContext = handlerContext.getServletContext();
-        ServletRequestEvent servletRequestEvent = new ServletRequestEvent(servletContext, handlerContext.getRequest());
         List<ServletRequestListener> servletRequestListeners = handlerContext.getServletContext().getDeploymentInfo().getServletRequestListeners();
-        servletRequestListeners.forEach(requestListener -> {
-            requestListener.requestInitialized(servletRequestEvent);
-            RunLogger.getLogger().log(Level.INFO, "requestInitialized " + requestListener);
-        });
+        ServletRequestEvent servletRequestEvent = servletRequestListeners.isEmpty() ? null : new ServletRequestEvent(servletContext, handlerContext.getRequest());
+        if (!servletRequestListeners.isEmpty()) {
+            servletRequestListeners.forEach(requestListener -> {
+                requestListener.requestInitialized(servletRequestEvent);
+                RunLogger.getLogger().log(Level.INFO, "requestInitialized " + requestListener);
+            });
+        }
         try {
             doNext(handlerContext);
         } finally {
-            servletRequestListeners.forEach(requestListener -> {
-                requestListener.requestDestroyed(servletRequestEvent);
-                RunLogger.getLogger().log(Level.INFO, "requestDestroyed " + requestListener);
-            });
+            if (!servletRequestListeners.isEmpty()) {
+                servletRequestListeners.forEach(requestListener -> {
+                    requestListener.requestDestroyed(servletRequestEvent);
+                    RunLogger.getLogger().log(Level.INFO, "requestDestroyed " + requestListener);
+                });
+            }
         }
     }
 }

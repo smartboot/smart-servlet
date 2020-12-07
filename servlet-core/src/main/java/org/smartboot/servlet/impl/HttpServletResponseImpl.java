@@ -16,7 +16,6 @@ import org.smartboot.http.utils.HttpHeaderConstant;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.ServletPathMatcher;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -202,7 +201,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     }
 
     @Override
-    public ServletOutputStream getOutputStream() throws IOException {
+    public ServletOutputStreamImpl getOutputStream() throws IOException {
         if (servletOutputStream == null) {
             servletOutputStream = new ServletOutputStreamImpl(response.getOutputStream());
         }

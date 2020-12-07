@@ -25,7 +25,6 @@ import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
-import org.smartboot.servlet.util.LRUCache;
 
 import javax.servlet.DispatcherType;
 import java.util.ArrayList;
@@ -50,10 +49,6 @@ public class ServletHttpHandle extends HttpHandle {
             "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
     private static final String VERSION = "0.1.0";
     private final List<ContainerRuntime> runtimes = new ArrayList<>();
-    /**
-     * 请求映射的Servlet运行环境
-     */
-    private final LRUCache<String, ContainerRuntime> contextCache = new LRUCache<>();
     private final List<Plugin> plugins = new ArrayList<>();
     private volatile boolean started = false;
 
@@ -141,9 +136,7 @@ public class ServletHttpHandle extends HttpHandle {
             // just do it
             servletContext.getPipeline().handleRequest(handlerContext);
             //输出buffer中的数据
-            if (servletResponse.unWriteSize() > 0) {
-                servletResponse.flushBuffer();
-            }
+            servletResponse.flushBuffer();
         } catch (WrappedRuntimeException e) {
             e.getThrowable().printStackTrace();
         } catch (Exception e) {
@@ -165,19 +158,12 @@ public class ServletHttpHandle extends HttpHandle {
     }
 
     public ContainerRuntime matchRuntime(String requestUri) {
-        ContainerRuntime runtime = contextCache.get(requestUri);
-        if (runtime != null) {
-            return runtime;
-        }
         for (ContainerRuntime matchRuntime : runtimes) {
-            //todo 兼容 请求 uri 为 servletPath结尾不带 '/' 的情况
             String contextPath = matchRuntime.getServletContext().getContextPath();
-            if (StringUtils.startsWith(requestUri, contextPath) || requestUri.equals(contextPath.substring(0, contextPath.length() - 1))) {
-                runtime = matchRuntime;
-                contextCache.put(requestUri, runtime);
-                break;
+            if (StringUtils.startsWith(requestUri, contextPath)) {
+                return matchRuntime;
             }
         }
-        return runtime;
+        throw new IllegalStateException("No match container runtime!");
     }
 }
