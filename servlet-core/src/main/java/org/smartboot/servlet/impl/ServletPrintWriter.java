@@ -9,29 +9,28 @@
 
 package org.smartboot.servlet.impl;
 
-import org.smartboot.socket.buffer.BufferPage;
-import org.smartboot.socket.buffer.BufferPagePool;
+import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.socket.buffer.VirtualBuffer;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.Buffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CoderResult;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/11/10
  */
 public class ServletPrintWriter extends Writer {
-    private static final BufferPage bufferPage = new BufferPagePool(10 * 1024 * 1024, 6, true).allocateBufferPage();
+    private static final int BUFFER_LIMIT = 128;
     private final ServletOutputStreamImpl servletOutputStream;
     private final CharsetEncoder charsetEncoder;
+    private final ContainerRuntime containerRuntime;
 
-    public ServletPrintWriter(ServletOutputStreamImpl servletOutputStream, String charset) {
+    public ServletPrintWriter(ServletOutputStreamImpl servletOutputStream, String charset, ContainerRuntime containerRuntime) {
         super(servletOutputStream);
+        this.containerRuntime = containerRuntime;
         this.servletOutputStream = servletOutputStream;
         this.charsetEncoder = Charset.forName(charset).newEncoder();
     }
@@ -50,10 +49,15 @@ public class ServletPrintWriter extends Writer {
     }
 
     private void write(CharBuffer buffer) throws IOException {
-        VirtualBuffer virtualBuffer = bufferPage.allocate(buffer.remaining() * 2);
-        CoderResult result = charsetEncoder.encode(buffer, virtualBuffer.buffer(), true);
-        ((Buffer) (virtualBuffer.buffer())).flip();
-        servletOutputStream.write(virtualBuffer);
+        while (buffer.hasRemaining()) {
+            VirtualBuffer virtualBuffer = containerRuntime.getMemoryPoolProvider().getBufferPage().allocate(BUFFER_LIMIT);
+            charsetEncoder.encode(buffer, virtualBuffer.buffer(), true);
+            virtualBuffer.buffer().flip();
+            servletOutputStream.write(virtualBuffer);
+            if (buffer.hasRemaining()) {
+                System.out.println("aaa " + buffer.remaining());
+            }
+        }
     }
 
     @Override

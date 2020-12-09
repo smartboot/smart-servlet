@@ -130,7 +130,7 @@ public class ServletHttpHandle extends HttpHandle {
 
             //封装上下文对象
             HttpServletRequestImpl servletRequest = new HttpServletRequestImpl(request, runtime, DispatcherType.REQUEST);
-            HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
+            HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response, runtime);
             servletRequest.setHttpServletResponse(servletResponse);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
             // just do it

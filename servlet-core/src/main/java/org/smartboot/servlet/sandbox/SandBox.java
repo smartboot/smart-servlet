@@ -10,6 +10,7 @@
 package org.smartboot.servlet.sandbox;
 
 import org.smartboot.servlet.provider.DispatcherProvider;
+import org.smartboot.servlet.provider.MemoryPoolProvider;
 import org.smartboot.servlet.provider.SessionProvider;
 
 /**
@@ -22,6 +23,12 @@ public class SandBox {
     public static final SandBox INSTANCE = new SandBox();
     private final DispatcherProvider dispatcherProvider = new MockDispatcherProvider();
     private final SessionProvider sessionProvider = new MockSessionProvider();
+
+    private final MemoryPoolProvider memoryPoolProvider = new MockMemoryPoolProvider();
+
+    public MemoryPoolProvider getMemoryPoolProvider() {
+        return memoryPoolProvider;
+    }
 
     public DispatcherProvider getDispatcherProvider() {
         return dispatcherProvider;

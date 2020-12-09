@@ -19,6 +19,7 @@ import org.smartboot.servlet.impl.ServletConfigImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.provider.DispatcherProvider;
+import org.smartboot.servlet.provider.MemoryPoolProvider;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.sandbox.SandBox;
 
@@ -68,6 +69,10 @@ public class ContainerRuntime {
      */
     private SessionProvider sessionProvider = SandBox.INSTANCE.getSessionProvider();
 
+    /**
+     * 内存池服务提供者
+     */
+    private MemoryPoolProvider memoryPoolProvider = SandBox.INSTANCE.getMemoryPoolProvider();
     /**
      * 关联至本运行环境的插件集合
      */
@@ -220,6 +225,14 @@ public class ContainerRuntime {
 
     public void setSessionProvider(SessionProvider sessionProvider) {
         this.sessionProvider = sessionProvider;
+    }
+
+    public MemoryPoolProvider getMemoryPoolProvider() {
+        return memoryPoolProvider;
+    }
+
+    public void setMemoryPoolProvider(MemoryPoolProvider memoryPoolProvider) {
+        this.memoryPoolProvider = memoryPoolProvider;
     }
 
     public String getContextPath() {

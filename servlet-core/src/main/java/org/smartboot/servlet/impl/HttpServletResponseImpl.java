@@ -13,6 +13,7 @@ import org.smartboot.http.HttpResponse;
 import org.smartboot.http.enums.HttpStatus;
 import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.HttpHeaderConstant;
+import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.ServletPathMatcher;
 
@@ -35,10 +36,12 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     private String contentType;
     private PrintWriter writer;
     private ServletOutputStreamImpl servletOutputStream;
+    private ContainerRuntime containerRuntime;
 
-    public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response) {
+    public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response, ContainerRuntime containerRuntime) {
         this.request = request;
         this.response = response;
+        this.containerRuntime = containerRuntime;
     }
 
     @Override
@@ -201,7 +204,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     }
 
     @Override
-    public ServletOutputStreamImpl getOutputStream() throws IOException {
+    public ServletOutputStreamImpl getOutputStream() {
         if (servletOutputStream == null) {
             servletOutputStream = new ServletOutputStreamImpl(response.getOutputStream());
         }
@@ -211,7 +214,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     @Override
     public PrintWriter getWriter() throws IOException {
         if (writer == null) {
-            writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
+            writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding(), containerRuntime));
         }
         return writer;
     }
