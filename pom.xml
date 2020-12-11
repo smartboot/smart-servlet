@@ -9,8 +9,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <smartsocket.version>1.5.1</smartsocket.version>
-        <smarthttp.version>1.0.19</smarthttp.version>
+        <smarthttp.version>1.0.20</smarthttp.version>
         <smartservlet.version>0.1.0</smartservlet.version>
 
         <servlet.version>3.1.0</servlet.version>
@@ -69,7 +68,7 @@
     <!-- 项目团队 -->
     <developers>
         <developer>
-            <id>Seer</id>
+            <id>sandao</id>
             <name>三刀</name>
             <email>zhengjunweimail@163.com</email>
             <roles>
