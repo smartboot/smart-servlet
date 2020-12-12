@@ -12,8 +12,10 @@ package org.smartboot.servlet.impl;
 import org.smartboot.http.HttpRequest;
 import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.NumberUtils;
+import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.SmartHttpServletRequest;
+import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.util.DateUtil;
 
 import javax.servlet.AsyncContext;
@@ -47,6 +49,7 @@ import java.util.logging.Level;
  * @version V1.0 , 2019/12/11
  */
 public class HttpServletRequestImpl implements SmartHttpServletRequest {
+    private static final Cookie[] NONE_COOKIE = new Cookie[0];
     private final HttpRequest request;
     private final ServletContextImpl servletContext;
     private final DispatcherType dispatcherType;
@@ -59,6 +62,15 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private String pathInfo;
     private String requestURI;
     private HttpServletResponse httpServletResponse;
+    /**
+     * 请求中携带的sessionId
+     */
+    private String requestedSessionId;
+
+    /**
+     * sessionId是否来源于Cookie
+     */
+    private boolean sessionIdFromCookie;
 
     public HttpServletRequestImpl(HttpRequest request, ContainerRuntime runtime, DispatcherType dispatcherType) {
         this.request = request;
@@ -79,13 +91,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public Cookie[] getCookies() {
-
         if (cookies != null) {
-            return cookies;
+            return cookies == NONE_COOKIE ? null : cookies;
         }
         org.smartboot.http.server.Cookie[] cookie = request.getCookies();
-        if (cookie == null) {
-            cookies = new Cookie[0];
+        if (cookie == null || cookie.length == 0) {
+            cookies = NONE_COOKIE;
         } else {
             cookies = new Cookie[cookie.length];
             for (int i = 0; i < cookie.length; i++) {
@@ -173,7 +184,28 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getRequestedSessionId() {
-        throw new UnsupportedOperationException();
+        if (requestedSessionId != null) {
+            //不要用 equals比较
+            return StringUtils.EMPTY.equals(requestedSessionId) ? null : requestedSessionId;
+        }
+        Cookie[] cookies = getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (SessionProvider.DEFAULT_SESSION_COOKIE_NAME.equals(cookie.getName())) {
+                    requestedSessionId = cookie.getValue();
+                    sessionIdFromCookie = true;
+                    break;
+                }
+            }
+        }
+        if (StringUtils.isBlank(requestedSessionId)) {
+            requestedSessionId = request.getParameter(SessionProvider.DEFAULT_SESSION_PARAMETER_NAME);
+            sessionIdFromCookie = false;
+        }
+        if (StringUtils.isBlank(requestedSessionId)) {
+            requestedSessionId = StringUtils.EMPTY;
+        }
+        return getRequestedSessionId();
     }
 
     @Override
@@ -222,22 +254,22 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isRequestedSessionIdValid() {
-        throw new UnsupportedOperationException();
+        return getSession(false) != null;
     }
 
     @Override
     public boolean isRequestedSessionIdFromCookie() {
-        throw new UnsupportedOperationException();
+        return getRequestedSessionId() != null && sessionIdFromCookie;
     }
 
     @Override
     public boolean isRequestedSessionIdFromURL() {
-        throw new UnsupportedOperationException();
+        return getRequestedSessionId() != null && !sessionIdFromCookie;
     }
 
     @Override
     public boolean isRequestedSessionIdFromUrl() {
-        throw new UnsupportedOperationException();
+        return isRequestedSessionIdFromURL();
     }
 
     @Override

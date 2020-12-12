@@ -28,8 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version V1.0 , 2019/12/21
  */
 class SessionProviderImpl implements SessionProvider, HttpSessionContext {
-    private static final String DEFAULT_SESSION_PARAMETER_NAME = "jsessionid";
-    private static final String DEFAULT_SESSION_COOKIE_NAME = "JSESSIONID";
+
     /**
      * 默认超时时间：30分钟
      */
@@ -91,19 +90,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
     }
 
     private HttpSessionImpl getSession(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String sessionId = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (DEFAULT_SESSION_COOKIE_NAME.equals(cookie.getName())) {
-                    sessionId = cookie.getValue();
-                    break;
-                }
-            }
-        }
-        if (sessionId == null) {
-            sessionId = request.getParameter(DEFAULT_SESSION_PARAMETER_NAME);
-        }
+        String sessionId = request.getRequestedSessionId();
         HttpSessionImpl session = sessionId == null ? null : sessionMap.get(sessionId);
         if (session != null) {
             session.setLastAccessed(System.currentTimeMillis());

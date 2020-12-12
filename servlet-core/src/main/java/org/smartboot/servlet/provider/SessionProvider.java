@@ -18,6 +18,8 @@ import javax.servlet.http.HttpSession;
  * @version V1.0 , 2020/11/27
  */
 public interface SessionProvider {
+    String DEFAULT_SESSION_PARAMETER_NAME = "jsessionid";
+    String DEFAULT_SESSION_COOKIE_NAME = "JSESSIONID";
 
     HttpSession getSession(HttpServletRequest request, HttpServletResponse response, boolean create);
 }
