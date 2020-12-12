@@ -33,10 +33,10 @@ import java.util.logging.Level;
 public class HttpServletResponseImpl implements HttpServletResponse {
     private final HttpResponse response;
     private final HttpServletRequest request;
+    private final ContainerRuntime containerRuntime;
     private String contentType;
     private PrintWriter writer;
     private ServletOutputStreamImpl servletOutputStream;
-    private ContainerRuntime containerRuntime;
 
     public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response, ContainerRuntime containerRuntime) {
         this.request = request;

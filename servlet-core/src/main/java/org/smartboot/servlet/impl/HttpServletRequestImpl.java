@@ -60,8 +60,9 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private Cookie[] cookies;
     private String servletPath;
     private String pathInfo;
-    private String requestURI;
+    private String requestUri;
     private HttpServletResponse httpServletResponse;
+    private ServletInputStream servletInputStream;
     /**
      * 请求中携带的sessionId
      */
@@ -77,7 +78,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         this.dispatcherType = dispatcherType;
         this.servletContext = runtime.getServletContext();
         this.runtime = runtime;
-        this.requestURI = request.getRequestURI();
+        this.requestUri = request.getRequestURI();
     }
 
     public void setHttpServletResponse(HttpServletResponse httpServletResponse) {
@@ -185,7 +186,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public String getRequestedSessionId() {
         if (requestedSessionId != null) {
-            //不要用 equals比较
             return StringUtils.EMPTY.equals(requestedSessionId) ? null : requestedSessionId;
         }
         Cookie[] cookies = getCookies();
@@ -210,12 +210,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        return requestURI;
+        return requestUri;
     }
 
     @Override
     public void setRequestUri(String requestURI) {
-        this.requestURI = requestURI;
+        this.requestUri = requestURI;
     }
 
     @Override
@@ -339,7 +339,10 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        throw new UnsupportedOperationException();
+        if (servletInputStream == null) {
+            servletInputStream = new ServletInputStreamImpl(request.getInputStream());
+        }
+        return servletInputStream;
     }
 
     @Override
