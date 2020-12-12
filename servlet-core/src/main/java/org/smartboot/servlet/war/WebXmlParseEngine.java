@@ -9,10 +9,7 @@
 
 package org.smartboot.servlet.war;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
+import org.smartboot.http.utils.CollectionUtils;
 import org.smartboot.http.utils.NumberUtils;
 import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.conf.ErrorPageInfo;
@@ -21,9 +18,21 @@ import org.smartboot.servlet.conf.FilterMappingInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.servlet.DispatcherType;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,86 +47,94 @@ import java.util.Set;
  */
 class WebXmlParseEngine {
 
-    public WebAppInfo load(InputStream webXmlStream) throws DocumentException {
+    public WebAppInfo load(InputStream webXmlStream) throws ParserConfigurationException, IOException, SAXException {
         WebAppInfo webAppInfo = new WebAppInfo();
-        Document document = new SAXReader().read(webXmlStream);
-        Element rootElement = document.getRootElement();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(webXmlStream);
+        Element parentElement = document.getDocumentElement();
 
-        parseServlet(webAppInfo, rootElement);
-        parseServletMapping(webAppInfo, rootElement);
+        parseServlet(webAppInfo, parentElement);
+        parseServletMapping(webAppInfo, parentElement);
 
-        parseFilter(webAppInfo, rootElement);
-        parseFilterMapping(webAppInfo, rootElement);
+        parseFilter(webAppInfo, parentElement);
+        parseFilterMapping(webAppInfo, parentElement);
 
-        parseListener(webAppInfo, rootElement);
+        parseListener(webAppInfo, parentElement);
 
-        parseContextParam(webAppInfo, rootElement);
+        parseContextParam(webAppInfo, parentElement);
 
-        parseErrorPage(webAppInfo, rootElement);
+        parseErrorPage(webAppInfo, parentElement);
 
-        parseSessionConfig(webAppInfo, rootElement);
+        parseSessionConfig(webAppInfo, parentElement);
 
-        parseWelcomeFile(webAppInfo, rootElement);
+        parseWelcomeFile(webAppInfo, parentElement);
         return webAppInfo;
     }
 
-    private void parseSessionConfig(WebAppInfo webAppInfo, Element rootElement) {
-        Element sessionElement = rootElement.element("session-config");
-        if (sessionElement != null) {
-            webAppInfo.setSessionTimeout(NumberUtils.toInt(sessionElement.elementTextTrim("session-timeout"), 0));
+    private void parseSessionConfig(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNode(parentElement, "session-config");
+        if (CollectionUtils.isNotEmpty(childNodeList)) {
+            Map<String, String> nodeData = getNodeValue(childNodeList.get(0), Arrays.asList("session-timeout"));
+            webAppInfo.setSessionTimeout(NumberUtils.toInt(nodeData.get("session-timeout"), 0));
         }
     }
 
-    private void parseContextParam(WebAppInfo webAppInfo, Element rootElement) {
-        List<Element> servletElementList = rootElement.elements("context-param");
-        for (Element element : servletElementList) {
-            webAppInfo.addContextParam(element.elementTextTrim("param-name"), element.elementTextTrim("param-value"));
+    private void parseContextParam(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNode(parentElement, "context-param");
+        for (Node node : childNodeList) {
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("param-name", "param-value"));
+            webAppInfo.addContextParam(nodeData.get("param-name"), nodeData.get("param-value"));
         }
     }
 
-    private void parseListener(WebAppInfo webAppInfo, Element rootElement) {
-        List<Element> servletElementList = rootElement.elements("listener");
-        for (Element element : servletElementList) {
-            webAppInfo.addListener(element.elementTextTrim("listener-class"));
+    private void parseListener(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNode(parentElement, "listener");
+        for (Node node : childNodeList) {
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("listener-class"));
+            webAppInfo.addListener(nodeData.get("listener-class"));
         }
     }
 
 
-    private void parseFilter(WebAppInfo webAppInfo, Element rootElement) {
-        List<Element> servletElementList = rootElement.elements("filter");
-        for (Element element : servletElementList) {
+    private void parseFilter(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNode(parentElement, "filter");
+        for (Node node : childNodeList) {
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("filter-name", "filter-class"));
             FilterInfo filterInfo = new FilterInfo();
-            filterInfo.setFilterName(element.elementTextTrim("filter-name"));
-            filterInfo.setFilterClass(element.elementTextTrim("filter-class"));
-            Map<String, String> initParamMap = parseParam(element);
+            filterInfo.setFilterName(nodeData.get("filter-name"));
+            filterInfo.setFilterClass(nodeData.get("filter-class"));
+            Map<String, String> initParamMap = parseParam(node);
             initParamMap.forEach(filterInfo::addInitParam);
             webAppInfo.addFilter(filterInfo);
         }
     }
 
-    private void parseErrorPage(WebAppInfo webAppInfo, Element rootElement) {
-        List<Element> servletElementList = rootElement.elements("error-page");
-        for (Element element : servletElementList) {
-            int errorCode = NumberUtils.toInt(element.elementTextTrim("error-code"), -1);
+    private void parseErrorPage(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNode(parentElement, "error-page");
+        for (Node node : childNodeList) {
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("error-code", "location", "exception-type"));
+            int errorCode = NumberUtils.toInt(nodeData.get("error-code"), -1);
             if (errorCode < 0) {
                 continue;
             }
-            webAppInfo.addErrorPage(new ErrorPageInfo(element.elementTextTrim("location"), errorCode, element.elementTextTrim("exception-type")));
+            webAppInfo.addErrorPage(new ErrorPageInfo(nodeData.get("location"), errorCode, nodeData.get("exception-type")));
         }
     }
 
-    private void parseFilterMapping(WebAppInfo webAppInfo, Element rootElement) {
-        List<Element> servletElementList = rootElement.elements("filter-mapping");
-        for (Element element : servletElementList) {
-            String filterName = element.elementTextTrim("filter-name");
-            String urlPattern = element.elementTextTrim("url-pattern");
-            String servletName = element.elementTextTrim("servlet-name");
-            List<Element> dispatcher = element.elements("dispatcher");
+    private void parseFilterMapping(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNode(parentElement, "filter-mapping");
+        for (Node node : childNodeList) {
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("filter-name", "url-pattern", "servlet-name"));
+            String filterName = nodeData.get("filter-name");
+            String urlPattern = nodeData.get("url-pattern");
+            String servletName = nodeData.get("servlet-name");
+            List<Node> dispatcher = getChildNode(node, "dispatcher");
             Set<DispatcherType> dispatcherTypes = new HashSet<>();
-            if (dispatcher == null || dispatcher.size() == 0) {
+            if (CollectionUtils.isEmpty(dispatcher)) {
                 dispatcherTypes.add(DispatcherType.REQUEST);
             } else {
-                dispatcher.forEach(dispatcherElement -> dispatcherTypes.add(DispatcherType.valueOf(dispatcherElement.getTextTrim())));
+                dispatcher.forEach(dispatcherElement -> dispatcherTypes.add(DispatcherType.valueOf(StringUtils.trim(dispatcherElement.getFirstChild().getNodeValue()))));
             }
             FilterMappingInfo filterInfo = new FilterMappingInfo(filterName
                     , StringUtils.isBlank(urlPattern) ? FilterMappingType.SERVLET : FilterMappingType.URL,
@@ -131,40 +148,68 @@ class WebXmlParseEngine {
      * 解析Servlet配置
      *
      * @param webAppInfo
-     * @param rootElement
+     * @param parentElement
      */
-    private void parseServlet(WebAppInfo webAppInfo, Element rootElement) {
-        List<Element> servletElementList = rootElement.elements("servlet");
-        for (Element element : servletElementList) {
+    private void parseServlet(WebAppInfo webAppInfo, Element parentElement) {
+        NodeList rootNodeList = parentElement.getElementsByTagName("servlet");
+        for (int i = 0; i < rootNodeList.getLength(); i++) {
+            Node node = rootNodeList.item(i);
+            Map<String, String> nodeMap = getNodeValue(node, Arrays.asList("servlet-name", "servlet-class", "load-on-startup"));
             ServletInfo servletInfo = new ServletInfo();
-            servletInfo.setServletName(element.elementTextTrim("servlet-name"));
-            servletInfo.setServletClass(element.elementTextTrim("servlet-class"));
-            Map<String, String> initParamMap = parseParam(element);
+            servletInfo.setServletName(nodeMap.get("servlet-name"));
+            servletInfo.setServletClass(nodeMap.get("servlet-class"));
+            servletInfo.setLoadOnStartup(NumberUtils.toInt(nodeMap.get("load-on-startup"), 0));
+            Map<String, String> initParamMap = parseParam(node);
             initParamMap.forEach(servletInfo::addInitParam);
-            servletInfo.setLoadOnStartup(NumberUtils.toInt(element.elementTextTrim("load-on-startup"), 0));
             webAppInfo.addServlet(servletInfo);
         }
+    }
+
+    private List<Node> getChildNode(Node node, String nodeName) {
+        NodeList nodeList = node.getChildNodes();
+        List<Node> childNodes = new ArrayList<>();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node childNode = nodeList.item(i);
+            if (StringUtils.equals(nodeName, childNode.getNodeName())) {
+                childNodes.add(childNode);
+            }
+        }
+        return childNodes;
+    }
+
+    private Map<String, String> getNodeValue(Node node, Collection<String> nodeNames) {
+        NodeList nodeList = node.getChildNodes();
+        Map<String, String> nodeMap = new HashMap<>();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node childNode = nodeList.item(i);
+            nodeNames.stream().filter(nodeName -> StringUtils.equals(nodeName, childNode.getNodeName())).forEach(nodeName -> {
+                nodeMap.put(nodeName, StringUtils.trim(childNode.getFirstChild().getNodeValue()));
+            });
+        }
+        return nodeMap;
     }
 
     /**
      * 解析Servlet配置
      *
      * @param webAppInfo
-     * @param rootElement
+     * @param parentElement
      */
-    private void parseServletMapping(WebAppInfo webAppInfo, Element rootElement) {
-        List<Element> servletElementList = rootElement.elements("servlet-mapping");
-        for (Element element : servletElementList) {
-            ServletInfo servletInfo = webAppInfo.getServlet(element.elementTextTrim("servlet-name"));
-            servletInfo.addMapping(element.elementTextTrim("url-pattern"));
+    private void parseServletMapping(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNode(parentElement, "servlet-mapping");
+        for (Node node : childNodeList) {
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("servlet-name", "url-pattern"));
+            ServletInfo servletInfo = webAppInfo.getServlet(nodeData.get("servlet-name"));
+            servletInfo.addMapping(nodeData.get("url-pattern"));
         }
     }
 
-    private Map<String, String> parseParam(Element rootElement) {
-        List<Element> paramElementList = rootElement.elements("init-param");
+    private Map<String, String> parseParam(Node parentElement) {
+        List<Node> paramElementList = getChildNode(parentElement, "init-param");
         Map<String, String> paramMap = new HashMap<>();
-        for (Element element : paramElementList) {
-            paramMap.put(element.elementTextTrim("param-name"), element.elementTextTrim("param-value"));
+        for (Node element : paramElementList) {
+            Map<String, String> nodeMap = getNodeValue(element, Arrays.asList("param-name", "param-value"));
+            paramMap.put(nodeMap.get("param-name"), nodeMap.get("param-value"));
         }
         return paramMap;
     }
@@ -173,16 +218,16 @@ class WebXmlParseEngine {
      * 解析 <welcome-file-list/>
      *
      * @param webAppInfo
-     * @param rootElement
+     * @param parentElement
      */
-    private void parseWelcomeFile(WebAppInfo webAppInfo, Element rootElement) {
-        Element welcomeFileListElement = rootElement.element("welcome-file-list");
-        if (welcomeFileListElement == null) {
+    private void parseWelcomeFile(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNode(parentElement, "welcome-file-list");
+        if (CollectionUtils.isEmpty(childNodeList)) {
             return;
         }
-        List<Element> welcomeFileElement = welcomeFileListElement.elements("welcome-file");
-        for (Element element : welcomeFileElement) {
-            webAppInfo.addWelcomeFile(element.getTextTrim());
+        List<Node> welcomeFileElement = getChildNode(childNodeList.get(0), "welcome-file");
+        for (Node node : welcomeFileElement) {
+            webAppInfo.addWelcomeFile(StringUtils.trim(node.getFirstChild().getNodeValue()));
         }
     }
 }

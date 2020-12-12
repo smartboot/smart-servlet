@@ -23,10 +23,6 @@
             <groupId>org.smartboot.http</groupId>
             <artifactId>smart-http-server</artifactId>
         </dependency>
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-        </dependency>
     </dependencies>
 
 </project>
