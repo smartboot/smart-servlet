@@ -103,7 +103,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                 cookies[i] = new Cookie(cookie[i].getName(), cookie[i].getValue());
             }
         }
-        return cookies;
+        return getCookies();
     }
 
     @Override
