@@ -57,7 +57,7 @@ public class ServletPathMatcher {
     public int matches(String uri, int startIndex, ServletMappingInfo mappingInfo) {
         String pattern = mappingInfo.getMapping();
         ServletMappingTypeEnum mappingTypeEnum = mappingInfo.getMappingType();
-        int matcherIndex = -1;
+        int servletPathEndIndex = -1;
         switch (mappingTypeEnum) {
             case EXACT_MATCH:
                 //《Servlet3.1规范中文版》12.2 映射规范
@@ -76,7 +76,7 @@ public class ServletPathMatcher {
                         return -1;
                     }
                 }
-                matcherIndex = pattern.length();
+                servletPathEndIndex = startIndex + pattern.length();
                 break;
             case PREFIX_MATCH:
                 //《Servlet3.1规范中文版》12.2 映射规范
@@ -98,7 +98,7 @@ public class ServletPathMatcher {
                         return -1;
                     }
                 }
-                matcherIndex = pattern.length() - 2;
+                servletPathEndIndex = startIndex + pattern.length() - 2;
                 break;
             case EXTENSION_MATCH:
                 // 不比较"*.xx" 中的 *
@@ -108,11 +108,11 @@ public class ServletPathMatcher {
                         return -1;
                     }
                 }
-                matcherIndex = uri.length();
+                servletPathEndIndex = uri.length();
                 break;
             default:
                 throw new UnsupportedOperationException("unSupport mappingType " + mappingTypeEnum);
         }
-        return matcherIndex;
+        return servletPathEndIndex;
     }
 }

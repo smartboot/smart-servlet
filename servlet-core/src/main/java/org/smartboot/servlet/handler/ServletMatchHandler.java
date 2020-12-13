@@ -52,18 +52,17 @@ public class ServletMatchHandler extends Handler {
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
                 final ServletInfo servletInfo = entry.getValue();
                 for (ServletMappingInfo path : servletInfo.getMappings()) {
-                    int index = PATH_MATCHER.matches(request.getRequestURI(), contextPath.length(), path);
-                    if (index > -1) {
+                    int servletPathEndIndex = PATH_MATCHER.matches(request.getRequestURI(), contextPath.length(), path);
+                    if (servletPathEndIndex > -1) {
                         servlet = servletInfo.getServlet();
                         //《Servlet3.1规范中文版》3.5请求路径元素
-                        request.setServletPath(request.getContextPath().length(), index);
-                        if (path.getMappingType() != ServletMappingTypeEnum.PREFIX_MATCH) {
+                        request.setServletPath(request.getContextPath().length(), servletPathEndIndex);
+                        if (path.getMappingType() != ServletMappingTypeEnum.PREFIX_MATCH || servletPathEndIndex == request.getRequestURI().length()) {
                             //精确匹配和后缀匹配的 PathInfo 都为null
                             request.setPathInfo(-1, -1);
                         } else {
-                            request.setPathInfo(0, request.getRequestURI().length());
+                            request.setPathInfo(servletPathEndIndex, request.getRequestURI().length());
                         }
-
                         break;
                     }
                 }
