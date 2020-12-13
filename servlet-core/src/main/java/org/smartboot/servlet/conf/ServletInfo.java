@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.conf;
 
-import org.smartboot.servlet.enums.ServletMappingTypeEnum;
+import org.smartboot.servlet.util.ServletPathMatcher;
 
 import javax.servlet.Servlet;
 import java.util.ArrayList;
@@ -73,18 +73,8 @@ public class ServletInfo {
      * @return
      */
     public ServletInfo addMapping(final String mapping) {
-        if (!mapping.contains("*")) {
-            if (!mapping.startsWith("/")) {
-                throw new IllegalArgumentException("invalid mapping: " + mapping);
-            }
-            mappings.add(new ServletMappingInfo(mapping, ServletMappingTypeEnum.EXACT_MATCH));
-        } else if (mapping.startsWith("*.")) {
-            mappings.add(new ServletMappingInfo(mapping, ServletMappingTypeEnum.EXTENSION_MATCH));
-        } else if (mapping.startsWith("/") && mapping.endsWith("/*")) {
-            mappings.add(new ServletMappingInfo(mapping, ServletMappingTypeEnum.PREFIX_MATCH));
-        } else {
-            throw new UnsupportedOperationException(mapping);
-        }
+        ServletMappingInfo servletMappingInfo = ServletPathMatcher.addMapping(mapping);
+        mappings.add(servletMappingInfo);
         return this;
     }
 

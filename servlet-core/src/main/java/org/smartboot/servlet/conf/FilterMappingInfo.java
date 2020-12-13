@@ -22,22 +22,24 @@ public class FilterMappingInfo {
 
     private final String filterName;
     private final FilterMappingType mappingType;
-    private final String mapping;
     private final Set<DispatcherType> dispatcher;
+    private final ServletMappingInfo servletUrlMapping;
+    private final String servletNameMapping;
 
-    public FilterMappingInfo(final String filterName, final FilterMappingType mappingType, final String mapping, final Set<DispatcherType> dispatcher) {
+    public FilterMappingInfo(final String filterName, final FilterMappingType mappingType, final String servletNameMapping, ServletMappingInfo servletUrlMapping, final Set<DispatcherType> dispatcher) {
         this.filterName = filterName;
         this.mappingType = mappingType;
-        this.mapping = mapping;
+        this.servletNameMapping = servletNameMapping;
         this.dispatcher = dispatcher;
+        this.servletUrlMapping = servletUrlMapping;
     }
 
     public FilterMappingType getMappingType() {
         return mappingType;
     }
 
-    public String getMapping() {
-        return mapping;
+    public String getServletNameMapping() {
+        return servletNameMapping;
     }
 
     public Set<DispatcherType> getDispatcher() {
@@ -48,5 +50,7 @@ public class FilterMappingInfo {
         return filterName;
     }
 
-
+    public ServletMappingInfo getServletUrlMapping() {
+        return servletUrlMapping;
+    }
 }

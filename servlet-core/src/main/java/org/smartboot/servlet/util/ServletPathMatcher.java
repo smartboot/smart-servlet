@@ -9,6 +9,9 @@
 
 package org.smartboot.servlet.util;
 
+import org.smartboot.servlet.conf.ServletMappingInfo;
+import org.smartboot.servlet.enums.ServletMappingTypeEnum;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -36,49 +39,80 @@ public class ServletPathMatcher {
         return false;
     }
 
-    /**
-     * <p>
-     * three type: endsWithMatch(eg. /xxx*=/xxx/xyz), startsWithMatch(eg.
-     * *.xxx=abc.xxx), equals(eg. /xxx=/xxx).
-     * </p>
-     * <b>Notice</b>: *xxx* will match *xxxyyyy. endsWithMatch first.
-     */
-    public boolean matches(String pattern, String source) {
-        if (pattern == null || source == null) {
-            return false;
-        }
-        pattern = pattern.trim();
-        source = source.trim();
-        if (pattern.endsWith("*")) {
-            // pattern: /druid* source:/druid/index.html
-            int length = pattern.length() - 1;
-            if (source.length() >= length) {
-                if (pattern.substring(0, length).equals(
-                        source.substring(0, length))) {
-                    return true;
-                }
+    public static ServletMappingInfo addMapping(final String mapping) {
+        if (!mapping.contains("*")) {
+            if (!mapping.startsWith("/")) {
+                throw new IllegalArgumentException("invalid mapping: " + mapping);
             }
-        } else if (pattern.startsWith("*")) {
-            // pattern: *.html source:/xx/xx.html
-            int length = pattern.length() - 1;
-            if (source.length() >= length
-                    && source.endsWith(pattern.substring(1))) {
-                return true;
-            }
-        } else if (pattern.contains("*")) {
-            // pattern:  /druid/*/index.html source:/druid/admin/index.html
-            int start = pattern.indexOf("*");
-            int end = pattern.lastIndexOf("*");
-            if (source.startsWith(pattern.substring(0, start))
-                    && source.endsWith(pattern.substring(end + 1))) {
-                return true;
-            }
+            return new ServletMappingInfo(mapping, ServletMappingTypeEnum.EXACT_MATCH);
+        } else if (mapping.startsWith("*.")) {
+            return new ServletMappingInfo(mapping, ServletMappingTypeEnum.EXTENSION_MATCH);
+        } else if (mapping.startsWith("/") && mapping.endsWith("/*")) {
+            return new ServletMappingInfo(mapping, ServletMappingTypeEnum.PREFIX_MATCH);
         } else {
-            // pattern: /druid/index.html source:/druid/index.html
-            if (pattern.equals(source)) {
-                return true;
-            }
+            throw new UnsupportedOperationException(mapping);
         }
-        return false;
+    }
+
+    public int matches(String uri, int startIndex, ServletMappingInfo mappingInfo) {
+        String pattern = mappingInfo.getMapping();
+        ServletMappingTypeEnum mappingTypeEnum = mappingInfo.getMappingType();
+        int matcherIndex = -1;
+        switch (mappingTypeEnum) {
+            case EXACT_MATCH:
+                //《Servlet3.1规范中文版》12.2 映射规范
+                //空字符串“”是一个特殊的 URL 模式，其精确映射到应用的上下文根，
+                // 即，http://host:port/<context-root>/ 请求形式。
+                // 在这种情况下，路径信息是‘/’且 servlet 路径和上下文路径是空字符串(“”)。
+                if (uri.length() == startIndex && "/".equals(pattern)) {
+                    return 0;
+                }
+                if (uri.length() - startIndex != pattern.length()) {
+                    return -1;
+                }
+                //第一位肯定是"/",从第二位开始匹配
+                for (int i = 1; i < pattern.length(); i++) {
+                    if (uri.charAt(startIndex + i) != pattern.charAt(i)) {
+                        return -1;
+                    }
+                }
+                matcherIndex = pattern.length();
+                break;
+            case PREFIX_MATCH:
+                //《Servlet3.1规范中文版》12.2 映射规范
+                //空字符串“”是一个特殊的 URL 模式，其精确映射到应用的上下文根，
+                // 即，http://host:port/<context-root>/ 请求形式。
+                // 在这种情况下，路径信息是‘/’且 servlet 路径和上下文路径是空字符串(“”)。
+                //pattern.length() == 2 等同于 "/*".equals(pattern)
+                if (uri.length() == startIndex && pattern.length() == 2) {
+                    return 0;
+                }
+                //舍去"/ab/*"最后一位"/*"
+                int matchLen = pattern.length() - 2;
+                if (uri.length() - startIndex < matchLen) {
+                    return -1;
+                }
+                //第一位肯定是"/",从第二位开始匹配
+                for (int i = 1; i < matchLen; i++) {
+                    if (uri.charAt(startIndex + i) != pattern.charAt(i)) {
+                        return -1;
+                    }
+                }
+                matcherIndex = pattern.length() - 2;
+                break;
+            case EXTENSION_MATCH:
+                // 不比较"*.xx" 中的 *
+                int uriStartIndex = uri.length() - pattern.length() - 1;
+                for (int i = 1; i < pattern.length(); i++) {
+                    if (uri.charAt(uriStartIndex + i) != pattern.charAt(i)) {
+                        return -1;
+                    }
+                }
+                matcherIndex = uri.length();
+                break;
+            default:
+                throw new UnsupportedOperationException("unSupport mappingType " + mappingTypeEnum);
+        }
+        return matcherIndex;
     }
 }

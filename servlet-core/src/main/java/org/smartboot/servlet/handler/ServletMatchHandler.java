@@ -53,11 +53,17 @@ public class ServletMatchHandler extends Handler {
                 final ServletInfo servletInfo = entry.getValue();
                 for (ServletMappingInfo path : servletInfo.getMappings()) {
 //                    RunLogger.getLogger().log(Level.SEVERE, "servlet match: " + (contextPath + path.getMapping()) + " requestURI: " + request.getRequestURI());
-                    if ("/".equals(path.getMapping()) || PATH_MATCHER.matches(contextPath + path.getMapping(), request.getRequestURI())) {
+                    int index = PATH_MATCHER.matches(request.getRequestURI(), contextPath.length(), path);
+                    if (index > -1) {
                         servlet = servletInfo.getServlet();
-                        setServletInfo(request, path);
+                        setServletInfo(request, path, index);
                         break;
                     }
+//                    if ("/".equals(path.getMapping()) || PATH_MATCHER.matches(contextPath + path.getMapping(), request.getRequestURI())) {
+//                        servlet = servletInfo.getServlet();
+//                        setServletInfo(request, path);
+//                        break;
+//                    }
                 }
                 if (servlet != null) {
                     break;
@@ -76,7 +82,7 @@ public class ServletMatchHandler extends Handler {
      * @param request
      * @param path
      */
-    private void setServletInfo(SmartHttpServletRequest request, ServletMappingInfo path) {
+    private void setServletInfo(SmartHttpServletRequest request, ServletMappingInfo path, int matchIndex) {
         String servletPath = null;
         String pathInfo = null;
         switch (path.getMappingType()) {

@@ -12,7 +12,9 @@ package org.smartboot.servlet.impl;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.FilterMappingInfo;
+import org.smartboot.servlet.conf.ServletMappingInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
+import org.smartboot.servlet.util.ServletPathMatcher;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
@@ -23,6 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 /**
  * @author 三刀
  * @version V1.0 , 2020/11/14
@@ -44,7 +47,7 @@ public class ApplicationFilterRegistration
             EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter,
             String... servletNames) {
         for (String servletName : servletNames) {
-            FilterMappingInfo mappingInfo = new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.SERVLET, servletName, dispatcherTypes);
+            FilterMappingInfo mappingInfo = new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.SERVLET, servletName, null, dispatcherTypes);
             context.addFilterMapping(mappingInfo);
         }
     }
@@ -53,8 +56,8 @@ public class ApplicationFilterRegistration
     public void addMappingForUrlPatterns(
             EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter,
             String... urlPatterns) {
-        for (String servletName : urlPatterns) {
-            FilterMappingInfo mappingInfo = new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.URL, servletName, dispatcherTypes);
+        for (String urlPattern : urlPatterns) {
+            FilterMappingInfo mappingInfo = new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.URL, null, ServletPathMatcher.addMapping(urlPattern), dispatcherTypes);
             context.addFilterMapping(mappingInfo);
         }
     }
@@ -63,14 +66,14 @@ public class ApplicationFilterRegistration
     public Collection<String> getServletNameMappings() {
         return context.getFilterMappings().stream()
                 .filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.URL)
-                .map(FilterMappingInfo::getMapping).collect(Collectors.toList());
+                .map(FilterMappingInfo::getServletUrlMapping).map(ServletMappingInfo::getMapping).collect(Collectors.toList());
     }
 
     @Override
     public Collection<String> getUrlPatternMappings() {
         return context.getFilterMappings().stream()
                 .filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.SERVLET)
-                .map(FilterMappingInfo::getMapping).collect(Collectors.toList());
+                .map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
     }
 
     @Override

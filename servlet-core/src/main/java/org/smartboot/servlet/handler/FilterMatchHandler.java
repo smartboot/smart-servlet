@@ -72,11 +72,11 @@ public class FilterMatchHandler extends Handler {
                 .filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType()))
                 .forEach(filterInfo -> {
                     if (filterInfo.getMappingType() == FilterMappingType.URL) {
-                        if (PATH_MATCHER.matches(contextPath + filterInfo.getMapping(), request.getRequestURI())) {
+                        if (PATH_MATCHER.matches(request.getRequestURI(), contextPath.length(), filterInfo.getServletUrlMapping()) > -1) {
                             filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
                         }
                     } else if (filterInfo.getMappingType() == FilterMappingType.SERVLET) {
-                        if (handlerContext.getServlet() != null && StringUtils.equals(filterInfo.getMapping(), handlerContext.getServlet().getServletConfig().getServletName())) {
+                        if (handlerContext.getServlet() != null && StringUtils.equals(filterInfo.getServletNameMapping(), handlerContext.getServlet().getServletConfig().getServletName())) {
                             filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
                         }
                     } else {
