@@ -9,11 +9,11 @@
 
 package org.smartboot.servlet.handler;
 
-import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
+import org.smartboot.servlet.enums.ServletMappingTypeEnum;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.ServletPathMatcher;
@@ -52,18 +52,20 @@ public class ServletMatchHandler extends Handler {
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
                 final ServletInfo servletInfo = entry.getValue();
                 for (ServletMappingInfo path : servletInfo.getMappings()) {
-//                    RunLogger.getLogger().log(Level.SEVERE, "servlet match: " + (contextPath + path.getMapping()) + " requestURI: " + request.getRequestURI());
                     int index = PATH_MATCHER.matches(request.getRequestURI(), contextPath.length(), path);
                     if (index > -1) {
                         servlet = servletInfo.getServlet();
-                        setServletInfo(request, path, index);
+                        //《Servlet3.1规范中文版》3.5请求路径元素
+                        request.setServletPath(request.getContextPath().length(), index);
+                        if (path.getMappingType() != ServletMappingTypeEnum.PREFIX_MATCH) {
+                            //精确匹配和后缀匹配的 PathInfo 都为null
+                            request.setPathInfo(-1, -1);
+                        } else {
+                            request.setPathInfo(0, request.getRequestURI().length());
+                        }
+
                         break;
                     }
-//                    if ("/".equals(path.getMapping()) || PATH_MATCHER.matches(contextPath + path.getMapping(), request.getRequestURI())) {
-//                        servlet = servletInfo.getServlet();
-//                        setServletInfo(request, path);
-//                        break;
-//                    }
                 }
                 if (servlet != null) {
                     break;
@@ -75,37 +77,4 @@ public class ServletMatchHandler extends Handler {
         doNext(handlerContext);
     }
 
-
-    /**
-     * 《Servlet3.1规范中文版》3.5请求路径元素
-     *
-     * @param request
-     * @param path
-     */
-    private void setServletInfo(SmartHttpServletRequest request, ServletMappingInfo path, int matchIndex) {
-        String servletPath = null;
-        String pathInfo = null;
-        switch (path.getMappingType()) {
-            case EXACT_MATCH:
-                servletPath = path.getMapping();
-                pathInfo = "/" + StringUtils.substringAfter(request.getRequestURI(), request.getContextPath() + servletPath);
-                if ("/".equals(servletPath)) {
-                    servletPath = pathInfo;
-                    pathInfo = null;
-                }
-                break;
-            case PREFIX_MATCH:
-                servletPath = path.getMapping().substring(0, path.getMapping().length() - 2);
-                pathInfo = StringUtils.substringAfter(request.getRequestURI(), request.getContextPath() + servletPath);
-                break;
-            case EXTENSION_MATCH:
-                servletPath = request.getRequestURI().substring(request.getContextPath().length());
-                pathInfo = null;
-                break;
-            default:
-        }
-        request.setServletPath(servletPath);
-        request.setPathInfo(pathInfo);
-//        RunLogger.getLogger().log(Level.SEVERE, "contextPath: " + request.getContextPath() + " , servletPath: " + request.getServletPath() + " ,pathInfo: " + request.getPathInfo());
-    }
 }

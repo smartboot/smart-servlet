@@ -31,7 +31,11 @@ class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implemen
     private final boolean named;
     private HttpServletResponseImpl response;
     private String servletPath;
+    private int servletPathStart;
+    private int servletPathEnd;
     private String pathInfo;
+    private int pathInfoStart;
+    private int pathInfoEnd;
     private String requestUri;
     private Map<String, String[]> paramaters;
 
@@ -94,22 +98,44 @@ class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implemen
 
     @Override
     public String getPathInfo() {
-        return named ? super.getPathInfo() : this.pathInfo;
+        if (named) {
+            return super.getPathInfo();
+        }
+        if (pathInfoStart < 0) {
+            return null;
+        }
+        if (pathInfo != null) {
+            return pathInfo;
+        }
+        pathInfo = getRequestURI().substring(pathInfoStart, pathInfoEnd);
+        return pathInfo;
     }
 
     @Override
-    public void setPathInfo(String pathInfo) {
-        this.pathInfo = pathInfo;
+    public void setPathInfo(int start, int end) {
+        this.pathInfoStart = start;
+        this.pathInfoEnd = end;
     }
 
     @Override
     public String getServletPath() {
-        return named ? super.getServletPath() : this.servletPath;
+        if (named) {
+            return super.getServletPath();
+        }
+        if (servletPathStart < 0) {
+            return null;
+        }
+        if (servletPath != null) {
+            return servletPath;
+        }
+        servletPath = getRequestURI().substring(servletPathStart, servletPathEnd);
+        return servletPath;
     }
 
     @Override
-    public void setServletPath(String servletPath) {
-        this.servletPath = servletPath;
+    public void setServletPath(int start, int end) {
+        this.servletPathStart = start;
+        this.servletPathEnd = end;
     }
 
     public void setParamaters(Map<String, String[]> paramaters) {

@@ -59,7 +59,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private HttpSession httpSession;
     private Cookie[] cookies;
     private String servletPath;
+    private int servletPathStart;
+    private int servletPathEnd;
     private String pathInfo;
+    private int pathInfoStart;
+    private int pathInfoEnd;
     private String requestUri;
     private HttpServletResponse httpServletResponse;
     private ServletInputStream servletInputStream;
@@ -144,12 +148,20 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getPathInfo() {
+        if (pathInfoStart < 0) {
+            return null;
+        }
+        if (pathInfo != null) {
+            return pathInfo;
+        }
+        pathInfo = getRequestURI().substring(pathInfoStart, pathInfoEnd);
         return pathInfo;
     }
 
     @Override
-    public void setPathInfo(String pathInfo) {
-        this.pathInfo = pathInfo;
+    public void setPathInfo(int start, int end) {
+        this.pathInfoStart = start;
+        this.pathInfoEnd = end;
     }
 
     @Override
@@ -214,8 +226,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     }
 
     @Override
-    public void setRequestUri(String requestURI) {
-        this.requestUri = requestURI;
+    public void setRequestUri(String requestUri) {
+        this.requestUri = requestUri;
     }
 
     @Override
@@ -225,12 +237,20 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getServletPath() {
+        if (servletPathStart < 0) {
+            return null;
+        }
+        if (servletPath != null) {
+            return servletPath;
+        }
+        servletPath = getRequestURI().substring(servletPathStart, servletPathEnd);
         return servletPath;
     }
 
     @Override
-    public void setServletPath(String servletPath) {
-        this.servletPath = servletPath;
+    public void setServletPath(int start, int end) {
+        this.servletPathStart = start;
+        this.servletPathEnd = end;
     }
 
     @Override

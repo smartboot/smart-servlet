@@ -18,7 +18,19 @@ import javax.servlet.http.HttpServletRequest;
 public interface SmartHttpServletRequest extends HttpServletRequest {
     void setRequestUri(String requestUri);
 
-    void setServletPath(String servletPath);
+    /**
+     * 设置servletPath索引位置,若为null者传入负数
+     *
+     * @param start 起始点位
+     * @param end   结束点位
+     */
+    void setServletPath(int start, int end);
 
-    void setPathInfo(String pathInfo);
+    /**
+     * 设置pathInfo索引位置,若为null者传入负数
+     *
+     * @param start 起始点位
+     * @param end   结束点位
+     */
+    void setPathInfo(int start, int end);
 }

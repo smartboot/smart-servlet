@@ -14,7 +14,7 @@ import java.util.logging.Level;
  */
 public class Bootstrap {
     public static void main(String[] args) throws Exception {
-        String webapps = System.getProperty("webapps.dir");
+        String webapps = System.getProperty("config");
         long start = System.currentTimeMillis();
         if (webapps == null) {
             webapps = new File("archives/webapps").getAbsolutePath();
@@ -24,10 +24,9 @@ public class Bootstrap {
         if (file.isDirectory()) {
             for (File path : file.listFiles()) {
                 RunLogger.getLogger().log(Level.FINE, "start load: " + path.getAbsolutePath());
-//                WebContextRuntime webContextRuntime = new WebContextRuntime(path.getAbsolutePath(), "examples".equals(path.getName()) ? "/" : "/" + path.getName());
                 WebContextRuntime webContextRuntime = new WebContextRuntime(path.getAbsolutePath(), "/" + path.getName());
                 httpHandle.addRuntime(webContextRuntime.getServletRuntime());
-                RunLogger.getLogger().log(Level.FINE, "load /" + path.getName() + " success!");
+                RunLogger.getLogger().log(Level.FINE, "load servlet container: /" + path.getName() + " success!");
             }
         }
         httpHandle.start();
@@ -35,7 +34,7 @@ public class Bootstrap {
         bootstrap.pipeline().next(httpHandle);
         bootstrap.setBannerEnabled(false);
         bootstrap.setBufferPool(1024 * 1024 * 10, Runtime.getRuntime().availableProcessors(), 1024 * 4);
-        bootstrap.setReadBufferSize(1024 * 4).setPort(8080).start();
+        bootstrap.setReadBufferSize(1024 * 4).setPort(8081).start();
         System.out.println("启动成功,耗时：" + (System.currentTimeMillis() - start) + "ms");
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
