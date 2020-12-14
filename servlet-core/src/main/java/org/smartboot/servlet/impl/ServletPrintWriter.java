@@ -24,7 +24,6 @@ import java.nio.charset.CharsetEncoder;
  * @version V1.0 , 2020/11/10
  */
 public class ServletPrintWriter extends Writer {
-    private static final int BUFFER_LIMIT = 128;
     private final ServletOutputStreamImpl servletOutputStream;
     private final CharsetEncoder charsetEncoder;
     private final ContainerRuntime containerRuntime;
@@ -58,7 +57,8 @@ public class ServletPrintWriter extends Writer {
             VirtualBuffer virtualBuffer = null;
             boolean committed = servletOutputStream.isCommitted();
             if (committed) {
-                virtualBuffer = containerRuntime.getMemoryPoolProvider().getBufferPage().allocate(Math.max(BUFFER_LIMIT, buffer.remaining()));
+                //一个中文转成2个字节，预申请2倍空间
+                virtualBuffer = containerRuntime.getMemoryPoolProvider().getBufferPage().allocate(buffer.remaining() << 1);
             } else if (this.virtualBuffer == null) {
                 //未提交前写入暂存区
                 byte[] bufferBytes = servletOutputStream.getBuffer();
@@ -76,6 +76,10 @@ public class ServletPrintWriter extends Writer {
             } else {
                 //更新缓冲区计数
                 servletOutputStream.setCount(virtualBuffer.buffer().remaining());
+                //释放内存
+                if (servletOutputStream.isCommitted()) {
+                    this.virtualBuffer = null;
+                }
             }
             if (buffer.hasRemaining()) {
                 System.out.println("aaa " + buffer.remaining());
