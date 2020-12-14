@@ -54,22 +54,25 @@ public class ServletPrintWriter extends Writer {
 
     private void write(CharBuffer buffer) throws IOException {
         while (buffer.hasRemaining()) {
-            VirtualBuffer virtualBuffer = null;
+            VirtualBuffer virtualBuffer;
+            //第一步：匹配VirtualBuffer
             boolean committed = servletOutputStream.isCommitted();
             if (committed) {
                 //一个中文转成2个字节，预申请2倍空间
                 virtualBuffer = containerRuntime.getMemoryPoolProvider().getBufferPage().allocate(buffer.remaining() << 1);
-            } else if (this.virtualBuffer == null) {
-                //未提交前写入暂存区
-                byte[] bufferBytes = servletOutputStream.getBuffer();
-                int offset = servletOutputStream.getCount();
-                int length = bufferBytes.length - offset;
-                virtualBuffer = this.virtualBuffer = VirtualBuffer.wrap(ByteBuffer.wrap(bufferBytes, offset, length));
             } else {
+                //未提交前写入暂存区
+                if (this.virtualBuffer == null) {
+                    this.virtualBuffer = VirtualBuffer.wrap(ByteBuffer.wrap(servletOutputStream.getBuffer()));
+                }
                 this.virtualBuffer.buffer().clear().position(servletOutputStream.getCount());
                 virtualBuffer = this.virtualBuffer;
             }
+
+            //第二步：编码
             charsetEncoder.encode(buffer, virtualBuffer.buffer(), true);
+
+            //第三步：输出
             virtualBuffer.buffer().flip();
             if (committed) {
                 servletOutputStream.write(virtualBuffer);
