@@ -15,7 +15,6 @@ import org.smartboot.socket.buffer.VirtualBuffer;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * @author 三刀
@@ -83,10 +82,6 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         outputStream.write(b, off, len);
     }
 
-    public void write(ByteBuffer buffer) throws IOException {
-        outputStream.write(buffer);
-    }
-
     public void write(VirtualBuffer buffer) throws IOException {
         outputStream.write(buffer);
     }
@@ -102,6 +97,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         if (count > 0) {
             outputStream.write(buffer, 0, count);
             buffer = null;
+            count = 0;
         }
         outputStream.flush();
     }
@@ -123,6 +119,26 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     public int getCount() {
         return count;
+    }
+
+    public void setCount(int count) throws IOException {
+        //此段逻辑必须只由ServletPrintWrite#write触发
+        this.count = count;
+        if (count == this.buffer.length) {
+            flush();
+        } else if (count > this.buffer.length) {
+            throw new IndexOutOfBoundsException("count:" + count + " ,limit:" + buffer.length);
+        }
+    }
+
+    public byte[] getBuffer() {
+        if (committed) {
+            return null;
+        }
+        if (buffer == null) {
+            buffer = FIRST_BUFFER.get();
+        }
+        return buffer;
     }
 
     public int getBufferSize() {
