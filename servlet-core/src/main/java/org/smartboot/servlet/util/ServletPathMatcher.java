@@ -50,7 +50,7 @@ public class ServletPathMatcher {
         } else if (mapping.startsWith("/") && mapping.endsWith("/*")) {
             return new ServletMappingInfo(mapping, ServletMappingTypeEnum.PREFIX_MATCH);
         } else {
-            throw new UnsupportedOperationException(mapping);
+            throw new IllegalArgumentException("illegal mapping : " + mapping);
         }
     }
 
@@ -111,7 +111,7 @@ public class ServletPathMatcher {
                 servletPathEndIndex = uri.length();
                 break;
             default:
-                throw new UnsupportedOperationException("unSupport mappingType " + mappingTypeEnum);
+                throw new IllegalStateException("unSupport mappingType " + mappingTypeEnum);
         }
         return servletPathEndIndex;
     }
