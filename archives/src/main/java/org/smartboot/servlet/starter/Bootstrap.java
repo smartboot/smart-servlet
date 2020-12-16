@@ -34,7 +34,7 @@ public class Bootstrap {
         bootstrap.pipeline().next(httpHandle);
         bootstrap.setBannerEnabled(false);
         bootstrap.setBufferPool(1024 * 1024 * 10, Runtime.getRuntime().availableProcessors(), 1024 * 4);
-        bootstrap.setReadBufferSize(1024 * 4).setPort(8081).start();
+        bootstrap.setReadBufferSize(1024 * 4).setPort(8080).start();
         System.out.println("启动成功,耗时：" + (System.currentTimeMillis() - start) + "ms");
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
