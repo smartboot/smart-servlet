@@ -15,13 +15,14 @@ import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.FilterMappingInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
-import org.smartboot.servlet.impl.FilterChainImpl;
 import org.smartboot.servlet.util.ServletPathMatcher;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -49,6 +50,7 @@ public class FilterMatchHandler extends Handler {
     private final Map<Servlet, Map<String, List<Filter>>> requestDispatcherFilterChainMap = new HashMap<>();
 
     private final Map<Servlet, Map<String, List<Filter>>> forwardDispatcherFilterChainMap = new HashMap<>();
+    private final ThreadLocal<FilterChainImpl> filterChainThreadLocal = ThreadLocal.withInitial(FilterChainImpl::new);
 
     @Override
     public void handleRequest(HandlerContext handlerContext) {
@@ -61,11 +63,14 @@ public class FilterMatchHandler extends Handler {
             cacheFilterList(handlerContext, filters);
         }
 
-        FilterChain filterChain = new FilterChainImpl(filters, () -> FilterMatchHandler.this.doNext(handlerContext));
+        FilterChainImpl filterChain = filterChainThreadLocal.get();
+        filterChain.init(filters, handlerContext);
         try {
             filterChain.doFilter(handlerContext.getRequest(), handlerContext.getResponse());
         } catch (IOException | ServletException e) {
             throw new WrappedRuntimeException(e);
+        } finally {
+            filterChain.init(null, null);
         }
     }
 
@@ -136,4 +141,31 @@ public class FilterMatchHandler extends Handler {
         }
         urlMap.put(handlerContext.getRequest().getRequestURI(), filters);
     }
+
+    class FilterChainImpl implements FilterChain {
+        private List<Filter> filters;
+        private int location = 0;
+        private HandlerContext handlerContext;
+        private boolean doNext = true;
+
+        public void init(List<Filter> filters, HandlerContext handlerContext) {
+            this.filters = filters;
+            this.handlerContext = handlerContext;
+            location = 0;
+            doNext = true;
+        }
+
+        @Override
+        public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
+            int index = location++;
+            if (index < filters.size()) {
+                filters.get(index).doFilter(request, response, this);
+            }
+            if (doNext) {
+                doNext = false;
+                FilterMatchHandler.this.doNext(handlerContext);
+            }
+        }
+    }
+
 }

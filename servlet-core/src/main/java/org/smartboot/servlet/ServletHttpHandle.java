@@ -47,7 +47,7 @@ public class ServletHttpHandle extends HttpHandle {
             "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" +
             "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" +
             "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
-    private static final String VERSION = "0.1.0";
+    private static final String VERSION = "0.1.1";
     private final List<ContainerRuntime> runtimes = new ArrayList<>();
     private final List<Plugin> plugins = new ArrayList<>();
     private volatile boolean started = false;
