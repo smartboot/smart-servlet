@@ -146,13 +146,11 @@ public class FilterMatchHandler extends Handler {
         private List<Filter> filters;
         private int location = 0;
         private HandlerContext handlerContext;
-        private boolean doNext = true;
 
         public void init(List<Filter> filters, HandlerContext handlerContext) {
             this.filters = filters;
             this.handlerContext = handlerContext;
             location = 0;
-            doNext = true;
         }
 
         @Override
@@ -160,9 +158,7 @@ public class FilterMatchHandler extends Handler {
             int index = location++;
             if (index < filters.size()) {
                 filters.get(index).doFilter(request, response, this);
-            }
-            if (doNext) {
-                doNext = false;
+            } else {
                 FilterMatchHandler.this.doNext(handlerContext);
             }
         }
