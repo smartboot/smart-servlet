@@ -55,14 +55,13 @@ public class ServletPrintWriter extends Writer {
     }
 
     private void write(CharBuffer buffer) throws IOException {
-        int remaining;
-        while ((remaining = buffer.remaining()) > 0) {
+        while (buffer.hasRemaining()) {
             VirtualBuffer virtualBuffer;
             //第一步：匹配VirtualBuffer
             boolean committed = servletOutputStream.isCommitted();
             if (committed) {
                 //一个中文转成2个字节，预申请2倍空间
-                virtualBuffer = containerRuntime.getMemoryPoolProvider().getBufferPage().allocate(buffer.remaining() << 1);
+                virtualBuffer = containerRuntime.getMemoryPoolProvider().getBufferPage().allocate(buffer.remaining() < 4 ? 32 : buffer.remaining() << 1);
             } else {
                 //未提交前写入暂存区
                 if (this.virtualBuffer == null) {
@@ -79,10 +78,6 @@ public class ServletPrintWriter extends Writer {
             virtualBuffer.buffer().flip();
             if (committed) {
                 servletOutputStream.write(virtualBuffer);
-            }
-            //virtualBuffer剩余空间不足以用于编码
-            else if (remaining == buffer.remaining()) {
-                servletOutputStream.flush();
             } else {
                 //更新缓冲区计数
                 servletOutputStream.setCount(virtualBuffer.buffer().remaining());

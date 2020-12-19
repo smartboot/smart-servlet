@@ -64,13 +64,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String encodeURL(String url) {
-        RunLogger.getLogger().log(Level.SEVERE, "url");
+        RunLogger.getLogger().log(Level.SEVERE, "url: " + url);
         return url;
     }
 
     @Override
     public String encodeRedirectURL(String url) {
-        RunLogger.getLogger().log(Level.SEVERE, "url");
+        RunLogger.getLogger().log(Level.SEVERE, "url: " + url);
         return url;
     }
 
