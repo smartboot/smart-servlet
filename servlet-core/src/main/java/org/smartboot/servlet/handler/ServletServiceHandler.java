@@ -49,7 +49,6 @@ public class ServletServiceHandler extends Handler {
             ServletContextImpl servletContext = handlerContext.getServletContext();
             //requestURI为本地资源文件
             if (isFile(servletContext.getResource(request.getRequestURI().substring(request.getContextPath().length())))) {
-                RunLogger.getLogger().log(Level.FINE, "加载资源文件...");
                 servletContext.getDeploymentInfo().getDefaultServlet().service(request, response);
                 return;
             }

@@ -61,7 +61,7 @@ public class ServletPrintWriter extends Writer {
             boolean committed = servletOutputStream.isCommitted();
             if (committed) {
                 //一个中文转成2个字节，预申请2倍空间
-                virtualBuffer = containerRuntime.getMemoryPoolProvider().getBufferPage().allocate(buffer.remaining() < 4 ? 32 : buffer.remaining() << 1);
+                virtualBuffer = containerRuntime.getMemoryPoolProvider().getBufferPage().allocate(buffer.remaining() < 32 ? 32 : buffer.remaining() << 1);
             } else {
                 //未提交前写入暂存区
                 if (this.virtualBuffer == null) {
