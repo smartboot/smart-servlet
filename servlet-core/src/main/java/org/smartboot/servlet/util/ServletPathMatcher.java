@@ -102,7 +102,7 @@ public class ServletPathMatcher {
                 break;
             case EXTENSION_MATCH:
                 // 不比较"*.xx" 中的 *
-                int uriStartIndex = uri.length() - pattern.length() - 1;
+                int uriStartIndex = uri.length() - pattern.length();
                 for (int i = 1; i < pattern.length(); i++) {
                     if (uri.charAt(uriStartIndex + i) != pattern.charAt(i)) {
                         return -1;

@@ -105,6 +105,7 @@ public class ServletHttpHandle extends HttpHandle {
             ContainerRuntime runtime = new ContainerRuntime("/");
             DeploymentInfo deploymentInfo = runtime.getDeploymentInfo();
             deploymentInfo.setDefaultServlet(new DefaultServlet());
+            deploymentInfo.setClassLoader(Thread.currentThread().getContextClassLoader());
             runtimes.add(runtime);
         }
     }
