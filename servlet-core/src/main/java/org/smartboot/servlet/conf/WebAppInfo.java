@@ -25,7 +25,7 @@ public class WebAppInfo {
     /**
      * web.xml中的Servlet配置
      */
-    private final Map<String, ServletInfo> servlets = new HashMap();
+    private final Map<String, ServletInfo> servlets = new HashMap<>();
 
     /**
      * web.xml中的Filter配置

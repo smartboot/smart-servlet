@@ -175,6 +175,9 @@ public class ContainerRuntime {
             }
             servlet.init(servletConfig);
         }
+        //初始化默认Servlet
+        ServletConfig servletConfig = new ServletConfigImpl(new ServletInfo(), servletContext);
+        deploymentInfo.getDefaultServlet().init(servletConfig);
     }
 
     /**

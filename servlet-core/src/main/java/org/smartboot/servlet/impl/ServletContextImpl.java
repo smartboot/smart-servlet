@@ -201,12 +201,12 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void log(String msg) {
-//        LOGGER.info(msg);
+        RunLogger.getLogger().log(Level.FINE, msg);
     }
 
     @Override
     public void log(Exception exception, String msg) {
-//        LOGGER.error(msg, exception);
+        RunLogger.getLogger().log(Level.SEVERE, msg, exception);
     }
 
     @Override
