@@ -16,7 +16,7 @@ import org.smartboot.servlet.conf.ServletMappingInfo;
 import org.smartboot.servlet.enums.ServletMappingTypeEnum;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.ServletContextImpl;
-import org.smartboot.servlet.util.ServletPathMatcher;
+import org.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -30,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version V1.0 , 2019/12/11
  */
 public class ServletMatchHandler extends Handler {
-    private static final ServletPathMatcher PATH_MATCHER = new ServletPathMatcher();
     /**
      * 缓存URI-Servlet映射关系
      */
@@ -64,7 +63,7 @@ public class ServletMatchHandler extends Handler {
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
                 final ServletInfo servletInfo = entry.getValue();
                 for (ServletMappingInfo path : servletInfo.getMappings()) {
-                    int servletPathEndIndex = PATH_MATCHER.matches(request.getRequestURI(), contextPath.length(), path);
+                    int servletPathEndIndex = PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), path);
                     if (servletPathEndIndex > -1) {
                         servlet = servletInfo.getServlet();
                         //《Servlet3.1规范中文版》3.5请求路径元素

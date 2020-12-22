@@ -15,7 +15,7 @@ import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.FilterMappingInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
-import org.smartboot.servlet.util.ServletPathMatcher;
+import org.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -42,7 +42,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FilterMatchHandler extends Handler {
     private static final Servlet NONE = new HttpServlet() {
     };
-    private static final ServletPathMatcher PATH_MATCHER = new ServletPathMatcher();
 
     /**
      * 缓存Servlet关联的过滤器
@@ -87,7 +86,7 @@ public class FilterMatchHandler extends Handler {
                 .filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType()))
                 .forEach(filterInfo -> {
                     if (filterInfo.getMappingType() == FilterMappingType.URL) {
-                        if (PATH_MATCHER.matches(request.getRequestURI(), contextPath.length(), filterInfo.getServletUrlMapping()) > -1) {
+                        if (PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), filterInfo.getServletUrlMapping()) > -1) {
                             filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
                         }
                     } else if (filterInfo.getMappingType() == FilterMappingType.SERVLET) {

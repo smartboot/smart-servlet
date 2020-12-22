@@ -163,6 +163,7 @@ public class DefaultServlet extends HttpServlet {
             response.getOutputStream().write(faviconBytes);
             return;
         }
+        RunLogger.getLogger().log(Level.FINE, "load file:" + fileName);
         FileInputStream fis = new FileInputStream(file);
         FileChannel fileChannel = fis.getChannel();
         long fileSize = fileChannel.size();

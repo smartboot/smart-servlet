@@ -19,13 +19,7 @@ import java.net.URISyntaxException;
  * @author 三刀
  * @version V1.0 , 2020/11/14
  */
-public class ServletPathMatcher {
-
-    private final static ServletPathMatcher INSTANCE = new ServletPathMatcher();
-
-    public static ServletPathMatcher getInstance() {
-        return INSTANCE;
-    }
+public class PathMatcherUtil {
 
     public static boolean isAbsoluteUrl(String location) {
         if (location != null && location.length() > 0 && location.contains(":")) {
@@ -54,7 +48,7 @@ public class ServletPathMatcher {
         }
     }
 
-    public int matches(String uri, int startIndex, ServletMappingInfo mappingInfo) {
+    public static int matches(String uri, int startIndex, ServletMappingInfo mappingInfo) {
         String pattern = mappingInfo.getMapping();
         ServletMappingTypeEnum mappingTypeEnum = mappingInfo.getMappingType();
         int servletPathEndIndex = -1;

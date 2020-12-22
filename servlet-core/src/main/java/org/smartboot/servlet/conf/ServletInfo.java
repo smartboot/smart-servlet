@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.conf;
 
-import org.smartboot.servlet.util.ServletPathMatcher;
+import org.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.servlet.Servlet;
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class ServletInfo {
      * @return
      */
     public ServletInfo addMapping(final String mapping) {
-        ServletMappingInfo servletMappingInfo = ServletPathMatcher.addMapping(mapping);
+        ServletMappingInfo servletMappingInfo = PathMatcherUtil.addMapping(mapping);
         mappings.add(servletMappingInfo);
         return this;
     }

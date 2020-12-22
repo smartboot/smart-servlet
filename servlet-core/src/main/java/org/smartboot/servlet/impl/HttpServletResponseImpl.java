@@ -15,7 +15,7 @@ import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.HttpHeaderConstant;
 import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.util.DateUtil;
-import org.smartboot.servlet.util.ServletPathMatcher;
+import org.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -102,7 +102,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         response.setHttpStatus(HttpStatus.FOUND);
         RunLogger.getLogger().log(Level.INFO, "location:" + location);
         String redirect;
-        if (ServletPathMatcher.isAbsoluteUrl(location)) {
+        if (PathMatcherUtil.isAbsoluteUrl(location)) {
             redirect = location;
         } else if (location.charAt(0) == '/') {
             redirect = request.getScheme() + "://" + request.getHeader(HttpHeaderConstant.Names.HOST) + location;

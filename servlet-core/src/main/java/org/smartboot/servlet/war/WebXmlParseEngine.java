@@ -18,7 +18,7 @@ import org.smartboot.servlet.conf.FilterMappingInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
-import org.smartboot.servlet.util.ServletPathMatcher;
+import org.smartboot.servlet.util.PathMatcherUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -139,7 +139,7 @@ class WebXmlParseEngine {
             }
             FilterMappingInfo filterInfo = new FilterMappingInfo(filterName
                     , StringUtils.isBlank(urlPattern) ? FilterMappingType.SERVLET : FilterMappingType.URL,
-                    servletName, StringUtils.isBlank(urlPattern) ? null : ServletPathMatcher.addMapping(urlPattern),
+                    servletName, StringUtils.isBlank(urlPattern) ? null : PathMatcherUtil.addMapping(urlPattern),
                     dispatcherTypes);
             webAppInfo.addFilterMapping(filterInfo);
         }

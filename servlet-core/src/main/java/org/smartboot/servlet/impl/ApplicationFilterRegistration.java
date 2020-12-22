@@ -14,7 +14,7 @@ import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.FilterMappingInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
-import org.smartboot.servlet.util.ServletPathMatcher;
+import org.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
@@ -57,7 +57,7 @@ public class ApplicationFilterRegistration
             EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter,
             String... urlPatterns) {
         for (String urlPattern : urlPatterns) {
-            FilterMappingInfo mappingInfo = new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.URL, null, ServletPathMatcher.addMapping(urlPattern), dispatcherTypes);
+            FilterMappingInfo mappingInfo = new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.URL, null, PathMatcherUtil.addMapping(urlPattern), dispatcherTypes);
             context.addFilterMapping(mappingInfo);
         }
     }
