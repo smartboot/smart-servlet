@@ -9,6 +9,8 @@
 
 package org.smartboot.servlet.conf;
 
+import org.smartboot.servlet.DefaultServlet;
+
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextAttributeListener;
@@ -38,10 +40,10 @@ public class DeploymentInfo {
     private final List<ServletContainerInitializer> servletContainerInitializers = new ArrayList<>();
     private final List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
     private List<String> welcomeFiles = Collections.emptyList();
-    private ClassLoader classLoader;
+    private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private String displayName;
     private URL contextUrl;
-    private Servlet defaultServlet;
+    private Servlet defaultServlet = new DefaultServlet();
     /**
      * 会话超时时间
      */
