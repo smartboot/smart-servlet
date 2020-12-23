@@ -31,12 +31,15 @@ import java.util.logging.Level;
  * @version V1.0 , 2019/12/11
  */
 public class HttpServletResponseImpl implements HttpServletResponse {
+    private static final int DEFAULT_BUFFER_SIZE = 512;
+    private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[DEFAULT_BUFFER_SIZE]);
     private final HttpResponse response;
     private final HttpServletRequest request;
     private final ContainerRuntime containerRuntime;
     private String contentType;
     private PrintWriter writer;
     private ServletOutputStreamImpl servletOutputStream;
+    private int bufferSize = -1;
 
     public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response, ContainerRuntime containerRuntime) {
         this.request = request;
@@ -206,7 +209,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     @Override
     public ServletOutputStreamImpl getOutputStream() {
         if (servletOutputStream == null) {
-            servletOutputStream = new ServletOutputStreamImpl(response.getOutputStream());
+            byte[] buffer = null;
+            if (bufferSize == -1) {
+                buffer = FIRST_BUFFER.get();
+            } else if (bufferSize > 0) {
+                buffer = new byte[bufferSize];
+            }
+            servletOutputStream = new ServletOutputStreamImpl(response.getOutputStream(), buffer);
         }
         return servletOutputStream;
     }
@@ -231,7 +240,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public int getBufferSize() {
-        return servletOutputStream == null ? 0 : servletOutputStream.getBufferSize();
+        return bufferSize;
     }
 
     @Override
@@ -239,9 +248,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (servletOutputStream != null && (servletOutputStream.getCount() > 0 || servletOutputStream.isCommitted())) {
             throw new IllegalStateException();
         }
-        if (servletOutputStream != null) {
-            servletOutputStream.updateBufferSize(size);
-        }
+        bufferSize = size;
     }
 
     public int unWriteSize() {
@@ -251,6 +258,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     @Override
     public void flushBuffer() throws IOException {
         getOutputStream().flush();
+    }
+
+    public void flushServletBuffer() throws IOException {
+        getOutputStream().flushServletBuffer();
     }
 
     @Override

@@ -21,8 +21,6 @@ import java.io.IOException;
  * @version V1.0 , 2020/10/19
  */
 public class ServletOutputStreamImpl extends ServletOutputStream {
-    private static final int DEFAULT_BUFFER_SIZE = 512;
-    private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[DEFAULT_BUFFER_SIZE]);
     private final BufferOutputStream outputStream;
     private boolean committed = false;
     /**
@@ -31,8 +29,9 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     private byte[] buffer;
     private int count;
 
-    public ServletOutputStreamImpl(BufferOutputStream outputStream) {
+    public ServletOutputStreamImpl(BufferOutputStream outputStream, byte[] buffer) {
         this.outputStream = outputStream;
+        this.buffer = buffer;
     }
 
     @Override
@@ -59,13 +58,9 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         }
         //继续缓存数据
         if (buffer == null) {
-            if (len >= DEFAULT_BUFFER_SIZE) {
-                committed = true;
-                outputStream.write(b, off, len);
-                return;
-            } else {
-                buffer = FIRST_BUFFER.get();
-            }
+            committed = true;
+            outputStream.write(b, off, len);
+            return;
         }
         if (len < buffer.length - count - 1) {
             System.arraycopy(b, off, buffer, count, len);
@@ -93,13 +88,17 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     @Override
     public void flush() throws IOException {
+        flushServletBuffer();
+        outputStream.flush();
+    }
+
+    public void flushServletBuffer() throws IOException {
         committed = true;
         if (count > 0) {
             outputStream.write(buffer, 0, count);
             buffer = null;
             count = 0;
         }
-        outputStream.flush();
     }
 
     public boolean isCommitted() {
@@ -108,13 +107,6 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     public void resetBuffer() {
         count = 0;
-    }
-
-    public void updateBufferSize(int bufferSize) {
-        if (committed || count > 0) {
-            return;
-        }
-        buffer = bufferSize > 0 ? new byte[bufferSize] : null;
     }
 
     public int getCount() {
@@ -136,13 +128,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         if (committed) {
             return null;
         }
-        if (buffer == null) {
-            buffer = FIRST_BUFFER.get();
-        }
         return buffer;
     }
 
-    public int getBufferSize() {
-        return buffer == null ? 0 : buffer.length;
-    }
 }

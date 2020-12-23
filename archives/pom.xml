@@ -9,7 +9,7 @@
     <version>1.0.0</version>
 
     <properties>
-        <smartservlet.version>0.1.1</smartservlet.version>
+        <smartservlet.version>0.1.2-SNAPSHOT</smartservlet.version>
     </properties>
 
     <dependencies>
@@ -21,15 +21,15 @@
         <dependency>
             <groupId>org.smartboot.servlet</groupId>
             <artifactId>plugin-dispatcher</artifactId>
-            <version>0.1.1</version>
-            <systemPath>${project.basedir}/plugins/plugin-dispatcher-0.1.1.jar</systemPath>
+            <version>0.1.2-SNAPSHOT</version>
+            <systemPath>${project.basedir}/plugins/plugin-dispatcher-0.1.2-SNAPSHOT.jar</systemPath>
             <scope>system</scope>
         </dependency>
         <dependency>
             <groupId>org.smartboot.servlet</groupId>
             <artifactId>plugin-session</artifactId>
-            <version>0.1.1</version>
-            <systemPath>${project.basedir}/plugins/plugin-session-0.1.1.jar</systemPath>
+            <version>0.1.2-SNAPSHOT</version>
+            <systemPath>${project.basedir}/plugins/plugin-session-0.1.2-SNAPSHOT.jar</systemPath>
             <scope>system</scope>
         </dependency>
     </dependencies>

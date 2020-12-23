@@ -47,7 +47,7 @@ public class ServletHttpHandle extends HttpHandle {
             "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" +
             "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" +
             "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
-    private static final String VERSION = "0.1.1";
+    private static final String VERSION = "0.1.2-SNAPSHOT";
     private final List<ContainerRuntime> runtimes = new ArrayList<>();
     private final List<Plugin> plugins = new ArrayList<>();
     private volatile boolean started = false;
@@ -137,7 +137,7 @@ public class ServletHttpHandle extends HttpHandle {
             // just do it
             servletContext.getPipeline().handleRequest(handlerContext);
             //输出buffer中的数据
-            servletResponse.flushBuffer();
+            servletResponse.flushServletBuffer();
         } catch (WrappedRuntimeException e) {
             e.getThrowable().printStackTrace();
         } catch (Exception e) {
