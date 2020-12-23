@@ -13,7 +13,6 @@ import org.smartboot.http.HttpRequest;
 import org.smartboot.http.HttpResponse;
 import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.server.handle.HttpHandle;
-import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
@@ -160,8 +159,8 @@ public class ServletHttpHandle extends HttpHandle {
 
     public ContainerRuntime matchRuntime(String requestUri) {
         for (ContainerRuntime matchRuntime : runtimes) {
-            String contextPath = matchRuntime.getServletContext().getContextPath();
-            if (StringUtils.startsWith(requestUri, contextPath)) {
+            String contextPath = matchRuntime.getContextPath();
+            if (requestUri.startsWith(contextPath)) {
                 return matchRuntime;
             }
         }
