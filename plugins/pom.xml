@@ -4,6 +4,7 @@
         <artifactId>smart-servlet-parent</artifactId>
         <groupId>org.smartboot.servlet</groupId>
         <version>0.1.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <name>servlet-plugins-parent</name>
     <modelVersion>4.0.0</modelVersion>
