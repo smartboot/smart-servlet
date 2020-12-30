@@ -16,6 +16,7 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
+import javax.servlet.http.HttpSessionListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +40,7 @@ public class DeploymentInfo {
     private final List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
     private final List<ServletContainerInitializer> servletContainerInitializers = new ArrayList<>();
     private final List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
+    private final List<HttpSessionListener> httpSessionListeners = new ArrayList<>();
     private List<String> welcomeFiles = Collections.emptyList();
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private String displayName;
@@ -110,6 +112,11 @@ public class DeploymentInfo {
     public void addServletContextAttributeListener(ServletContextAttributeListener attributeListener) {
         servletContextAttributeListeners.add(attributeListener);
     }
+
+    public void addHttpSessionListener(HttpSessionListener httpSessionListener) {
+        httpSessionListeners.add(httpSessionListener);
+    }
+
 
     public List<ServletContextAttributeListener> getServletContextAttributeListeners() {
         return servletContextAttributeListeners;

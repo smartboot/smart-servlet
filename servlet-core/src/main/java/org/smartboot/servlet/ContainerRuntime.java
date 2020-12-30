@@ -9,7 +9,6 @@
 
 package org.smartboot.servlet;
 
-import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.StringUtils;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
@@ -28,18 +27,18 @@ import javax.servlet.FilterConfig;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequestListener;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * 运行时环境
@@ -60,6 +59,7 @@ public class ContainerRuntime {
      * 上下文路径
      */
     private final String contextPath;
+    private final String location;
     /**
      * Dispatcher服务提供者
      */
@@ -68,7 +68,6 @@ public class ContainerRuntime {
      * Session服务提供者
      */
     private SessionProvider sessionProvider = SandBox.INSTANCE.getSessionProvider();
-
     /**
      * 内存池服务提供者
      */
@@ -77,15 +76,19 @@ public class ContainerRuntime {
      * 关联至本运行环境的插件集合
      */
     private List<Plugin> plugins = Collections.emptyList();
-
     private boolean started = false;
 
     public ContainerRuntime(String contextPath) {
+        this(null, contextPath);
+    }
+
+    public ContainerRuntime(String location, String contextPath) {
         if (StringUtils.isBlank(contextPath)) {
             this.contextPath = "/";
         } else {
             this.contextPath = contextPath;
         }
+        this.location = location;
     }
 
     public List<Plugin> getPlugins() {
@@ -100,6 +103,12 @@ public class ContainerRuntime {
      * 启动容器
      */
     public void start() throws Exception {
+
+        //自定义ClassLoader
+        if (StringUtils.isNotBlank(location)) {
+            ClassLoader webClassLoader = getClassLoader(location);
+            deploymentInfo.setClassLoader(webClassLoader);
+        }
         plugins.forEach(plugin -> {
             plugin.willStartContainer(this);
         });
@@ -114,22 +123,8 @@ public class ContainerRuntime {
 
         //启动Listener
         for (String eventListenerInfo : deploymentInfo.getEventListeners()) {
-            EventListener listener = (EventListener) Thread.currentThread().getContextClassLoader().loadClass(eventListenerInfo).newInstance();
-            if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
-                ServletContextListener contextListener = (ServletContextListener) listener;
-                ServletContextEvent event = new ServletContextEvent(servletContext);
-                contextListener.contextInitialized(event);
-                deploymentInfo.addServletContextListener(contextListener);
-                RunLogger.getLogger().log(Level.FINE, "contextInitialized listener:" + listener);
-            } else if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
-                deploymentInfo.addServletRequestListener((ServletRequestListener) listener);
-                RunLogger.getLogger().log(Level.FINE, "ServletRequestListener listener:" + listener);
-            } else if (ServletContextAttributeListener.class.isAssignableFrom(listener.getClass())) {
-                deploymentInfo.addServletContextAttributeListener((ServletContextAttributeListener) listener);
-                RunLogger.getLogger().log(Level.FINE, "ServletContextAttributeListener listener:" + listener);
-            } else {
-                throw new RuntimeException(listener.toString());
-            }
+            EventListener listener = (EventListener) deploymentInfo.getClassLoader().loadClass(eventListenerInfo).newInstance();
+            servletContext.addListener(listener);
         }
 
         //启动Servlet
@@ -142,6 +137,23 @@ public class ContainerRuntime {
         plugins.forEach(plugin -> {
             plugin.onContainerStartSuccess(this);
         });
+    }
+
+    private ClassLoader getClassLoader(String location) throws MalformedURLException {
+        List<URL> list = new ArrayList<>();
+        File libDir = new File(location, "WEB-INF" + File.separator + "lib/");
+        File[] files = libDir.listFiles();
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                list.add(file.toURI().toURL());
+            }
+        }
+
+        File classDir = new File(location, "WEB-INF" + File.separator + "classes/");
+        list.add(classDir.toURI().toURL());
+        URL[] urls = new URL[list.size()];
+        list.toArray(urls);
+        return new URLClassLoader(urls);
     }
 
     /**
@@ -170,7 +182,7 @@ public class ContainerRuntime {
             if (servletInfo.isDynamic()) {
                 servlet = servletInfo.getServlet();
             } else {
-                servlet = (Servlet) Thread.currentThread().getContextClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
+                servlet = (Servlet) deploymentInfo.getClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
                 servletInfo.setServlet(servlet);
             }
             servlet.init(servletConfig);
@@ -192,7 +204,7 @@ public class ContainerRuntime {
             if (filterInfo.isDynamic()) {
                 filter = filterInfo.getFilter();
             } else {
-                filter = (Filter) Thread.currentThread().getContextClassLoader().loadClass(filterInfo.getFilterClass()).newInstance();
+                filter = (Filter) deploymentInfo.getClassLoader().loadClass(filterInfo.getFilterClass()).newInstance();
                 filterInfo.setFilter(filter);
             }
             filter.init(filterConfig);

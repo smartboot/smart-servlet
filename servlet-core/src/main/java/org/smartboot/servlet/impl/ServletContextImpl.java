@@ -25,11 +25,15 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRequestListener;
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.servlet.descriptor.JspConfigDescriptor;
+import javax.servlet.http.HttpSessionListener;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -130,6 +134,8 @@ public class ServletContextImpl implements ServletContext {
         try {
             if (new File(pathUrl.toURI()).exists()) {
                 url = pathUrl;
+            } else {
+                url = getClassLoader().getResource(path);
             }
         } catch (URISyntaxException e) {
             RunLogger.getLogger().log(Level.SEVERE, "path:" + pathUrl + " ，URISyntaxException:" + e.getMessage());
@@ -392,17 +398,34 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void addListener(String className) {
-        throw new UnsupportedOperationException();
+        deploymentInfo.addEventListener(className);
     }
 
     @Override
-    public <T extends EventListener> void addListener(T t) {
-        throw new UnsupportedOperationException();
+    public <T extends EventListener> void addListener(T listener) {
+        if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
+            ServletContextListener contextListener = (ServletContextListener) listener;
+            ServletContextEvent event = new ServletContextEvent(this);
+            contextListener.contextInitialized(event);
+            deploymentInfo.addServletContextListener(contextListener);
+            RunLogger.getLogger().log(Level.FINE, "contextInitialized listener:" + listener);
+        } else if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
+            deploymentInfo.addServletRequestListener((ServletRequestListener) listener);
+            RunLogger.getLogger().log(Level.FINE, "ServletRequestListener listener:" + listener);
+        } else if (ServletContextAttributeListener.class.isAssignableFrom(listener.getClass())) {
+            deploymentInfo.addServletContextAttributeListener((ServletContextAttributeListener) listener);
+            RunLogger.getLogger().log(Level.FINE, "ServletContextAttributeListener listener:" + listener);
+        } else if (HttpSessionListener.class.isAssignableFrom(listener.getClass())) {
+            deploymentInfo.addHttpSessionListener((HttpSessionListener) listener);
+            RunLogger.getLogger().log(Level.FINE, "HttpSessionListener listener:" + listener);
+        } else {
+            throw new RuntimeException(listener.toString());
+        }
     }
 
     @Override
     public void addListener(Class<? extends EventListener> listenerClass) {
-        throw new UnsupportedOperationException();
+        addListener(listenerClass.getName());
     }
 
     @Override

@@ -52,15 +52,11 @@ public class WebContextRuntime {
             WebAppInfo webAppInfo = webXmlParse.load(webXmlInputStream);
 
             //new runtime object
-            this.servletRuntime = new ContainerRuntime(StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
+            this.servletRuntime = new ContainerRuntime(location, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
             DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
             //set session timeout
             deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
             //register Servlet into deploymentInfo
-//            ServletInfo servletInfo = new ServletInfo();
-//            servletInfo.addMapping("*.jsp");
-//            servletInfo.setServletClass("org.apache.jasper.servlet.JspServlet");
-//            deploymentInfo.addServlet(servletInfo);
             webAppInfo.getServlets().values().forEach(deploymentInfo::addServlet);
 
             //register Filter
@@ -105,11 +101,6 @@ public class WebContextRuntime {
             //默认Servlet
             deploymentInfo.setDefaultServlet(new DefaultServlet());
 
-
-            //自定义ClassLoader
-            ContainerClassLoader webContextClassLoader = new ContainerClassLoader(location);
-            ClassLoader webClassLoader = webContextClassLoader.getClassLoader();
-            deploymentInfo.setClassLoader(webClassLoader);
         } finally {
             if (webXmlInputStream != null) {
                 try {

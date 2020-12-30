@@ -78,15 +78,11 @@ public class ServletHttpHandle extends HttpHandle {
         runtimes.forEach(runtime -> {
             runtime.getServletContext().setPipeline(pipeline);
             runtime.setPlugins(plugins);
-            ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(runtime.getServletContext().getClassLoader());
             try {
                 runtime.start();
             } catch (Exception e) {
                 e.printStackTrace();
                 runtime.getPlugins().forEach(plugin -> plugin.whenContainerStartError(runtime, e));
-            } finally {
-                Thread.currentThread().setContextClassLoader(originalClassLoader);
             }
         });
         //按contextPath长度倒序,防止被"/"优先匹配
@@ -104,7 +100,6 @@ public class ServletHttpHandle extends HttpHandle {
             ContainerRuntime runtime = new ContainerRuntime("/");
             DeploymentInfo deploymentInfo = runtime.getDeploymentInfo();
             deploymentInfo.setDefaultServlet(new DefaultServlet());
-            deploymentInfo.setClassLoader(Thread.currentThread().getContextClassLoader());
             runtimes.add(runtime);
         }
     }
