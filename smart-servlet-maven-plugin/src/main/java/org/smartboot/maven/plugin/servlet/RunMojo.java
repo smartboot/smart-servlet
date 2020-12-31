@@ -57,7 +57,7 @@ public class RunMojo extends AbstractMojo {
             List<URL> urlList = new ArrayList<>();
             pluginArtifacts.forEach(artifact -> {
                 try {
-//                    System.out.println("plugin: " + artifact.getFile().getAbsolutePath());
+                    System.out.println("plugin: " + artifact.getFile().getAbsolutePath());
                     urlList.add(artifact.getFile().toURI().toURL());
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -66,7 +66,6 @@ public class RunMojo extends AbstractMojo {
             URL[] urls = new URL[urlList.size()];
             urlList.toArray(urls);
             URLClassLoader classLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
-            Thread.currentThread().setContextClassLoader(classLoader);
             File webFile = null;
             for (File file : configurationDir.listFiles()) {
                 System.out.println("file: " + file.getAbsolutePath());
@@ -76,7 +75,7 @@ public class RunMojo extends AbstractMojo {
                 }
             }
             Class<?> clazz = classLoader.loadClass("org.smartboot.maven.plugin.servlet.Starter");
-            clazz.getConstructor(String.class, int.class).newInstance(webFile.getAbsolutePath(), port);
+            clazz.getConstructor(String.class, int.class, ClassLoader.class).newInstance(webFile.getAbsolutePath(), port, classLoader);
         } catch (Exception e) {
             e.printStackTrace();
             throw new MojoExecutionException(e.getMessage());

@@ -2,12 +2,12 @@
  * Copyright (c) 2017-2020, org.smartboot. All rights reserved.
  * project name: smart-servlet
  * file name: WebXmlParseEngine.java
- * Date: 2020-11-28
+ * Date: 2020-12-31
  * Author: sandao (zhengjunweimail@163.com)
  *
  */
 
-package org.smartboot.servlet.war;
+package org.smartboot.servlet;
 
 import org.smartboot.http.utils.CollectionUtils;
 import org.smartboot.http.utils.NumberUtils;
@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -76,7 +77,7 @@ class WebXmlParseEngine {
     private void parseSessionConfig(WebAppInfo webAppInfo, Element parentElement) {
         List<Node> childNodeList = getChildNode(parentElement, "session-config");
         if (CollectionUtils.isNotEmpty(childNodeList)) {
-            Map<String, String> nodeData = getNodeValue(childNodeList.get(0), Arrays.asList("session-timeout"));
+            Map<String, String> nodeData = getNodeValue(childNodeList.get(0), Collections.singletonList("session-timeout"));
             webAppInfo.setSessionTimeout(NumberUtils.toInt(nodeData.get("session-timeout"), 0));
         }
     }
@@ -92,7 +93,7 @@ class WebXmlParseEngine {
     private void parseListener(WebAppInfo webAppInfo, Element parentElement) {
         List<Node> childNodeList = getChildNode(parentElement, "listener");
         for (Node node : childNodeList) {
-            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("listener-class"));
+            Map<String, String> nodeData = getNodeValue(node, Collections.singletonList("listener-class"));
             webAppInfo.addListener(nodeData.get("listener-class"));
         }
     }
@@ -147,9 +148,6 @@ class WebXmlParseEngine {
 
     /**
      * 解析Servlet配置
-     *
-     * @param webAppInfo
-     * @param parentElement
      */
     private void parseServlet(WebAppInfo webAppInfo, Element parentElement) {
         NodeList rootNodeList = parentElement.getElementsByTagName("servlet");
@@ -183,18 +181,15 @@ class WebXmlParseEngine {
         Map<String, String> nodeMap = new HashMap<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node childNode = nodeList.item(i);
-            nodeNames.stream().filter(nodeName -> StringUtils.equals(nodeName, childNode.getNodeName())).forEach(nodeName -> {
-                nodeMap.put(nodeName, StringUtils.trim(childNode.getFirstChild().getNodeValue()));
-            });
+            nodeNames.stream()
+                    .filter(nodeName -> StringUtils.equals(nodeName, childNode.getNodeName()))
+                    .forEach(nodeName -> nodeMap.put(nodeName, StringUtils.trim(childNode.getFirstChild().getNodeValue())));
         }
         return nodeMap;
     }
 
     /**
      * 解析Servlet配置
-     *
-     * @param webAppInfo
-     * @param parentElement
      */
     private void parseServletMapping(WebAppInfo webAppInfo, Element parentElement) {
         List<Node> childNodeList = getChildNode(parentElement, "servlet-mapping");
@@ -217,9 +212,6 @@ class WebXmlParseEngine {
 
     /**
      * 解析 <welcome-file-list/>
-     *
-     * @param webAppInfo
-     * @param parentElement
      */
     private void parseWelcomeFile(WebAppInfo webAppInfo, Element parentElement) {
         List<Node> childNodeList = getChildNode(parentElement, "welcome-file-list");

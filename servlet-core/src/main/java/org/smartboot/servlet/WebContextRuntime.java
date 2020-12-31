@@ -2,22 +2,23 @@
  * Copyright (c) 2017-2020, org.smartboot. All rights reserved.
  * project name: smart-servlet
  * file name: WebContextRuntime.java
- * Date: 2020-11-28
+ * Date: 2020-12-31
  * Author: sandao (zhengjunweimail@163.com)
  *
  */
 
-package org.smartboot.servlet.war;
+package org.smartboot.servlet;
 
 import org.smartboot.http.utils.StringUtils;
-import org.smartboot.servlet.ContainerRuntime;
-import org.smartboot.servlet.DefaultServlet;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,23 +27,21 @@ import java.util.List;
  * @author 三刀
  * @version V1.0 , 2019/12/13
  */
-public class WebContextRuntime {
+class WebContextRuntime {
     private final String location;
     private final String contextPath;
-    private ContainerRuntime servletRuntime;
+    private final ClassLoader parentClassLoader;
 
-    public WebContextRuntime(String location, String contextPath) throws Exception {
+
+    public WebContextRuntime(String location, String contextPath, ClassLoader parentClassLoader) throws Exception {
         this.location = location;
         this.contextPath = contextPath;
-        start();
+        this.parentClassLoader = parentClassLoader;
     }
 
-    public ContainerRuntime getServletRuntime() {
-        return servletRuntime;
-    }
-
-    private void start() throws Exception {
+    public ApplicationRuntime getServletRuntime() throws Exception {
         FileInputStream webXmlInputStream = null;
+        ApplicationRuntime servletRuntime;
         try {
             //load web.xml file
             WebXmlParseEngine webXmlParse = new WebXmlParseEngine();
@@ -52,7 +51,7 @@ public class WebContextRuntime {
             WebAppInfo webAppInfo = webXmlParse.load(webXmlInputStream);
 
             //new runtime object
-            this.servletRuntime = new ContainerRuntime(location, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
+            servletRuntime = new ApplicationRuntime(getClassLoader(location), StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
             DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
             //set session timeout
             deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
@@ -97,7 +96,6 @@ public class WebContextRuntime {
                 deploymentInfo.setWelcomeFiles(welcomeFiles);
             }
 
-
             //默认Servlet
             deploymentInfo.setDefaultServlet(new DefaultServlet());
 
@@ -110,6 +108,24 @@ public class WebContextRuntime {
                 }
             }
         }
+
+        return servletRuntime;
     }
 
+    private ClassLoader getClassLoader(String location) throws MalformedURLException {
+        List<URL> list = new ArrayList<>();
+        File libDir = new File(location, "WEB-INF" + File.separator + "lib/");
+        File[] files = libDir.listFiles();
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                list.add(file.toURI().toURL());
+            }
+        }
+
+        File classDir = new File(location, "WEB-INF" + File.separator + "classes/");
+        list.add(classDir.toURI().toURL());
+        URL[] urls = new URL[list.size()];
+        list.toArray(urls);
+        return new URLClassLoader(urls, parentClassLoader);
+    }
 }

@@ -1,268 +1,184 @@
 /*
  * Copyright (c) 2017-2020, org.smartboot. All rights reserved.
  * project name: smart-servlet
- * file name: ContainerRuntime.java
- * Date: 2020-11-28
+ * file name: ServletContainerRuntime.java
+ * Date: 2020-12-31
  * Author: sandao (zhengjunweimail@163.com)
  *
  */
 
 package org.smartboot.servlet;
 
-import org.smartboot.http.utils.StringUtils;
-import org.smartboot.servlet.conf.DeploymentInfo;
-import org.smartboot.servlet.conf.FilterInfo;
-import org.smartboot.servlet.conf.ServletInfo;
-import org.smartboot.servlet.impl.FilterConfigImpl;
-import org.smartboot.servlet.impl.ServletConfigImpl;
+import org.smartboot.http.HttpRequest;
+import org.smartboot.http.HttpResponse;
+import org.smartboot.http.logging.RunLogger;
+import org.smartboot.servlet.exception.WrappedRuntimeException;
+import org.smartboot.servlet.handler.FilterMatchHandler;
+import org.smartboot.servlet.handler.HandlePipeline;
+import org.smartboot.servlet.handler.ServletMatchHandler;
+import org.smartboot.servlet.handler.ServletRequestListenerHandler;
+import org.smartboot.servlet.handler.ServletServiceHandler;
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
+import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
-import org.smartboot.servlet.provider.DispatcherProvider;
-import org.smartboot.servlet.provider.MemoryPoolProvider;
-import org.smartboot.servlet.provider.SessionProvider;
-import org.smartboot.servlet.sandbox.SandBox;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletException;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import javax.servlet.DispatcherType;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EventListener;
 import java.util.List;
-import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.logging.Level;
 
 /**
- * 运行时环境
+ * Servlet容器运行环境
  *
- * @author 三刀
- * @version V1.0 , 2019/12/11
+ * @author 三刀（zhengjunweimail@163.com）
+ * @version V1.0 , 2020/12/31
  */
 public class ContainerRuntime {
     /**
-     * 容器部署信息
+     * http://patorjk.com/software/taag/
+     * Font Name: Puffy
      */
-    private final DeploymentInfo deploymentInfo = new DeploymentInfo();
-    /**
-     * 服务上下文
-     */
-    private final ServletContextImpl servletContext = new ServletContextImpl(this);
-    /**
-     * 上下文路径
-     */
-    private final String contextPath;
-    private final String location;
-    /**
-     * Dispatcher服务提供者
-     */
-    private DispatcherProvider dispatcherProvider = SandBox.INSTANCE.getDispatcherProvider();
-    /**
-     * Session服务提供者
-     */
-    private SessionProvider sessionProvider = SandBox.INSTANCE.getSessionProvider();
-    /**
-     * 内存池服务提供者
-     */
-    private MemoryPoolProvider memoryPoolProvider = SandBox.INSTANCE.getMemoryPoolProvider();
-    /**
-     * 关联至本运行环境的插件集合
-     */
-    private List<Plugin> plugins = Collections.emptyList();
-    private boolean started = false;
+    private static final String BANNER = "                               _                                 _           _   \n" +
+            "                              ( )_                              (_ )        ( )_ \n" +
+            "  ___   ___ ___     _ _  _ __ | ,_)     ___    __   _ __  _   _  | |    __  | ,_)\n" +
+            "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" +
+            "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" +
+            "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
+    private static final String VERSION = "0.1.2-SNAPSHOT";
+    private final List<ApplicationRuntime> runtimes = new ArrayList<>();
+    private final List<Plugin> plugins = new ArrayList<>();
+    private volatile boolean started = false;
 
-    public ContainerRuntime(String contextPath) {
-        this(null, contextPath);
-    }
-
-    public ContainerRuntime(String location, String contextPath) {
-        if (StringUtils.isBlank(contextPath)) {
-            this.contextPath = "/";
-        } else {
-            this.contextPath = contextPath;
+    public void start() {
+        if (started) {
+            return;
         }
-        this.location = location;
-    }
-
-    public List<Plugin> getPlugins() {
-        return plugins;
-    }
-
-    public void setPlugins(List<Plugin> plugins) {
-        this.plugins = plugins;
-    }
-
-    /**
-     * 启动容器
-     */
-    public void start() throws Exception {
-
-        //自定义ClassLoader
-        if (StringUtils.isNotBlank(location)) {
-            ClassLoader webClassLoader = getClassLoader(location);
-            deploymentInfo.setClassLoader(webClassLoader);
-        }
-        plugins.forEach(plugin -> {
-            plugin.willStartContainer(this);
-        });
-
-        DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
-        //设置ServletContext参数
-        Map<String, String> params = deploymentInfo.getInitParameters();
-        params.forEach(servletContext::setInitParameter);
-
-        //初始化容器
-        initContainer(deploymentInfo);
-
-        //启动Listener
-        for (String eventListenerInfo : deploymentInfo.getEventListeners()) {
-            EventListener listener = (EventListener) deploymentInfo.getClassLoader().loadClass(eventListenerInfo).newInstance();
-            servletContext.addListener(listener);
-        }
-
-        //启动Servlet
-        initServlet(deploymentInfo);
-
-        //启动Filter
-        initFilter(deploymentInfo);
         started = true;
+        HandlePipeline pipeline = new HandlePipeline();
+        pipeline.next(new ServletRequestListenerHandler())
+                .next(new ServletMatchHandler())
+                .next(new FilterMatchHandler())
+                .next(new ServletServiceHandler());
+        //扫描插件
+        loadAndInstallPlugins();
 
+        //必须有一个 contextPath 为 "/" 的环境
+        initRootContainer();
+
+        //启动运行环境
+        runtimes.forEach(runtime -> {
+            runtime.getServletContext().setPipeline(pipeline);
+            runtime.setPlugins(plugins);
+            ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+            try {
+                //有些场景下ServletContainerInitializer初始化依赖当前容器的类加载器
+                Thread.currentThread().setContextClassLoader(runtime.getDeploymentInfo().getClassLoader());
+                runtime.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+                runtime.getPlugins().forEach(plugin -> plugin.whenContainerStartError(runtime, e));
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentClassLoader);
+            }
+        });
+        //按contextPath长度倒序,防止被"/"优先匹配
+        runtimes.sort((o1, o2) -> o2.getContextPath().length() - o1.getContextPath().length());
+
+        System.out.println(BANNER + "\r\n :: smart-servlet :: (" + VERSION + ")");
+
+    }
+
+    /**
+     * 加载并安装插件
+     */
+    private void loadAndInstallPlugins() {
+        for (Plugin plugin : ServiceLoader.load(Plugin.class, ContainerRuntime.class.getClassLoader())) {
+            RunLogger.getLogger().log(Level.FINE, "load plugin: " + plugin.pluginName());
+            plugins.add(plugin);
+        }
+        //安装插件
         plugins.forEach(plugin -> {
-            plugin.onContainerStartSuccess(this);
+            RunLogger.getLogger().log(Level.FINE, "install plugin: " + plugin.pluginName());
+            plugin.install();
         });
     }
 
-    private ClassLoader getClassLoader(String location) throws MalformedURLException {
-        List<URL> list = new ArrayList<>();
-        File libDir = new File(location, "WEB-INF" + File.separator + "lib/");
-        File[] files = libDir.listFiles();
-        if (files != null && files.length > 0) {
-            for (File file : files) {
-                list.add(file.toURI().toURL());
-            }
+    public void addRuntime(ApplicationRuntime runtime) {
+        if (runtimes.stream().anyMatch(containerRuntime -> containerRuntime.getContextPath().equals(runtime.getContextPath()))) {
+            throw new IllegalArgumentException("contextPath: " + runtime.getContextPath() + " is already exists!");
         }
-
-        File classDir = new File(location, "WEB-INF" + File.separator + "classes/");
-        list.add(classDir.toURI().toURL());
-        URL[] urls = new URL[list.size()];
-        list.toArray(urls);
-        return new URLClassLoader(urls);
+        runtimes.add(runtime);
     }
 
-    /**
-     * 初始化容器
-     *
-     * @param deploymentInfo 部署信息
-     */
-    private void initContainer(DeploymentInfo deploymentInfo) throws ServletException {
-        for (ServletContainerInitializer servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
-            servletContainerInitializer.onStartup(null, servletContext);
-        }
+    public void addRuntime(String location, String contextPath) throws Exception {
+        addRuntime(location, contextPath, Thread.currentThread().getContextClassLoader());
     }
 
-    /**
-     * 初始化Servlet
-     *
-     * @param deploymentInfo 部署信息
-     */
-    private void initServlet(DeploymentInfo deploymentInfo) throws Exception {
-        List<ServletInfo> servletInfoList = new ArrayList<>(deploymentInfo.getServlets().values());
-        servletInfoList.sort(Comparator.comparingInt(ServletInfo::getLoadOnStartup));
-
-        for (ServletInfo servletInfo : servletInfoList) {
-            Servlet servlet;
-            ServletConfig servletConfig = new ServletConfigImpl(servletInfo, servletContext);
-            if (servletInfo.isDynamic()) {
-                servlet = servletInfo.getServlet();
-            } else {
-                servlet = (Servlet) deploymentInfo.getClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
-                servletInfo.setServlet(servlet);
-            }
-            servlet.init(servletConfig);
-        }
-        //初始化默认Servlet
-        ServletConfig servletConfig = new ServletConfigImpl(new ServletInfo(), servletContext);
-        deploymentInfo.getDefaultServlet().init(servletConfig);
+    public void addRuntime(String location, String contextPath, ClassLoader parentClassLoader) throws Exception {
+        WebContextRuntime webContextRuntime = new WebContextRuntime(location, contextPath, parentClassLoader);
+        addRuntime(webContextRuntime.getServletRuntime());
     }
 
-    /**
-     * 初始化Filter
-     *
-     * @param deploymentInfo 部署信息
-     */
-    private void initFilter(DeploymentInfo deploymentInfo) throws Exception {
-        for (FilterInfo filterInfo : deploymentInfo.getFilters().values()) {
-            FilterConfig filterConfig = new FilterConfigImpl(filterInfo, servletContext);
-            Filter filter;
-            if (filterInfo.isDynamic()) {
-                filter = filterInfo.getFilter();
-            } else {
-                filter = (Filter) deploymentInfo.getClassLoader().loadClass(filterInfo.getFilterClass()).newInstance();
-                filterInfo.setFilter(filter);
+    public void doHandle(HttpRequest request, HttpResponse response) {
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
+            ApplicationRuntime runtime = matchRuntime(request.getRequestURI());
+            if (!runtime.isStarted()) {
+                throw new IllegalStateException("container is not started");
             }
-            filter.init(filterConfig);
+            ServletContextImpl servletContext = runtime.getServletContext();
+            Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
+
+            //封装上下文对象
+            HttpServletRequestImpl servletRequest = new HttpServletRequestImpl(request, runtime, DispatcherType.REQUEST);
+            HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response, runtime);
+            servletRequest.setHttpServletResponse(servletResponse);
+            HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
+            // just do it
+            servletContext.getPipeline().handleRequest(handlerContext);
+            //输出buffer中的数据
+            servletResponse.flushServletBuffer();
+        } catch (WrappedRuntimeException e) {
+            e.getThrowable().printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(classLoader);
         }
+
     }
 
     public void stop() {
-        plugins.forEach(plugin -> {
-            plugin.willStopContainer(this);
-        });
-        servletContext.getDeploymentInfo().getServlets().values().forEach(servletInfo -> servletInfo.getServlet().destroy());
-        servletContext.getDeploymentInfo().getServletContextListeners().forEach(servletContextListener -> {
-            ServletContextEvent event = new ServletContextEvent(servletContext);
-            servletContextListener.contextDestroyed(event);
-        });
-
-        plugins.forEach(plugin -> {
-            plugin.onContainerStopped(this);
-        });
-    }
-
-    public DispatcherProvider getDispatcherProvider() {
-        return dispatcherProvider;
-    }
-
-    public void setDispatcherProvider(DispatcherProvider dispatcherProvider) {
-        this.dispatcherProvider = dispatcherProvider;
-    }
-
-    public SessionProvider getSessionProvider() {
-        return sessionProvider;
-    }
-
-    public void setSessionProvider(SessionProvider sessionProvider) {
-        this.sessionProvider = sessionProvider;
-    }
-
-    public MemoryPoolProvider getMemoryPoolProvider() {
-        return memoryPoolProvider;
-    }
-
-    public void setMemoryPoolProvider(MemoryPoolProvider memoryPoolProvider) {
-        this.memoryPoolProvider = memoryPoolProvider;
-    }
-
-    public String getContextPath() {
-        return contextPath;
-    }
-
-    public ServletContextImpl getServletContext() {
-        return servletContext;
-    }
-
-    public DeploymentInfo getDeploymentInfo() {
-        return deploymentInfo;
+        runtimes.forEach(ApplicationRuntime::stop);
+        //卸载插件
+        plugins.forEach(Plugin::uninstall);
     }
 
     public boolean isStarted() {
         return started;
+    }
+
+    private ApplicationRuntime matchRuntime(String requestUri) {
+        for (ApplicationRuntime matchRuntime : runtimes) {
+            String contextPath = matchRuntime.getContextPath();
+            if (requestUri.startsWith(contextPath)) {
+                return matchRuntime;
+            }
+        }
+        throw new IllegalStateException("No match container runtime!");
+    }
+
+    /**
+     * 若不存在根级容器，则初始化一个
+     */
+    private void initRootContainer() {
+        if (runtimes.stream().noneMatch(runtime -> "/".equals(runtime.getContextPath()))) {
+            ApplicationRuntime runtime = new ApplicationRuntime("/");
+            runtime.getDeploymentInfo().setDefaultServlet(new DefaultServlet());
+            runtimes.add(runtime);
+        }
     }
 }

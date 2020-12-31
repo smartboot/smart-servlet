@@ -10,7 +10,7 @@
 package org.smartboot.servlet.plugins;
 
 import org.smartboot.http.logging.RunLogger;
-import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.ApplicationRuntime;
 
 import java.util.logging.Level;
 
@@ -63,7 +63,7 @@ public abstract class Plugin {
      *
      * @param containerRuntime 当前启动成功的子容器
      */
-    public void onContainerStartSuccess(ContainerRuntime containerRuntime) {
+    public void onContainerStartSuccess(ApplicationRuntime containerRuntime) {
         RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start success!");
     }
 
@@ -73,7 +73,7 @@ public abstract class Plugin {
      *
      * @param containerRuntime 当前即将被启动的子容器
      */
-    public void willStartContainer(ContainerRuntime containerRuntime) {
+    public void willStartContainer(ApplicationRuntime containerRuntime) {
         RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " before start!");
     }
 
@@ -82,7 +82,7 @@ public abstract class Plugin {
      *
      * @param containerRuntime 当前启动失败的子容器
      */
-    public void whenContainerStartError(ContainerRuntime containerRuntime, Throwable throwable) {
+    public void whenContainerStartError(ApplicationRuntime containerRuntime, Throwable throwable) {
         RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start error!");
     }
 
@@ -91,7 +91,7 @@ public abstract class Plugin {
      *
      * @param containerRuntime 即将被消耗的子容器
      */
-    public void willStopContainer(ContainerRuntime containerRuntime) {
+    public void willStopContainer(ApplicationRuntime containerRuntime) {
         RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "]do nothing for container: " + containerRuntime.getContextPath() + " before stop!");
     }
 
@@ -100,7 +100,7 @@ public abstract class Plugin {
      *
      * @param containerRuntime 当前被消耗的子容器
      */
-    public void onContainerStopped(ContainerRuntime containerRuntime) {
+    public void onContainerStopped(ApplicationRuntime containerRuntime) {
         RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when stop!");
     }
 

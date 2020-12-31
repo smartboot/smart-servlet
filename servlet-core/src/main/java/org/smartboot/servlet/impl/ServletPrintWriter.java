@@ -10,7 +10,7 @@
 package org.smartboot.servlet.impl;
 
 import org.smartboot.http.logging.RunLogger;
-import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.socket.buffer.VirtualBuffer;
 
 import java.io.IOException;
@@ -28,10 +28,10 @@ import java.util.logging.Level;
 public class ServletPrintWriter extends Writer {
     private final ServletOutputStreamImpl servletOutputStream;
     private final CharsetEncoder charsetEncoder;
-    private final ContainerRuntime containerRuntime;
+    private final ApplicationRuntime containerRuntime;
     private VirtualBuffer virtualBuffer;
 
-    public ServletPrintWriter(ServletOutputStreamImpl servletOutputStream, String charset, ContainerRuntime containerRuntime) {
+    public ServletPrintWriter(ServletOutputStreamImpl servletOutputStream, String charset, ApplicationRuntime containerRuntime) {
         super(servletOutputStream);
         this.containerRuntime = containerRuntime;
         this.servletOutputStream = servletOutputStream;

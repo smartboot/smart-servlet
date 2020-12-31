@@ -78,10 +78,12 @@ public class DefaultServlet extends HttpServlet {
         }
         InputStream inputStream = null;
         try {
-            inputStream = ClassLoader.getSystemResource(FAVICON_NAME).openStream();
-            faviconBytes = new byte[inputStream.available()];
-            inputStream.read(faviconBytes);
-            faviconModifyTime = System.currentTimeMillis();
+            inputStream = DefaultServlet.class.getClassLoader().getResourceAsStream(FAVICON_NAME);
+            if (inputStream != null) {
+                faviconBytes = new byte[inputStream.available()];
+                inputStream.read(faviconBytes);
+                faviconModifyTime = System.currentTimeMillis();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

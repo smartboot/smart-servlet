@@ -9,7 +9,7 @@
 
 package org.smartboot.springboot.starter;
 
-import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -32,7 +32,7 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
         File docBase = (root != null) ? root : createTempDir("smart-servlet");
         System.out.println(docBase.getAbsoluteFile());
         SmartContainerInitializer initializer = new SmartContainerInitializer(initializers);
-        ContainerRuntime servletRuntime = new ContainerRuntime(getContextPath());
+        ApplicationRuntime servletRuntime = new ApplicationRuntime(getContextPath());
         DeploymentInfo deployment = servletRuntime.getDeploymentInfo();
         deployment.setClassLoader(getServletClassLoader());
         deployment.setDisplayName(getDisplayName());

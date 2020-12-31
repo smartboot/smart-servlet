@@ -10,10 +10,15 @@
 package org.smartboot.springboot.starter;
 
 import org.smartboot.http.HttpBootstrap;
+import org.smartboot.http.HttpRequest;
+import org.smartboot.http.HttpResponse;
+import org.smartboot.http.server.handle.HttpHandle;
+import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.ContainerRuntime;
-import org.smartboot.servlet.ServletHttpHandle;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
+
+import java.io.IOException;
 
 /**
  * @author 三刀
@@ -21,19 +26,15 @@ import org.springframework.boot.web.server.WebServerException;
  */
 public class SmartServletServer implements WebServer {
     private final Object monitor = new Object();
-    private final ServletHttpHandle httpHandle;
+    private final ContainerRuntime containerRuntime;
     private HttpBootstrap bootstrap;
     private volatile boolean started = false;
 
 
-    public SmartServletServer(ContainerRuntime runtime) {
-        httpHandle = new ServletHttpHandle();
-        try {
-            httpHandle.addRuntime(runtime);
-            httpHandle.start();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public SmartServletServer(ApplicationRuntime runtime) {
+        containerRuntime = new ContainerRuntime();
+        containerRuntime.addRuntime(runtime);
+        containerRuntime.start();
     }
 
     @Override
@@ -45,7 +46,12 @@ public class SmartServletServer implements WebServer {
             try {
                 if (this.bootstrap == null) {
                     this.bootstrap = new HttpBootstrap();
-                    bootstrap.pipeline().next(httpHandle);
+                    bootstrap.pipeline().next(new HttpHandle() {
+                        @Override
+                        public void doHandle(HttpRequest request, HttpResponse response) throws IOException {
+                            containerRuntime.doHandle(request, response);
+                        }
+                    });
                     bootstrap.setBannerEnabled(false);
                     bootstrap.setReadBufferSize(1024 * 1024).setPort(8080).start();
                     System.out.println("启动成功");
@@ -64,7 +70,7 @@ public class SmartServletServer implements WebServer {
                 return;
             }
             this.started = false;
-            this.httpHandle.stop();
+            containerRuntime.stop();
             bootstrap.shutdown();
         }
     }

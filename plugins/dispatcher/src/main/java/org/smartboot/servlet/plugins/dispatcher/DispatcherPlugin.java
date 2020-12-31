@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.plugins.dispatcher;
 
-import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.plugins.Plugin;
 
 /**
@@ -20,7 +20,7 @@ public class DispatcherPlugin extends Plugin {
 
 
     @Override
-    public void onContainerStartSuccess(ContainerRuntime containerRuntime) {
+    public void onContainerStartSuccess(ApplicationRuntime containerRuntime) {
         containerRuntime.setDispatcherProvider(new DispatcherProviderImpl());
     }
 }

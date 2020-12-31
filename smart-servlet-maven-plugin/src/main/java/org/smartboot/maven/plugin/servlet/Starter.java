@@ -13,40 +13,32 @@ import org.smartboot.http.HttpBootstrap;
 import org.smartboot.http.HttpRequest;
 import org.smartboot.http.HttpResponse;
 import org.smartboot.http.server.handle.HttpHandle;
-import org.smartboot.servlet.ServletHttpHandle;
-import org.smartboot.servlet.war.WebContextRuntime;
-
-import java.io.IOException;
+import org.smartboot.servlet.ContainerRuntime;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/11/4
  */
-public class Starter extends HttpHandle {
-    private final ServletHttpHandle httpHandle;
+public class Starter {
 
-    public Starter(String path, int port) throws Exception {
-        WebContextRuntime webContextRuntime = new WebContextRuntime(path, "/");
-        httpHandle = new ServletHttpHandle();
-        httpHandle.addRuntime(webContextRuntime.getServletRuntime());
-        httpHandle.start();
+    public Starter(String path, int port, ClassLoader classLoader) throws Exception {
+        ContainerRuntime containerRuntime = new ContainerRuntime();
+        containerRuntime.addRuntime(path, "/", classLoader);
+        containerRuntime.start();
         HttpBootstrap bootstrap = new HttpBootstrap();
         bootstrap.setBannerEnabled(false);
         bootstrap
                 .setReadBufferSize(1024 * 1024)
-                .pipeline().next(httpHandle);
-        bootstrap.setPort(port).start();
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                .pipeline().next(new HttpHandle() {
             @Override
-            public void run() {
-                httpHandle.stop();
-                bootstrap.shutdown();
+            public void doHandle(HttpRequest request, HttpResponse response) {
+                containerRuntime.doHandle(request, response);
             }
+        });
+        bootstrap.setPort(port).start();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            containerRuntime.stop();
+            bootstrap.shutdown();
         }));
-    }
-
-    @Override
-    public void doHandle(HttpRequest request, HttpResponse response) throws IOException {
-        httpHandle.doHandle(request, response);
     }
 }

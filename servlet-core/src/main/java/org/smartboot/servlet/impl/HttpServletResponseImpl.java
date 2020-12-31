@@ -13,7 +13,7 @@ import org.smartboot.http.HttpResponse;
 import org.smartboot.http.enums.HttpStatus;
 import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.HttpHeaderConstant;
-import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
@@ -35,13 +35,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[DEFAULT_BUFFER_SIZE]);
     private final HttpResponse response;
     private final HttpServletRequest request;
-    private final ContainerRuntime containerRuntime;
+    private final ApplicationRuntime containerRuntime;
     private String contentType;
     private PrintWriter writer;
     private ServletOutputStreamImpl servletOutputStream;
     private int bufferSize = -1;
 
-    public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response, ContainerRuntime containerRuntime) {
+    public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response, ApplicationRuntime containerRuntime) {
         this.request = request;
         this.response = response;
         this.containerRuntime = containerRuntime;

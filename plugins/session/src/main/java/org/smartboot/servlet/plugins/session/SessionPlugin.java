@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.plugins.session;
 
-import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.plugins.Plugin;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class SessionPlugin extends Plugin {
     }
 
     @Override
-    public void willStartContainer(ContainerRuntime containerRuntime) {
+    public void willStartContainer(ApplicationRuntime containerRuntime) {
         SessionProviderImpl sessionProvider = new SessionProviderImpl();
         sessionProvider.setMaxInactiveInterval(containerRuntime.getDeploymentInfo().getSessionTimeout());
         containerRuntime.setSessionProvider(sessionProvider);

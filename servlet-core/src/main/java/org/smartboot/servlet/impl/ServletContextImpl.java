@@ -11,7 +11,7 @@ package org.smartboot.servlet.impl;
 
 import org.smartboot.http.logging.RunLogger;
 import org.smartboot.http.utils.Mimetypes;
-import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.ServletInfo;
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 public class ServletContextImpl implements ServletContext {
     //    private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextImpl.class);
     private final ConcurrentMap<String, Object> attributes = new ConcurrentHashMap<>();
-    private final ContainerRuntime containerRuntime;
+    private final ApplicationRuntime containerRuntime;
     private final DeploymentInfo deploymentInfo;
     private SessionCookieConfig sessionCookieConfig = new SessionCookieConfigImpl();
     private ServletContextPathType pathType = ServletContextPathType.PATH;
@@ -66,7 +66,7 @@ public class ServletContextImpl implements ServletContext {
      */
     private HandlePipeline pipeline;
 
-    public ServletContextImpl(ContainerRuntime containerRuntime) {
+    public ServletContextImpl(ApplicationRuntime containerRuntime) {
         this.containerRuntime = containerRuntime;
         this.deploymentInfo = containerRuntime.getDeploymentInfo();
     }
@@ -403,21 +403,18 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public <T extends EventListener> void addListener(T listener) {
+        RunLogger.getLogger().log(Level.FINE, listener.getClass().getSimpleName() + " listener: " + listener);
         if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
             ServletContextListener contextListener = (ServletContextListener) listener;
             ServletContextEvent event = new ServletContextEvent(this);
             contextListener.contextInitialized(event);
             deploymentInfo.addServletContextListener(contextListener);
-            RunLogger.getLogger().log(Level.FINE, "contextInitialized listener:" + listener);
         } else if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletRequestListener((ServletRequestListener) listener);
-            RunLogger.getLogger().log(Level.FINE, "ServletRequestListener listener:" + listener);
         } else if (ServletContextAttributeListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletContextAttributeListener((ServletContextAttributeListener) listener);
-            RunLogger.getLogger().log(Level.FINE, "ServletContextAttributeListener listener:" + listener);
         } else if (HttpSessionListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addHttpSessionListener((HttpSessionListener) listener);
-            RunLogger.getLogger().log(Level.FINE, "HttpSessionListener listener:" + listener);
         } else {
             throw new RuntimeException(listener.toString());
         }
