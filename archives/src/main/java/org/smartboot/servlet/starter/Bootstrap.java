@@ -1,9 +1,11 @@
 package org.smartboot.servlet.starter;
 
 import org.smartboot.http.HttpBootstrap;
+import org.smartboot.http.HttpRequest;
+import org.smartboot.http.HttpResponse;
 import org.smartboot.http.logging.RunLogger;
-import org.smartboot.servlet.ServletHttpHandle;
-import org.smartboot.servlet.war.WebContextRuntime;
+import org.smartboot.http.server.handle.HttpHandle;
+import org.smartboot.servlet.ContainerRuntime;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -19,29 +21,30 @@ public class Bootstrap {
         if (webapps == null) {
             webapps = new File("archives/webapps").getAbsolutePath();
         }
-        final ServletHttpHandle httpHandle = new ServletHttpHandle();
+        ContainerRuntime containerRuntime = new ContainerRuntime();
         File file = new File(webapps);
         if (file.isDirectory()) {
             for (File path : file.listFiles()) {
                 RunLogger.getLogger().log(Level.FINE, "start load: " + path.getAbsolutePath());
-                WebContextRuntime webContextRuntime = new WebContextRuntime(path.getAbsolutePath(), "/" + path.getName());
-                httpHandle.addRuntime(webContextRuntime.getServletRuntime());
+                containerRuntime.addRuntime(path.getAbsolutePath(), "/" + path.getName());
                 RunLogger.getLogger().log(Level.FINE, "load servlet container: /" + path.getName() + " success!");
             }
         }
-        httpHandle.start();
+        containerRuntime.start();
         final HttpBootstrap bootstrap = new HttpBootstrap();
-        bootstrap.pipeline().next(httpHandle);
+        bootstrap.pipeline().next(new HttpHandle() {
+            @Override
+            public void doHandle(HttpRequest request, HttpResponse response) {
+                containerRuntime.doHandle(request, response);
+            }
+        });
         bootstrap.setBannerEnabled(false);
         bootstrap.setBufferPool(1024 * 1024 * 10, Runtime.getRuntime().availableProcessors(), 1024 * 4);
         bootstrap.setReadBufferSize(1024 * 4).setPort(8080).start();
         System.out.println("启动成功,耗时：" + (System.currentTimeMillis() - start) + "ms");
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                httpHandle.stop();
-                bootstrap.shutdown();
-            }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            containerRuntime.stop();
+            bootstrap.shutdown();
         }));
     }
 }
