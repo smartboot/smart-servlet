@@ -16,7 +16,7 @@ import java.util.logging.Level;
  */
 public class Bootstrap {
     public static void main(String[] args) throws Exception {
-        String webapps = System.getProperty("config");
+        String webapps = System.getProperty("webapps.dir");
         long start = System.currentTimeMillis();
         if (webapps == null) {
             webapps = new File("archives/webapps").getAbsolutePath();
