@@ -46,7 +46,7 @@ public class ContainerRuntime {
             "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" +
             "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" +
             "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
-    private static final String VERSION = "0.1.2-SNAPSHOT";
+    private static final String VERSION = "0.1.2";
     private final List<ApplicationRuntime> runtimes = new ArrayList<>();
     private final List<Plugin> plugins = new ArrayList<>();
     private volatile boolean started = false;
