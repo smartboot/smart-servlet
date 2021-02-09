@@ -9,20 +9,21 @@
 
 package org.smartboot.servlet.handler;
 
-import org.smartboot.http.logging.RunLogger;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.HandlerContext;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * @author 三刀
  * @version V1.0 , 2019/12/19
  */
 public class ServletRequestListenerHandler extends Handler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletRequestListenerHandler.class);
 
     @Override
     public void handleRequest(HandlerContext handlerContext) {
@@ -32,7 +33,7 @@ public class ServletRequestListenerHandler extends Handler {
         if (!servletRequestListeners.isEmpty()) {
             servletRequestListeners.forEach(requestListener -> {
                 requestListener.requestInitialized(servletRequestEvent);
-                RunLogger.getLogger().log(Level.INFO, "requestInitialized " + requestListener);
+                LOGGER.info("requestInitialized " + requestListener);
             });
         }
         try {
@@ -41,7 +42,7 @@ public class ServletRequestListenerHandler extends Handler {
             if (!servletRequestListeners.isEmpty()) {
                 servletRequestListeners.forEach(requestListener -> {
                     requestListener.requestDestroyed(servletRequestEvent);
-                    RunLogger.getLogger().log(Level.INFO, "requestDestroyed " + requestListener);
+                    LOGGER.info("requestDestroyed " + requestListener);
                 });
             }
         }

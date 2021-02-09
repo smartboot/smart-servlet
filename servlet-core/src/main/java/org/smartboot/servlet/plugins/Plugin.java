@@ -9,17 +9,16 @@
 
 package org.smartboot.servlet.plugins;
 
-import org.smartboot.http.logging.RunLogger;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.ApplicationRuntime;
-
-import java.util.logging.Level;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/11/27
  */
 public abstract class Plugin {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(Plugin.class);
     /**
      * 是否已安装
      */
@@ -55,7 +54,7 @@ public abstract class Plugin {
      * 初始化插件
      */
     protected void initPlugin() {
-        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing when initPlugin!");
+        LOGGER.info("plugin:[" + pluginName() + "] do nothing when initPlugin!");
     }
 
     /**
@@ -64,7 +63,7 @@ public abstract class Plugin {
      * @param containerRuntime 当前启动成功的子容器
      */
     public void onContainerStartSuccess(ApplicationRuntime containerRuntime) {
-        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start success!");
+        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start success!");
     }
 
 
@@ -74,7 +73,7 @@ public abstract class Plugin {
      * @param containerRuntime 当前即将被启动的子容器
      */
     public void willStartContainer(ApplicationRuntime containerRuntime) {
-        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " before start!");
+        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " before start!");
     }
 
     /**
@@ -83,7 +82,7 @@ public abstract class Plugin {
      * @param containerRuntime 当前启动失败的子容器
      */
     public void whenContainerStartError(ApplicationRuntime containerRuntime, Throwable throwable) {
-        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start error!");
+        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start error!");
     }
 
     /**
@@ -92,7 +91,7 @@ public abstract class Plugin {
      * @param containerRuntime 即将被消耗的子容器
      */
     public void willStopContainer(ApplicationRuntime containerRuntime) {
-        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "]do nothing for container: " + containerRuntime.getContextPath() + " before stop!");
+        LOGGER.info("plugin:[" + pluginName() + "]do nothing for container: " + containerRuntime.getContextPath() + " before stop!");
     }
 
     /**
@@ -101,7 +100,7 @@ public abstract class Plugin {
      * @param containerRuntime 当前被消耗的子容器
      */
     public void onContainerStopped(ApplicationRuntime containerRuntime) {
-        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when stop!");
+        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when stop!");
     }
 
     /**
@@ -115,7 +114,7 @@ public abstract class Plugin {
      * 销毁插件
      */
     protected void destroyPlugin() {
-        RunLogger.getLogger().log(Level.FINE, "plugin:[" + pluginName() + "] do nothing when destroyPlugin!");
+        LOGGER.info("plugin:[" + pluginName() + "] do nothing when destroyPlugin!");
     }
 
     private void checkSate() {

@@ -9,7 +9,8 @@
 
 package org.smartboot.servlet.handler;
 
-import org.smartboot.http.logging.RunLogger;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.ServletContextImpl;
@@ -24,7 +25,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * 匹配并执行符合当前请求的Servlet
@@ -33,6 +33,7 @@ import java.util.logging.Level;
  * @version V1.0 , 2019/12/11
  */
 public class ServletServiceHandler extends Handler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletServiceHandler.class);
 
     @Override
     public void handleRequest(HandlerContext handlerContext) {
@@ -60,11 +61,11 @@ public class ServletServiceHandler extends Handler {
                 servletContext.getDeploymentInfo().getDefaultServlet().service(request, response);
             } else if (welcome.endsWith("/")) {
                 // 以"/"通过302跳转触发 welcome file逻辑
-                RunLogger.getLogger().log(Level.FINE, "执行 welcome 302跳转...");
+                LOGGER.info("执行 welcome 302跳转...");
                 handlerContext.getResponse().sendRedirect(welcome);
             } else {
                 //找到有效welcome file，执行服务端跳转
-                RunLogger.getLogger().log(Level.FINE, "执行 welcome 服务端跳转...");
+                LOGGER.info("执行 welcome 服务端跳转...");
                 handlerContext.getRequest().getRequestDispatcher(welcome).forward(handlerContext.getRequest(), handlerContext.getResponse());
             }
         } catch (ServletException | URISyntaxException | IOException e) {

@@ -9,10 +9,11 @@
 
 package org.smartboot.servlet.impl;
 
-import org.smartboot.http.HttpResponse;
-import org.smartboot.http.enums.HttpStatus;
-import org.smartboot.http.logging.RunLogger;
-import org.smartboot.http.utils.HttpHeaderConstant;
+import org.smartboot.http.common.enums.HttpStatus;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.HttpHeaderConstant;
+import org.smartboot.http.server.HttpResponse;
 import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
@@ -24,13 +25,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Locale;
-import java.util.logging.Level;
 
 /**
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
 public class HttpServletResponseImpl implements HttpServletResponse {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpServletResponseImpl.class);
     private static final int DEFAULT_BUFFER_SIZE = 512;
     private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[DEFAULT_BUFFER_SIZE]);
     private final HttpResponse response;
@@ -49,7 +50,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void addCookie(Cookie cookie) {
-        org.smartboot.http.server.Cookie httpCookie = new org.smartboot.http.server.Cookie(cookie.getName(), cookie.getValue());
+        org.smartboot.http.common.Cookie httpCookie = new org.smartboot.http.common.Cookie(cookie.getName(), cookie.getValue());
         httpCookie.setComment(cookie.getComment());
         httpCookie.setDomain(cookie.getDomain());
         httpCookie.setHttpOnly(cookie.isHttpOnly());
@@ -67,13 +68,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String encodeURL(String url) {
-        RunLogger.getLogger().log(Level.SEVERE, "url: " + url);
+        LOGGER.info("url: " + url);
         return url;
     }
 
     @Override
     public String encodeRedirectURL(String url) {
-        RunLogger.getLogger().log(Level.SEVERE, "url: " + url);
+        LOGGER.info("url: " + url);
         return url;
     }
 
@@ -103,7 +104,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     @Override
     public void sendRedirect(String location) throws IOException {
         response.setHttpStatus(HttpStatus.FOUND);
-        RunLogger.getLogger().log(Level.INFO, "location:" + location);
+        LOGGER.info("location:" + location);
         String redirect;
         if (PathMatcherUtil.isAbsoluteUrl(location)) {
             redirect = location;
@@ -118,7 +119,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
                 redirect = url + location;
             }
         }
-        RunLogger.getLogger().log(Level.INFO, "sendRedirect:" + redirect);
+        LOGGER.info("sendRedirect:" + redirect);
         response.setHeader(HttpHeaderConstant.Names.LOCATION, redirect);
     }
 
@@ -303,6 +304,6 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void setLocale(Locale loc) {
-        RunLogger.getLogger().log(Level.SEVERE, "unSupport setLocal now");
+        LOGGER.info("unSupport setLocal now");
     }
 }

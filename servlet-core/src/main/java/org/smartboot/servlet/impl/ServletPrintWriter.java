@@ -9,7 +9,8 @@
 
 package org.smartboot.servlet.impl;
 
-import org.smartboot.http.logging.RunLogger;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.socket.buffer.VirtualBuffer;
 
@@ -19,13 +20,13 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
-import java.util.logging.Level;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/11/10
  */
 public class ServletPrintWriter extends Writer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletPrintWriter.class);
     private final ServletOutputStreamImpl servletOutputStream;
     private final CharsetEncoder charsetEncoder;
     private final ApplicationRuntime containerRuntime;
@@ -87,7 +88,7 @@ public class ServletPrintWriter extends Writer {
                 }
             }
             if (buffer.hasRemaining()) {
-                RunLogger.getLogger().log(Level.FINE, "continue encoding ,remaining:" + buffer.remaining());
+                LOGGER.info("continue encoding ,remaining:" + buffer.remaining());
             }
         }
     }

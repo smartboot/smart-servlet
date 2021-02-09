@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.impl;
 
-import org.smartboot.http.BufferOutputStream;
+import org.smartboot.http.common.BufferOutputStream;
 import org.smartboot.socket.buffer.VirtualBuffer;
 
 import javax.servlet.ServletOutputStream;

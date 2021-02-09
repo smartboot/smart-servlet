@@ -9,9 +9,10 @@
 
 package org.smartboot.servlet;
 
-import org.smartboot.http.HttpRequest;
-import org.smartboot.http.HttpResponse;
-import org.smartboot.http.logging.RunLogger;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.server.HttpRequest;
+import org.smartboot.http.server.HttpResponse;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
 import org.smartboot.servlet.handler.HandlePipeline;
@@ -36,6 +37,7 @@ import java.util.logging.Level;
  * @version V1.0 , 2020/12/31
  */
 public class ContainerRuntime {
+    private static final Logger LOGGER= LoggerFactory.getLogger(ContainerRuntime.class);
     /**
      * http://patorjk.com/software/taag/
      * Font Name: Puffy
@@ -46,7 +48,7 @@ public class ContainerRuntime {
             "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" +
             "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" +
             "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
-    private static final String VERSION = "0.1.2";
+    private static final String VERSION = "0.1.3-SNAPSHOT";
     private final List<ApplicationRuntime> runtimes = new ArrayList<>();
     private final List<Plugin> plugins = new ArrayList<>();
     private volatile boolean started = false;
@@ -95,12 +97,12 @@ public class ContainerRuntime {
      */
     private void loadAndInstallPlugins() {
         for (Plugin plugin : ServiceLoader.load(Plugin.class, ContainerRuntime.class.getClassLoader())) {
-            RunLogger.getLogger().log(Level.FINE, "load plugin: " + plugin.pluginName());
+            LOGGER.info("load plugin: " + plugin.pluginName());
             plugins.add(plugin);
         }
         //安装插件
         plugins.forEach(plugin -> {
-            RunLogger.getLogger().log(Level.FINE, "install plugin: " + plugin.pluginName());
+            LOGGER.info( "install plugin: " + plugin.pluginName());
             plugin.install();
         });
     }

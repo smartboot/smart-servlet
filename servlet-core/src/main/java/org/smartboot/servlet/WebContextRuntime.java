@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet;
 
-import org.smartboot.http.utils.StringUtils;
+import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 

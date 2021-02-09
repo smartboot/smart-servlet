@@ -9,10 +9,11 @@
 
 package org.smartboot.servlet.impl;
 
-import org.smartboot.http.HttpRequest;
-import org.smartboot.http.logging.RunLogger;
-import org.smartboot.http.utils.NumberUtils;
-import org.smartboot.http.utils.StringUtils;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.NumberUtils;
+import org.smartboot.http.common.utils.StringUtils;
+import org.smartboot.http.server.HttpRequest;
 import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.provider.SessionProvider;
@@ -42,13 +43,13 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
 public class HttpServletRequestImpl implements SmartHttpServletRequest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpServletRequestImpl.class);
     private static final Cookie[] NONE_COOKIE = new Cookie[0];
     private final HttpRequest request;
     private final ServletContextImpl servletContext;
@@ -99,7 +100,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (cookies != null) {
             return cookies == NONE_COOKIE ? null : cookies;
         }
-        org.smartboot.http.server.Cookie[] cookie = request.getCookies();
+        org.smartboot.http.common.Cookie[] cookie = request.getCookies();
         if (cookie == null || cookie.length == 0) {
             cookies = NONE_COOKIE;
         } else {
@@ -191,7 +192,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public Principal getUserPrincipal() {
-        RunLogger.getLogger().log(Level.SEVERE, "unSupport getUserPrincipal");
+        LOGGER.info("unSupport getUserPrincipal");
         return null;
     }
 

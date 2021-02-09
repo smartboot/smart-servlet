@@ -10,12 +10,13 @@
 package org.smartboot.servlet;
 
 
-import org.smartboot.http.enums.HttpMethodEnum;
-import org.smartboot.http.enums.HttpStatus;
-import org.smartboot.http.logging.RunLogger;
-import org.smartboot.http.utils.HttpHeaderConstant;
-import org.smartboot.http.utils.Mimetypes;
-import org.smartboot.http.utils.StringUtils;
+import org.smartboot.http.common.enums.HttpMethodEnum;
+import org.smartboot.http.common.enums.HttpStatus;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.HttpHeaderConstant;
+import org.smartboot.http.common.utils.Mimetypes;
+import org.smartboot.http.common.utils.StringUtils;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletConfig;
@@ -36,13 +37,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
-import java.util.logging.Level;
 
 /**
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
 public class DefaultServlet extends HttpServlet {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServlet.class);
     private static final int READ_BUFFER = 1024 * 1024;
     private static final String FAVICON_NAME = "favicon.ico";
     private static final String URL_404 =
@@ -67,7 +68,7 @@ public class DefaultServlet extends HttpServlet {
         Enumeration<String> enumeration = config.getInitParameterNames();
         while (enumeration.hasMoreElements()) {
             String name = enumeration.nextElement();
-            RunLogger.getLogger().log(Level.INFO, "servlet parameter name:" + name + " ,value:" + config.getInitParameter(name));
+            LOGGER.info("servlet parameter name:" + name + " ,value:" + config.getInitParameter(name));
         }
         loadDefaultFavicon();
     }
@@ -111,7 +112,7 @@ public class DefaultServlet extends HttpServlet {
 
         try {
             if (url != null) {
-                RunLogger.getLogger().log(Level.FINE, url.toURI().toString());
+                LOGGER.info(url.toURI().toString());
                 file = new File(url.toURI());
             }
         } catch (URISyntaxException e) {
@@ -119,7 +120,7 @@ public class DefaultServlet extends HttpServlet {
         }
         //404
         if (!defaultFavicon && (file == null || !file.isFile())) {
-            RunLogger.getLogger().log(Level.WARNING, "file:" + request.getRequestURI() + " not found!");
+            LOGGER.info("file:" + request.getRequestURI() + " not found!");
             //《Servlet3.1规范中文版》9.3 include 方法
             //如果默认的 servlet 是 RequestDispatch.include()的目标 servlet，
             // 而且请求的资源不存在，那么默认的 servlet 必须抛出 FileNotFoundException 异常。
@@ -146,7 +147,7 @@ public class DefaultServlet extends HttpServlet {
                 return;
             }
         } catch (Exception e) {
-            RunLogger.getLogger().log(Level.SEVERE, "exception", e);
+            LOGGER.info("exception", e);
         }
         response.setHeader(HttpHeaderConstant.Names.LAST_MODIFIED, sdf.get().format(new Date(lastModifiedTime)));
 
@@ -165,7 +166,7 @@ public class DefaultServlet extends HttpServlet {
             response.getOutputStream().write(faviconBytes);
             return;
         }
-        RunLogger.getLogger().log(Level.FINE, "load file:" + fileName);
+        LOGGER.info("load file:" + fileName);
         FileInputStream fis = new FileInputStream(file);
         FileChannel fileChannel = fis.getChannel();
         long fileSize = fileChannel.size();

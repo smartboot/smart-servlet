@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.handler;
 
-import org.smartboot.http.utils.StringUtils;
+import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.FilterMappingInfo;

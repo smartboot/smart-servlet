@@ -9,7 +9,8 @@
 
 package org.smartboot.servlet.impl;
 
-import org.smartboot.http.logging.RunLogger;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
@@ -23,7 +24,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
  * @version V1.0 , 2020/10/18
  */
 public class ApplicationServletRegistration implements ServletRegistration.Dynamic {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationServletRegistration.class);
     private ServletInfo servletInfo;
     private DeploymentInfo deploymentInfo;
 
@@ -46,18 +47,18 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
 
     @Override
     public Set<String> setServletSecurity(ServletSecurityElement constraint) {
-        RunLogger.getLogger().log(Level.SEVERE, "unSupport");
+        LOGGER.info("unSupport");
         return null;
     }
 
     @Override
     public void setMultipartConfig(MultipartConfigElement multipartConfig) {
-        RunLogger.getLogger().log(Level.SEVERE, "unSupport");
+        LOGGER.info("unSupport");
     }
 
     @Override
     public void setAsyncSupported(boolean isAsyncSupported) {
-        RunLogger.getLogger().log(Level.SEVERE, "unSupport");
+        LOGGER.info("unSupport");
     }
 
     @Override
@@ -78,13 +79,13 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
 
     @Override
     public String getRunAsRole() {
-        RunLogger.getLogger().log(Level.SEVERE, "unSupport");
+        LOGGER.info("unSupport");
         return null;
     }
 
     @Override
     public void setRunAsRole(String roleName) {
-        RunLogger.getLogger().log(Level.SEVERE, "unSupport");
+        LOGGER.info("unSupport");
     }
 
     @Override

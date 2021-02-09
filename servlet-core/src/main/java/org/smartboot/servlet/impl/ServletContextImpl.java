@@ -9,8 +9,9 @@
 
 package org.smartboot.servlet.impl;
 
-import org.smartboot.http.logging.RunLogger;
-import org.smartboot.http.utils.Mimetypes;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.Mimetypes;
 import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
@@ -47,7 +48,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
  * @version V1.0 , 2019/12/11
  */
 public class ServletContextImpl implements ServletContext {
-    //    private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextImpl.class);
     private final ConcurrentMap<String, Object> attributes = new ConcurrentHashMap<>();
     private final ApplicationRuntime containerRuntime;
     private final DeploymentInfo deploymentInfo;
@@ -138,9 +138,9 @@ public class ServletContextImpl implements ServletContext {
                 url = getClassLoader().getResource(path);
             }
         } catch (URISyntaxException e) {
-            RunLogger.getLogger().log(Level.SEVERE, "path:" + pathUrl + " ，URISyntaxException:" + e.getMessage());
+            LOGGER.info("path:" + pathUrl + " ，URISyntaxException:" + e.getMessage());
         }
-        RunLogger.getLogger().log(Level.SEVERE, "path" + ((url == null) ? "(404):" : ":") + pathUrl + " ，url:" + deploymentInfo.getContextUrl());
+        LOGGER.info("path" + ((url == null) ? "(404):" : ":") + pathUrl + " ，url:" + deploymentInfo.getContextUrl());
         return url;
     }
 
@@ -207,12 +207,12 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void log(String msg) {
-        RunLogger.getLogger().log(Level.FINE, msg);
+        LOGGER.info(msg);
     }
 
     @Override
     public void log(Exception exception, String msg) {
-        RunLogger.getLogger().log(Level.SEVERE, msg, exception);
+        LOGGER.info(msg, exception);
     }
 
     @Override
@@ -403,7 +403,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public <T extends EventListener> void addListener(T listener) {
-        RunLogger.getLogger().log(Level.FINE, listener.getClass().getSimpleName() + " listener: " + listener);
+        LOGGER.info(listener.getClass().getSimpleName() + " listener: " + listener);
         if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
             ServletContextListener contextListener = (ServletContextListener) listener;
             ServletContextEvent event = new ServletContextEvent(this);
