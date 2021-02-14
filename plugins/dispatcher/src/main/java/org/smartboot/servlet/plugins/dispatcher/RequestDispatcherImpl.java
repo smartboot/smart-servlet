@@ -9,8 +9,8 @@
 
 package org.smartboot.servlet.plugins.dispatcher;
 
-import org.smartboot.http.utils.HttpUtils;
-import org.smartboot.http.utils.StringUtils;
+import org.smartboot.http.common.utils.HttpUtils;
+import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;

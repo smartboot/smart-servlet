@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.plugins.dispatcher;
 
-import org.smartboot.http.utils.HttpHeaderConstant;
+import org.smartboot.http.common.utils.HttpHeaderConstant;
 import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;

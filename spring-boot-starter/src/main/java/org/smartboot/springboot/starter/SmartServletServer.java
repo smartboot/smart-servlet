@@ -9,10 +9,10 @@
 
 package org.smartboot.springboot.starter;
 
-import org.smartboot.http.HttpBootstrap;
-import org.smartboot.http.HttpRequest;
-import org.smartboot.http.HttpResponse;
-import org.smartboot.http.server.handle.HttpHandle;
+import org.smartboot.http.server.HttpBootstrap;
+import org.smartboot.http.server.HttpRequest;
+import org.smartboot.http.server.HttpResponse;
+import org.smartboot.http.server.HttpServerHandle;
 import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.ContainerRuntime;
 import org.springframework.boot.web.server.WebServer;
@@ -46,7 +46,7 @@ public class SmartServletServer implements WebServer {
             try {
                 if (this.bootstrap == null) {
                     this.bootstrap = new HttpBootstrap();
-                    bootstrap.pipeline().next(new HttpHandle() {
+                    bootstrap.pipeline().next(new HttpServerHandle() {
                         @Override
                         public void doHandle(HttpRequest request, HttpResponse response) throws IOException {
                             containerRuntime.doHandle(request, response);

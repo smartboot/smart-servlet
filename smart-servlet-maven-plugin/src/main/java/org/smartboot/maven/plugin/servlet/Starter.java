@@ -9,10 +9,10 @@
 
 package org.smartboot.maven.plugin.servlet;
 
-import org.smartboot.http.HttpBootstrap;
-import org.smartboot.http.HttpRequest;
-import org.smartboot.http.HttpResponse;
-import org.smartboot.http.server.handle.HttpHandle;
+import org.smartboot.http.server.HttpBootstrap;
+import org.smartboot.http.server.HttpRequest;
+import org.smartboot.http.server.HttpResponse;
+import org.smartboot.http.server.HttpServerHandle;
 import org.smartboot.servlet.ContainerRuntime;
 
 /**
@@ -29,7 +29,7 @@ public class Starter {
         bootstrap.setBannerEnabled(false);
         bootstrap
                 .setReadBufferSize(1024 * 1024)
-                .pipeline().next(new HttpHandle() {
+                .pipeline().next(new HttpServerHandle() {
             @Override
             public void doHandle(HttpRequest request, HttpResponse response) {
                 containerRuntime.doHandle(request, response);
