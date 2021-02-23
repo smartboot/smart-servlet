@@ -46,14 +46,14 @@ public class SmartServletServer implements WebServer {
             try {
                 if (this.bootstrap == null) {
                     this.bootstrap = new HttpBootstrap();
-                    bootstrap.pipeline().next(new HttpServerHandle() {
+                    bootstrap.pipeline(new HttpServerHandle() {
                         @Override
                         public void doHandle(HttpRequest request, HttpResponse response) throws IOException {
                             containerRuntime.doHandle(request, response);
                         }
                     });
-                    bootstrap.setBannerEnabled(false);
-                    bootstrap.setReadBufferSize(1024 * 1024).setPort(8080).start();
+                    bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024);
+                    bootstrap.setPort(8080).start();
                     System.out.println("启动成功");
                 }
                 this.started = true;

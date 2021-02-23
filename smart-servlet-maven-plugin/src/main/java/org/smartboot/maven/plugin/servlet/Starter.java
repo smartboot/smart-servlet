@@ -26,10 +26,8 @@ public class Starter {
         containerRuntime.addRuntime(path, "/", classLoader);
         containerRuntime.start();
         HttpBootstrap bootstrap = new HttpBootstrap();
-        bootstrap.setBannerEnabled(false);
-        bootstrap
-                .setReadBufferSize(1024 * 1024)
-                .pipeline().next(new HttpServerHandle() {
+        bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024);
+        bootstrap.pipeline(new HttpServerHandle() {
             @Override
             public void doHandle(HttpRequest request, HttpResponse response) {
                 containerRuntime.doHandle(request, response);
