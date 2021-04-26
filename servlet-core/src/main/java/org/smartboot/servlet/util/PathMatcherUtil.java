@@ -9,8 +9,8 @@
 
 package org.smartboot.servlet.util;
 
-import org.smartboot.servlet.conf.ServletMappingInfo;
-import org.smartboot.servlet.enums.ServletMappingTypeEnum;
+import org.smartboot.servlet.conf.UriMappingInfo;
+import org.smartboot.servlet.enums.UriMappingTypeEnum;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,24 +33,24 @@ public class PathMatcherUtil {
         return false;
     }
 
-    public static ServletMappingInfo addMapping(final String mapping) {
+    public static UriMappingInfo addMapping(final String mapping) {
         if (!mapping.contains("*")) {
             if (!mapping.startsWith("/")) {
                 throw new IllegalArgumentException("invalid mapping: " + mapping);
             }
-            return new ServletMappingInfo(mapping, ServletMappingTypeEnum.EXACT_MATCH);
+            return new UriMappingInfo(mapping, UriMappingTypeEnum.EXACT_MATCH);
         } else if (mapping.startsWith("*.")) {
-            return new ServletMappingInfo(mapping, ServletMappingTypeEnum.EXTENSION_MATCH);
+            return new UriMappingInfo(mapping, UriMappingTypeEnum.EXTENSION_MATCH);
         } else if (mapping.startsWith("/") && mapping.endsWith("/*")) {
-            return new ServletMappingInfo(mapping, ServletMappingTypeEnum.PREFIX_MATCH);
+            return new UriMappingInfo(mapping, UriMappingTypeEnum.PREFIX_MATCH);
         } else {
             throw new IllegalArgumentException("illegal mapping : " + mapping);
         }
     }
 
-    public static int matches(String uri, int startIndex, ServletMappingInfo mappingInfo) {
+    public static int matches(String uri, int startIndex, UriMappingInfo mappingInfo) {
         String pattern = mappingInfo.getMapping();
-        ServletMappingTypeEnum mappingTypeEnum = mappingInfo.getMappingType();
+        UriMappingTypeEnum mappingTypeEnum = mappingInfo.getMappingType();
         int servletPathEndIndex = -1;
         switch (mappingTypeEnum) {
             case EXACT_MATCH:

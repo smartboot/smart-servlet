@@ -13,6 +13,8 @@ import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
+import org.smartboot.http.server.WebSocketRequest;
+import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
 import org.smartboot.servlet.handler.HandlePipeline;
@@ -36,7 +38,7 @@ import java.util.ServiceLoader;
  * @version V1.0 , 2020/12/31
  */
 public class ContainerRuntime {
-    private static final Logger LOGGER= LoggerFactory.getLogger(ContainerRuntime.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContainerRuntime.class);
     /**
      * http://patorjk.com/software/taag/
      * Font Name: Puffy
@@ -101,7 +103,7 @@ public class ContainerRuntime {
         }
         //安装插件
         plugins.forEach(plugin -> {
-            LOGGER.info( "install plugin: " + plugin.pluginName());
+            LOGGER.info("install plugin: " + plugin.pluginName());
             plugin.install();
         });
     }
@@ -120,6 +122,27 @@ public class ContainerRuntime {
     public void addRuntime(String location, String contextPath, ClassLoader parentClassLoader) throws Exception {
         WebContextRuntime webContextRuntime = new WebContextRuntime(location, contextPath, parentClassLoader);
         addRuntime(webContextRuntime.getServletRuntime());
+    }
+
+    public void doHandle(WebSocketRequest request, WebSocketResponse response) {
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
+            ApplicationRuntime runtime = matchRuntime(request.getRequestURI());
+            if (!runtime.isStarted()) {
+                throw new IllegalStateException("container is not started");
+            }
+            ServletContextImpl servletContext = runtime.getServletContext();
+            Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
+            runtime.getWebsocketProvider().doHandle(runtime,request, response);
+        } catch (WrappedRuntimeException e) {
+            e.getThrowable().printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+
     }
 
     public void doHandle(HttpRequest request, HttpResponse response) {

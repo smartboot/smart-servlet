@@ -23,7 +23,7 @@ import java.util.Map;
  * @version V1.0 , 2019/12/11
  */
 public class ServletInfo {
-    private final List<ServletMappingInfo> mappings = new ArrayList<>();
+    private final List<UriMappingInfo> mappings = new ArrayList<>();
     private final Map<String, String> initParams = new HashMap<>();
     private String servletClass;
     private String servletName;
@@ -51,7 +51,7 @@ public class ServletInfo {
         this.servlet = servlet;
     }
 
-    public List<ServletMappingInfo> getMappings() {
+    public List<UriMappingInfo> getMappings() {
         return Collections.unmodifiableList(mappings);
     }
 
@@ -73,7 +73,7 @@ public class ServletInfo {
      * @return
      */
     public ServletInfo addMapping(final String mapping) {
-        ServletMappingInfo servletMappingInfo = PathMatcherUtil.addMapping(mapping);
+        UriMappingInfo servletMappingInfo = PathMatcherUtil.addMapping(mapping);
         mappings.add(servletMappingInfo);
         return this;
     }

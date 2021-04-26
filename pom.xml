@@ -247,5 +247,6 @@
         <module>servlet-core</module>
         <module>spring-boot-starter</module>
         <module>smart-servlet-maven-plugin</module>
+        <module>smart-servlet-embed-websocket</module>
     </modules>
 </project>

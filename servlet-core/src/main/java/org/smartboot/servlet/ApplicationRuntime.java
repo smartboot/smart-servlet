@@ -21,6 +21,7 @@ import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.provider.DispatcherProvider;
 import org.smartboot.servlet.provider.MemoryPoolProvider;
 import org.smartboot.servlet.provider.SessionProvider;
+import org.smartboot.servlet.provider.WebsocketProvider;
 import org.smartboot.servlet.sandbox.SandBox;
 
 import javax.servlet.Filter;
@@ -67,6 +68,11 @@ public class ApplicationRuntime {
      * 内存池服务提供者
      */
     private MemoryPoolProvider memoryPoolProvider = SandBox.INSTANCE.getMemoryPoolProvider();
+
+    /**
+     * Websocket服务提供者
+     */
+    private WebsocketProvider websocketProvider = SandBox.INSTANCE.getWebsocketProvider();
     /**
      * 关联至本运行环境的插件集合
      */
@@ -214,6 +220,14 @@ public class ApplicationRuntime {
 
     public void setMemoryPoolProvider(MemoryPoolProvider memoryPoolProvider) {
         this.memoryPoolProvider = memoryPoolProvider;
+    }
+
+    public WebsocketProvider getWebsocketProvider() {
+        return websocketProvider;
+    }
+
+    public void setWebsocketProvider(WebsocketProvider websocketProvider) {
+        this.websocketProvider = websocketProvider;
     }
 
     public String getContextPath() {

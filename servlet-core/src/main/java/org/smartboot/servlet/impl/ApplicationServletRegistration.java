@@ -13,7 +13,7 @@ import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.ServletInfo;
-import org.smartboot.servlet.conf.ServletMappingInfo;
+import org.smartboot.servlet.conf.UriMappingInfo;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletRegistration;
@@ -74,7 +74,7 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
     @Override
     public Collection<String> getMappings() {
         return servletInfo.getMappings().stream()
-                .map(ServletMappingInfo::getMapping).collect(Collectors.toList());
+                .map(UriMappingInfo::getMapping).collect(Collectors.toList());
     }
 
     @Override

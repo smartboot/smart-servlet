@@ -229,5 +229,6 @@
     <modules>
         <module>session</module>
         <module>dispatcher</module>
+        <module>websocket</module>
     </modules>
 </project>
