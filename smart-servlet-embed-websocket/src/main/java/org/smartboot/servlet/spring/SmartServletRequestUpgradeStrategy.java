@@ -23,7 +23,7 @@ public class SmartServletRequestUpgradeStrategy extends AbstractStandardUpgradeS
 
     @Override
     protected void upgradeInternal(ServerHttpRequest request, ServerHttpResponse response, String selectedProtocol, List<Extension> selectedExtensions, Endpoint endpoint) throws HandshakeFailureException {
-        System.out.println("haha");
+        System.out.println("haha"+servletContext);
     }
 
     @Override

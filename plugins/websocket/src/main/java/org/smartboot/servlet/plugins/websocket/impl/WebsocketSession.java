@@ -12,13 +12,13 @@ package org.smartboot.servlet.plugins.websocket.impl;
 import javax.websocket.CloseReason;
 import javax.websocket.Extension;
 import javax.websocket.MessageHandler;
+import javax.websocket.PongMessage;
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +29,6 @@ import java.util.Set;
  */
 public class WebsocketSession implements Session {
 
-    private final Map<Integer, HandlerWrapper> handlerWrapperMap = new HashMap<>();
     private final WebSocketContainer container;
     private final AnnotatedEndpoint endpoint;
     private final URI uri;
@@ -41,9 +40,6 @@ public class WebsocketSession implements Session {
         this.container = container;
         this.endpoint = endpoint;
         this.uri = uri;
-        textMessageHandler = endpoint.getTextMessageHandler();
-        binaryMessageHandler = endpoint.getBinaryMessageHandler();
-        pongMessageHandler = endpoint.getPongMessageHandler();
     }
 
     @Override
@@ -67,7 +63,15 @@ public class WebsocketSession implements Session {
     }
 
     private <T> void addMessageHandler(HandlerWrapper wrapper) {
-
+        if (wrapper.getMessageType() == String.class) {
+            textMessageHandler = wrapper;
+        }
+        if (wrapper.getMessageType() == byte[].class) {
+            binaryMessageHandler = wrapper;
+        }
+        if (wrapper.getMessageType() == PongMessage.class) {
+            pongMessageHandler = wrapper;
+        }
     }
 
     @Override

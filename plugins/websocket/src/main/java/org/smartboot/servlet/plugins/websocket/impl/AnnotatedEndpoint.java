@@ -16,10 +16,13 @@ import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
+import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpointConfig;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
@@ -31,9 +34,7 @@ public class AnnotatedEndpoint extends Endpoint {
     private Method onOpenMethod;
     private Method onErrorMethod;
 
-    private HandlerWrapper textMessageHandler;
-    private HandlerWrapper binaryMessageHandler = null;
-    private HandlerWrapper pongMessageHandler;
+    private List<OnMessageConfig> onMessageConfigs = new ArrayList<>();
 
     public AnnotatedEndpoint(ServerEndpointConfig serverEndpointConfig) {
         try {
@@ -63,7 +64,22 @@ public class AnnotatedEndpoint extends Endpoint {
                         }
                     }
                     if (method.isAnnotationPresent(OnMessage.class)) {
-//                        HandlerWrapper handlerWrapper=new HandlerWrapper()
+                        OnMessageConfig messageHandler = new OnMessageConfig(method, instance);
+                        for (Class<?> paramType : onOpenMethod.getParameterTypes()) {
+                            if (paramType == String.class) {
+                                messageHandler.setMessageType(String.class);
+                                break;
+                            }
+                            if (paramType == byte[].class) {
+                                messageHandler.setMessageType(byte[].class);
+                                break;
+                            }
+                            if (paramType == PongMessage.class) {
+                                messageHandler.setMessageType(PongMessage.class);
+                                break;
+                            }
+                        }
+                        onMessageConfigs.add(messageHandler);
                     }
                 }
                 c = c.getSuperclass();
@@ -155,15 +171,7 @@ public class AnnotatedEndpoint extends Endpoint {
         }
     }
 
-    public HandlerWrapper getTextMessageHandler() {
-        return textMessageHandler;
-    }
-
-    public HandlerWrapper getBinaryMessageHandler() {
-        return binaryMessageHandler;
-    }
-
-    public HandlerWrapper getPongMessageHandler() {
-        return pongMessageHandler;
+    public List<OnMessageConfig> getOnMessageConfigs() {
+        return onMessageConfigs;
     }
 }

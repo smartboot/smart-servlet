@@ -10,7 +10,6 @@
 package org.smartboot.servlet.plugins.websocket.impl;
 
 import org.smartboot.http.server.WebSocketRequest;
-import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.websocket.ClientEndpointConfig;
@@ -37,12 +36,7 @@ import java.util.Set;
 public class WebsocketServerContainer implements ServerContainer {
     private final Set<Class<?>> endpointClassSet = new HashSet<>();
     private final List<SmartServerEndpointConfig> endpointConfigs = new ArrayList<>();
-    private final ApplicationRuntime containerRuntime;
     private boolean deployed = false;
-
-    public WebsocketServerContainer(ApplicationRuntime containerRuntime) {
-        this.containerRuntime = containerRuntime;
-    }
 
 
     /**
@@ -51,9 +45,9 @@ public class WebsocketServerContainer implements ServerContainer {
      * @param request
      * @return
      */
-    public SmartServerEndpointConfig match(WebSocketRequest request) {
+    public SmartServerEndpointConfig match(String contextPath, WebSocketRequest request) {
         for (SmartServerEndpointConfig serverEndpointConfig : endpointConfigs) {
-            if (PathMatcherUtil.matches(request.getRequestURI(), containerRuntime.getContextPath().length(), serverEndpointConfig.getPath()) > -1) {
+            if (PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), serverEndpointConfig.getPath()) > -1) {
                 return serverEndpointConfig;
             }
         }

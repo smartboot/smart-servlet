@@ -22,7 +22,11 @@ import org.smartboot.servlet.plugins.websocket.impl.WebsocketServerContainer;
 import org.smartboot.servlet.plugins.websocket.impl.WebsocketSession;
 import org.smartboot.servlet.provider.WebsocketProvider;
 
+import javax.websocket.MessageHandler;
 import javax.websocket.PongMessage;
+import javax.websocket.Session;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
@@ -42,7 +46,7 @@ public class WebsocketProviderImpl implements WebsocketProvider {
         try {
             switch (request.getWebsocketStatus()) {
                 case HandShake:
-                    onHandShark(request, response);
+                    onHandShark(runtime, request, response);
                     break;
                 case DataFrame: {
                     WebsocketSession session = request.getAttachment();
@@ -81,12 +85,42 @@ public class WebsocketProviderImpl implements WebsocketProvider {
         }
     }
 
-    private void onHandShark(WebSocketRequest request, WebSocketResponse response) {
+    private void onHandShark(ApplicationRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
         try {
-            SmartServerEndpointConfig serverEndpointConfig = container.match(request);
+            SmartServerEndpointConfig serverEndpointConfig = container.match(runtime.getContextPath(), request);
             AnnotatedEndpoint endpoint = serverEndpointConfig.getEndpoint();
+
             WebsocketSession websocketSession = new WebsocketSession(container, endpoint, URI.create(request.getRequestURI()));
+            request.setAttachment(websocketSession);
+
+            //注册 OnMessage 回调
+            endpoint.getOnMessageConfigs().forEach(messageConfig -> {
+                websocketSession.addMessageHandler(messageConfig.getMessageType(), new MessageHandler.Whole<Object>() {
+                    @Override
+                    public void onMessage(Object message) {
+                        try {
+                            Method method = messageConfig.getMethod();
+                            Object[] args = new Override[method.getParameterTypes().length];
+                            int i = 0;
+                            for (Class<?> paramType : method.getParameterTypes()) {
+                                Object value = null;
+                                if (Session.class == paramType) {
+                                    value = websocketSession;
+                                }
+                                if (messageConfig.getMessageType() == paramType) {
+                                    value = message;
+                                }
+                                args[i++] = value;
+                            }
+                            method.invoke(messageConfig.getInstance(), args);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            });
             endpoint.onOpen(websocketSession, serverEndpointConfig.getServerEndpointConfig());
+
         } catch (Throwable e) {
             onError(e);
             response.close();
