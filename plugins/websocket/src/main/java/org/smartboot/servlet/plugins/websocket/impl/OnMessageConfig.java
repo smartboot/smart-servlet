@@ -16,8 +16,8 @@ import java.lang.reflect.Method;
  * @version V1.0 , 2021/4/27
  */
 public class OnMessageConfig {
-    private Method method;
-    private Object instance;
+    private final Method method;
+    private final Object instance;
     private Class<?> messageType;
 
     public OnMessageConfig(Method method, Object instance) {

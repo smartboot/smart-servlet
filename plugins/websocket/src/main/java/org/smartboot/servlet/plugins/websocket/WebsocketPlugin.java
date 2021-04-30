@@ -13,17 +13,18 @@ import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.plugins.websocket.impl.WebsocketServerContainer;
 
-import javax.websocket.ContainerProvider;
+import javax.websocket.server.ServerContainer;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2021/3/28
  */
 public class WebsocketPlugin extends Plugin {
+    private final WebsocketServerContainer container = new WebsocketServerContainer();
 
     @Override
     public void willStartContainer(ApplicationRuntime containerRuntime) {
-        WebsocketServerContainer container = (WebsocketServerContainer) ContainerProvider.getWebSocketContainer();
         containerRuntime.setWebsocketProvider(new WebsocketProviderImpl(container));
+        containerRuntime.getServletContext().setAttribute(ServerContainer.class.getName(), container);
     }
 }

@@ -29,12 +29,11 @@ import java.util.List;
  * @version V1.0 , 2021/4/26
  */
 public class AnnotatedEndpoint extends Endpoint {
+    private final List<OnMessageConfig> onMessageConfigs = new ArrayList<>();
     private Object instance;
     private Method onCloseMethod;
     private Method onOpenMethod;
     private Method onErrorMethod;
-
-    private List<OnMessageConfig> onMessageConfigs = new ArrayList<>();
 
     public AnnotatedEndpoint(ServerEndpointConfig serverEndpointConfig) {
         try {
@@ -45,21 +44,21 @@ public class AnnotatedEndpoint extends Endpoint {
                     if (method.isAnnotationPresent(OnOpen.class)) {
                         if (onOpenMethod == null) {
                             onOpenMethod = method;
-                        } else if (!overrides(onOpenMethod, method)) {
+                        } else if (overrides(onOpenMethod, method)) {
                             throw new IllegalAccessException("more than one OnOpen annotation");
                         }
                     }
                     if (method.isAnnotationPresent(OnClose.class)) {
                         if (onCloseMethod == null) {
                             onCloseMethod = method;
-                        } else if (!overrides(onCloseMethod, method)) {
+                        } else if (overrides(onCloseMethod, method)) {
                             throw new IllegalAccessException("more than one OnClose annotation");
                         }
                     }
                     if (method.isAnnotationPresent(OnError.class)) {
                         if (onErrorMethod == null) {
                             onErrorMethod = method;
-                        } else if (!overrides(onErrorMethod, method)) {
+                        } else if (overrides(onErrorMethod, method)) {
                             throw new IllegalAccessException("more than one OnError annotation");
                         }
                     }
@@ -92,26 +91,26 @@ public class AnnotatedEndpoint extends Endpoint {
 
     private boolean overrides(Method preMethod, Method method) {
         if (!method.getName().equals(preMethod.getName())) {
-            return false;
+            return true;
         }
         if (!method.getReturnType().isAssignableFrom(preMethod.getReturnType())) {
-            return false;
+            return true;
         }
         if (method.getParameterTypes().length != preMethod.getParameterTypes().length) {
-            return false;
+            return true;
         }
         for (int i = 0; i < method.getParameterTypes().length; ++i) {
             if (method.getParameterTypes()[i] != preMethod.getParameterTypes()[i]) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     @Override
     public void onOpen(Session session, EndpointConfig config) {
         try {
-            Object[] args = new Override[onOpenMethod.getParameterTypes().length];
+            Object[] args = new Object[onOpenMethod.getParameterTypes().length];
             int i = 0;
             for (Class<?> paramType : onOpenMethod.getParameterTypes()) {
                 Object value = null;
@@ -132,7 +131,7 @@ public class AnnotatedEndpoint extends Endpoint {
     @Override
     public void onClose(Session session, CloseReason closeReason) {
         try {
-            Object[] args = new Override[onCloseMethod.getParameterTypes().length];
+            Object[] args = new Object[onCloseMethod.getParameterTypes().length];
             int i = 0;
             for (Class<?> paramType : onCloseMethod.getParameterTypes()) {
                 Object value = null;
@@ -153,7 +152,7 @@ public class AnnotatedEndpoint extends Endpoint {
     @Override
     public void onError(Session session, Throwable thr) {
         try {
-            Object[] args = new Override[onErrorMethod.getParameterTypes().length];
+            Object[] args = new Object[onErrorMethod.getParameterTypes().length];
             int i = 0;
             for (Class<?> paramType : onErrorMethod.getParameterTypes()) {
                 Object value = null;

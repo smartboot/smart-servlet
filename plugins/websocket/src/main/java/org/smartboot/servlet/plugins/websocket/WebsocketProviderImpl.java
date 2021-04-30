@@ -100,7 +100,7 @@ public class WebsocketProviderImpl implements WebsocketProvider {
                     public void onMessage(Object message) {
                         try {
                             Method method = messageConfig.getMethod();
-                            Object[] args = new Override[method.getParameterTypes().length];
+                            Object[] args = new Object[method.getParameterTypes().length];
                             int i = 0;
                             for (Class<?> paramType : method.getParameterTypes()) {
                                 Object value = null;
