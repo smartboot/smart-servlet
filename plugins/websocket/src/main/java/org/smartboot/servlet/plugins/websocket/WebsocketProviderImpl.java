@@ -11,12 +11,14 @@ package org.smartboot.servlet.plugins.websocket;
 
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.exception.HttpException;
+import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.plugins.websocket.impl.AnnotatedEndpoint;
 import org.smartboot.servlet.plugins.websocket.impl.HandlerWrapper;
+import org.smartboot.servlet.plugins.websocket.impl.PathNode;
 import org.smartboot.servlet.plugins.websocket.impl.SmartServerEndpointConfig;
 import org.smartboot.servlet.plugins.websocket.impl.WebsocketServerContainer;
 import org.smartboot.servlet.plugins.websocket.impl.WebsocketSession;
@@ -25,10 +27,14 @@ import org.smartboot.servlet.provider.WebsocketProvider;
 import javax.websocket.MessageHandler;
 import javax.websocket.PongMessage;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
@@ -87,14 +93,47 @@ public class WebsocketProviderImpl implements WebsocketProvider {
 
     private void onHandShark(ApplicationRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
         try {
-            SmartServerEndpointConfig serverEndpointConfig = container.match(runtime.getContextPath(), request);
-            AnnotatedEndpoint endpoint = serverEndpointConfig.getEndpoint();
+            SmartServerEndpointConfig matchedServerEndpointConfig = null;
+            Map<String, String> data = new HashMap<>();
+            List<PathNode> requestPathNodes = PathNode.convertToPathNodes(request.getRequestURI());
+            for (SmartServerEndpointConfig serverEndpointConfig : container.getEndpointConfigs()) {
+                List<PathNode> pathNodes = serverEndpointConfig.getPathNodes();
+                if (requestPathNodes.size() != pathNodes.size()) {
+                    continue;
+                }
+                //是否匹配成功
+                boolean matched = true;
+                Map<String, String> matchData = new HashMap<>();
+                for (int i = 0; i < pathNodes.size(); i++) {
+                    PathNode node = pathNodes.get(i);
+                    PathNode requestNode = requestPathNodes.get(i);
+                    if (node.isPatternMatching()) {
+                        matchData.put(node.getNodeName(), requestNode.getNodeName());
+                    } else if (!StringUtils.equals(requestNode.getNodeName(), node.getNodeName())) {
+                        matched = false;
+                        break;
+                    }
+                }
+                //匹配成功
+                if (matched) {
+                    data = matchData;
+                    matchedServerEndpointConfig = serverEndpointConfig;
+                    break;
+                }
+            }
+            //匹配失败
+            if (matchedServerEndpointConfig == null) {
+                response.close();
+                return;
+            }
+            AnnotatedEndpoint endpoint = new AnnotatedEndpoint(matchedServerEndpointConfig,data);
 
             WebsocketSession websocketSession = new WebsocketSession(container, endpoint, URI.create(request.getRequestURI()));
             request.setAttachment(websocketSession);
 
             //注册 OnMessage 回调
-            endpoint.getOnMessageConfigs().forEach(messageConfig -> {
+            Map<String, String> finalData = data;
+            matchedServerEndpointConfig.getOnMessageConfigs().forEach(messageConfig -> {
                 websocketSession.addMessageHandler(messageConfig.getMessageType(), new MessageHandler.Whole<Object>() {
                     @Override
                     public void onMessage(Object message) {
@@ -110,6 +149,12 @@ public class WebsocketProviderImpl implements WebsocketProvider {
                                 if (messageConfig.getMessageType() == paramType) {
                                     value = message;
                                 }
+
+                                PathParam pathParam = paramType.getAnnotation(PathParam.class);
+                                if (pathParam != null) {
+                                    value = finalData.get(pathParam.value());
+                                }
+
                                 args[i++] = value;
                             }
                             method.invoke(messageConfig.getInstance(), args);
@@ -119,7 +164,7 @@ public class WebsocketProviderImpl implements WebsocketProvider {
                     }
                 });
             });
-            endpoint.onOpen(websocketSession, serverEndpointConfig.getServerEndpointConfig());
+            endpoint.onOpen(websocketSession, matchedServerEndpointConfig.getServerEndpointConfig());
 
         } catch (Throwable e) {
             onError(e);

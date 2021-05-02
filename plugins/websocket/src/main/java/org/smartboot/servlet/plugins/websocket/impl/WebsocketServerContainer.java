@@ -9,9 +9,6 @@
 
 package org.smartboot.servlet.plugins.websocket.impl;
 
-import org.smartboot.http.server.WebSocketRequest;
-import org.smartboot.servlet.util.PathMatcherUtil;
-
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.DeploymentException;
 import javax.websocket.Endpoint;
@@ -37,22 +34,6 @@ public class WebsocketServerContainer implements ServerContainer {
     private final Set<Class<?>> endpointClassSet = new HashSet<>();
     private final List<SmartServerEndpointConfig> endpointConfigs = new ArrayList<>();
     private boolean deployed = false;
-
-
-    /**
-     * 匹配本次连接对应的 Endpoint
-     *
-     * @param request
-     * @return
-     */
-    public SmartServerEndpointConfig match(String contextPath, WebSocketRequest request) {
-        for (SmartServerEndpointConfig serverEndpointConfig : endpointConfigs) {
-            if (PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), serverEndpointConfig.getPath()) > -1) {
-                return serverEndpointConfig;
-            }
-        }
-        return null;
-    }
 
     @Override
     public void addEndpoint(Class<?> endpointClass) throws DeploymentException {
@@ -153,5 +134,9 @@ public class WebsocketServerContainer implements ServerContainer {
 
     public void deployComplete() {
         deployed = true;
+    }
+
+    public List<SmartServerEndpointConfig> getEndpointConfigs() {
+        return endpointConfigs;
     }
 }
