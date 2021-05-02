@@ -15,6 +15,7 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.PongMessage;
 import javax.websocket.server.ServerEndpointConfig;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,9 @@ public class SmartServerEndpointConfig {
     private Method onCloseMethod;
     private Method onOpenMethod;
     private Method onErrorMethod;
+    private Annotation[][] onOpenAnnotations;
+    private Annotation[][] onCloseAnnotations;
+    private Annotation[][] onErrorAnnotations;
 
     public SmartServerEndpointConfig(ServerEndpointConfig serverEndpointConfig) {
         this.serverEndpointConfig = serverEndpointConfig;
@@ -42,6 +46,7 @@ public class SmartServerEndpointConfig {
                     if (method.isAnnotationPresent(OnOpen.class)) {
                         if (onOpenMethod == null) {
                             onOpenMethod = method;
+                            onOpenAnnotations = method.getParameterAnnotations();
                         } else if (overrides(onOpenMethod, method)) {
                             throw new IllegalAccessException("more than one OnOpen annotation");
                         }
@@ -49,6 +54,7 @@ public class SmartServerEndpointConfig {
                     if (method.isAnnotationPresent(OnClose.class)) {
                         if (onCloseMethod == null) {
                             onCloseMethod = method;
+                            onCloseAnnotations = method.getParameterAnnotations();
                         } else if (overrides(onCloseMethod, method)) {
                             throw new IllegalAccessException("more than one OnClose annotation");
                         }
@@ -56,6 +62,7 @@ public class SmartServerEndpointConfig {
                     if (method.isAnnotationPresent(OnError.class)) {
                         if (onErrorMethod == null) {
                             onErrorMethod = method;
+                            onErrorAnnotations = method.getParameterAnnotations();
                         } else if (overrides(onErrorMethod, method)) {
                             throw new IllegalAccessException("more than one OnError annotation");
                         }
@@ -132,5 +139,17 @@ public class SmartServerEndpointConfig {
 
     public Method getOnErrorMethod() {
         return onErrorMethod;
+    }
+
+    public Annotation[][] getOnOpenAnnotations() {
+        return onOpenAnnotations;
+    }
+
+    public Annotation[][] getOnCloseAnnotations() {
+        return onCloseAnnotations;
+    }
+
+    public Annotation[][] getOnErrorAnnotations() {
+        return onErrorAnnotations;
     }
 }

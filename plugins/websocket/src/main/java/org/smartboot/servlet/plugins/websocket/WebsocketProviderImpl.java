@@ -28,6 +28,7 @@ import javax.websocket.MessageHandler;
 import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -126,7 +127,7 @@ public class WebsocketProviderImpl implements WebsocketProvider {
                 response.close();
                 return;
             }
-            AnnotatedEndpoint endpoint = new AnnotatedEndpoint(matchedServerEndpointConfig,data);
+            AnnotatedEndpoint endpoint = new AnnotatedEndpoint(matchedServerEndpointConfig, data);
 
             WebsocketSession websocketSession = new WebsocketSession(container, endpoint, URI.create(request.getRequestURI()));
             request.setAttachment(websocketSession);
@@ -143,18 +144,19 @@ public class WebsocketProviderImpl implements WebsocketProvider {
                             int i = 0;
                             for (Class<?> paramType : method.getParameterTypes()) {
                                 Object value = null;
-                                if (Session.class == paramType) {
-                                    value = websocketSession;
+                                PathParam pathParam = null;
+                                for (Annotation annotation : messageConfig.getAnnotations()[i]) {
+                                    if (annotation.annotationType() == PathParam.class) {
+                                        pathParam = (PathParam) annotation;
+                                    }
                                 }
-                                if (messageConfig.getMessageType() == paramType) {
-                                    value = message;
-                                }
-
-                                PathParam pathParam = paramType.getAnnotation(PathParam.class);
                                 if (pathParam != null) {
                                     value = finalData.get(pathParam.value());
+                                } else if (Session.class == paramType) {
+                                    value = websocketSession;
+                                } else if (messageConfig.getMessageType() == paramType) {
+                                    value = message;
                                 }
-
                                 args[i++] = value;
                             }
                             method.invoke(messageConfig.getInstance(), args);

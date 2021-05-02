@@ -9,6 +9,7 @@
 
 package org.smartboot.servlet.plugins.websocket.impl;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -18,11 +19,13 @@ import java.lang.reflect.Method;
 public class OnMessageConfig {
     private final Method method;
     private final Object instance;
+    private final Annotation[][] annotations;
     private Class<?> messageType;
 
     public OnMessageConfig(Method method, Object instance) {
         this.method = method;
         this.instance = instance;
+        this.annotations = method.getParameterAnnotations();
     }
 
     public Method getMethod() {
@@ -39,5 +42,9 @@ public class OnMessageConfig {
 
     public void setMessageType(Class<?> messageType) {
         this.messageType = messageType;
+    }
+
+    public Annotation[][] getAnnotations() {
+        return annotations;
     }
 }
