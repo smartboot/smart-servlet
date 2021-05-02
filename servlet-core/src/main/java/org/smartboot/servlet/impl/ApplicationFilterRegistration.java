@@ -12,7 +12,7 @@ package org.smartboot.servlet.impl;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.FilterMappingInfo;
-import org.smartboot.servlet.conf.UriMappingInfo;
+import org.smartboot.servlet.conf.ServletMappingInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
@@ -66,7 +66,7 @@ public class ApplicationFilterRegistration
     public Collection<String> getServletNameMappings() {
         return context.getFilterMappings().stream()
                 .filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.URL)
-                .map(FilterMappingInfo::getServletUrlMapping).map(UriMappingInfo::getMapping).collect(Collectors.toList());
+                .map(FilterMappingInfo::getServletUrlMapping).map(ServletMappingInfo::getMapping).collect(Collectors.toList());
     }
 
     @Override

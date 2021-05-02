@@ -9,17 +9,17 @@
 
 package org.smartboot.servlet.conf;
 
-import org.smartboot.servlet.enums.UriMappingTypeEnum;
+import org.smartboot.servlet.enums.ServletMappingTypeEnum;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/10/11
  */
-public class UriMappingInfo {
+public class ServletMappingInfo {
     private final String mapping;
-    private final UriMappingTypeEnum mappingType;
+    private final ServletMappingTypeEnum mappingType;
 
-    public UriMappingInfo(String mapping, UriMappingTypeEnum mappingType) {
+    public ServletMappingInfo(String mapping, ServletMappingTypeEnum mappingType) {
         this.mapping = mapping;
         this.mappingType = mappingType;
     }
@@ -28,7 +28,7 @@ public class UriMappingInfo {
         return mapping;
     }
 
-    public UriMappingTypeEnum getMappingType() {
+    public ServletMappingTypeEnum getMappingType() {
         return mappingType;
     }
 }

@@ -15,7 +15,7 @@ package org.smartboot.servlet.enums;
  * @author 三刀
  * @version V1.0 , 2020/10/11
  */
-public enum UriMappingTypeEnum {
+public enum ServletMappingTypeEnum {
     /**
      * 精准匹配
      */
@@ -27,5 +27,6 @@ public enum UriMappingTypeEnum {
     /**
      * 后缀匹配
      */
-    EXTENSION_MATCH
+    EXTENSION_MATCH,
+
 }

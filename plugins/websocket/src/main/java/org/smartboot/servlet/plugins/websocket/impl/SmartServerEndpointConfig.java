@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.plugins.websocket.impl;
 
-import org.smartboot.servlet.conf.UriMappingInfo;
+import org.smartboot.servlet.conf.ServletMappingInfo;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.websocket.server.ServerEndpointConfig;
@@ -20,7 +20,8 @@ import javax.websocket.server.ServerEndpointConfig;
  */
 public class SmartServerEndpointConfig {
     private final ServerEndpointConfig serverEndpointConfig;
-    private final UriMappingInfo path;
+    private final ServletMappingInfo path;
+
     private final AnnotatedEndpoint endpoint;
 
     public SmartServerEndpointConfig(ServerEndpointConfig serverEndpointConfig) {
@@ -33,7 +34,7 @@ public class SmartServerEndpointConfig {
         return serverEndpointConfig;
     }
 
-    public UriMappingInfo getPath() {
+    public ServletMappingInfo getPath() {
         return path;
     }
 

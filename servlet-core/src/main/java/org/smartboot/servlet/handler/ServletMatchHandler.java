@@ -12,8 +12,8 @@ package org.smartboot.servlet.handler;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
-import org.smartboot.servlet.conf.UriMappingInfo;
-import org.smartboot.servlet.enums.UriMappingTypeEnum;
+import org.smartboot.servlet.conf.ServletMappingInfo;
+import org.smartboot.servlet.enums.ServletMappingTypeEnum;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.PathMatcherUtil;
@@ -62,7 +62,7 @@ public class ServletMatchHandler extends Handler {
             Servlet servlet = null;
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
                 final ServletInfo servletInfo = entry.getValue();
-                for (UriMappingInfo path : servletInfo.getMappings()) {
+                for (ServletMappingInfo path : servletInfo.getMappings()) {
                     int servletPathEndIndex = PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), path);
                     if (servletPathEndIndex > -1) {
                         servlet = servletInfo.getServlet();
@@ -71,7 +71,7 @@ public class ServletMatchHandler extends Handler {
                         int servletPathEnd = servletPathEndIndex;
                         int pathInfoStart;
                         int pathInfoEnd;
-                        if (path.getMappingType() != UriMappingTypeEnum.PREFIX_MATCH || servletPathEndIndex == request.getRequestURI().length()) {
+                        if (path.getMappingType() != ServletMappingTypeEnum.PREFIX_MATCH || servletPathEndIndex == request.getRequestURI().length()) {
                             //精确匹配和后缀匹配的 PathInfo 都为null
                             pathInfoStart = -1;
                             pathInfoEnd = -1;
