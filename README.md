@@ -164,13 +164,6 @@ smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导
 
 本项目还处于研发阶段，还未完成所有 Servlet 标准的兑现。如若在使用过程中发现问题可提 [Issues](https://gitee.com/smartboot/smart-servlet/issues) 反馈，我们会尽快安排处理，感谢您的理解和支持！
 
-QQ交流社群：1167545865（付费制），入群福利：
-
-1. 前20名免费入群。
-2. 掌握 smart-servlet 的第一手资讯。
-3. 深入探讨 Servlet 规范及服务器开发经验。
-4. 与同类开发人群成为朋友。
-
 ### 代码贡献者
 
 [三刀](https://gitee.com/smartdms)、[**@cwq108**](https://gitee.com/cwq108)、[**@slef**](https://gitee.com/slef)
