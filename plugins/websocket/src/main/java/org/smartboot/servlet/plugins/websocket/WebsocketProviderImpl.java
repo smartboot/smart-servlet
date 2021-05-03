@@ -24,7 +24,6 @@ import org.smartboot.servlet.plugins.websocket.impl.WebsocketServerContainer;
 import org.smartboot.servlet.plugins.websocket.impl.WebsocketSession;
 import org.smartboot.servlet.provider.WebsocketProvider;
 
-import javax.websocket.MessageHandler;
 import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
@@ -135,34 +134,31 @@ public class WebsocketProviderImpl implements WebsocketProvider {
             //注册 OnMessage 回调
             Map<String, String> finalData = data;
             matchedServerEndpointConfig.getOnMessageConfigs().forEach(messageConfig -> {
-                websocketSession.addMessageHandler(messageConfig.getMessageType(), new MessageHandler.Whole<Object>() {
-                    @Override
-                    public void onMessage(Object message) {
-                        try {
-                            Method method = messageConfig.getMethod();
-                            Object[] args = new Object[method.getParameterTypes().length];
-                            int i = 0;
-                            for (Class<?> paramType : method.getParameterTypes()) {
-                                Object value = null;
-                                PathParam pathParam = null;
-                                for (Annotation annotation : messageConfig.getAnnotations()[i]) {
-                                    if (annotation.annotationType() == PathParam.class) {
-                                        pathParam = (PathParam) annotation;
-                                    }
+                websocketSession.addMessageHandler(messageConfig.getMessageType(), message -> {
+                    try {
+                        Method method = messageConfig.getMethod();
+                        Object[] args = new Object[method.getParameterTypes().length];
+                        int i = 0;
+                        for (Class<?> paramType : method.getParameterTypes()) {
+                            Object value = null;
+                            PathParam pathParam = null;
+                            for (Annotation annotation : messageConfig.getAnnotations()[i]) {
+                                if (annotation.annotationType() == PathParam.class) {
+                                    pathParam = (PathParam) annotation;
                                 }
-                                if (pathParam != null) {
-                                    value = finalData.get(pathParam.value());
-                                } else if (Session.class == paramType) {
-                                    value = websocketSession;
-                                } else if (messageConfig.getMessageType() == paramType) {
-                                    value = message;
-                                }
-                                args[i++] = value;
                             }
-                            method.invoke(messageConfig.getInstance(), args);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
+                            if (pathParam != null) {
+                                value = finalData.get(pathParam.value());
+                            } else if (Session.class == paramType) {
+                                value = websocketSession;
+                            } else if (messageConfig.getMessageType() == paramType) {
+                                value = message;
+                            }
+                            args[i++] = value;
                         }
+                        method.invoke(messageConfig.getInstance(), args);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
                     }
                 });
             });

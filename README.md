@@ -32,6 +32,7 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
   - plugins【容器可扩展插件】
     - dispatcher【RequestDispatcher插件，**必选**】
     - session【HttpSession插件，**可选**】
+    - websocket【 JSR 356 规范插件，**可选**】
   - smart-servlet-maven-plugin【业务系统通过pom.xml集成本地开发环境】
   - spring-boot-start【springboot业务系统通过pom.xml集成本地开发环境】
   - archives【用于部署War包的可执行环境软件包，开箱即用】
