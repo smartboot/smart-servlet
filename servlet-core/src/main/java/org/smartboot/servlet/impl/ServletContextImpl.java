@@ -59,7 +59,7 @@ public class ServletContextImpl implements ServletContext {
     private final ConcurrentMap<String, Object> attributes = new ConcurrentHashMap<>();
     private final ApplicationRuntime containerRuntime;
     private final DeploymentInfo deploymentInfo;
-    private SessionCookieConfig sessionCookieConfig = new SessionCookieConfigImpl();
+    private final SessionCookieConfig sessionCookieConfig = new SessionCookieConfigImpl();
     private ServletContextPathType pathType = ServletContextPathType.PATH;
     /**
      * 请求执行管道
