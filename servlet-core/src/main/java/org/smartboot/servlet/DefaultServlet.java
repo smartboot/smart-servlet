@@ -218,23 +218,8 @@ public class DefaultServlet extends HttpServlet {
 
     private String matchForwardWelcome(HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         String requestUri = request.getRequestURI();
-        //已经是以welcomeFile结尾的不再进行匹配
-        for (String file : welcomeFiles) {
-            if (requestUri.endsWith(file)) {
-                return null;
-            }
-        }
         ServletContext servletContext = request.getServletContext();
-        if (!requestUri.endsWith("/")) {
-            // 例如: /abc/d.html ,由于d.html不存在而走到该分支
-            if (requestUri.indexOf(".") > 0) {
-                return null;
-            }
-            if (isFile(servletContext.getResource(requestUri.substring(request.getContextPath().length())))) {
-                return null;
-            }
-            return requestUri + "/";
-        } else {
+        if (requestUri.endsWith("/")) {
             for (String file : welcomeFiles) {
                 String uri = requestUri.substring(request.getContextPath().length());
                 URL welcomeUrl = servletContext.getResource(uri + file);
@@ -242,9 +227,10 @@ public class DefaultServlet extends HttpServlet {
                     return file;
                 }
             }
+            return null;
         }
-
-        return null;
+        // 例如: /abc/d.html ,由于d.html不存在而走到该分支
+        return requestUri.indexOf(".") > 0 ? null : requestUri + "/";
     }
 
     private boolean isFile(URL url) throws URISyntaxException {
