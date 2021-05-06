@@ -97,7 +97,7 @@ class WebContextRuntime {
             }
 
             //默认Servlet
-            deploymentInfo.setDefaultServlet(new DefaultServlet());
+            deploymentInfo.setDefaultServlet(new DefaultServlet(deploymentInfo.getWelcomeFiles()));
 
         } finally {
             if (webXmlInputStream != null) {

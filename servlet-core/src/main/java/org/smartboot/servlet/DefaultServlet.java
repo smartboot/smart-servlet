@@ -17,9 +17,11 @@ import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.HttpHeaderConstant;
 import org.smartboot.http.common.utils.Mimetypes;
 import org.smartboot.http.common.utils.StringUtils;
+import org.smartboot.servlet.exception.WrappedRuntimeException;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,13 +31,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -60,7 +65,19 @@ public class DefaultServlet extends HttpServlet {
             return new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
         }
     };
+    /**
+     * 默认页面
+     */
+    private final List<String> welcomeFiles;
     private long faviconModifyTime;
+
+    public DefaultServlet() {
+        this.welcomeFiles = Collections.emptyList();
+    }
+
+    public DefaultServlet(List<String> welcomeFiles) {
+        this.welcomeFiles = welcomeFiles;
+    }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -102,40 +119,23 @@ public class DefaultServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String fileName = request.getRequestURI();
         String method = request.getMethod();
-//        RunLogger.getLogger().log(Level.FINEST, "请求URL:" + fileName);
         URL url = request.getServletContext().getResource(fileName.substring(request.getContextPath().length()));
         File file = null;
-        boolean defaultFavicon = false;
-        if (url == null && fileName.endsWith(FAVICON_NAME) && faviconBytes != null) {
-            defaultFavicon = true;
-        }
+        boolean defaultFavicon = url == null && fileName.endsWith(FAVICON_NAME) && faviconBytes != null;
 
         try {
             if (url != null) {
                 LOGGER.info(url.toURI().toString());
                 file = new File(url.toURI());
             }
+            //资源文件不存在，尝试跳转welcome文件
+            boolean forwardWelcome = !defaultFavicon && (file == null || !file.isFile());
+            if (forwardWelcome) {
+                forwardWelcome(request, response, method);
+                return;
+            }
         } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        //404
-        if (!defaultFavicon && (file == null || !file.isFile())) {
-            LOGGER.info("file:" + request.getRequestURI() + " not found!");
-            //《Servlet3.1规范中文版》9.3 include 方法
-            //如果默认的 servlet 是 RequestDispatch.include()的目标 servlet，
-            // 而且请求的资源不存在，那么默认的 servlet 必须抛出 FileNotFoundException 异常。
-            // 如果这个异常没有被捕获和处理，以及响应还未􏰀交，则响应状态 码必须被设置为 500。
-            if (request.getDispatcherType() == DispatcherType.INCLUDE) {
-                response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-                throw new FileNotFoundException();
-            }
-            response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
-            response.setHeader(HttpHeaderConstant.Names.CONTENT_TYPE, "text/html; charset=utf-8");
-
-            if (!HttpMethodEnum.HEAD.getMethod().equals(method)) {
-                response.getOutputStream().write(URL_404.getBytes());
-            }
-            return;
+            throw new WrappedRuntimeException(e);
         }
 
         //304
@@ -179,5 +179,75 @@ public class DefaultServlet extends HttpServlet {
             response.getOutputStream().write(data);
         }
         fis.close();
+    }
+
+    /**
+     * 尝试跳转至welcome页面
+     */
+    private void forwardWelcome(HttpServletRequest request, HttpServletResponse response, String method) throws URISyntaxException, IOException, ServletException {
+        String welcome = matchForwardWelcome(request);
+        // 404
+        if (welcome == null) {
+            LOGGER.info("file:" + request.getRequestURI() + " not found!");
+            //《Servlet3.1规范中文版》9.3 include 方法
+            //如果默认的 servlet 是 RequestDispatch.include()的目标 servlet，
+            // 而且请求的资源不存在，那么默认的 servlet 必须抛出 FileNotFoundException 异常。
+            // 如果这个异常没有被捕获和处理，以及响应还未􏰀交，则响应状态 码必须被设置为 500。
+            if (request.getDispatcherType() == DispatcherType.INCLUDE) {
+                response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+                throw new FileNotFoundException();
+            }
+            response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+            response.setHeader(HttpHeaderConstant.Names.CONTENT_TYPE, "text/html; charset=utf-8");
+
+            if (!HttpMethodEnum.HEAD.getMethod().equals(method)) {
+                response.getOutputStream().write(URL_404.getBytes());
+            }
+            return;
+        }
+        if (welcome.endsWith("/")) {
+            // 以"/"通过302跳转触发 welcome file逻辑
+            LOGGER.info("执行 welcome 302跳转...");
+            response.sendRedirect(welcome);
+        } else {
+            //找到有效welcome file，执行服务端跳转
+            LOGGER.info("执行 welcome 服务端跳转...");
+            request.getRequestDispatcher(welcome).forward(request, response);
+        }
+    }
+
+    private String matchForwardWelcome(HttpServletRequest request) throws MalformedURLException, URISyntaxException {
+        String requestUri = request.getRequestURI();
+        //已经是以welcomeFile结尾的不再进行匹配
+        for (String file : welcomeFiles) {
+            if (requestUri.endsWith(file)) {
+                return null;
+            }
+        }
+        ServletContext servletContext = request.getServletContext();
+        if (!requestUri.endsWith("/")) {
+            // 例如: /abc/d.html ,由于d.html不存在而走到该分支
+            if (requestUri.indexOf(".") > 0) {
+                return null;
+            }
+            if (isFile(servletContext.getResource(requestUri.substring(request.getContextPath().length())))) {
+                return null;
+            }
+            return requestUri + "/";
+        } else {
+            for (String file : welcomeFiles) {
+                String uri = requestUri.substring(request.getContextPath().length());
+                URL welcomeUrl = servletContext.getResource(uri + file);
+                if (welcomeUrl != null) {
+                    return file;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private boolean isFile(URL url) throws URISyntaxException {
+        return url != null && new File(url.toURI()).isFile();
     }
 }
