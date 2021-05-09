@@ -33,7 +33,7 @@ class WebContextRuntime {
     private final ClassLoader parentClassLoader;
 
 
-    public WebContextRuntime(String location, String contextPath, ClassLoader parentClassLoader) throws Exception {
+    public WebContextRuntime(String location, String contextPath, ClassLoader parentClassLoader) {
         this.location = location;
         this.contextPath = contextPath;
         this.parentClassLoader = parentClassLoader;

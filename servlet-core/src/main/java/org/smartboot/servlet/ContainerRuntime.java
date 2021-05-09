@@ -104,7 +104,7 @@ public class ContainerRuntime {
         //安装插件
         plugins.forEach(plugin -> {
             LOGGER.info("install plugin: " + plugin.pluginName());
-            plugin.install();
+            plugin.install(this);
         });
     }
 

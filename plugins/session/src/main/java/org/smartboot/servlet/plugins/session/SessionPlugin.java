@@ -10,6 +10,7 @@
 package org.smartboot.servlet.plugins.session;
 
 import org.smartboot.servlet.ApplicationRuntime;
+import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.plugins.Plugin;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class SessionPlugin extends Plugin {
     private final List<SessionProviderImpl> providerList = new ArrayList<>();
 
     @Override
-    public void initPlugin() {
+    public void initPlugin(ContainerRuntime containerRuntime) {
         //Session定期清理
         ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1, r -> {
             Thread thread = new Thread(r, "SessionMonitor");

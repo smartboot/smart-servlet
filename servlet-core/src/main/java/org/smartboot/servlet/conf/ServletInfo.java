@@ -32,9 +32,6 @@ public class ServletInfo {
 
     private boolean dynamic;
 
-    public ServletInfo() {
-    }
-
     public int getLoadOnStartup() {
         return loadOnStartup;
     }
