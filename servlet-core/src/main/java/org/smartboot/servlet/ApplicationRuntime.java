@@ -13,6 +13,7 @@ import org.smartboot.http.common.utils.CollectionUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
+import org.smartboot.servlet.conf.ServletContainerInitializerInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.FilterConfigImpl;
 import org.smartboot.servlet.impl.ServletConfigImpl;
@@ -28,7 +29,6 @@ import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
@@ -138,8 +138,8 @@ public class ApplicationRuntime {
      * @param deploymentInfo 部署信息
      */
     private void initContainer(DeploymentInfo deploymentInfo) throws ServletException {
-        for (ServletContainerInitializer servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
-            servletContainerInitializer.onStartup(null, servletContext);
+        for (ServletContainerInitializerInfo servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
+            servletContainerInitializer.getServletContainerInitializer().onStartup(servletContainerInitializer.getHandlesTypes(), servletContext);
         }
     }
 

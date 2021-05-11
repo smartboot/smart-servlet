@@ -9,10 +9,13 @@
 
 package org.smartboot.servlet;
 
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 
+import javax.servlet.ServletContainerInitializer;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,12 +23,14 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * @author 三刀
  * @version V1.0 , 2019/12/13
  */
 class WebContextRuntime {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebContextRuntime.class);
     private final String location;
     private final String contextPath;
     private final ClassLoader parentClassLoader;
@@ -41,7 +46,6 @@ class WebContextRuntime {
         ApplicationRuntime servletRuntime;
         //load web.xml file
         File contextFile = new File(location);
-
         WebAppInfo webAppInfo = new WebXmlParseEngine().load(contextFile);
 
         //new runtime object
@@ -64,6 +68,11 @@ class WebContextRuntime {
         webAppInfo.getFilterMappings().forEach(deploymentInfo::addFilterMapping);
 
         deploymentInfo.setContextUrl(contextFile.toURI().toURL());
+
+        for (ServletContainerInitializer containerInitializer : ServiceLoader.load(ServletContainerInitializer.class, deploymentInfo.getClassLoader())) {
+            LOGGER.info("load ServletContainerInitializer:" + containerInitializer.getClass().getName());
+            deploymentInfo.addServletContainerInitializer(containerInitializer);
+        }
 
         //默认页面
         //《Servlet3.1规范中文版》10.10 欢迎文件
@@ -97,7 +106,7 @@ class WebContextRuntime {
         return servletRuntime;
     }
 
-    private ClassLoader getClassLoader(String location) throws MalformedURLException {
+    private URLClassLoader getClassLoader(String location) throws MalformedURLException {
         List<URL> list = new ArrayList<>();
         File libDir = new File(location, "WEB-INF" + File.separator + "lib/");
         if (libDir.isDirectory()) {

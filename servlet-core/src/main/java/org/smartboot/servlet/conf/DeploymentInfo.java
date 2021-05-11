@@ -9,6 +9,7 @@
 
 package org.smartboot.servlet.conf;
 
+import org.reflections.Reflections;
 import org.smartboot.servlet.DefaultServlet;
 
 import javax.servlet.Servlet;
@@ -16,11 +17,14 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
+import javax.servlet.annotation.HandlesTypes;
 import javax.servlet.http.HttpSessionListener;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +42,7 @@ public class DeploymentInfo {
     private final List<String> eventListeners = new ArrayList<>();
     private final List<ServletContextListener> servletContextListeners = new ArrayList<>();
     private final List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
-    private final List<ServletContainerInitializer> servletContainerInitializers = new ArrayList<>();
+    private final List<ServletContainerInitializerInfo> servletContainerInitializers = new ArrayList<>();
     private final List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
     private final List<HttpSessionListener> httpSessionListeners = new ArrayList<>();
     private List<String> welcomeFiles = Collections.emptyList();
@@ -69,11 +73,24 @@ public class DeploymentInfo {
 
     public void addServletContainerInitializer(final ServletContainerInitializer servletContainerInitializer) {
         if (servletContainerInitializer != null) {
-            servletContainerInitializers.add(servletContainerInitializer);
+            HandlesTypes handlesTypesAnnotation = servletContainerInitializer.getClass().getDeclaredAnnotation(HandlesTypes.class);
+            HashSet<Class<?>> handlesTypes = null;
+            if (handlesTypesAnnotation != null) {
+                handlesTypes = new HashSet<>();
+                Reflections f = new Reflections(getClassLoader());
+                for (Class<?> c : handlesTypesAnnotation.value()) {
+                    if (c.isAnnotation()) {
+                        handlesTypes.addAll(f.getTypesAnnotatedWith((Class<? extends Annotation>) c));
+                    } else {
+                        handlesTypes.addAll(f.getSubTypesOf(c));
+                    }
+                }
+            }
+            servletContainerInitializers.add(new ServletContainerInitializerInfo(servletContainerInitializer, handlesTypes));
         }
     }
 
-    public List<ServletContainerInitializer> getServletContainerInitializers() {
+    public List<ServletContainerInitializerInfo> getServletContainerInitializers() {
         return servletContainerInitializers;
     }
 
