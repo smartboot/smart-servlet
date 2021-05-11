@@ -69,7 +69,7 @@ public class SmartServerEndpointConfig {
                     }
                     if (method.isAnnotationPresent(OnMessage.class)) {
                         OnMessageConfig messageHandler = new OnMessageConfig(method, instance);
-                        for (Class<?> paramType : onOpenMethod.getParameterTypes()) {
+                        for (Class<?> paramType : method.getParameterTypes()) {
                             if (paramType == String.class) {
                                 messageHandler.setMessageType(String.class);
                                 break;
