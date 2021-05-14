@@ -13,7 +13,6 @@ import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
-import org.smartboot.servlet.enums.ServletMappingTypeEnum;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.PathMatcherUtil;
@@ -63,29 +62,30 @@ public class ServletMatchHandler extends Handler {
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
                 final ServletInfo servletInfo = entry.getValue();
                 for (ServletMappingInfo path : servletInfo.getMappings()) {
-                    int servletPathEndIndex = PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), path);
-                    if (servletPathEndIndex > -1) {
-                        servlet = servletInfo.getServlet();
-                        //《Servlet3.1规范中文版》3.5请求路径元素
-                        int servletPathStart = request.getContextPath().length();
-                        int servletPathEnd = servletPathEndIndex;
-                        int pathInfoStart;
-                        int pathInfoEnd;
-                        if (path.getMappingType() != ServletMappingTypeEnum.PREFIX_MATCH || servletPathEndIndex == request.getRequestURI().length()) {
-                            //精确匹配和后缀匹配的 PathInfo 都为null
-                            pathInfoStart = -1;
-                            pathInfoEnd = -1;
-                            request.setPathInfo(-1, -1);
-                        } else {
-                            pathInfoStart = servletPathEndIndex;
-                            pathInfoEnd = request.getRequestURI().length();
-
-                        }
-                        request.setServletPath(servletPathStart, servletPathEnd);
-                        request.setPathInfo(pathInfoStart, pathInfoEnd);
-                        cacheServletMap.put(request.getRequestURI(), new CacheServlet(servlet, servletPathStart, servletPathEnd, pathInfoStart, pathInfoEnd));
-                        break;
+                    int servletPathEnd = PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), path);
+                    //匹配失败
+                    if (servletPathEnd < 0) {
+                        continue;
                     }
+                    servlet = servletInfo.getServlet();
+                    //《Servlet3.1规范中文版》3.5请求路径元素
+                    int servletPathStart = request.getContextPath().length();
+                    int pathInfoStart;
+                    int pathInfoEnd;
+                    if (servletPathEnd == 0) {
+                        //精确匹配和后缀匹配的 PathInfo 都为null
+                        servletPathEnd = servletPathStart;
+                    }
+                    if (servletPathEnd == request.getRequestURI().length()) {
+                        pathInfoStart = pathInfoEnd = -1;
+                    } else {
+                        pathInfoStart = servletPathEnd;
+                        pathInfoEnd = request.getRequestURI().length();
+                    }
+                    request.setServletPath(servletPathStart, servletPathEnd);
+                    request.setPathInfo(pathInfoStart, pathInfoEnd);
+                    cacheServletMap.put(request.getRequestURI(), new CacheServlet(servlet, servletPathStart, servletPathEnd, pathInfoStart, pathInfoEnd));
+                    break;
                 }
                 if (servlet != null) {
                     handlerContext.setServlet(servlet);

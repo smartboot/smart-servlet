@@ -48,11 +48,18 @@ public class PathMatcherUtil {
         }
     }
 
+    /**
+     * @param uri
+     * @param startIndex
+     * @param mappingInfo
+     * @return 0:根目录匹配
+     */
     public static int matches(String uri, int startIndex, ServletMappingInfo mappingInfo) {
         String pattern = mappingInfo.getMapping();
         ServletMappingTypeEnum mappingTypeEnum = mappingInfo.getMappingType();
         int servletPathEndIndex = -1;
         switch (mappingTypeEnum) {
+            //精准匹配
             case EXACT_MATCH:
                 //《Servlet3.1规范中文版》12.2 映射规范
                 //空字符串“”是一个特殊的 URL 模式，其精确映射到应用的上下文根，
@@ -72,6 +79,7 @@ public class PathMatcherUtil {
                 }
                 servletPathEndIndex = startIndex + pattern.length();
                 break;
+            //路径匹配（前缀匹配）
             case PREFIX_MATCH:
                 //《Servlet3.1规范中文版》12.2 映射规范
                 //空字符串“”是一个特殊的 URL 模式，其精确映射到应用的上下文根，
@@ -94,6 +102,7 @@ public class PathMatcherUtil {
                 }
                 servletPathEndIndex = startIndex + pattern.length() - 2;
                 break;
+            //后缀匹配
             case EXTENSION_MATCH:
                 // 不比较"*.xx" 中的 *
                 int uriStartIndex = uri.length() - pattern.length();
