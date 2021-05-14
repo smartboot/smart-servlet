@@ -7,7 +7,7 @@
  *
  */
 
-package org.smartboot.servlet.demo.test;
+package org.smartboot.servlet.testsuite.test;
 
 import org.junit.After;
 import org.junit.Before;

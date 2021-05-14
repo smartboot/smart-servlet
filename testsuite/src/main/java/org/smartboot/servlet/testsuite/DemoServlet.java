@@ -6,7 +6,7 @@
  * Author: sandao (zhengjunweimail@163.com)
  *
  */
-package org.smartboot.servlet.demo;
+package org.smartboot.servlet.testsuite;
 
 import com.alibaba.fastjson.JSONObject;
 

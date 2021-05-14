@@ -6,7 +6,7 @@
 
     <servlet>
         <servlet-name>demoServlet</servlet-name>
-        <servlet-class>org.smartboot.servlet.demo.DemoServlet</servlet-class>
+        <servlet-class>org.smartboot.servlet.testsuite.DemoServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>demoServlet</servlet-name>
