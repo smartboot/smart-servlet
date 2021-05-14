@@ -10,16 +10,11 @@
 package org.smartboot.servlet.demo.test;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartboot.http.client.HttpClient;
-import org.smartboot.http.client.HttpResponse;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
@@ -36,15 +31,36 @@ public class ServletTest extends BastTest {
         tomcatClient = getTomcatClient();
     }
 
+    /**
+     * 精确匹配
+     */
     @Test
-    public void testHelloWorld() throws ExecutionException, InterruptedException {
-        Future<HttpResponse> smartFuture = smartClient.get("/demo").onSuccess(resp -> {
-            LOGGER.info("smart-servlet response: {}", resp.body());
-        }).send();
-        Future<HttpResponse> tomcatFuture = tomcatClient.get("/demo").onSuccess(resp -> {
-            LOGGER.info("tomcat response: {}", resp.body());
-        }).send();
-        Assert.assertEquals("body 响应不同", smartFuture.get().body(), tomcatFuture.get().body());
+    public void test1() {
+        checkPath("/demo", smartClient, tomcatClient);
+    }
+
+    /**
+     * 前缀匹配
+     */
+    @Test
+    public void test2() {
+        checkPath("/pathMatch", smartClient, tomcatClient);
+    }
+
+    /**
+     * 前缀匹配
+     */
+    @Test
+    public void test3() {
+        checkPath("/pathMatch/1", smartClient, tomcatClient);
+    }
+
+    /**
+     * 前缀匹配，包含query
+     */
+    @Test
+    public void test4() {
+        checkPath("/pathMatch/1?abc=c&bdc=4", smartClient, tomcatClient);
     }
 
     @After

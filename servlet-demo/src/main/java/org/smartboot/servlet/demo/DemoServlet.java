@@ -8,6 +8,8 @@
  */
 package org.smartboot.servlet.demo;
 
+import com.alibaba.fastjson.JSONObject;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +24,11 @@ import java.nio.charset.StandardCharsets;
 public class DemoServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.getOutputStream().write(("Hello World").getBytes(StandardCharsets.UTF_8));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("contextPath", req.getContextPath());
+        jsonObject.put("servletPath", req.getServletPath());
+        jsonObject.put("pathInfo", req.getPathInfo());
+        jsonObject.put("queryString", req.getQueryString());
+        resp.getOutputStream().write((jsonObject.toJSONString()).getBytes(StandardCharsets.UTF_8));
     }
 }
