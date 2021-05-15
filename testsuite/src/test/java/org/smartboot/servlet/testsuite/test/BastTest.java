@@ -24,6 +24,7 @@ import java.util.concurrent.Future;
  */
 public class BastTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletTest.class);
+    private static final String CONTENT_PATH = "/demo";
 
     protected HttpClient getSmartClient() {
         HttpClient httpClient = new HttpClient("127.0.0.1", 8081);
@@ -38,10 +39,10 @@ public class BastTest {
     }
 
     protected void checkPath(String path, HttpClient smartClient, HttpClient tomcatClient) {
-        Future<HttpResponse> smartFuture = smartClient.get(path).onSuccess(resp -> {
+        Future<HttpResponse> smartFuture = smartClient.get(CONTENT_PATH + path).onSuccess(resp -> {
             LOGGER.info("smart-servlet response: {}", resp.body());
         }).send();
-        Future<HttpResponse> tomcatFuture = tomcatClient.get(path).onSuccess(resp -> {
+        Future<HttpResponse> tomcatFuture = tomcatClient.get(CONTENT_PATH + path).onSuccess(resp -> {
             LOGGER.info("tomcat response: {}", resp.body());
         }).send();
         try {

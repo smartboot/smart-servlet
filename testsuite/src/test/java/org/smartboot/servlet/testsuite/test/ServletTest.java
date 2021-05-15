@@ -63,6 +63,31 @@ public class ServletTest extends BastTest {
         checkPath("/pathMatch/1?abc=c&bdc=4", smartClient, tomcatClient);
     }
 
+
+    /**
+     * 扩展名匹配，包含query
+     */
+    @Test
+    public void test6() {
+        checkPath("/pathMatch/abc.do?abc=c&bdc=4", smartClient, tomcatClient);
+    }
+
+    /**
+     * 扩展名匹配，包含query
+     */
+    @Test
+    public void test7() {
+        checkPath("/abc/abc.do?abc=c&bdc=4", smartClient, tomcatClient);
+    }
+
+    /**
+     * 扩展名匹配，包含query
+     */
+    @Test
+    public void test8() {
+        checkPath("/adb/abc/abc.do?abc=c&bdc=4", smartClient, tomcatClient);
+    }
+
     @After
     public void destroy() {
         smartClient.close();

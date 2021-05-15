@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
@@ -29,6 +30,11 @@ public class DemoServlet extends HttpServlet {
         jsonObject.put("servletPath", req.getServletPath());
         jsonObject.put("pathInfo", req.getPathInfo());
         jsonObject.put("queryString", req.getQueryString());
+        Enumeration enumeration = req.getParameterNames();
+        while ((enumeration.hasMoreElements())) {
+            String param = String.valueOf(enumeration.nextElement());
+            jsonObject.put("param_" + param, req.getParameter(param));
+        }
         resp.getOutputStream().write((jsonObject.toJSONString()).getBytes(StandardCharsets.UTF_8));
     }
 }
