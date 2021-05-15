@@ -51,6 +51,9 @@ public class RunMojo extends AbstractMojo {
     @Parameter(defaultValue = "8080")
     private int port;
 
+    @Parameter(defaultValue = "/")
+    private String path;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -75,7 +78,7 @@ public class RunMojo extends AbstractMojo {
                 }
             }
             Class<?> clazz = classLoader.loadClass("org.smartboot.maven.plugin.servlet.Starter");
-            clazz.getConstructor(String.class, int.class, ClassLoader.class).newInstance(webFile.getAbsolutePath(), port, classLoader);
+            clazz.getConstructor(String.class, String.class, int.class, ClassLoader.class).newInstance(webFile.getAbsolutePath(), path, port, classLoader);
         } catch (Exception e) {
             e.printStackTrace();
             throw new MojoExecutionException(e.getMessage());

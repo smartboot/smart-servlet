@@ -26,9 +26,9 @@ import java.io.IOException;
  */
 public class Starter {
 
-    public Starter(String path, int port, ClassLoader classLoader) throws Exception {
+    public Starter(String path, String contentPath, int port, ClassLoader classLoader) throws Exception {
         ContainerRuntime containerRuntime = new ContainerRuntime();
-        containerRuntime.addRuntime(path, "/", classLoader);
+        containerRuntime.addRuntime(path, contentPath, classLoader);
         containerRuntime.start();
         HttpBootstrap bootstrap = new HttpBootstrap();
         bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024);
