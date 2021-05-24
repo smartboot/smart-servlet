@@ -134,6 +134,9 @@ public class DeploymentInfo {
         httpSessionListeners.add(httpSessionListener);
     }
 
+    public List<HttpSessionListener> getHttpSessionListeners() {
+        return httpSessionListeners;
+    }
 
     public List<ServletContextAttributeListener> getServletContextAttributeListeners() {
         return servletContextAttributeListeners;

@@ -9,7 +9,8 @@
 
 package org.smartboot.servlet.provider;
 
-import javax.servlet.http.HttpServletRequest;
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -21,5 +22,5 @@ public interface SessionProvider {
     String DEFAULT_SESSION_PARAMETER_NAME = "jsessionid";
     String DEFAULT_SESSION_COOKIE_NAME = "JSESSIONID";
 
-    HttpSession getSession(HttpServletRequest request, HttpServletResponse response, boolean create);
+    HttpSession getSession(HttpServletRequestImpl request, HttpServletResponse response, boolean create);
 }

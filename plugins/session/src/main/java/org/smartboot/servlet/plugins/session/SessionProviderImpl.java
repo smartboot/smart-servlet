@@ -9,6 +9,7 @@
 
 package org.smartboot.servlet.plugins.session;
 
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.provider.SessionProvider;
 
 import javax.servlet.http.Cookie;
@@ -68,7 +69,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
 
 
     @Override
-    public HttpSession getSession(HttpServletRequest request, HttpServletResponse response, boolean create) {
+    public HttpSession getSession(HttpServletRequestImpl request, HttpServletResponse response, boolean create) {
         HttpSessionImpl httpSession = getSession(request);
         if (create && httpSession == null) {
             /**

@@ -9,9 +9,12 @@
 
 package org.smartboot.servlet.plugins.session;
 
+import org.smartboot.servlet.impl.ServletContextImpl;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
+import javax.servlet.http.HttpSessionEvent;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -26,16 +29,18 @@ class HttpSessionImpl implements HttpSession {
     private final long creationTime = System.currentTimeMillis();
     private final Map<String, Object> attributes = new HashMap<>();
     private final String sessionId;
-    private final ServletContext servletContext;
+    private final ServletContextImpl servletContext;
     private final HttpSessionContext httpSessionContext;
     private volatile long lastAccessed;
     private volatile int maxInactiveInterval;
     private volatile boolean invalid;
 
-    public HttpSessionImpl(HttpSessionContext httpSessionContext, String sessionId, ServletContext servletContext) {
+    public HttpSessionImpl(HttpSessionContext httpSessionContext, String sessionId, ServletContextImpl servletContext) {
         this.httpSessionContext = httpSessionContext;
         this.sessionId = sessionId;
         this.servletContext = servletContext;
+        HttpSessionEvent httpSessionEvent = new HttpSessionEvent(this);
+        servletContext.getDeploymentInfo().getHttpSessionListeners().forEach(httpSessionListener -> httpSessionListener.sessionCreated(httpSessionEvent));
     }
 
     @Override
@@ -133,6 +138,8 @@ class HttpSessionImpl implements HttpSession {
     }
 
     public void invalid() {
+        HttpSessionEvent httpSessionEvent = new HttpSessionEvent(this);
+        servletContext.getDeploymentInfo().getHttpSessionListeners().forEach(httpSessionListener -> httpSessionListener.sessionDestroyed(httpSessionEvent));
         invalid = true;
     }
 
