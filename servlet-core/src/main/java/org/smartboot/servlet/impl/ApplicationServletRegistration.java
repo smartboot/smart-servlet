@@ -111,7 +111,7 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
     @Override
     public Set<String> setInitParameters(Map<String, String> initParameters) {
         initParameters.forEach((key, value) -> servletInfo.addInitParam(key, value));
-        return null;
+        return servletInfo.getInitParams().keySet();
     }
 
     @Override
