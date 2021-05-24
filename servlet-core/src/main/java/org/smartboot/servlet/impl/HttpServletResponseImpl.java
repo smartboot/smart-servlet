@@ -74,8 +74,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String encodeRedirectURL(String url) {
-        LOGGER.info("url: " + url);
-        return url;
+        return encodeURL(url);
     }
 
 
@@ -86,7 +85,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String encodeRedirectUrl(String url) {
-        return encodeRedirectURL(url);
+        return encodeURL(url);
     }
 
     @Override

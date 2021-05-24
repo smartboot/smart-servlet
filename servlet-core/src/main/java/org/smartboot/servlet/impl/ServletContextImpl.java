@@ -12,11 +12,13 @@ package org.smartboot.servlet.impl;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.Mimetypes;
+import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.enums.ServletContextPathType;
+import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.HandlePipeline;
 
 import javax.servlet.Filter;
@@ -43,6 +45,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -217,7 +220,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void log(String message, Throwable throwable) {
-//        LOGGER.error(message, throwable);
+        LOGGER.error(message, throwable);
     }
 
     @Override
@@ -342,11 +345,24 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, String className) {
-        throw new UnsupportedOperationException();
+        try {
+            return addFilter(filterName, (Class<? extends Filter>) getClassLoader().loadClass(className));
+        } catch (ClassNotFoundException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
+        if (containerRuntime.isStarted()) {
+            throw new IllegalStateException("ServletContext has already been initialized");
+        }
+        if (StringUtils.isBlank(filterName)) {
+            throw new IllegalArgumentException("filterName is null or an empty String");
+        }
+        if (deploymentInfo.getFilters().containsKey(filterName)) {
+            return null;
+        }
         FilterInfo filterInfo = new FilterInfo();
         filterInfo.setFilter(filter);
         filterInfo.setFilterName(filterName);
@@ -358,22 +374,29 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, Class<? extends Filter> filterClass) {
-        throw new UnsupportedOperationException();
+        return addFilter(filterName, createFilter(filterClass));
     }
 
     @Override
-    public <T extends Filter> T createFilter(Class<T> clazz) throws ServletException {
-        throw new UnsupportedOperationException();
+    public <T extends Filter> T createFilter(Class<T> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 
     @Override
     public FilterRegistration getFilterRegistration(String filterName) {
-        throw new UnsupportedOperationException();
+        FilterInfo filterInfo = deploymentInfo.getFilters().get(filterName);
+        return new ApplicationFilterRegistration(filterInfo, deploymentInfo);
     }
 
     @Override
     public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
-        throw new UnsupportedOperationException();
+        Map<String, ApplicationFilterRegistration> filterMap = new HashMap<>();
+        deploymentInfo.getFilters().forEach((filterName, filterInfo) -> filterMap.put(filterName, new ApplicationFilterRegistration(filterInfo, deploymentInfo)));
+        return filterMap;
     }
 
     @Override
