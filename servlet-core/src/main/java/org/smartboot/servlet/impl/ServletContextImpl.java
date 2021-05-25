@@ -13,7 +13,7 @@ import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.Mimetypes;
 import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.servlet.ApplicationRuntime;
+import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.ServletInfo;
@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
 public class ServletContextImpl implements ServletContext {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextImpl.class);
     private final ConcurrentMap<String, Object> attributes = new ConcurrentHashMap<>();
-    private final ApplicationRuntime containerRuntime;
+    private final ServletContextRuntime containerRuntime;
     private final DeploymentInfo deploymentInfo;
     private final SessionCookieConfig sessionCookieConfig = new SessionCookieConfigImpl();
     private ServletContextPathType pathType = ServletContextPathType.PATH;
@@ -69,7 +69,7 @@ public class ServletContextImpl implements ServletContext {
      */
     private HandlePipeline pipeline;
 
-    public ServletContextImpl(ApplicationRuntime containerRuntime) {
+    public ServletContextImpl(ServletContextRuntime containerRuntime) {
         this.containerRuntime = containerRuntime;
         this.deploymentInfo = containerRuntime.getDeploymentInfo();
     }

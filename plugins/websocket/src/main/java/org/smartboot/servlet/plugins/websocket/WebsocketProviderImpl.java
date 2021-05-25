@@ -15,7 +15,7 @@ import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
-import org.smartboot.servlet.ApplicationRuntime;
+import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.plugins.websocket.impl.AnnotatedEndpoint;
 import org.smartboot.servlet.plugins.websocket.impl.HandlerWrapper;
 import org.smartboot.servlet.plugins.websocket.impl.PathNode;
@@ -48,7 +48,7 @@ public class WebsocketProviderImpl implements WebsocketProvider {
     }
 
     @Override
-    public void doHandle(ApplicationRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
+    public void doHandle(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
         try {
             switch (request.getWebsocketStatus()) {
                 case HandShake:
@@ -91,7 +91,7 @@ public class WebsocketProviderImpl implements WebsocketProvider {
         }
     }
 
-    private void onHandShark(ApplicationRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
+    private void onHandShark(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
         try {
             SmartServerEndpointConfig matchedServerEndpointConfig = null;
             Map<String, String> data = new HashMap<>();

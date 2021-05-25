@@ -16,8 +16,8 @@ import org.smartboot.http.server.HttpServerHandle;
 import org.smartboot.http.server.WebSocketHandle;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
-import org.smartboot.servlet.ApplicationRuntime;
 import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.ServletContextRuntime;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 
@@ -34,7 +34,7 @@ public class SmartServletServer implements WebServer {
     private volatile boolean started = false;
 
 
-    public SmartServletServer(ApplicationRuntime runtime) {
+    public SmartServletServer(ServletContextRuntime runtime) {
         containerRuntime = new ContainerRuntime();
         containerRuntime.addRuntime(runtime);
         containerRuntime.start();

@@ -11,12 +11,12 @@ package org.smartboot.servlet.provider;
 
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
-import org.smartboot.servlet.ApplicationRuntime;
+import org.smartboot.servlet.ServletContextRuntime;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2021/3/28
  */
 public interface WebsocketProvider {
-    void doHandle(ApplicationRuntime runtime, WebSocketRequest request, WebSocketResponse response);
+    void doHandle(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response);
 }

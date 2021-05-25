@@ -11,7 +11,7 @@ package org.smartboot.servlet.impl;
 
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.servlet.ApplicationRuntime;
+import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.socket.buffer.VirtualBuffer;
 
 import java.io.IOException;
@@ -29,10 +29,10 @@ public class ServletPrintWriter extends Writer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletPrintWriter.class);
     private final ServletOutputStreamImpl servletOutputStream;
     private final CharsetEncoder charsetEncoder;
-    private final ApplicationRuntime containerRuntime;
+    private final ServletContextRuntime containerRuntime;
     private VirtualBuffer virtualBuffer;
 
-    public ServletPrintWriter(ServletOutputStreamImpl servletOutputStream, String charset, ApplicationRuntime containerRuntime) {
+    public ServletPrintWriter(ServletOutputStreamImpl servletOutputStream, String charset, ServletContextRuntime containerRuntime) {
         super(servletOutputStream);
         this.containerRuntime = containerRuntime;
         this.servletOutputStream = servletOutputStream;

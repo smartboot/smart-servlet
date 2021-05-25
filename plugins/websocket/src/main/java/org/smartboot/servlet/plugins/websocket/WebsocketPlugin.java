@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.plugins.websocket;
 
-import org.smartboot.servlet.ApplicationRuntime;
+import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.plugins.websocket.impl.WebsocketServerContainer;
 
@@ -23,7 +23,7 @@ public class WebsocketPlugin extends Plugin {
     private final WebsocketServerContainer container = new WebsocketServerContainer();
 
     @Override
-    public void willStartContainer(ApplicationRuntime containerRuntime) {
+    public void willStartContainer(ServletContextRuntime containerRuntime) {
         containerRuntime.setWebsocketProvider(new WebsocketProviderImpl(container));
         containerRuntime.getServletContext().setAttribute(ServerContainer.class.getName(), container);
     }

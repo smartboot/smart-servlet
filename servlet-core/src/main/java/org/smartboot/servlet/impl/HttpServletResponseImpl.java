@@ -14,7 +14,7 @@ import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.HttpHeaderConstant;
 import org.smartboot.http.server.HttpResponse;
-import org.smartboot.servlet.ApplicationRuntime;
+import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
@@ -36,13 +36,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[DEFAULT_BUFFER_SIZE]);
     private final HttpResponse response;
     private final HttpServletRequest request;
-    private final ApplicationRuntime containerRuntime;
+    private final ServletContextRuntime containerRuntime;
     private String contentType;
     private PrintWriter writer;
     private ServletOutputStreamImpl servletOutputStream;
     private int bufferSize = -1;
 
-    public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response, ApplicationRuntime containerRuntime) {
+    public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response, ServletContextRuntime containerRuntime) {
         this.request = request;
         this.response = response;
         this.containerRuntime = containerRuntime;

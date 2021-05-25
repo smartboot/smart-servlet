@@ -43,7 +43,7 @@ import java.util.List;
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
-public class ApplicationRuntime {
+public class ServletContextRuntime {
     /**
      * 容器部署信息
      */
@@ -82,11 +82,11 @@ public class ApplicationRuntime {
      */
     private boolean started = false;
 
-    public ApplicationRuntime(String contextPath) {
+    public ServletContextRuntime(String contextPath) {
         this(Thread.currentThread().getContextClassLoader(), contextPath);
     }
 
-    public ApplicationRuntime(ClassLoader classLoader, String contextPath) {
+    public ServletContextRuntime(ClassLoader classLoader, String contextPath) {
 
         if (StringUtils.isBlank(contextPath)) {
             this.contextPath = "/";

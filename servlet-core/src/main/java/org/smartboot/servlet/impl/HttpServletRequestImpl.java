@@ -14,7 +14,7 @@ import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.NumberUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
-import org.smartboot.servlet.ApplicationRuntime;
+import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.util.DateUtil;
@@ -54,7 +54,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private final HttpRequest request;
     private final ServletContextImpl servletContext;
     private final DispatcherType dispatcherType;
-    private final ApplicationRuntime runtime;
+    private final ServletContextRuntime runtime;
     private String characterEncoding;
     private Map<String, Object> attributes;
     private HttpSession httpSession;
@@ -78,7 +78,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
      */
     private boolean sessionIdFromCookie;
 
-    public HttpServletRequestImpl(HttpRequest request, ApplicationRuntime runtime, DispatcherType dispatcherType) {
+    public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, DispatcherType dispatcherType) {
         this.request = request;
         this.dispatcherType = dispatcherType;
         this.servletContext = runtime.getServletContext();

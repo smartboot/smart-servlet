@@ -49,6 +49,9 @@ public class FilterMatchHandler extends Handler {
     private final Map<Servlet, Map<String, List<Filter>>> requestDispatcherFilterChainMap = new HashMap<>();
 
     private final Map<Servlet, Map<String, List<Filter>>> forwardDispatcherFilterChainMap = new HashMap<>();
+    /**
+     * 用 ThreadLocal 缓存 FilterChainImpl,节省内存开销
+     */
     private final ThreadLocal<FilterChainImpl> filterChainThreadLocal = ThreadLocal.withInitial(FilterChainImpl::new);
 
     @Override

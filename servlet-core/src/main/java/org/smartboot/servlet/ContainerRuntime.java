@@ -11,10 +11,13 @@ package org.smartboot.servlet;
 
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
+import org.smartboot.servlet.conf.DeploymentInfo;
+import org.smartboot.servlet.conf.WebAppInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
 import org.smartboot.servlet.handler.HandlePipeline;
@@ -27,7 +30,13 @@ import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.ServletContainerInitializer;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -50,8 +59,17 @@ public class ContainerRuntime {
             "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" +
             "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
     private static final String VERSION = "0.1.4";
-    private final List<ApplicationRuntime> runtimes = new ArrayList<>();
+    /**
+     * 注册在当前 Servlet 容器中的运行环境
+     */
+    private final List<ServletContextRuntime> runtimes = new ArrayList<>();
+    /**
+     * 注册至当前容器中的插件集
+     */
     private final List<Plugin> plugins = new ArrayList<>();
+    /**
+     * Servlet容器运行环境是否完成启动
+     */
     private volatile boolean started = false;
 
     public void start() {
@@ -108,27 +126,46 @@ public class ContainerRuntime {
         });
     }
 
-    public void addRuntime(ApplicationRuntime runtime) {
+    /**
+     * 注册 Servlet 子容器
+     *
+     * @param runtime Servlet 子容器
+     */
+    public void addRuntime(ServletContextRuntime runtime) {
         if (runtimes.stream().anyMatch(containerRuntime -> containerRuntime.getContextPath().equals(runtime.getContextPath()))) {
             throw new IllegalArgumentException("contextPath: " + runtime.getContextPath() + " is already exists!");
         }
         runtimes.add(runtime);
     }
 
+    /**
+     * 注册 Servlet 子容器
+     *
+     * @param location    本地目录
+     * @param contextPath 注册的 Context 路径
+     * @throws Exception
+     */
     public void addRuntime(String location, String contextPath) throws Exception {
         addRuntime(location, contextPath, Thread.currentThread().getContextClassLoader());
     }
 
+    /**
+     * 注册 Servlet 子容器
+     *
+     * @param location          本地目录
+     * @param contextPath       注册的 Context 路径
+     * @param parentClassLoader 父类加载
+     * @throws Exception
+     */
     public void addRuntime(String location, String contextPath, ClassLoader parentClassLoader) throws Exception {
-        WebContextRuntime webContextRuntime = new WebContextRuntime(location, contextPath, parentClassLoader);
-        addRuntime(webContextRuntime.getServletRuntime());
+        addRuntime(getServletRuntime(location, contextPath, parentClassLoader));
     }
 
     public void doHandle(WebSocketRequest request, WebSocketResponse response) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
             //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
-            ApplicationRuntime runtime = matchRuntime(request.getRequestURI());
+            ServletContextRuntime runtime = matchRuntime(request.getRequestURI());
             if (!runtime.isStarted()) {
                 throw new IllegalStateException("container is not started");
             }
@@ -145,11 +182,17 @@ public class ContainerRuntime {
 
     }
 
+    /**
+     * 执行 Http 请求
+     *
+     * @param request
+     * @param response
+     */
     public void doHandle(HttpRequest request, HttpResponse response) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
             //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
-            ApplicationRuntime runtime = matchRuntime(request.getRequestURI());
+            ServletContextRuntime runtime = matchRuntime(request.getRequestURI());
             if (!runtime.isStarted()) {
                 throw new IllegalStateException("container is not started");
             }
@@ -176,7 +219,7 @@ public class ContainerRuntime {
     }
 
     public void stop() {
-        runtimes.forEach(ApplicationRuntime::stop);
+        runtimes.forEach(ServletContextRuntime::stop);
         //卸载插件
         plugins.forEach(Plugin::uninstall);
     }
@@ -185,8 +228,8 @@ public class ContainerRuntime {
         return started;
     }
 
-    private ApplicationRuntime matchRuntime(String requestUri) {
-        for (ApplicationRuntime matchRuntime : runtimes) {
+    private ServletContextRuntime matchRuntime(String requestUri) {
+        for (ServletContextRuntime matchRuntime : runtimes) {
             String contextPath = matchRuntime.getContextPath();
             if (requestUri.startsWith(contextPath)) {
                 return matchRuntime;
@@ -200,9 +243,94 @@ public class ContainerRuntime {
      */
     private void initRootContainer() {
         if (runtimes.stream().noneMatch(runtime -> "/".equals(runtime.getContextPath()))) {
-            ApplicationRuntime runtime = new ApplicationRuntime("/");
+            ServletContextRuntime runtime = new ServletContextRuntime("/");
             runtime.getDeploymentInfo().setDefaultServlet(new DefaultServlet());
             runtimes.add(runtime);
         }
+    }
+
+    private ServletContextRuntime getServletRuntime(String location, String contextPath, ClassLoader parentClassLoader) throws Exception {
+        ServletContextRuntime servletRuntime;
+        //load web.xml file
+        File contextFile = new File(location);
+        WebAppInfo webAppInfo = new WebXmlParseEngine().load(contextFile);
+
+        //new runtime object
+        servletRuntime = new ServletContextRuntime(getClassLoader(location, parentClassLoader), StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
+        DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
+        //set session timeout
+        deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
+        //register Servlet into deploymentInfo
+        webAppInfo.getServlets().values().forEach(deploymentInfo::addServlet);
+
+        //register Filter
+        webAppInfo.getFilters().values().forEach(deploymentInfo::addFilter);
+        //register servletContext into deploymentInfo
+        webAppInfo.getContextParams().forEach(deploymentInfo::addInitParameter);
+
+        //register ServletContextListener into deploymentInfo
+        webAppInfo.getListeners().forEach(deploymentInfo::addEventListener);
+
+        //register filterMapping into deploymentInfo
+        webAppInfo.getFilterMappings().forEach(deploymentInfo::addFilterMapping);
+
+        deploymentInfo.setContextUrl(contextFile.toURI().toURL());
+
+        for (ServletContainerInitializer containerInitializer : ServiceLoader.load(ServletContainerInitializer.class, deploymentInfo.getClassLoader())) {
+            LOGGER.info("load ServletContainerInitializer:" + containerInitializer.getClass().getName());
+            deploymentInfo.addServletContainerInitializer(containerInitializer);
+        }
+
+        //默认页面
+        //《Servlet3.1规范中文版》10.10 欢迎文件
+        // 欢迎文件列表是一个没有尾随或前导/的局部 URL 有序列表
+//            for (String welcomeFile : webAppInfo.getWelcomeFileList()) {
+//                if (welcomeFile.startsWith("/")) {
+//                    throw new IllegalArgumentException("invalid welcome file " + welcomeFile + " is startWith /");
+//                } else if (welcomeFile.endsWith("/")) {
+//                    throw new IllegalArgumentException("invalid welcome file " + welcomeFile + " is endWith /");
+//                }
+//            }
+        if (webAppInfo.getWelcomeFileList() == null || webAppInfo.getWelcomeFileList().size() == 0) {
+            deploymentInfo.setWelcomeFiles(Arrays.asList("index.html", "index.jsp"));
+        } else {
+            //实际使用中存在"/"开头的情况，将其矫正过来
+            List<String> welcomeFiles = new ArrayList<>(webAppInfo.getWelcomeFileList().size());
+            webAppInfo.getWelcomeFileList().forEach(file -> {
+                if (file.startsWith("/")) {
+                    welcomeFiles.add(file.substring(1));
+                } else {
+                    welcomeFiles.add(file);
+                }
+            });
+            deploymentInfo.setWelcomeFiles(welcomeFiles);
+        }
+
+        //默认Servlet
+        deploymentInfo.setDefaultServlet(new DefaultServlet(deploymentInfo.getWelcomeFiles()));
+
+
+        return servletRuntime;
+    }
+
+    private URLClassLoader getClassLoader(String location, ClassLoader parentClassLoader) throws MalformedURLException {
+        List<URL> list = new ArrayList<>();
+        File libDir = new File(location, "WEB-INF" + File.separator + "lib/");
+        if (libDir.isDirectory()) {
+            File[] files = libDir.listFiles();
+            if (files != null && files.length > 0) {
+                for (File file : files) {
+                    list.add(file.toURI().toURL());
+                }
+            }
+        }
+
+        File classDir = new File(location, "WEB-INF" + File.separator + "classes/");
+        if (classDir.isDirectory()) {
+            list.add(classDir.toURI().toURL());
+        }
+        URL[] urls = new URL[list.size()];
+        list.toArray(urls);
+        return new URLClassLoader(urls, parentClassLoader);
     }
 }
