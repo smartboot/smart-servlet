@@ -30,21 +30,17 @@ public class ServletRequestListenerHandler extends Handler {
         ServletContext servletContext = handlerContext.getServletContext();
         List<ServletRequestListener> servletRequestListeners = handlerContext.getServletContext().getDeploymentInfo().getServletRequestListeners();
         ServletRequestEvent servletRequestEvent = servletRequestListeners.isEmpty() ? null : new ServletRequestEvent(servletContext, handlerContext.getRequest());
-        if (!servletRequestListeners.isEmpty()) {
-            servletRequestListeners.forEach(requestListener -> {
-                requestListener.requestInitialized(servletRequestEvent);
-                LOGGER.info("requestInitialized " + requestListener);
-            });
-        }
+        servletRequestListeners.forEach(requestListener -> {
+            requestListener.requestInitialized(servletRequestEvent);
+            LOGGER.info("requestInitialized " + requestListener);
+        });
         try {
             doNext(handlerContext);
         } finally {
-            if (!servletRequestListeners.isEmpty()) {
-                servletRequestListeners.forEach(requestListener -> {
-                    requestListener.requestDestroyed(servletRequestEvent);
-                    LOGGER.info("requestDestroyed " + requestListener);
-                });
-            }
+            servletRequestListeners.forEach(requestListener -> {
+                requestListener.requestDestroyed(servletRequestEvent);
+                LOGGER.info("requestDestroyed " + requestListener);
+            });
         }
     }
 }

@@ -280,26 +280,22 @@ public class ServletContextImpl implements ServletContext {
         Object oldValue = attributes.put(name, object);
 
         List<ServletContextAttributeListener> listeners = deploymentInfo.getServletContextAttributeListeners();
-        if (listeners.size() > 0) {
-            ServletContextAttributeEvent event = new ServletContextAttributeEvent(this, name, object);
-            deploymentInfo.getServletContextAttributeListeners().forEach(listener -> {
-                if (oldValue == null) {
-                    listener.attributeAdded(event);
-                } else {
-                    listener.attributeReplaced(event);
-                }
-            });
-        }
+        ServletContextAttributeEvent event = listeners.isEmpty() ? null : new ServletContextAttributeEvent(this, name, object);
+        listeners.forEach(listener -> {
+            if (oldValue == null) {
+                listener.attributeAdded(event);
+            } else {
+                listener.attributeReplaced(event);
+            }
+        });
     }
 
     @Override
     public void removeAttribute(String name) {
         Object value = attributes.remove(name);
         List<ServletContextAttributeListener> listeners = deploymentInfo.getServletContextAttributeListeners();
-        if (listeners.size() > 0) {
-            ServletContextAttributeEvent event = new ServletContextAttributeEvent(this, name, value);
-            listeners.forEach(listener -> listener.attributeRemoved(event));
-        }
+        ServletContextAttributeEvent event = listeners.isEmpty() ? null : new ServletContextAttributeEvent(this, name, value);
+        listeners.forEach(listener -> listener.attributeRemoved(event));
     }
 
     @Override

@@ -15,9 +15,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,8 +41,10 @@ class HttpSessionImpl implements HttpSession {
         this.httpSessionContext = httpSessionContext;
         this.sessionId = sessionId;
         this.servletContext = servletContext;
-        HttpSessionEvent httpSessionEvent = new HttpSessionEvent(this);
-        servletContext.getDeploymentInfo().getHttpSessionListeners().forEach(httpSessionListener -> httpSessionListener.sessionCreated(httpSessionEvent));
+
+        List<HttpSessionListener> sessionListeners = servletContext.getDeploymentInfo().getHttpSessionListeners();
+        HttpSessionEvent httpSessionEvent = sessionListeners.isEmpty() ? null : new HttpSessionEvent(this);
+        sessionListeners.forEach(httpSessionListener -> httpSessionListener.sessionCreated(httpSessionEvent));
     }
 
     @Override
@@ -138,8 +142,9 @@ class HttpSessionImpl implements HttpSession {
     }
 
     public void invalid() {
-        HttpSessionEvent httpSessionEvent = new HttpSessionEvent(this);
-        servletContext.getDeploymentInfo().getHttpSessionListeners().forEach(httpSessionListener -> httpSessionListener.sessionDestroyed(httpSessionEvent));
+        List<HttpSessionListener> sessionListeners = servletContext.getDeploymentInfo().getHttpSessionListeners();
+        HttpSessionEvent httpSessionEvent = sessionListeners.isEmpty() ? null : new HttpSessionEvent(this);
+        sessionListeners.forEach(httpSessionListener -> httpSessionListener.sessionDestroyed(httpSessionEvent));
         invalid = true;
     }
 

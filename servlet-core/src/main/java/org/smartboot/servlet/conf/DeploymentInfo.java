@@ -39,12 +39,12 @@ public class DeploymentInfo {
     private final Map<String, FilterInfo> filters = new HashMap<>();
     private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
     private final Map<String, String> initParameters = new HashMap<>();
-    private final List<String> eventListeners = new ArrayList<>();
-    private final List<ServletContextListener> servletContextListeners = new ArrayList<>();
-    private final List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
-    private final List<ServletContainerInitializerInfo> servletContainerInitializers = new ArrayList<>();
-    private final List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
-    private final List<HttpSessionListener> httpSessionListeners = new ArrayList<>();
+    private List<String> eventListeners = new ArrayList<>();
+    private List<ServletContainerInitializerInfo> servletContainerInitializers = new ArrayList<>();
+    private List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
+    private List<ServletContextListener> servletContextListeners = new ArrayList<>();
+    private List<HttpSessionListener> httpSessionListeners = new ArrayList<>();
+    private List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
     private List<String> welcomeFiles = Collections.emptyList();
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private String displayName;
@@ -112,6 +112,26 @@ public class DeploymentInfo {
 
     public List<String> getEventListeners() {
         return eventListeners;
+    }
+
+    public void amazing() {
+        eventListeners.clear();
+        eventListeners = null;
+        if (servletContainerInitializers.isEmpty()) {
+            servletContainerInitializers = Collections.emptyList();
+        }
+        if (servletContextAttributeListeners.isEmpty()) {
+            servletContextAttributeListeners = Collections.emptyList();
+        }
+        if (servletContextListeners.isEmpty()) {
+            servletContextListeners = Collections.emptyList();
+        }
+        if (httpSessionListeners.isEmpty()) {
+            httpSessionListeners = Collections.emptyList();
+        }
+        if (servletRequestListeners.isEmpty()) {
+            servletRequestListeners = Collections.emptyList();
+        }
     }
 
     public void addServletContextListener(ServletContextListener contextListener) {

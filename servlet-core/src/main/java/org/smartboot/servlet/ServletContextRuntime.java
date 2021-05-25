@@ -9,7 +9,6 @@
 
 package org.smartboot.servlet;
 
-import org.smartboot.http.common.utils.CollectionUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
@@ -127,7 +126,7 @@ public class ServletContextRuntime {
         //启动Filter
         initFilter(deploymentInfo);
         started = true;
-
+        deploymentInfo.amazing();
         plugins.forEach(plugin -> plugin.onContainerStartSuccess(this));
     }
 
@@ -190,10 +189,8 @@ public class ServletContextRuntime {
     public void stop() {
         plugins.forEach(plugin -> plugin.willStopContainer(this));
         deploymentInfo.getServlets().values().forEach(servletInfo -> servletInfo.getServlet().destroy());
-        if (CollectionUtils.isNotEmpty(deploymentInfo.getServletContextListeners())) {
-            ServletContextEvent event = new ServletContextEvent(servletContext);
-            deploymentInfo.getServletContextListeners().forEach(servletContextListener -> servletContextListener.contextDestroyed(event));
-        }
+        ServletContextEvent event = deploymentInfo.getServletContextListeners().isEmpty() ? null : new ServletContextEvent(servletContext);
+        deploymentInfo.getServletContextListeners().forEach(servletContextListener -> servletContextListener.contextDestroyed(event));
 
         plugins.forEach(plugin -> plugin.onContainerStopped(this));
     }
