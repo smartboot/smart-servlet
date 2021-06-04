@@ -10,11 +10,11 @@
 package org.smartboot.servlet;
 
 
+import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpMethodEnum;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.utils.HttpHeaderConstant;
 import org.smartboot.http.common.utils.Mimetypes;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
@@ -141,7 +141,7 @@ public class DefaultServlet extends HttpServlet {
         //304
         long lastModifiedTime = defaultFavicon ? faviconModifyTime : file.lastModified();
         try {
-            String requestModified = request.getHeader(HttpHeaderConstant.Names.IF_MODIFIED_SINCE);
+            String requestModified = request.getHeader(HeaderNameEnum.IF_MODIFIED_SINCE.getName());
             if (StringUtils.isNotBlank(requestModified) && lastModifiedTime <= sdf.get().parse(requestModified).getTime()) {
                 response.sendError(HttpStatus.NOT_MODIFIED.value(), HttpStatus.NOT_MODIFIED.getReasonPhrase());
                 return;
@@ -149,13 +149,13 @@ public class DefaultServlet extends HttpServlet {
         } catch (Exception e) {
             LOGGER.info("exception", e);
         }
-        response.setHeader(HttpHeaderConstant.Names.LAST_MODIFIED, sdf.get().format(new Date(lastModifiedTime)));
+        response.setHeader(HeaderNameEnum.LAST_MODIFIED.getName(), sdf.get().format(new Date(lastModifiedTime)));
 
         if (defaultFavicon) {
             response.setContentType("image/x-icon");
         } else {
             String contentType = Mimetypes.getInstance().getMimetype(file);
-            response.setHeader(HttpHeaderConstant.Names.CONTENT_TYPE, contentType + "; charset=utf-8");
+            response.setHeader(HeaderNameEnum.CONTENT_TYPE.getName(), contentType + "; charset=utf-8");
         }
         //HEAD不输出内容
         if (HttpMethodEnum.HEAD.getMethod().equals(method)) {
@@ -198,7 +198,7 @@ public class DefaultServlet extends HttpServlet {
                 throw new FileNotFoundException();
             }
             response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
-            response.setHeader(HttpHeaderConstant.Names.CONTENT_TYPE, "text/html; charset=utf-8");
+            response.setHeader(HeaderNameEnum.CONTENT_TYPE.getName(), "text/html; charset=utf-8");
 
             if (!HttpMethodEnum.HEAD.getMethod().equals(method)) {
                 response.getOutputStream().write(URL_404.getBytes());

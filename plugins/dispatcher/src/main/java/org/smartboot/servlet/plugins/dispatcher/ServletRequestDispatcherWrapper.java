@@ -9,7 +9,7 @@
 
 package org.smartboot.servlet.plugins.dispatcher;
 
-import org.smartboot.http.common.utils.HttpHeaderConstant;
+import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
@@ -144,7 +144,7 @@ class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implemen
 
     @Override
     public HttpSession getSession(boolean create) {
-        if (dispatcherType == DispatcherType.INCLUDE && response.containsHeader(HttpHeaderConstant.Names.COOKIE)) {
+        if (dispatcherType == DispatcherType.INCLUDE && response.containsHeader(HeaderNameEnum.COOKIE.getName())) {
             throw new IllegalStateException();
         }
         return super.getSession(create);
@@ -152,7 +152,7 @@ class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implemen
 
     @Override
     public HttpSession getSession() {
-        if (dispatcherType == DispatcherType.INCLUDE && response.containsHeader(HttpHeaderConstant.Names.COOKIE)) {
+        if (dispatcherType == DispatcherType.INCLUDE && response.containsHeader(HeaderNameEnum.COOKIE.getName())) {
             throw new IllegalStateException();
         }
         return super.getSession();

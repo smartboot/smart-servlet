@@ -9,10 +9,10 @@
 
 package org.smartboot.servlet.impl;
 
+import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.utils.HttpHeaderConstant;
 import org.smartboot.http.server.HttpResponse;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.util.DateUtil;
@@ -108,7 +108,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (PathMatcherUtil.isAbsoluteUrl(location)) {
             redirect = location;
         } else if (location.charAt(0) == '/') {
-            redirect = request.getScheme() + "://" + request.getHeader(HttpHeaderConstant.Names.HOST) + location;
+            redirect = request.getScheme() + "://" + request.getHeader(HeaderNameEnum.HOST.getName()) + location;
         } else {
             String url = request.getRequestURL().toString();
             int last = url.lastIndexOf("/");
@@ -119,7 +119,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             }
         }
         LOGGER.info("sendRedirect:" + redirect);
-        response.setHeader(HttpHeaderConstant.Names.LOCATION, redirect);
+        response.setHeader(HeaderNameEnum.LOCATION.getName(), redirect);
     }
 
     @Override
