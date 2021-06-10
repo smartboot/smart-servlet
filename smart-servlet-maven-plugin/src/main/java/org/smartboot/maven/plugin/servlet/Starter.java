@@ -12,8 +12,8 @@ package org.smartboot.maven.plugin.servlet;
 import org.smartboot.http.server.HttpBootstrap;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
-import org.smartboot.http.server.HttpServerHandle;
-import org.smartboot.http.server.WebSocketHandle;
+import org.smartboot.http.server.HttpServerHandler;
+import org.smartboot.http.server.WebSocketHandler;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.servlet.ContainerRuntime;
@@ -32,14 +32,14 @@ public class Starter {
         containerRuntime.start();
         HttpBootstrap bootstrap = new HttpBootstrap();
         bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024);
-        bootstrap.pipeline(new HttpServerHandle() {
+        bootstrap.pipeline(new HttpServerHandler() {
             @Override
-            public void doHandle(HttpRequest request, HttpResponse response) {
+            public void handle(HttpRequest request, HttpResponse response) {
                 containerRuntime.doHandle(request, response);
             }
-        }).wsPipeline().next(new WebSocketHandle() {
+        }).wsPipeline().next(new WebSocketHandler() {
             @Override
-            public void doHandle(WebSocketRequest request, WebSocketResponse response) throws IOException {
+            public void handle(WebSocketRequest request, WebSocketResponse response) throws IOException {
                 containerRuntime.doHandle(request, response);
             }
         });

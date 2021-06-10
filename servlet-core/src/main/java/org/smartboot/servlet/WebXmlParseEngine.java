@@ -9,7 +9,6 @@
 
 package org.smartboot.servlet;
 
-import org.smartboot.http.common.utils.CollectionUtils;
 import org.smartboot.http.common.utils.NumberUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.conf.ErrorPageInfo;
@@ -18,6 +17,7 @@ import org.smartboot.servlet.conf.FilterMappingInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
+import org.smartboot.servlet.util.CollectionUtils;
 import org.smartboot.servlet.util.PathMatcherUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
