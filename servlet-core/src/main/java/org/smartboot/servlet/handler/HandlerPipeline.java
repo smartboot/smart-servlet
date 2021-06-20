@@ -15,11 +15,11 @@ import org.smartboot.servlet.HandlerContext;
  * @author 三刀
  * @version V1.0 , 2019/11/3
  */
-public final class HandlePipeline extends Handler {
+public final class HandlerPipeline extends Handler {
     /**
      * 管道尾
      */
-    private Handler tailHandle;
+    private Handler tailHandler;
 
     /**
      * 添加HttpHandle至末尾
@@ -27,21 +27,21 @@ public final class HandlePipeline extends Handler {
      * @param handle 尾部handle
      * @return 当前管道对象
      */
-    public HandlePipeline next(Handler handle) {
-        if (nextHandle == null) {
-            nextHandle = tailHandle = handle;
+    public HandlerPipeline next(Handler handle) {
+        if (nextHandler == null) {
+            nextHandler = tailHandler = handle;
             return this;
         }
-        Handler httpHandle = tailHandle;
-        while (httpHandle.nextHandle != null) {
-            httpHandle = httpHandle.nextHandle;
+        Handler httpHandle = tailHandler;
+        while (httpHandle.nextHandler != null) {
+            httpHandle = httpHandle.nextHandler;
         }
-        httpHandle.nextHandle = handle;
+        httpHandle.nextHandler = handle;
         return this;
     }
 
     @Override
     public void handleRequest(HandlerContext handlerContext) {
-        nextHandle.handleRequest(handlerContext);
+        nextHandler.handleRequest(handlerContext);
     }
 }

@@ -21,7 +21,7 @@ abstract class Handler {
     /**
      * 持有下一个处理器的句柄
      */
-    protected Handler nextHandle;
+    protected Handler nextHandler;
 
     /**
      * 处理handlerContext中的请求
@@ -38,8 +38,8 @@ abstract class Handler {
      * @throws Exception
      */
     protected final void doNext(HandlerContext handlerContext) {
-        if (nextHandle != null) {
-            nextHandle.handleRequest(handlerContext);
+        if (nextHandler != null) {
+            nextHandler.handleRequest(handlerContext);
         }
     }
 }

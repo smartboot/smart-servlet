@@ -20,7 +20,7 @@ import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
-import org.smartboot.servlet.handler.HandlePipeline;
+import org.smartboot.servlet.handler.HandlerPipeline;
 import org.smartboot.servlet.handler.ServletMatchHandler;
 import org.smartboot.servlet.handler.ServletRequestListenerHandler;
 import org.smartboot.servlet.handler.ServletServiceHandler;
@@ -77,7 +77,7 @@ public class ContainerRuntime {
             return;
         }
         started = true;
-        HandlePipeline pipeline = new HandlePipeline();
+        HandlerPipeline pipeline = new HandlerPipeline();
         pipeline.next(new ServletRequestListenerHandler())
                 .next(new ServletMatchHandler())
                 .next(new FilterMatchHandler())

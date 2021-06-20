@@ -19,7 +19,7 @@ import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.enums.ServletContextPathType;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
-import org.smartboot.servlet.handler.HandlePipeline;
+import org.smartboot.servlet.handler.HandlerPipeline;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
@@ -67,7 +67,7 @@ public class ServletContextImpl implements ServletContext {
     /**
      * 请求执行管道
      */
-    private HandlePipeline pipeline;
+    private HandlerPipeline pipeline;
 
     public ServletContextImpl(ServletContextRuntime containerRuntime) {
         this.containerRuntime = containerRuntime;
@@ -305,7 +305,11 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public ServletRegistration.Dynamic addServlet(String servletName, String className) {
-        throw new UnsupportedOperationException();
+        try {
+            return addServlet(servletName, (Class<? extends Servlet>) getClassLoader().loadClass(className));
+        } catch (ClassNotFoundException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 
     @Override
@@ -321,22 +325,27 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public ServletRegistration.Dynamic addServlet(String servletName, Class<? extends Servlet> servletClass) {
-        throw new UnsupportedOperationException();
+        return addServlet(servletName, createServlet(servletClass));
     }
 
     @Override
-    public <T extends Servlet> T createServlet(Class<T> clazz) throws ServletException {
-        throw new UnsupportedOperationException();
+    public <T extends Servlet> T createServlet(Class<T> clazz) {
+        return newInstance(clazz);
     }
 
     @Override
     public ServletRegistration getServletRegistration(String servletName) {
-        throw new UnsupportedOperationException();
+        ServletInfo servletInfo = deploymentInfo.getServlets().get(servletName);
+        return servletInfo == null ? null : new ApplicationServletRegistration(servletInfo, deploymentInfo);
     }
 
     @Override
     public Map<String, ? extends ServletRegistration> getServletRegistrations() {
-        throw new UnsupportedOperationException();
+        Map<String, ApplicationServletRegistration> map = new HashMap<>();
+        deploymentInfo.getServlets().forEach((servletName, servletInfo) -> {
+            map.put(servletName, new ApplicationServletRegistration(servletInfo, deploymentInfo));
+        });
+        return map;
     }
 
     @Override
@@ -375,11 +384,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public <T extends Filter> T createFilter(Class<T> clazz) {
-        try {
-            return clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new WrappedRuntimeException(e);
-        }
+        return newInstance(clazz);
     }
 
     @Override
@@ -446,7 +451,15 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public <T extends EventListener> T createListener(Class<T> clazz) throws ServletException {
-        throw new UnsupportedOperationException();
+        return newInstance(clazz);
+    }
+
+    private <T> T newInstance(Class<T> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 
     @Override
@@ -474,11 +487,11 @@ public class ServletContextImpl implements ServletContext {
         return deploymentInfo;
     }
 
-    public HandlePipeline getPipeline() {
+    public HandlerPipeline getPipeline() {
         return pipeline;
     }
 
-    public void setPipeline(HandlePipeline pipeline) {
+    public void setPipeline(HandlerPipeline pipeline) {
         this.pipeline = pipeline;
     }
 }
