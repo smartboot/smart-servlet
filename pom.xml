@@ -21,12 +21,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
-            <dependency>
-                <groupId>org.reflections</groupId>
-                <artifactId>reflections</artifactId>
-                <version>0.9.12</version>
-            </dependency>
             <dependency>
                 <groupId>org.smartboot.http</groupId>
                 <artifactId>smart-http-server</artifactId>

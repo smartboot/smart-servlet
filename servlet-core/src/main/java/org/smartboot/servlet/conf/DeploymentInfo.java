@@ -9,8 +9,8 @@
 
 package org.smartboot.servlet.conf;
 
-import org.reflections.Reflections;
 import org.smartboot.servlet.DefaultServlet;
+import org.smartboot.servlet.HandlesTypesLoader;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
@@ -19,12 +19,10 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.annotation.HandlesTypes;
 import javax.servlet.http.HttpSessionListener;
-import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +48,8 @@ public class DeploymentInfo {
     private String displayName;
     private URL contextUrl;
     private Servlet defaultServlet = new DefaultServlet();
+
+    private HandlesTypesLoader handlesTypesLoader;
     /**
      * 会话超时时间
      */
@@ -72,22 +72,22 @@ public class DeploymentInfo {
     }
 
     public void addServletContainerInitializer(final ServletContainerInitializer servletContainerInitializer) {
-        if (servletContainerInitializer != null) {
-            HandlesTypes handlesTypesAnnotation = servletContainerInitializer.getClass().getDeclaredAnnotation(HandlesTypes.class);
-            HashSet<Class<?>> handlesTypes = null;
-            if (handlesTypesAnnotation != null) {
-                handlesTypes = new HashSet<>();
-                Reflections f = new Reflections(getClassLoader());
-                for (Class<?> c : handlesTypesAnnotation.value()) {
-                    if (c.isAnnotation()) {
-                        handlesTypes.addAll(f.getTypesAnnotatedWith((Class<? extends Annotation>) c));
-                    } else {
-                        handlesTypes.addAll(f.getSubTypesOf(c));
-                    }
-                }
+        HandlesTypes handlesTypesAnnotation = servletContainerInitializer.getClass().getDeclaredAnnotation(HandlesTypes.class);
+        if (handlesTypesAnnotation != null) {
+            for (Class<?> c : handlesTypesAnnotation.value()) {
+                handlesTypesLoader.add(servletContainerInitializer, c);
             }
-            servletContainerInitializers.add(new ServletContainerInitializerInfo(servletContainerInitializer, handlesTypes));
+        } else {
+            servletContainerInitializers.add(new ServletContainerInitializerInfo(servletContainerInitializer, null));
         }
+    }
+
+    public HandlesTypesLoader getHandlesTypesLoader() {
+        return handlesTypesLoader;
+    }
+
+    public void setHandlesTypesLoader(HandlesTypesLoader handlesTypesLoader) {
+        this.handlesTypesLoader = handlesTypesLoader;
     }
 
     public List<ServletContainerInitializerInfo> getServletContainerInitializers() {

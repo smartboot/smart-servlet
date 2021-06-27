@@ -255,8 +255,9 @@ public class ContainerRuntime {
         File contextFile = new File(location);
         WebAppInfo webAppInfo = new WebXmlParseEngine().load(contextFile);
 
+        URLClassLoader urlClassLoader = getClassLoader(location, parentClassLoader);
         //new runtime object
-        servletRuntime = new ServletContextRuntime(getClassLoader(location, parentClassLoader), StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
+        servletRuntime = new ServletContextRuntime(urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
         DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
         //set session timeout
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
@@ -275,6 +276,8 @@ public class ContainerRuntime {
         webAppInfo.getFilterMappings().forEach(deploymentInfo::addFilterMapping);
 
         deploymentInfo.setContextUrl(contextFile.toURI().toURL());
+
+        deploymentInfo.setHandlesTypesLoader(new HandlesTypesLoader(deploymentInfo.getClassLoader()));
 
         for (ServletContainerInitializer containerInitializer : ServiceLoader.load(ServletContainerInitializer.class, deploymentInfo.getClassLoader())) {
             LOGGER.info("load ServletContainerInitializer:" + containerInitializer.getClass().getName());
@@ -324,6 +327,7 @@ public class ContainerRuntime {
                 }
             }
         }
+        //list.sort((o1, o2) -> o2.toString().compareTo(o1.toString()));
 
         File classDir = new File(location, "WEB-INF" + File.separator + "classes/");
         if (classDir.isDirectory()) {
