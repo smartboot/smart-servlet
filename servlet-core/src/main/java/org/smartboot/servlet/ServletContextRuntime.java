@@ -138,18 +138,20 @@ public class ServletContextRuntime {
      */
     private void initContainer(DeploymentInfo deploymentInfo) throws ServletException {
         //扫描 handleType
-        long start = System.currentTimeMillis();
-        deploymentInfo.getHandlesTypesLoader().scanHandleTypes()
-                .forEach((servletContainerInitializer, handlesTypes) -> {
-                    ServletContainerInitializerInfo initializerInfo = new ServletContainerInitializerInfo(servletContainerInitializer, handlesTypes);
-                    deploymentInfo.getServletContainerInitializers().add(initializerInfo);
-                });
-        System.out.println("scanHandleTypes use :" + (System.currentTimeMillis() - start));
+        if (deploymentInfo.getHandlesTypesLoader() != null) {
+            long start = System.currentTimeMillis();
+            deploymentInfo.getHandlesTypesLoader().scanHandleTypes()
+                    .forEach((servletContainerInitializer, handlesTypes) -> {
+                        ServletContainerInitializerInfo initializerInfo = new ServletContainerInitializerInfo(servletContainerInitializer, handlesTypes);
+                        deploymentInfo.getServletContainerInitializers().add(initializerInfo);
+                    });
+            deploymentInfo.getHandlesTypesLoader().clear();
+            deploymentInfo.setHandlesTypesLoader(null);
+            System.out.println("scanHandleTypes use :" + (System.currentTimeMillis() - start));
+        }
         for (ServletContainerInitializerInfo servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
             servletContainerInitializer.getServletContainerInitializer().onStartup(servletContainerInitializer.getHandlesTypes(), servletContext);
         }
-        deploymentInfo.getHandlesTypesLoader().clear();
-        deploymentInfo.setHandlesTypesLoader(null);
     }
 
     /**

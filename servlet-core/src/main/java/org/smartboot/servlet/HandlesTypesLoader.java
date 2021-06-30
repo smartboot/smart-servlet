@@ -331,7 +331,7 @@ public class HandlesTypesLoader {
                 internalForm.length() - 1).replace('/', '.');
     }
 
-    class JavaClassCacheEntry {
+    static class JavaClassCacheEntry {
         public final String superclassName;
 
         public final String[] interfaceNames;
