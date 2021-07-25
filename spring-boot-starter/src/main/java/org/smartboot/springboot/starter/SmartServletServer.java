@@ -49,12 +49,12 @@ public class SmartServletServer implements WebServer {
             try {
                 if (this.bootstrap == null) {
                     this.bootstrap = new HttpBootstrap();
-                    bootstrap.pipeline(new HttpServerHandler() {
+                    bootstrap.httpHandler(new HttpServerHandler() {
                         @Override
                         public void handle(HttpRequest request, HttpResponse response) throws IOException {
                             containerRuntime.doHandle(request, response);
                         }
-                    }).wsPipeline().next(new WebSocketHandler() {
+                    }).webSocketHandler(new WebSocketHandler() {
                         @Override
                         public void handle(WebSocketRequest request, WebSocketResponse response) throws IOException {
                             containerRuntime.doHandle(request, response);

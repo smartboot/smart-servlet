@@ -32,12 +32,12 @@ public class Starter {
         containerRuntime.start();
         HttpBootstrap bootstrap = new HttpBootstrap();
         bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024);
-        bootstrap.pipeline(new HttpServerHandler() {
+        bootstrap.httpHandler(new HttpServerHandler() {
             @Override
             public void handle(HttpRequest request, HttpResponse response) {
                 containerRuntime.doHandle(request, response);
             }
-        }).wsPipeline().next(new WebSocketHandler() {
+        }).webSocketHandler(new WebSocketHandler() {
             @Override
             public void handle(WebSocketRequest request, WebSocketResponse response) throws IOException {
                 containerRuntime.doHandle(request, response);
