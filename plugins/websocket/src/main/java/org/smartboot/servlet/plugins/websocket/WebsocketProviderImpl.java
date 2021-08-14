@@ -9,8 +9,6 @@
 
 package org.smartboot.servlet.plugins.websocket;
 
-import org.smartboot.http.common.enums.HttpStatus;
-import org.smartboot.http.common.exception.HttpException;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
@@ -50,48 +48,39 @@ public class WebsocketProviderImpl implements WebsocketProvider {
     @Override
     public void doHandle(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
         try {
-            switch (request.getWebsocketStatus()) {
-                case HandShake:
-                    onHandShark(runtime, request, response);
+            WebsocketSession session = request.getAttachment();
+            switch (request.getFrameOpcode()) {
+                case WebSocketRequestImpl.OPCODE_TEXT:
+                    handleTextMessage(session.getTextMessageHandler(), new String(request.getPayload(), StandardCharsets.UTF_8));
                     break;
-                case DataFrame: {
-                    WebsocketSession session = request.getAttachment();
-                    switch (request.getFrameOpcode()) {
-                        case WebSocketRequestImpl.OPCODE_TEXT:
-                            handleTextMessage(session.getTextMessageHandler(), new String(request.getPayload(), StandardCharsets.UTF_8));
-                            break;
-                        case WebSocketRequestImpl.OPCODE_BINARY:
-                            handleBinaryMessage(session.getBinaryMessageHandler(), request.getPayload());
-                            break;
-                        case WebSocketRequestImpl.OPCODE_CLOSE:
-                            try {
-                                onClose(request, response);
-                            } finally {
-                                response.close();
-                            }
-                            break;
-                        case WebSocketRequestImpl.OPCODE_PING:
-//                            onPing(request, response);
-                            throw new UnsupportedOperationException();
-//                            break;
-                        case WebSocketRequestImpl.OPCODE_PONG:
-                            onPong(request, session.getPongMessageHandler());
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
+                case WebSocketRequestImpl.OPCODE_BINARY:
+                    handleBinaryMessage(session.getBinaryMessageHandler(), request.getPayload());
+                    break;
+                case WebSocketRequestImpl.OPCODE_CLOSE:
+                    try {
+                        onClose(request, response);
+                    } finally {
+                        response.close();
                     }
-                }
-                break;
+                    break;
+                case WebSocketRequestImpl.OPCODE_PING:
+//                            onPing(request, response);
+                    throw new UnsupportedOperationException();
+//                            break;
+                case WebSocketRequestImpl.OPCODE_PONG:
+                    onPong(request, session.getPongMessageHandler());
+                    break;
                 default:
-                    throw new HttpException(HttpStatus.BAD_REQUEST);
+                    throw new UnsupportedOperationException();
             }
+
         } catch (Throwable throwable) {
             onError(throwable);
             throw throwable;
         }
     }
 
-    private void onHandShark(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
+    public void onHandShark(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
         try {
             SmartServerEndpointConfig matchedServerEndpointConfig = null;
             Map<String, String> data = new HashMap<>();

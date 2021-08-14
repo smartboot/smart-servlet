@@ -16,6 +16,7 @@ import org.smartboot.http.server.HttpServerHandler;
 import org.smartboot.http.server.WebSocketHandler;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
+import org.smartboot.http.server.impl.Request;
 import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.springframework.boot.web.server.WebServer;
@@ -55,6 +56,12 @@ public class SmartServletServer implements WebServer {
                             containerRuntime.doHandle(request, response);
                         }
                     }).webSocketHandler(new WebSocketHandler() {
+                        @Override
+                        public void onHeaderComplete(Request request) throws IOException {
+                            super.onHeaderComplete(request);
+                            containerRuntime.onHeaderComplete(request);
+                        }
+
                         @Override
                         public void handle(WebSocketRequest request, WebSocketResponse response) throws IOException {
                             containerRuntime.doHandle(request, response);

@@ -18,5 +18,7 @@ import org.smartboot.servlet.ServletContextRuntime;
  * @version V1.0 , 2021/3/28
  */
 public interface WebsocketProvider {
+    void onHandShark(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response);
+
     void doHandle(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response);
 }

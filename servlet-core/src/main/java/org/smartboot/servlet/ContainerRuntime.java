@@ -16,6 +16,8 @@ import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
+import org.smartboot.http.server.impl.Request;
+import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
@@ -160,6 +162,28 @@ public class ContainerRuntime {
      */
     public void addRuntime(String location, String contextPath, ClassLoader parentClassLoader) throws Exception {
         addRuntime(getServletRuntime(location, contextPath, parentClassLoader));
+    }
+
+    public void onHeaderComplete(Request request) {
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
+            ServletContextRuntime runtime = matchRuntime(request.getRequestURI());
+            if (!runtime.isStarted()) {
+                throw new IllegalStateException("container is not started");
+            }
+
+            ServletContextImpl servletContext = runtime.getServletContext();
+            Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
+            WebSocketRequestImpl webSocketRequest = request.newWebsocketRequest();
+            runtime.getWebsocketProvider().onHandShark(runtime, webSocketRequest, webSocketRequest.getResponse());
+        } catch (WrappedRuntimeException e) {
+            e.getThrowable().printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
     }
 
     public void doHandle(WebSocketRequest request, WebSocketResponse response) {
