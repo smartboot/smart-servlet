@@ -21,6 +21,11 @@ import org.smartboot.servlet.provider.WebsocketProvider;
  */
 public class MockWebsocketProvider implements WebsocketProvider {
     @Override
+    public void onHandShark(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
+
+    }
+
+    @Override
     public void doHandle(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
         throw new PluginException("Please install the [websocket] plugin to enable the [doHandle] function");
     }
