@@ -159,10 +159,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public int getStatus() {
-        if (response.getHttpStatus() == null) {
-            return HttpStatus.OK.value();
-        }
-        return response.getHttpStatus().value();
+        return response.getHttpStatus();
     }
 
     @Override
