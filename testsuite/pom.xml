@@ -26,22 +26,22 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.75</version>
+            <version>1.2.78</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
+            <version>1.7.32</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.30</version>
+            <version>1.7.32</version>
         </dependency>
         <dependency>
             <groupId>org.smartboot.http</groupId>
             <artifactId>smart-http-client</artifactId>
-            <version>1.1.4</version>
+            <version>1.1.8</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -52,7 +52,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -73,7 +73,7 @@
             <plugin>
                 <groupId>org.smartboot.servlet</groupId>
                 <artifactId>smart-servlet-maven-plugin</artifactId>
-                <version>0.1.5-SNAPSHOT</version><!--最新版本 -->
+                <version>0.1.5</version><!--最新版本 -->
                 <configuration>
                     <port>8081</port>
                     <path>/demo</path>
