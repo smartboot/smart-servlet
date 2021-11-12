@@ -63,7 +63,7 @@ smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导
 
    ```she
    [INFO] ------------------------------------------------------------------------
-   [INFO] Reactor Summary for servlet-plugins-parent 0.1.6:
+   [INFO] Reactor Summary for servlet-plugins-parent 0.1.7-SNAPSHOT:
    [INFO] 
    [INFO] servlet-plugins-parent ............................. SUCCESS [  2.403 s]
    [INFO] plugin-session ..................................... SUCCESS [  3.104 s]
@@ -108,7 +108,7 @@ smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导
        <plugin>
          <groupId>org.smartboot.servlet</groupId>
          <artifactId>smart-servlet-maven-plugin</artifactId>
-         <version>0.1.6</version>
+         <version>0.1.7-SNAPSHOT</version>
          <configuration>
            <port>8080</port>
          </configuration>
@@ -116,12 +116,12 @@ smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导
            <dependency>
              <groupId>org.smartboot.servlet</groupId>
              <artifactId>plugin-session</artifactId>
-             <version>0.1.6</version>
+             <version>0.1.7-SNAPSHOT</version>
            </dependency>
            <dependency>
              <groupId>org.smartboot.servlet</groupId>
              <artifactId>plugin-dispatcher</artifactId>
-             <version>0.1.6</version>
+             <version>0.1.7-SNAPSHOT</version>
            </dependency>
          </dependencies>
        </plugin>
@@ -151,7 +151,7 @@ smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导
        <dependency>
          <groupId>org.smartboot.servlet</groupId>
          <artifactId>smart-servlet-spring-boot-starter</artifactId>
-         <version>0.1.6</version>
+         <version>0.1.7-SNAPSHOT</version>
        </dependency>
      </dependencies>
    </project>

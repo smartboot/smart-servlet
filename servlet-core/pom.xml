@@ -5,17 +5,12 @@
     <parent>
         <artifactId>smart-servlet-parent</artifactId>
         <groupId>org.smartboot.servlet</groupId>
-        <version>0.1.6</version>
+        <version>0.1.7-SNAPSHOT</version>
     </parent>
     <name>servlet-core</name>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>servlet-core</artifactId>
     <dependencies>
-        <dependency>
-            <groupId>org.smartboot.socket</groupId>
-            <artifactId>aio-pro</artifactId>
-            <version>1.5.11</version>
-        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
