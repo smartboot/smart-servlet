@@ -56,6 +56,7 @@ public class RunMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        long startTime = System.currentTimeMillis();
         try {
             List<URL> urlList = new ArrayList<>();
             pluginArtifacts.forEach(artifact -> {
@@ -83,7 +84,7 @@ public class RunMojo extends AbstractMojo {
             e.printStackTrace();
             throw new MojoExecutionException(e.getMessage());
         }
-        getLog().info("smart-servlet start success");
+        getLog().info("smart-servlet start success, cost: " + (System.currentTimeMillis() - startTime));
         Object lock = new Object();
         synchronized (lock) {
             try {
