@@ -30,7 +30,6 @@ import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
-import org.smartboot.servlet.util.CollectionUtils;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContainerInitializer;
@@ -302,14 +301,15 @@ public class ContainerRuntime {
 
         deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 
+        deploymentInfo.setHandlesTypesLoader(new HandlesTypesLoader(deploymentInfo.getClassLoader()));
         for (ServletContainerInitializer containerInitializer : ServiceLoader.load(ServletContainerInitializer.class, deploymentInfo.getClassLoader())) {
             LOGGER.info("load ServletContainerInitializer:" + containerInitializer.getClass().getName());
             deploymentInfo.addServletContainerInitializer(containerInitializer);
         }
         // ServletContainerInitializer 可能注解 handlesTypes
-        if (CollectionUtils.isNotEmpty(deploymentInfo.getServletContainerInitializers())) {
-            deploymentInfo.setHandlesTypesLoader(new HandlesTypesLoader(deploymentInfo.getClassLoader()));
-        }
+//        if (CollectionUtils.isNotEmpty(deploymentInfo.getServletContainerInitializers())) {
+//            deploymentInfo.setHandlesTypesLoader(new HandlesTypesLoader(deploymentInfo.getClassLoader()));
+//        }
 
         //默认页面
         //《Servlet3.1规范中文版》10.10 欢迎文件
