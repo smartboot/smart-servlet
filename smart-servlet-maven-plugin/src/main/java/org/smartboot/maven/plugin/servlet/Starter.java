@@ -27,6 +27,8 @@ import java.io.IOException;
 public class Starter {
 
     public Starter(String path, String contentPath, int port, ClassLoader classLoader) throws Exception {
+        System.out.println("path: " + path);
+        System.out.println("contentPath: " + contentPath);
         ContainerRuntime containerRuntime = new ContainerRuntime();
         containerRuntime.addRuntime(path, contentPath, classLoader);
         containerRuntime.start();

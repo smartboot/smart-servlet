@@ -30,6 +30,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -72,8 +75,11 @@ public class HandlesTypesLoader {
     }
 
     public void clear() {
-
+        executorService.shutdownNow();
+        executorService = null;
     }
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public Map<ServletContainerInitializer, Set<Class<?>>> scanHandleTypes() {
         if (typeInitializerMap.isEmpty()) {
@@ -84,17 +90,32 @@ public class HandlesTypesLoader {
         }
         Map<String, JavaClassCacheEntry> javaClassCache = new HashMap<>();
         URL[] urls = ((URLClassLoader) classLoader).getURLs();
+        CountDownLatch count = new CountDownLatch(urls.length);
         for (URL url : urls) {
-            if ("jar".equals(url.getProtocol()) || url.toString().endsWith(".jar")) {
-                processAnnotationsJar(url, javaClassCache);
-            } else if ("file".equals(url.getProtocol())) {
+            executorService.execute(() -> {
+                long start = System.currentTimeMillis();
                 try {
-                    processAnnotationsFile(
-                            new File(url.toURI()), javaClassCache);
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
+                    if ("jar".equals(url.getProtocol()) || url.toString().endsWith(".jar")) {
+                        processAnnotationsJar(url, javaClassCache);
+                    } else if ("file".equals(url.getProtocol())) {
+                        try {
+                            processAnnotationsFile(
+                                    new File(url.toURI()), javaClassCache);
+                        } catch (URISyntaxException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } finally {
+//                    System.out.println("scan cost: " + (System.currentTimeMillis() - start));
+                    count.countDown();
                 }
-            }
+            });
+
+        }
+        try {
+            count.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         javaClassCache.clear();
         return initializerClassMap;

@@ -126,6 +126,7 @@ public class ContainerRuntime {
             LOGGER.info("install plugin: " + plugin.pluginName());
             plugin.install(this);
         });
+        runtimes.forEach(runtime -> plugins.forEach(plugin -> plugin.addServletContext(runtime)));
     }
 
     /**
@@ -138,6 +139,7 @@ public class ContainerRuntime {
             throw new IllegalArgumentException("contextPath: " + runtime.getContextPath() + " is already exists!");
         }
         runtimes.add(runtime);
+        plugins.forEach(plugin -> plugin.addServletContext(runtime));
     }
 
     /**
@@ -270,6 +272,7 @@ public class ContainerRuntime {
             ServletContextRuntime runtime = new ServletContextRuntime("/");
             runtime.getDeploymentInfo().setDefaultServlet(new DefaultServlet());
             runtimes.add(runtime);
+            plugins.forEach(plugin -> plugin.addServletContext(runtime));
         }
     }
 
@@ -281,7 +284,7 @@ public class ContainerRuntime {
 
         URLClassLoader urlClassLoader = getClassLoader(location, parentClassLoader);
         //new runtime object
-        servletRuntime = new ServletContextRuntime(urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
+        servletRuntime = new ServletContextRuntime(location, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
         DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
         //set session timeout
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());

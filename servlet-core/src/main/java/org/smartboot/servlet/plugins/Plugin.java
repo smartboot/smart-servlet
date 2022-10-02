@@ -58,6 +58,10 @@ public abstract class Plugin {
         LOGGER.info("plugin:[" + pluginName() + "] do nothing when initPlugin!");
     }
 
+    public void addServletContext(ServletContextRuntime runtime) {
+        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + runtime.getContextPath() + " when addServletContext!");
+    }
+
     /**
      * servlet容器被启动成功之后被调用
      *

@@ -81,18 +81,24 @@ public class ServletContextRuntime {
      */
     private boolean started = false;
 
+    private String location;
+
     public ServletContextRuntime(String contextPath) {
-        this(Thread.currentThread().getContextClassLoader(), contextPath);
+        this(null, Thread.currentThread().getContextClassLoader(), contextPath);
     }
 
-    public ServletContextRuntime(ClassLoader classLoader, String contextPath) {
-
+    public ServletContextRuntime(String location, ClassLoader classLoader, String contextPath) {
+        this.location = location;
         if (StringUtils.isBlank(contextPath)) {
             this.contextPath = "/";
         } else {
             this.contextPath = contextPath;
         }
         this.deploymentInfo.setClassLoader(classLoader);
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     public List<Plugin> getPlugins() {
