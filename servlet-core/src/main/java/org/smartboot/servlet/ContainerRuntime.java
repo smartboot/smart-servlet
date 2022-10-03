@@ -358,7 +358,4 @@ public class ContainerRuntime {
         return new URLClassLoader(urls, parentClassLoader);
     }
 
-    public List<ServletContextRuntime> getRuntimes() {
-        return runtimes;
-    }
 }
