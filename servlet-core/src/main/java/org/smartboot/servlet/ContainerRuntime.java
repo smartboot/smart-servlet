@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Servlet容器运行环境
@@ -54,17 +55,12 @@ public class ContainerRuntime {
      * http://patorjk.com/software/taag/
      * Font Name: Puffy
      */
-    private static final String BANNER = "                               _                                 _           _   \n" +
-            "                              ( )_                              (_ )        ( )_ \n" +
-            "  ___   ___ ___     _ _  _ __ | ,_)     ___    __   _ __  _   _  | |    __  | ,_)\n" +
-            "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" +
-            "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" +
-            "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
+    private static final String BANNER = "                               _                                 _           _   \n" + "                              ( )_                              (_ )        ( )_ \n" + "  ___   ___ ___     _ _  _ __ | ,_)     ___    __   _ __  _   _  | |    __  | ,_)\n" + "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" + "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" + "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
     private static final String VERSION = "0.1.7-SNAPSHOT";
     /**
      * 注册在当前 Servlet 容器中的运行环境
      */
-    private final List<ServletContextRuntime> runtimes = new ArrayList<>();
+    private final List<ServletContextRuntime> runtimes = new CopyOnWriteArrayList<>();
     /**
      * 注册至当前容器中的插件集
      */
@@ -79,11 +75,6 @@ public class ContainerRuntime {
             return;
         }
         started = true;
-        HandlerPipeline pipeline = new HandlerPipeline();
-        pipeline.next(new ServletRequestListenerHandler())
-                .next(new ServletMatchHandler())
-                .next(new FilterMatchHandler())
-                .next(new ServletServiceHandler());
         //扫描插件
         loadAndInstallPlugins();
 
@@ -91,23 +82,7 @@ public class ContainerRuntime {
         initRootContainer();
 
         //启动运行环境
-        runtimes.forEach(runtime -> {
-            runtime.getServletContext().setPipeline(pipeline);
-            runtime.setPlugins(plugins);
-            ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-            try {
-                //有些场景下ServletContainerInitializer初始化依赖当前容器的类加载器
-                Thread.currentThread().setContextClassLoader(runtime.getDeploymentInfo().getClassLoader());
-                runtime.start();
-            } catch (Exception e) {
-                e.printStackTrace();
-                runtime.getPlugins().forEach(plugin -> plugin.whenContainerStartError(runtime, e));
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
-            }
-        });
-        //按contextPath长度倒序,防止被"/"优先匹配
-        runtimes.sort((o1, o2) -> o2.getContextPath().length() - o1.getContextPath().length());
+        runtimes.forEach(ServletContextRuntime::start);
 
         System.out.println(BANNER + "\r\n :: smart-servlet :: (" + VERSION + ")");
 
@@ -117,6 +92,13 @@ public class ContainerRuntime {
      * 加载并安装插件
      */
     private void loadAndInstallPlugins() {
+        plugins.add(new Plugin() {
+            @Override
+            public void onContainerStopped(ServletContextRuntime containerRuntime) {
+                LOGGER.info("remove servletContextRuntime:{} from runtimes", containerRuntime.getContextPath());
+                runtimes.remove(containerRuntime);
+            }
+        });
         for (Plugin plugin : ServiceLoader.load(Plugin.class, ContainerRuntime.class.getClassLoader())) {
             LOGGER.info("load plugin: " + plugin.pluginName());
             plugins.add(plugin);
@@ -138,31 +120,39 @@ public class ContainerRuntime {
         if (runtimes.stream().anyMatch(containerRuntime -> containerRuntime.getContextPath().equals(runtime.getContextPath()))) {
             throw new IllegalArgumentException("contextPath: " + runtime.getContextPath() + " is already exists!");
         }
+        HandlerPipeline pipeline = new HandlerPipeline();
+        pipeline.next(new ServletRequestListenerHandler()).next(new ServletMatchHandler()).next(new FilterMatchHandler()).next(new ServletServiceHandler());
+        runtime.getServletContext().setPipeline(pipeline);
+        runtime.setPlugins(plugins);
         runtimes.add(runtime);
+        //按contextPath长度倒序,防止被"/"优先匹配
+        runtimes.sort((o1, o2) -> o2.getContextPath().length() - o1.getContextPath().length());
         plugins.forEach(plugin -> plugin.addServletContext(runtime));
     }
 
     /**
      * 注册 Servlet 子容器
      *
-     * @param location    本地目录
+     * @param localPath   本地目录
      * @param contextPath 注册的 Context 路径
      * @throws Exception
      */
-    public void addRuntime(String location, String contextPath) throws Exception {
-        addRuntime(location, contextPath, Thread.currentThread().getContextClassLoader());
+    public ServletContextRuntime addRuntime(String localPath, String contextPath) throws Exception {
+        return addRuntime(localPath, contextPath, Thread.currentThread().getContextClassLoader());
     }
 
     /**
      * 注册 Servlet 子容器
      *
-     * @param location          本地目录
+     * @param localPath         本地目录
      * @param contextPath       注册的 Context 路径
      * @param parentClassLoader 父类加载
      * @throws Exception
      */
-    public void addRuntime(String location, String contextPath, ClassLoader parentClassLoader) throws Exception {
-        addRuntime(getServletRuntime(location, contextPath, parentClassLoader));
+    public ServletContextRuntime addRuntime(String localPath, String contextPath, ClassLoader parentClassLoader) throws Exception {
+        ServletContextRuntime contextRuntime = getServletRuntime(localPath, contextPath, parentClassLoader);
+        addRuntime(contextRuntime);
+        return contextRuntime;
     }
 
     public void onHeaderComplete(Request request) {
@@ -276,15 +266,15 @@ public class ContainerRuntime {
         }
     }
 
-    private ServletContextRuntime getServletRuntime(String location, String contextPath, ClassLoader parentClassLoader) throws Exception {
+    private ServletContextRuntime getServletRuntime(String localPath, String contextPath, ClassLoader parentClassLoader) throws Exception {
         ServletContextRuntime servletRuntime;
         //load web.xml file
-        File contextFile = new File(location);
+        File contextFile = new File(localPath);
         WebAppInfo webAppInfo = new WebXmlParseEngine().load(contextFile);
 
-        URLClassLoader urlClassLoader = getClassLoader(location, parentClassLoader);
+        URLClassLoader urlClassLoader = getClassLoader(localPath, parentClassLoader);
         //new runtime object
-        servletRuntime = new ServletContextRuntime(location, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
+        servletRuntime = new ServletContextRuntime(localPath, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
         DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
         //set session timeout
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
@@ -346,9 +336,9 @@ public class ContainerRuntime {
         return servletRuntime;
     }
 
-    private URLClassLoader getClassLoader(String location, ClassLoader parentClassLoader) throws MalformedURLException {
+    private URLClassLoader getClassLoader(String localPath, ClassLoader parentClassLoader) throws MalformedURLException {
         List<URL> list = new ArrayList<>();
-        File libDir = new File(location, "WEB-INF" + File.separator + "lib/");
+        File libDir = new File(localPath, "WEB-INF" + File.separator + "lib/");
         if (libDir.isDirectory()) {
             File[] files = libDir.listFiles();
             if (files != null && files.length > 0) {
@@ -359,12 +349,16 @@ public class ContainerRuntime {
         }
         //list.sort((o1, o2) -> o2.toString().compareTo(o1.toString()));
 
-        File classDir = new File(location, "WEB-INF" + File.separator + "classes/");
+        File classDir = new File(localPath, "WEB-INF" + File.separator + "classes/");
         if (classDir.isDirectory()) {
             list.add(classDir.toURI().toURL());
         }
         URL[] urls = new URL[list.size()];
         list.toArray(urls);
         return new URLClassLoader(urls, parentClassLoader);
+    }
+
+    public List<ServletContextRuntime> getRuntimes() {
+        return runtimes;
     }
 }

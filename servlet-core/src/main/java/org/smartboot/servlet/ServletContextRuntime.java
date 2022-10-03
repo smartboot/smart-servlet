@@ -81,14 +81,14 @@ public class ServletContextRuntime {
      */
     private boolean started = false;
 
-    private String location;
+    private final String localPath;
 
     public ServletContextRuntime(String contextPath) {
         this(null, Thread.currentThread().getContextClassLoader(), contextPath);
     }
 
-    public ServletContextRuntime(String location, ClassLoader classLoader, String contextPath) {
-        this.location = location;
+    public ServletContextRuntime(String localPath, ClassLoader classLoader, String contextPath) {
+        this.localPath = localPath;
         if (StringUtils.isBlank(contextPath)) {
             this.contextPath = "/";
         } else {
@@ -97,8 +97,11 @@ public class ServletContextRuntime {
         this.deploymentInfo.setClassLoader(classLoader);
     }
 
-    public String getLocation() {
-        return location;
+    /**
+     * 当前Servlet应用的本地路径
+     */
+    public String getLocalPath() {
+        return localPath;
     }
 
     public List<Plugin> getPlugins() {
@@ -112,28 +115,39 @@ public class ServletContextRuntime {
     /**
      * 启动容器
      */
-    public void start() throws Exception {
-        plugins.forEach(plugin -> plugin.willStartContainer(this));
+    public void start() {
+        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            //有些场景下ServletContainerInitializer初始化依赖当前容器的类加载器
+            Thread.currentThread().setContextClassLoader(deploymentInfo.getClassLoader());
 
-        DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
+            plugins.forEach(plugin -> plugin.willStartContainer(this));
 
-        //初始化容器
-        initContainer(deploymentInfo);
+            DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
 
-        //启动Listener
-        for (String eventListenerInfo : deploymentInfo.getEventListeners()) {
-            EventListener listener = (EventListener) deploymentInfo.getClassLoader().loadClass(eventListenerInfo).newInstance();
-            servletContext.addListener(listener);
+            //初始化容器
+            initContainer(deploymentInfo);
+
+            //启动Listener
+            for (String eventListenerInfo : deploymentInfo.getEventListeners()) {
+                EventListener listener = (EventListener) deploymentInfo.getClassLoader().loadClass(eventListenerInfo).newInstance();
+                servletContext.addListener(listener);
+            }
+
+            //启动Servlet
+            initServlet(deploymentInfo);
+
+            //启动Filter
+            initFilter(deploymentInfo);
+            started = true;
+            deploymentInfo.amazing();
+            plugins.forEach(plugin -> plugin.onContainerStartSuccess(this));
+        } catch (Exception e) {
+            e.printStackTrace();
+            plugins.forEach(plugin -> plugin.whenContainerStartError(this, e));
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
-
-        //启动Servlet
-        initServlet(deploymentInfo);
-
-        //启动Filter
-        initFilter(deploymentInfo);
-        started = true;
-        deploymentInfo.amazing();
-        plugins.forEach(plugin -> plugin.onContainerStartSuccess(this));
     }
 
 
