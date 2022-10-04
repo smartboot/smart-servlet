@@ -117,16 +117,32 @@ public class ContainerRuntime {
      * @param runtime Servlet 子容器
      */
     public void addRuntime(ServletContextRuntime runtime) {
-        if (runtimes.stream().anyMatch(containerRuntime -> containerRuntime.getContextPath().equals(runtime.getContextPath()))) {
+        ServletContextRuntime existRuntime = runtimes.stream().filter(containerRuntime -> containerRuntime.getContextPath().equals(runtime.getContextPath())).findFirst().orElse(null);
+        if (existRuntime != null
+                && (!StringUtils.equals(runtime.getContextPath(), rootRuntime.getContextPath())
+                || (existRuntime != rootRuntime && runtime != rootRuntime)
+                || (existRuntime == rootRuntime && runtime == rootRuntime))) {
+            //自定义ROOT Context优先级高于rootRuntime
             throw new IllegalArgumentException("contextPath: " + runtime.getContextPath() + " is already exists!");
         }
         HandlerPipeline pipeline = new HandlerPipeline();
         pipeline.next(new ServletRequestListenerHandler()).next(new ServletMatchHandler()).next(new FilterMatchHandler()).next(new ServletServiceHandler());
         runtime.getServletContext().setPipeline(pipeline);
-        runtime.setPlugins(plugins);
+        // rootRuntime不绑定插件
+        if (rootRuntime != runtime) {
+            runtime.setPlugins(plugins);
+        }
         runtimes.add(runtime);
         //按contextPath长度倒序,防止被"/"优先匹配
-        runtimes.sort((o1, o2) -> o2.getContextPath().length() - o1.getContextPath().length());
+        runtimes.sort((o1, o2) -> {
+            if (o1 == rootRuntime) {
+                return 1;
+            } else if (o2 == rootRuntime) {
+                return -1;
+            } else {
+                return o2.getContextPath().length() - o1.getContextPath().length();
+            }
+        });
         plugins.forEach(plugin -> plugin.addServletContext(runtime));
     }
 
@@ -254,16 +270,14 @@ public class ContainerRuntime {
         throw new IllegalStateException("No match container runtime!");
     }
 
+    private final ServletContextRuntime rootRuntime = new ServletContextRuntime("/");
+
     /**
      * 若不存在根级容器，则初始化一个
      */
     private void initRootContainer() {
-        if (runtimes.stream().noneMatch(runtime -> "/".equals(runtime.getContextPath()))) {
-            ServletContextRuntime runtime = new ServletContextRuntime("/");
-            runtime.getDeploymentInfo().setDefaultServlet(new DefaultServlet());
-            runtimes.add(runtime);
-            plugins.forEach(plugin -> plugin.addServletContext(runtime));
-        }
+        rootRuntime.getDeploymentInfo().setDefaultServlet(new DefaultServlet());
+        addRuntime(rootRuntime);
     }
 
     private ServletContextRuntime getServletRuntime(String localPath, String contextPath, ClassLoader parentClassLoader) throws Exception {
