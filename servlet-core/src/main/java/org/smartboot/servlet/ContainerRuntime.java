@@ -75,6 +75,7 @@ public class ContainerRuntime {
             return;
         }
         started = true;
+        System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n :: smart-servlet :: (" + VERSION + ")");
         //扫描插件
         loadAndInstallPlugins();
 
@@ -84,7 +85,6 @@ public class ContainerRuntime {
         //启动运行环境
         runtimes.forEach(ServletContextRuntime::start);
 
-        System.out.println(BANNER + "\r\n :: smart-servlet :: (" + VERSION + ")");
 
     }
 
@@ -372,4 +372,25 @@ public class ContainerRuntime {
         return new URLClassLoader(urls, parentClassLoader);
     }
 
+    static class ConsoleColors {
+        /**
+         * 重置颜色
+         */
+        public static final String RESET = "\033[0m";
+        /**
+         * 蓝色
+         */
+        public static final String BLUE = "\033[34;1m";
+
+        /**
+         * 红色
+         */
+        public static final String RED = "\033[31m";
+
+        /**
+         * 绿色
+         */
+        public static final String GREEN = "\033[32;1m";
+
+    }
 }
