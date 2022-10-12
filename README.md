@@ -36,62 +36,14 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
     - websocket【 JSR 356 规范插件，**可选**】
   - smart-servlet-maven-plugin【业务系统通过pom.xml集成本地开发环境】
   - spring-boot-start【springboot业务系统通过pom.xml集成本地开发环境】
-  - archives【用于部署War包的可执行环境软件包，开箱即用】
 
 ## Part 2. 操作手册
 
-### 准备工作
+### 2.1 安装包启动 smart-servlet
 
-smart-servlet 还未正式发布，如需体验请从本仓库下载源码并导入 IDE 完成工程编译，编译执行顺序如下：
-
-1. 路径：smart-servlet/pom.xml，执行`mvn install`。当控制台出现以下信息时，说明编译成功。
-
-   ```she
-   [INFO] ------------------------------------------------------------------------
-   [INFO] Reactor Summary:
-   [INFO] 
-   [INFO] smart-servlet-parent ............................... SUCCESS [  1.168 s]
-   [INFO] servlet-core ....................................... SUCCESS [ 10.142 s]
-   [INFO] smart-servlet-spring-boot-starter .................. SUCCESS [  2.107 s]
-   [INFO] smart-servlet-maven-plugin ......................... SUCCESS [  6.330 s]
-   [INFO] ------------------------------------------------------------------------
-   [INFO] BUILD SUCCESS
-   [INFO] ------------------------------------------------------------------------
-   ```
-
-2. 路径：smart-servlet/plugins/pom.xml，执行`mvn install`。当控制台出现以下信息时，说明编译成功。
-
-   ```she
-   [INFO] ------------------------------------------------------------------------
-   [INFO] Reactor Summary for servlet-plugins-parent 0.1.6:
-   [INFO] 
-   [INFO] servlet-plugins-parent ............................. SUCCESS [  2.403 s]
-   [INFO] plugin-session ..................................... SUCCESS [  3.104 s]
-   [INFO] plugin-dispatcher .................................. SUCCESS [  2.005 s]
-   [INFO] ------------------------------------------------------------------------
-   [INFO] BUILD SUCCESS
-   [INFO] ------------------------------------------------------------------------
-   ```
-
-3. 路径：smart-servlet/archives/pom.xml，执行`mvn install`。当控制台出现以下信息时，说明编译成功。
-
-   ```shell
-   [INFO] ------------------------------------------------------------------------
-   [INFO] BUILD SUCCESS
-   [INFO] ------------------------------------------------------------------------
-   ```
-
-   
-
-### 2.1 示例演示
-
-> 特别说明：smart-servlet 提供的演示文件来自 Tomcat 的示例，存放于`smart-servlet/archives/webapps`目录下。
-
-1. 完成前面的工程编译后，运行archives模块中的`org.smartboot.servlet.starter.Bootstrap`启动服务器。
-
-2. 若启动过程无任何异常，打开浏览器访问 [http://127.0.0.1:8080/examples](http:127.0.0.1:8080/examples)。
-
-   
+1. 访问[https://gitee.com/smartboot/smart-servlet/releases](https://gitee.com/smartboot/smart-servlet/releases)下载最新版本的程序包。
+2. 解压  smart-servlet-bin-x.x.x.tar.gz
+3. 执行`bin/start.sh`，若启动过程无任何异常，打开浏览器访问 [http://127.0.0.1:8080/](http:127.0.0.1:8080/)。
 
 ### 2.2 业务系统集成smart-servlet
 
