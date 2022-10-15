@@ -9,6 +9,7 @@
 
 package org.smartboot.servlet.impl;
 
+import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.NumberUtils;
@@ -398,12 +399,30 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getServerName() {
-        throw new UnsupportedOperationException();
+        String host = getHeader(HeaderNameEnum.HOST.getName());
+        if (StringUtils.isBlank(host)) {
+            return request.getLocalAddress().getHostName();
+        }
+        int index = host.indexOf(":");
+        if (index < 0) {
+            return host;
+        } else {
+            return host.substring(0, index);
+        }
     }
 
     @Override
     public int getServerPort() {
-        throw new UnsupportedOperationException();
+        String host = getHeader(HeaderNameEnum.HOST.getName());
+        if (StringUtils.isBlank(host)) {
+            throw new UnsupportedOperationException();
+        }
+        int index = host.indexOf(":");
+        if (index < 0) {
+            return request.getRemoteAddress().getPort();
+        } else {
+            return NumberUtils.toInt(host.substring(index), -1);
+        }
     }
 
     @Override
