@@ -2,6 +2,8 @@
 smart-servlet 是一款实现了Servlet 3.1规范，支持多应用隔离部署的的 Web 容器。
 除此之外，smart-servlet 还是一款插件化容器，基于内置的沙箱环境确保 smart-servlet 拥有最精简的运行能力，用户还可以通过自定义插件扩展容器的服务能力。
 
+[体验服一](体验服)
+
 <img src="smart-servlet-servlet-container.png" height="50%" width="50%"/>
 
 ## Part 1. 项目概述
@@ -38,12 +40,17 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
   - spring-boot-start【springboot业务系统通过pom.xml集成本地开发环境】
 
 ## Part 2. 操作手册
+   
 
-### 2.1 安装包启动 smart-servlet
+### 2.1 示例演示
 
-1. 访问[https://gitee.com/smartboot/smart-servlet/releases](https://gitee.com/smartboot/smart-servlet/releases)下载最新版本的程序包。
-2. 解压  smart-servlet-bin-x.x.x.tar.gz
-3. 执行`bin/start.sh`，若启动过程无任何异常，打开浏览器访问 [http://127.0.0.1:8080/](http:127.0.0.1:8080/)。
+> 特别说明：smart-servlet 提供的演示文件来自 Tomcat 的示例，存放于`smart-servlet/archives/webapps`目录下。
+
+1. 完成前面的工程编译后，运行archives模块中的`org.smartboot.servlet.starter.Bootstrap`启动服务器。
+
+2. 若启动过程无任何异常，打开浏览器访问 [http://127.0.0.1:8080/examples](http:127.0.0.1:8080/examples)。
+
+   
 
 ### 2.2 业务系统集成smart-servlet
 
@@ -60,7 +67,7 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
        <plugin>
          <groupId>org.smartboot.servlet</groupId>
          <artifactId>smart-servlet-maven-plugin</artifactId>
-         <version>0.1.7-SNAPSHOT</version>
+         <version>0.1.6</version>
          <configuration>
            <port>8080</port>
          </configuration>
@@ -68,12 +75,12 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
            <dependency>
              <groupId>org.smartboot.servlet</groupId>
              <artifactId>plugin-session</artifactId>
-             <version>0.1.7-SNAPSHOT</version>
+             <version>0.1.6</version>
            </dependency>
            <dependency>
              <groupId>org.smartboot.servlet</groupId>
              <artifactId>plugin-dispatcher</artifactId>
-             <version>0.1.7-SNAPSHOT</version>
+             <version>0.1.6</version>
            </dependency>
          </dependencies>
        </plugin>
@@ -103,7 +110,7 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
        <dependency>
          <groupId>org.smartboot.servlet</groupId>
          <artifactId>smart-servlet-spring-boot-starter</artifactId>
-         <version>0.1.7-SNAPSHOT</version>
+         <version>0.1.6</version>
        </dependency>
      </dependencies>
    </project>
