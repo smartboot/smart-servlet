@@ -48,6 +48,12 @@ public class RunMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.packaging}", required = true, readonly = true)
     private String packaging;
 
+    @Parameter(defaultValue = "${project.artifactId}", required = true, readonly = true)
+    private String artifactId;
+
+    @Parameter(defaultValue = "${project.version}", required = true, readonly = true)
+    private String version;
+
     @Parameter(defaultValue = "8080")
     private int port;
 
@@ -70,14 +76,7 @@ public class RunMojo extends AbstractMojo {
             URL[] urls = new URL[urlList.size()];
             urlList.toArray(urls);
             URLClassLoader classLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
-            File webFile = null;
-            for (File file : configurationDir.listFiles()) {
-                System.out.println("file: " + file.getAbsolutePath());
-                if (file.getName().endsWith(".war")) {
-                    webFile = new File(configurationDir, file.getName().substring(0, file.getName().length() - 4));
-                    break;
-                }
-            }
+            File webFile = new File(configurationDir, artifactId + "-" + version);
             Class<?> clazz = classLoader.loadClass("org.smartboot.maven.plugin.servlet.Starter");
             clazz.getConstructor(String.class, String.class, int.class, ClassLoader.class).newInstance(webFile.getAbsolutePath(), path, port, classLoader);
         } catch (Exception e) {

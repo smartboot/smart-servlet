@@ -114,7 +114,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <skipSource>true</skipSource>
+<!--                    <skipSource>true</skipSource>-->
                 </configuration>
             </plugin>
             <plugin>

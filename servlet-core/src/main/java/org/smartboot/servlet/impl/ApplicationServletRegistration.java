@@ -95,7 +95,7 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
 
     @Override
     public String getClassName() {
-        return servletInfo.getServletClass();
+        return servletInfo.getServlet().getClass().getName();
     }
 
     @Override

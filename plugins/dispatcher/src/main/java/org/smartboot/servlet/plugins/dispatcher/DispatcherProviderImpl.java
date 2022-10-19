@@ -9,6 +9,8 @@
 
 package org.smartboot.servlet.plugins.dispatcher;
 
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
@@ -21,6 +23,8 @@ import javax.servlet.RequestDispatcher;
  * @version V1.0 , 2020/11/27
  */
 class DispatcherProviderImpl implements DispatcherProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherProviderImpl.class);
+
     @Override
     public RequestDispatcher getRequestDispatcher(ServletContextImpl servletContext, String path) {
         if (path == null) {
@@ -37,6 +41,10 @@ class DispatcherProviderImpl implements DispatcherProvider {
         System.out.println("getNamedDispatcher:" + name);
         ServletInfo servletInfo = servletContext.getDeploymentInfo().getServlets().get(name);
         if (servletInfo == null) {
+            return null;
+        }
+        if (servletInfo.getServlet() == null) {
+            LOGGER.warn("servlet is null,maybe waiting initialized");
             return null;
         }
         return new RequestDispatcherImpl(servletContext, servletInfo.getServlet(), null);
