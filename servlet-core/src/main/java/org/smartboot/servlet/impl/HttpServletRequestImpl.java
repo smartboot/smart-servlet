@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -105,10 +106,16 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (cookie == null || cookie.length == 0) {
             cookies = NONE_COOKIE;
         } else {
-            cookies = new Cookie[cookie.length];
-            for (int i = 0; i < cookie.length; i++) {
-                cookies[i] = new Cookie(cookie[i].getName(), cookie[i].getValue());
+            List<Cookie> list = new ArrayList<>(cookie.length);
+            for (org.smartboot.http.common.Cookie value : cookie) {
+                if ("Path".equals(value.getName())) {
+                    LOGGER.warn("invalid cookie name: " + value.getName());
+                    continue;
+                }
+                list.add(new Cookie(value.getName(), value.getValue()));
             }
+            cookies = new Cookie[list.size()];
+            list.toArray(cookies);
         }
         return getCookies();
     }

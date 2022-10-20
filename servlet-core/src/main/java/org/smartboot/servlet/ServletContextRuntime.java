@@ -128,6 +128,9 @@ public class ServletContextRuntime {
             //初始化容器
             initContainer(deploymentInfo);
 
+            //实例化Servlet
+            newServletsInstance(deploymentInfo);
+
             //启动Listener
             for (String eventListenerInfo : deploymentInfo.getEventListeners()) {
                 EventListener listener = (EventListener) deploymentInfo.getClassLoader().loadClass(eventListenerInfo).newInstance();
@@ -147,6 +150,21 @@ public class ServletContextRuntime {
             plugins.forEach(plugin -> plugin.whenContainerStartError(this, e));
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
+        }
+    }
+
+    private void newServletsInstance(DeploymentInfo deploymentInfo) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        for (ServletInfo servletInfo : deploymentInfo.getServlets().values()) {
+            if (!servletInfo.isDynamic()) {
+                Servlet servlet = (Servlet) deploymentInfo.getClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
+                servletInfo.setServlet(servlet);
+            }
+        }
+        if (!deploymentInfo.getServlets().containsKey("default")) {
+            ServletInfo servletInfo = new ServletInfo();
+            servletInfo.setServletName("default");
+            servletInfo.setServlet(deploymentInfo.getDefaultServlet());
+            deploymentInfo.addServlet(servletInfo);
         }
     }
 
@@ -184,19 +202,12 @@ public class ServletContextRuntime {
         servletInfoList.sort(Comparator.comparingInt(ServletInfo::getLoadOnStartup));
 
         for (ServletInfo servletInfo : servletInfoList) {
-            Servlet servlet;
             ServletConfig servletConfig = new ServletConfigImpl(servletInfo, servletContext);
-            if (servletInfo.isDynamic()) {
-                servlet = servletInfo.getServlet();
-            } else {
-                servlet = (Servlet) deploymentInfo.getClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
-                servletInfo.setServlet(servlet);
-            }
-            servlet.init(servletConfig);
+            servletInfo.getServlet().init(servletConfig);
         }
         //初始化默认Servlet
-        ServletConfig servletConfig = new ServletConfigImpl(new ServletInfo(), servletContext);
-        deploymentInfo.getDefaultServlet().init(servletConfig);
+//        ServletConfig servletConfig = new ServletConfigImpl(new ServletInfo(), servletContext);
+//        deploymentInfo.getDefaultServlet().init(servletConfig);
     }
 
     /**
