@@ -162,6 +162,13 @@ public class ServletContextRuntime {
                 servletInfo.setServlet(servlet);
             }
         }
+        //绑定 default Servlet
+        if (!deploymentInfo.getServlets().containsKey(ServletInfo.DEFAULT_SERVLET_NAME)) {
+            ServletInfo servletInfo = new ServletInfo();
+            servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
+            servletInfo.setServlet(new DefaultServlet(deploymentInfo.getWelcomeFiles()));
+            deploymentInfo.addServlet(servletInfo);
+        }
     }
 
 

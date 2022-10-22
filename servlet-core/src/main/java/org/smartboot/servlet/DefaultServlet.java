@@ -47,7 +47,7 @@ import java.util.Locale;
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
-public class DefaultServlet extends HttpServlet {
+class DefaultServlet extends HttpServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServlet.class);
     private static final int READ_BUFFER = 1024 * 1024;
     private static final String FAVICON_NAME = "favicon.ico";

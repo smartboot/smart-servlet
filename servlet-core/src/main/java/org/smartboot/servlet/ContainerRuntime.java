@@ -288,10 +288,10 @@ public class ContainerRuntime {
     private ServletContextRuntime getServletRuntime(String localPath, String contextPath, ClassLoader parentClassLoader) throws Exception {
         WebAppInfo webAppInfo = new WebAppInfo();
         WebXmlParseEngine engine = new WebXmlParseEngine();
-        //加载classpath内的web.xml
-        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("web.xml")) {
-            engine.load(webAppInfo, stream);
-        }
+//        //加载classpath内的web.xml
+//        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("web.xml")) {
+//            engine.load(webAppInfo, stream);
+//        }
 
         //load web.xml file
         File contextFile = new File(localPath);
