@@ -21,6 +21,8 @@ import java.util.Map;
  * @version V1.0 , 2019/12/12
  */
 public class WebAppInfo {
+    private String displayName;
+    private String description;
 
     /**
      * web.xml中的Servlet配置
@@ -113,5 +115,21 @@ public class WebAppInfo {
 
     public List<String> getWelcomeFileList() {
         return welcomeFileList;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

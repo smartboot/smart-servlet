@@ -295,6 +295,8 @@ public class ContainerRuntime {
         URLClassLoader urlClassLoader = getClassLoader(localPath, parentClassLoader);
         //new runtime object
         ServletContextRuntime servletRuntime = new ServletContextRuntime(localPath, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
+        servletRuntime.setDisplayName(webAppInfo.getDisplayName());
+        servletRuntime.setDescription(webAppInfo.getDescription());
         DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
         //set session timeout
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());

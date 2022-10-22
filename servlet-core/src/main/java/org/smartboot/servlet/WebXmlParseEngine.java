@@ -56,6 +56,8 @@ class WebXmlParseEngine {
         Document document = builder.parse(contextFile);
         Element parentElement = document.getDocumentElement();
 
+        parseBasicInfo(webAppInfo, parentElement);
+
         parseServlet(webAppInfo, parentElement);
         parseServletMapping(webAppInfo, parentElement);
 
@@ -71,6 +73,16 @@ class WebXmlParseEngine {
         parseSessionConfig(webAppInfo, parentElement);
 
         parseWelcomeFile(webAppInfo, parentElement);
+    }
+
+    private void parseBasicInfo(WebAppInfo webAppInfo, Element parentElement) {
+        Map<String, String> map = getNodeValue(parentElement, Arrays.asList("display-name", "description"));
+        if (map.containsKey("display-name")) {
+            webAppInfo.setDisplayName(map.get("display-name"));
+        }
+        if (map.containsKey("description")) {
+            webAppInfo.setDescription(map.get("description"));
+        }
     }
 
     private void parseSessionConfig(WebAppInfo webAppInfo, Element parentElement) {

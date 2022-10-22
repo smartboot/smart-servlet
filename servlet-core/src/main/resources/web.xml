@@ -6,8 +6,8 @@
          version="3.1"
          metadata-complete="true">
 
-    <display-name>smart-servlet Manager Application</display-name>
-    <description>smart-servlet 企业版</description>
+    <display-name>smart-servlet service</display-name>
+    <description>no description</description>
 
     <servlet>
         <servlet-name>default</servlet-name>
