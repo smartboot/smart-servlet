@@ -19,7 +19,6 @@ import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.Request;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.servlet.conf.DeploymentInfo;
-import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
@@ -35,10 +34,12 @@ import org.smartboot.servlet.plugins.Plugin;
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContainerInitializer;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,11 +80,21 @@ public class ContainerRuntime {
         }
         started = true;
         System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n :: smart-servlet :: (" + VERSION + ")");
+        HandlerPipeline pipeline = new HandlerPipeline();
+        pipeline.next(new ServletServiceHandler() {
+            @Override
+            public void handleRequest(HandlerContext handlerContext) {
+                try {
+                    handlerContext.getResponse().getOutputStream().write("hello smart-socket!".getBytes(StandardCharsets.UTF_8));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        defaultRuntime.getServletContext().setPipeline(pipeline);
+        defaultRuntime.start();
         //扫描插件
         loadAndInstallPlugins();
-
-        //必须有一个 contextPath 为 "/" 的环境
-        initRootContainer();
 
         //启动运行环境
         runtimes.forEach(ServletContextRuntime::start);
@@ -121,30 +132,18 @@ public class ContainerRuntime {
      */
     public void addRuntime(ServletContextRuntime runtime) {
         ServletContextRuntime existRuntime = runtimes.stream().filter(containerRuntime -> containerRuntime.getContextPath().equals(runtime.getContextPath())).findFirst().orElse(null);
-        if (existRuntime != null
-                && (!StringUtils.equals(runtime.getContextPath(), rootRuntime.getContextPath())
-                || (existRuntime != rootRuntime && runtime != rootRuntime)
-                || (existRuntime == rootRuntime && runtime == rootRuntime))) {
+        if (existRuntime != null) {
             //自定义ROOT Context优先级高于rootRuntime
             throw new IllegalArgumentException("contextPath: " + runtime.getContextPath() + " is already exists!");
         }
         HandlerPipeline pipeline = new HandlerPipeline();
         pipeline.next(new ServletRequestListenerHandler()).next(new ServletMatchHandler()).next(new FilterMatchHandler()).next(new ServletServiceHandler());
         runtime.getServletContext().setPipeline(pipeline);
-        // rootRuntime不绑定插件
-        if (rootRuntime != runtime) {
-            runtime.setPlugins(plugins);
-        }
+        runtime.setPlugins(plugins);
         runtimes.add(runtime);
         //按contextPath长度倒序,防止被"/"优先匹配
         runtimes.sort((o1, o2) -> {
-            if (o1 == rootRuntime) {
-                return 1;
-            } else if (o2 == rootRuntime) {
-                return -1;
-            } else {
-                return o2.getContextPath().length() - o1.getContextPath().length();
-            }
+            return o2.getContextPath().length() - o1.getContextPath().length();
         });
         plugins.forEach(plugin -> plugin.addServletContext(runtime));
     }
@@ -263,6 +262,8 @@ public class ContainerRuntime {
         return started;
     }
 
+    private final ServletContextRuntime defaultRuntime = new ServletContextRuntime("/");
+
     private ServletContextRuntime matchRuntime(String requestUri) {
         for (ServletContextRuntime matchRuntime : runtimes) {
             String contextPath = matchRuntime.getContextPath();
@@ -270,21 +271,9 @@ public class ContainerRuntime {
                 return matchRuntime;
             }
         }
-        throw new IllegalStateException("No match container runtime!");
+        return defaultRuntime;
     }
 
-    private final ServletContextRuntime rootRuntime = new ServletContextRuntime("/");
-
-    /**
-     * 若不存在根级容器，则初始化一个
-     */
-    private void initRootContainer() {
-        ServletInfo defaultServlet = new ServletInfo();
-        defaultServlet.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
-        defaultServlet.setServletClass(DefaultServlet.class.getName());
-        rootRuntime.getDeploymentInfo().addServlet(defaultServlet);
-        addRuntime(rootRuntime);
-    }
 
     private ServletContextRuntime getServletRuntime(String localPath, String contextPath, ClassLoader parentClassLoader) throws Exception {
         WebAppInfo webAppInfo = new WebAppInfo();
