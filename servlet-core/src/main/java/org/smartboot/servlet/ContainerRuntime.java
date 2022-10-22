@@ -33,6 +33,7 @@ import org.smartboot.servlet.plugins.Plugin;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContainerInitializer;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,10 +83,14 @@ public class ContainerRuntime {
         System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n :: smart-servlet :: (" + VERSION + ")");
         HandlerPipeline pipeline = new HandlerPipeline();
         pipeline.next(new ServletServiceHandler() {
+            final byte[] line = "欢迎使用 smart-socket！".getBytes(StandardCharsets.UTF_8);
+
             @Override
             public void handleRequest(HandlerContext handlerContext) {
                 try {
-                    handlerContext.getResponse().getOutputStream().write("hello smart-socket!".getBytes(StandardCharsets.UTF_8));
+                    HttpServletResponse response = handlerContext.getResponse();
+                    response.setContentLength(line.length);
+                    response.getOutputStream().write(line);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
