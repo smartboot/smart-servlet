@@ -191,10 +191,8 @@ public class ContainerRuntime {
             Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
             WebSocketRequestImpl webSocketRequest = request.newWebsocketRequest();
             runtime.getWebsocketProvider().onHandShark(runtime, webSocketRequest, webSocketRequest.getResponse());
-        } catch (WrappedRuntimeException e) {
-            e.getThrowable().printStackTrace();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WrappedRuntimeException(e);
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
@@ -211,10 +209,8 @@ public class ContainerRuntime {
             ServletContextImpl servletContext = runtime.getServletContext();
             Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
             runtime.getWebsocketProvider().doHandle(runtime, request, response);
-        } catch (WrappedRuntimeException e) {
-            e.getThrowable().printStackTrace();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WrappedRuntimeException(e);
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
@@ -247,10 +243,8 @@ public class ContainerRuntime {
             servletContext.getPipeline().handleRequest(handlerContext);
             //输出buffer中的数据
             servletResponse.flushServletBuffer();
-        } catch (WrappedRuntimeException e) {
-            e.getThrowable().printStackTrace();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WrappedRuntimeException(e);
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
         }

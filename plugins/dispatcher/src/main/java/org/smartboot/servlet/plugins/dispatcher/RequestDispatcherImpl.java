@@ -87,15 +87,20 @@ class RequestDispatcherImpl implements RequestDispatcher {
         //request 对象暴露给目标 servlet 的路径元素(path elements)必须反映获得 RequestDispatcher 使用的路径。
         // 唯一例外的是，如果 RequestDispatcher 是通过 getNamedDispatcher 方法获得。这种情况下，request 对象的路径元素必须反映这些原始请求。
         if (named) {
-            return;
-        }
-        String[] array = StringUtils.split(dispatcherURL, "?");
-        requestWrapper.setRequestUri(array[0]);
-        Map<String, String[]> parameters = new HashMap<>();
-        if (array.length > 1) {
-            HttpUtils.decodeParamString(array[1], parameters);
+            requestWrapper.setRequestUri(requestWrapper.getRequest().getRequestURI());
+            Map<String, String[]> parameters = new HashMap<>();
+            HttpUtils.decodeParamString(requestWrapper.getQueryString(), parameters);
             requestWrapper.setParamaters(parameters);
+        } else {
+            String[] array = StringUtils.split(dispatcherURL, "?");
+            requestWrapper.setRequestUri(array[0]);
+            Map<String, String[]> parameters = new HashMap<>();
+            if (array.length > 1) {
+                HttpUtils.decodeParamString(array[1], parameters);
+                requestWrapper.setParamaters(parameters);
+            }
         }
+
 
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
         if (dispatcherServlet != null) {

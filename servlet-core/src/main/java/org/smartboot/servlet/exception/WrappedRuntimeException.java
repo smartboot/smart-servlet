@@ -14,13 +14,9 @@ package org.smartboot.servlet.exception;
  * @version V1.0 , 2020/11/14
  */
 public class WrappedRuntimeException extends RuntimeException {
-    private final Throwable throwable;
 
     public WrappedRuntimeException(Throwable cause) {
-        this.throwable = cause;
+        super(cause);
     }
 
-    public Throwable getThrowable() {
-        return throwable;
-    }
 }
