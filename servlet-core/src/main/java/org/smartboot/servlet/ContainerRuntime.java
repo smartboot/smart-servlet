@@ -19,6 +19,7 @@ import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.Request;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.servlet.conf.DeploymentInfo;
+import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
@@ -34,9 +35,11 @@ import org.smartboot.servlet.plugins.Plugin;
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContainerInitializer;
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -276,19 +279,34 @@ public class ContainerRuntime {
      * 若不存在根级容器，则初始化一个
      */
     private void initRootContainer() {
-        rootRuntime.getDeploymentInfo().setDefaultServlet(new DefaultServlet());
+        ServletInfo defaultServlet = new ServletInfo();
+        defaultServlet.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
+        defaultServlet.setServlet(new DefaultServlet());
+        rootRuntime.getDeploymentInfo().addServlet(defaultServlet);
         addRuntime(rootRuntime);
     }
 
     private ServletContextRuntime getServletRuntime(String localPath, String contextPath, ClassLoader parentClassLoader) throws Exception {
-        ServletContextRuntime servletRuntime;
+        WebAppInfo webAppInfo = new WebAppInfo();
+        WebXmlParseEngine engine = new WebXmlParseEngine();
+        //加载classpath内的web.xml
+        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("web.xml")) {
+            engine.load(webAppInfo, stream);
+        }
+
         //load web.xml file
         File contextFile = new File(localPath);
-        WebAppInfo webAppInfo = new WebXmlParseEngine().load(contextFile);
+        File webXmlFile = new File(contextFile, "WEB-INF" + File.separatorChar + "web.xml");
+        if (webXmlFile.isFile()) {
+            try (InputStream inputStream = Files.newInputStream(webXmlFile.toPath())) {
+                engine.load(webAppInfo, inputStream);
+            }
+        }
+
 
         URLClassLoader urlClassLoader = getClassLoader(localPath, parentClassLoader);
         //new runtime object
-        servletRuntime = new ServletContextRuntime(localPath, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
+        ServletContextRuntime servletRuntime = new ServletContextRuntime(localPath, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
         DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
         //set session timeout
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
@@ -342,11 +360,6 @@ public class ContainerRuntime {
             });
             deploymentInfo.setWelcomeFiles(welcomeFiles);
         }
-
-        //默认Servlet
-        deploymentInfo.setDefaultServlet(new DefaultServlet(deploymentInfo.getWelcomeFiles()));
-
-
         return servletRuntime;
     }
 

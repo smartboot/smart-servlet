@@ -317,7 +317,6 @@ public class ServletContextImpl implements ServletContext {
         ServletInfo servletInfo = new ServletInfo();
         servletInfo.setServletName(servletName);
         servletInfo.setServlet(servlet);
-//        servletInfo.setServletClass(servlet.getClass().getName());
         servletInfo.setDynamic(true);
         deploymentInfo.addServlet(servletInfo);
         return new ApplicationServletRegistration(servletInfo, deploymentInfo);

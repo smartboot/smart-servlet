@@ -36,18 +36,6 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
         DeploymentInfo deployment = servletRuntime.getDeploymentInfo();
         deployment.setClassLoader(getServletClassLoader());
         deployment.setDisplayName(getDisplayName());
-//        try {
-//            deployment.setContextUrl(docBase.toURI().toURL());
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-//        if (isRegisterDefaultServlet()) {
-//            ServletInfo servletInfo = new ServletInfo();
-//            servletInfo.setServletName("default");
-//            servletInfo.setServletClass(DefaultServlet.class.getName());
-//            servletInfo.addMapping("/*");
-//            deployment.addServlet(servletInfo);
-//        }
         deployment.addServletContainerInitializer(initializer);
         return new SmartServletServer(servletRuntime, getPort());
     }

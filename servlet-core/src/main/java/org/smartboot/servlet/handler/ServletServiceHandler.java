@@ -10,6 +10,7 @@
 package org.smartboot.servlet.handler;
 
 import org.smartboot.servlet.HandlerContext;
+import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 
 import javax.servlet.Servlet;
@@ -36,7 +37,7 @@ public class ServletServiceHandler extends Handler {
             if (handlerContext.getServlet() != null) {
                 servlet.service(request, response);
             } else {
-                handlerContext.getServletContext().getDeploymentInfo().getDefaultServlet().service(request, response);
+                handlerContext.getServletContext().getServlet(ServletInfo.DEFAULT_SERVLET_NAME).service(request, response);
             }
         } catch (ServletException | IOException e) {
             throw new WrappedRuntimeException(e);

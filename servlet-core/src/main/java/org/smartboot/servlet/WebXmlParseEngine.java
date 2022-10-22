@@ -29,9 +29,8 @@ import javax.servlet.DispatcherType;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,36 +49,28 @@ import java.util.Set;
  */
 class WebXmlParseEngine {
 
-    public WebAppInfo load(File contextFile) throws ParserConfigurationException, IOException, SAXException {
-        File webXmlFile = new File(contextFile, "WEB-INF" + File.separatorChar + "web.xml");
-        WebAppInfo webAppInfo = new WebAppInfo();
-        if (!webXmlFile.isFile()) {
-            return webAppInfo;
-        }
-        try (FileInputStream webXmlInputStream = new FileInputStream(webXmlFile)) {
+    public void load(WebAppInfo webAppInfo, InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
 
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(webXmlInputStream);
-            Element parentElement = document.getDocumentElement();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(contextFile);
+        Element parentElement = document.getDocumentElement();
 
-            parseServlet(webAppInfo, parentElement);
-            parseServletMapping(webAppInfo, parentElement);
+        parseServlet(webAppInfo, parentElement);
+        parseServletMapping(webAppInfo, parentElement);
 
-            parseFilter(webAppInfo, parentElement);
-            parseFilterMapping(webAppInfo, parentElement);
+        parseFilter(webAppInfo, parentElement);
+        parseFilterMapping(webAppInfo, parentElement);
 
-            parseListener(webAppInfo, parentElement);
+        parseListener(webAppInfo, parentElement);
 
-            parseContextParam(webAppInfo, parentElement);
+        parseContextParam(webAppInfo, parentElement);
 
-            parseErrorPage(webAppInfo, parentElement);
+        parseErrorPage(webAppInfo, parentElement);
 
-            parseSessionConfig(webAppInfo, parentElement);
+        parseSessionConfig(webAppInfo, parentElement);
 
-            parseWelcomeFile(webAppInfo, parentElement);
-        }
-        return webAppInfo;
+        parseWelcomeFile(webAppInfo, parentElement);
     }
 
     private void parseSessionConfig(WebAppInfo webAppInfo, Element parentElement) {

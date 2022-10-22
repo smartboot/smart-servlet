@@ -23,6 +23,7 @@ import java.util.Map;
  * @version V1.0 , 2019/12/11
  */
 public class ServletInfo {
+    public static final String DEFAULT_SERVLET_NAME = "default";
     private final List<ServletMappingInfo> mappings = new ArrayList<>();
     private final Map<String, String> initParams = new HashMap<>();
     private String servletClass;

@@ -9,10 +9,8 @@
 
 package org.smartboot.servlet.conf;
 
-import org.smartboot.servlet.DefaultServlet;
 import org.smartboot.servlet.HandlesTypesLoader;
 
-import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextListener;
@@ -47,7 +45,6 @@ public class DeploymentInfo {
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private String displayName;
     private URL contextUrl;
-    private Servlet defaultServlet = new DefaultServlet();
 
     private HandlesTypesLoader handlesTypesLoader;
     /**
@@ -202,13 +199,6 @@ public class DeploymentInfo {
         this.welcomeFiles = welcomeFiles;
     }
 
-    public Servlet getDefaultServlet() {
-        return defaultServlet;
-    }
-
-    public void setDefaultServlet(Servlet defaultServlet) {
-        this.defaultServlet = defaultServlet;
-    }
 
     public int getSessionTimeout() {
         return sessionTimeout;

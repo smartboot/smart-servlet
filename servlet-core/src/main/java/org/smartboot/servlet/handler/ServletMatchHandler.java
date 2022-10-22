@@ -61,6 +61,9 @@ public class ServletMatchHandler extends Handler {
             Servlet servlet = null;
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
                 final ServletInfo servletInfo = entry.getValue();
+                if (ServletInfo.DEFAULT_SERVLET_NAME.equals(servletInfo.getServletName())) {
+                    continue;
+                }
                 for (ServletMappingInfo path : servletInfo.getMappings()) {
                     int servletPathEnd = PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), path);
                     //匹配失败

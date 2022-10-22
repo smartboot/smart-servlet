@@ -160,12 +160,6 @@ public class ServletContextRuntime {
                 servletInfo.setServlet(servlet);
             }
         }
-        if (!deploymentInfo.getServlets().containsKey("default")) {
-            ServletInfo servletInfo = new ServletInfo();
-            servletInfo.setServletName("default");
-            servletInfo.setServlet(deploymentInfo.getDefaultServlet());
-            deploymentInfo.addServlet(servletInfo);
-        }
     }
 
 
@@ -205,9 +199,6 @@ public class ServletContextRuntime {
             ServletConfig servletConfig = new ServletConfigImpl(servletInfo, servletContext);
             servletInfo.getServlet().init(servletConfig);
         }
-        //初始化默认Servlet
-//        ServletConfig servletConfig = new ServletConfigImpl(new ServletInfo(), servletContext);
-//        deploymentInfo.getDefaultServlet().init(servletConfig);
     }
 
     /**
