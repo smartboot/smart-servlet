@@ -281,7 +281,7 @@ public class ContainerRuntime {
     private void initRootContainer() {
         ServletInfo defaultServlet = new ServletInfo();
         defaultServlet.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
-        defaultServlet.setServlet(new DefaultServlet());
+        defaultServlet.setServletClass(DefaultServlet.class.getName());
         rootRuntime.getDeploymentInfo().addServlet(defaultServlet);
         addRuntime(rootRuntime);
     }
