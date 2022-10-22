@@ -31,7 +31,6 @@ public class Starter {
         System.out.println("contentPath: " + contentPath);
         ContainerRuntime containerRuntime = new ContainerRuntime();
         containerRuntime.addRuntime(path, contentPath, classLoader);
-        containerRuntime.start();
         HttpBootstrap bootstrap = new HttpBootstrap();
         bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024);
         bootstrap.httpHandler(new HttpServerHandler() {
@@ -45,6 +44,7 @@ public class Starter {
                 containerRuntime.doHandle(request, response);
             }
         });
+        containerRuntime.start(bootstrap.configuration());
         bootstrap.setPort(port).start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             containerRuntime.stop();

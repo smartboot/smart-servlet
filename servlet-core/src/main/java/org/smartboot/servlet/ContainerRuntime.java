@@ -14,6 +14,7 @@ import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
+import org.smartboot.http.server.HttpServerConfiguration;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.Request;
@@ -75,11 +76,17 @@ public class ContainerRuntime {
      */
     private volatile boolean started = false;
 
-    public void start() {
+    /**
+     * Http服务相关配置
+     */
+    private HttpServerConfiguration configuration;
+
+    public void start(HttpServerConfiguration configuration) {
         if (started) {
             return;
         }
         started = true;
+        this.configuration = configuration;
         System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n :: smart-servlet :: (" + VERSION + ")");
         HandlerPipeline pipeline = new HandlerPipeline();
         pipeline.next(new ServletServiceHandler() {
@@ -259,6 +266,10 @@ public class ContainerRuntime {
 
     public boolean isStarted() {
         return started;
+    }
+
+    public HttpServerConfiguration getConfiguration() {
+        return configuration;
     }
 
     private final ServletContextRuntime defaultRuntime = new ServletContextRuntime("/");

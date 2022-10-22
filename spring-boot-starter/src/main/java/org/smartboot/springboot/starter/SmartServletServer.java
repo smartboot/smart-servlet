@@ -31,16 +31,35 @@ import java.io.IOException;
 public class SmartServletServer implements WebServer {
     private final Object monitor = new Object();
     private final ContainerRuntime containerRuntime;
-    private HttpBootstrap bootstrap;
+    private final HttpBootstrap bootstrap;
     private volatile boolean started = false;
-    private int port;
+    private final int port;
 
 
     public SmartServletServer(ServletContextRuntime runtime, int port) {
         this.port = port;
         containerRuntime = new ContainerRuntime();
         containerRuntime.addRuntime(runtime);
-        containerRuntime.start();
+        this.bootstrap = new HttpBootstrap();
+        bootstrap.httpHandler(new HttpServerHandler() {
+            @Override
+            public void handle(HttpRequest request, HttpResponse response) {
+                containerRuntime.doHandle(request, response);
+            }
+        }).webSocketHandler(new WebSocketHandler() {
+            @Override
+            public void onHeaderComplete(Request request) throws IOException {
+                super.onHeaderComplete(request);
+                containerRuntime.onHeaderComplete(request);
+            }
+
+            @Override
+            public void handle(WebSocketRequest request, WebSocketResponse response) {
+                containerRuntime.doHandle(request, response);
+            }
+        });
+        bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024).debug(true);
+        bootstrap.setPort(port);
     }
 
     @Override
@@ -50,29 +69,9 @@ public class SmartServletServer implements WebServer {
                 return;
             }
             try {
-                if (this.bootstrap == null) {
-                    this.bootstrap = new HttpBootstrap();
-                    bootstrap.httpHandler(new HttpServerHandler() {
-                        @Override
-                        public void handle(HttpRequest request, HttpResponse response) throws IOException {
-                            containerRuntime.doHandle(request, response);
-                        }
-                    }).webSocketHandler(new WebSocketHandler() {
-                        @Override
-                        public void onHeaderComplete(Request request) throws IOException {
-                            super.onHeaderComplete(request);
-                            containerRuntime.onHeaderComplete(request);
-                        }
-
-                        @Override
-                        public void handle(WebSocketRequest request, WebSocketResponse response) throws IOException {
-                            containerRuntime.doHandle(request, response);
-                        }
-                    });
-                    bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024).debug(true);
-                    bootstrap.setPort(port).start();
-                    System.out.println("启动成功");
-                }
+                containerRuntime.start(this.bootstrap.configuration());
+                bootstrap.start();
+                System.out.println("启动成功");
                 this.started = true;
             } catch (Exception ex) {
                 ex.printStackTrace();
