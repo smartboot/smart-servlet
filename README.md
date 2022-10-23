@@ -10,23 +10,13 @@ smart-servlet 是一款实现了Servlet 3.1规范，支持多应用隔离部署�
 
 smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了 Servlet 规范。这意味着任何 smart-http 服务都可以通过单独引入 smart-servlet 核心包的方式，将普通的 http 应用改造成 servlet 应用，而且这个成本是极低的。
 
-![](smart-servlet.png)
+![](https://foruda.gitee.com/images/1666446010203449163/fca34841_351975.png)
 
 **产品特色**
-- 零学习成本，素未谋面，却已相知。保留用户原有的 Tomcat、Undertow 使用习惯。
-- 朴实无华，用最初级的设计手法打造专业级服务器。
-- 实现 Servlet 核心规范：request、response、session、cookie、dispatcher、servletContext。
-- 插件化设计，自由 DIY 服务器。
-- 延续一贯的极简、易用、高性能设计风格。
-- 开箱即用，运行程序包、maven本地开发/调试插件、springboot starter 一应俱全，满足你的开发、部署需求。
-
-**有所不为**
-
-有些规范我们默认不会提供实现方案，毕竟时代不一样了。
-很多东西在当下已经过时或有了更好的替代方案，我们认为是时候跟过去告别了。
-- JNDI
-- Security Role
-- JSP
+- 国产血统：核心技术 100% 全栈自研。
+- 性能优越：搭载最新版通信微内核 smart-socket。
+- 安全可靠：严格遵循协议规范；支持加密传输方式。
+- 简洁易用：支持 War 包、springboot、maven-plugin等多种运行模式，使用体验100%兼容 Tomcat。
 
 ### 工程模块
 
@@ -40,15 +30,15 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
   - spring-boot-start【springboot业务系统通过pom.xml集成本地开发环境】
 
 ## Part 2. 操作手册
-   
+
 
 ### 2.1 示例演示
 
-> 特别说明：smart-servlet 提供的演示文件来自 Tomcat 的示例，存放于`smart-servlet/archives/webapps`目录下。
+1. 下载最新版发行包：https://gitee.com/smartboot/smart-servlet/releases
 
-1. 完成前面的工程编译后，运行archives模块中的`org.smartboot.servlet.starter.Bootstrap`启动服务器。
+2. 解压安装包，启动服务：`smart-servlet-bin-x.x.x/bin/start.sh`
 
-2. 若启动过程无任何异常，打开浏览器访问 [http://127.0.0.1:8080/examples](http:127.0.0.1:8080/examples)。
+3. 若启动过程无任何异常，打开浏览器访问 [http://127.0.0.1:8080/](http:127.0.0.1:8080/)。
 
    
 
@@ -67,7 +57,7 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
        <plugin>
          <groupId>org.smartboot.servlet</groupId>
          <artifactId>smart-servlet-maven-plugin</artifactId>
-         <version>0.1.6</version>
+         <version>0.1.7</version>
          <configuration>
            <port>8080</port>
          </configuration>
@@ -75,12 +65,12 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
            <dependency>
              <groupId>org.smartboot.servlet</groupId>
              <artifactId>plugin-session</artifactId>
-             <version>0.1.6</version>
+             <version>0.1.7</version>
            </dependency>
            <dependency>
              <groupId>org.smartboot.servlet</groupId>
              <artifactId>plugin-dispatcher</artifactId>
-             <version>0.1.6</version>
+             <version>0.1.7</version>
            </dependency>
          </dependencies>
        </plugin>
@@ -110,19 +100,11 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
        <dependency>
          <groupId>org.smartboot.servlet</groupId>
          <artifactId>smart-servlet-spring-boot-starter</artifactId>
-         <version>0.1.6</version>
+         <version>0.1.7</version>
        </dependency>
      </dependencies>
    </project>
   ```
-
-
-
-
-
-## 特别说明
-
-本项目还处于研发阶段，还未完成所有 Servlet 标准的兑现。如若在使用过程中发现问题可提 [Issues](https://gitee.com/smartboot/smart-servlet/issues) 反馈，我们会尽快安排处理，感谢您的理解和支持！
 
 ### 代码贡献者
 
