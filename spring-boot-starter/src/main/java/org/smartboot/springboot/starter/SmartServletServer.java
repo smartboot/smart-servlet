@@ -60,6 +60,7 @@ public class SmartServletServer implements WebServer {
         });
         bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024).debug(true);
         bootstrap.setPort(port);
+        containerRuntime.start(this.bootstrap.configuration());
     }
 
     @Override
@@ -69,7 +70,6 @@ public class SmartServletServer implements WebServer {
                 return;
             }
             try {
-                containerRuntime.start(this.bootstrap.configuration());
                 bootstrap.start();
                 System.out.println("启动成功");
                 this.started = true;
