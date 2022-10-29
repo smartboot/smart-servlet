@@ -1,0 +1,3 @@
+org.smartboot.servlet.plugins.session.SessionPlugin
+org.smartboot.servlet.plugins.dispatcher.DispatcherPlugin
+org.smartboot.servlet.plugins.websocket.WebsocketPlugin
