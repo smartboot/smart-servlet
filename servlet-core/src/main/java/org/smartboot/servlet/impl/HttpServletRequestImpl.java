@@ -190,7 +190,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getRemoteUser() {
-        throw new UnsupportedOperationException();
+        Principal principal = getUserPrincipal();
+        return principal == null ? null : principal.getName();
     }
 
     @Override
