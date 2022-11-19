@@ -9,6 +9,8 @@
 
 package org.smartboot.servlet.impl;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -17,6 +19,8 @@ import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.SmartHttpServletRequest;
+import org.smartboot.servlet.impl.fileupload.SmartHttpFileUpload;
+import org.smartboot.servlet.impl.fileupload.SmartHttpRequestContext;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.util.DateUtil;
 
@@ -319,12 +323,56 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
-        throw new UnsupportedOperationException();
+        parseParts();
+        if (partsParseException != null) {
+            if (partsParseException instanceof IOException) {
+                throw (IOException) partsParseException;
+            } else if (partsParseException instanceof ServletException) {
+                throw (ServletException) partsParseException;
+            }
+        }
+        return parts;
+    }
+
+    private Collection<Part> parts = null;
+    private Exception partsParseException = null;
+
+    private void parseParts() {
+        if (parts != null || partsParseException != null) {
+            return;
+        }
+        try {
+            parts = new ArrayList<>();
+            SmartHttpFileUpload upload = new SmartHttpFileUpload();
+            List<FileItem> items = upload.parseRequest(new SmartHttpRequestContext(request));
+            for (FileItem item : items) {
+                //todo item
+                PartImpl part = new PartImpl();
+                parts.add(part);
+                if (part.getSubmittedFileName() == null) {
+                    String name = part.getName();
+                    String value = null;
+                    try {
+                        value = item.getString(getCharacterEncoding());
+                    } catch (UnsupportedEncodingException uee) {
+                        // Not possible
+                    }
+                    request.getParameters().put(name, new String[]{value});
+                }
+            }
+        } catch (FileUploadException e) {
+            partsParseException = e;
+        }
     }
 
     @Override
     public Part getPart(String name) throws IOException, ServletException {
-        throw new UnsupportedOperationException();
+        for (Part part : getParts()) {
+            if (name.equals(part.getName())) {
+                return part;
+            }
+        }
+        return null;
     }
 
     @Override
