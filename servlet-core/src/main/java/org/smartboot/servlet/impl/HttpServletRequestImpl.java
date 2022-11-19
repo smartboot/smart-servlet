@@ -347,7 +347,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             List<FileItem> items = upload.parseRequest(new SmartHttpRequestContext(request));
             for (FileItem item : items) {
                 //todo item
-                PartImpl part = new PartImpl();
+                PartImpl part = new PartImpl(item,null);
                 parts.add(part);
                 if (part.getSubmittedFileName() == null) {
                     String name = part.getName();
