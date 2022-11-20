@@ -13,7 +13,6 @@ import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +29,11 @@ public class ServletServiceHandler extends Handler {
     @Override
     public void handleRequest(HandlerContext handlerContext) {
         try {
-            Servlet servlet = handlerContext.getServlet();
             HttpServletRequest request = handlerContext.getRequest();
             HttpServletResponse response = handlerContext.getResponse();
             //成功匹配到Servlet,直接执行
-            if (handlerContext.getServlet() != null) {
-                servlet.service(request, response);
+            if (handlerContext.getServletInfo() != null) {
+                handlerContext.getServletInfo().getServlet().service(request, response);
             } else {
                 handlerContext.getServletContext().getServlet(ServletInfo.DEFAULT_SERVLET_NAME).service(request, response);
             }

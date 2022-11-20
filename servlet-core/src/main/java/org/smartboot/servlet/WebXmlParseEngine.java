@@ -26,6 +26,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.MultipartConfigElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -149,10 +150,7 @@ class WebXmlParseEngine {
             } else {
                 dispatcher.forEach(dispatcherElement -> dispatcherTypes.add(DispatcherType.valueOf(StringUtils.trim(dispatcherElement.getFirstChild().getNodeValue()))));
             }
-            FilterMappingInfo filterInfo = new FilterMappingInfo(filterName
-                    , StringUtils.isBlank(urlPattern) ? FilterMappingType.SERVLET : FilterMappingType.URL,
-                    servletName, StringUtils.isBlank(urlPattern) ? null : PathMatcherUtil.addMapping(urlPattern),
-                    dispatcherTypes);
+            FilterMappingInfo filterInfo = new FilterMappingInfo(filterName, StringUtils.isBlank(urlPattern) ? FilterMappingType.SERVLET : FilterMappingType.URL, servletName, StringUtils.isBlank(urlPattern) ? null : PathMatcherUtil.addMapping(urlPattern), dispatcherTypes);
             webAppInfo.addFilterMapping(filterInfo);
         }
     }
@@ -171,6 +169,7 @@ class WebXmlParseEngine {
             servletInfo.setLoadOnStartup(NumberUtils.toInt(nodeMap.get("load-on-startup"), 0));
             Map<String, String> initParamMap = parseParam(node);
             initParamMap.forEach(servletInfo::addInitParam);
+            servletInfo.setMultipartConfig(parseMultipartConfig(node));
             webAppInfo.addServlet(servletInfo);
         }
     }
@@ -192,9 +191,7 @@ class WebXmlParseEngine {
         Map<String, String> nodeMap = new HashMap<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node childNode = nodeList.item(i);
-            nodeNames.stream()
-                    .filter(nodeName -> StringUtils.equals(nodeName, childNode.getNodeName()))
-                    .forEach(nodeName -> nodeMap.put(nodeName, StringUtils.trim(childNode.getFirstChild().getNodeValue())));
+            nodeNames.stream().filter(nodeName -> StringUtils.equals(nodeName, childNode.getNodeName())).forEach(nodeName -> nodeMap.put(nodeName, StringUtils.trim(childNode.getFirstChild().getNodeValue())));
         }
         return nodeMap;
     }
@@ -209,6 +206,19 @@ class WebXmlParseEngine {
             ServletInfo servletInfo = webAppInfo.getServlet(nodeData.get("servlet-name"));
             servletInfo.addMapping(nodeData.get("url-pattern"));
         }
+    }
+
+    private MultipartConfigElement parseMultipartConfig(Node parentElement) {
+        List<Node> paramElementList = getChildNode(parentElement, "multipart-config");
+        if (CollectionUtils.isEmpty(paramElementList)) {
+            return null;
+        }
+        if (paramElementList.size() > 1) {
+            throw new RuntimeException("config is error");
+        }
+        Node node = paramElementList.get(0);
+        Map<String, String> nodeMap = getNodeValue(node, Arrays.asList("location", "max-file-size", "max-request-size", "file-size-threshold"));
+        return new MultipartConfigElement(nodeMap.get("location"), NumberUtils.toInt(nodeMap.get("max-file-size"), -1), NumberUtils.toInt(nodeMap.get("max-request-size"), -1), NumberUtils.toInt(nodeMap.get("file-size-threshold"), -1));
     }
 
     private Map<String, String> parseParam(Node parentElement) {

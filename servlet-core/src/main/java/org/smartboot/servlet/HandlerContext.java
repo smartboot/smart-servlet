@@ -9,9 +9,9 @@
 
 package org.smartboot.servlet;
 
+import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.ServletContextImpl;
 
-import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -34,10 +34,11 @@ public class HandlerContext {
      */
     private final ServletContextImpl servletContext;
     private final boolean namedDispatcher;
+
     /**
      * 匹配的Servlet处理器
      */
-    private Servlet servlet;
+    private ServletInfo servletInfo;
 
     public HandlerContext(SmartHttpServletRequest request, HttpServletResponse response, ServletContextImpl servletContext, boolean namedDispatcher) {
         this.request = request;
@@ -61,12 +62,12 @@ public class HandlerContext {
     }
 
 
-    public Servlet getServlet() {
-        return servlet;
+    public ServletInfo getServletInfo() {
+        return servletInfo;
     }
 
-    public void setServlet(Servlet servlet) {
-        this.servlet = servlet;
+    public void setServletInfo(ServletInfo servletInfo) {
+        this.servletInfo = servletInfo;
     }
 
     public boolean isNamedDispatcher() {

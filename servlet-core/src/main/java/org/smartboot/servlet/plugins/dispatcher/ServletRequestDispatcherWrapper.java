@@ -11,6 +11,7 @@ package org.smartboot.servlet.plugins.dispatcher;
 
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.servlet.SmartHttpServletRequest;
+import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 
@@ -115,6 +116,11 @@ class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implemen
     public void setPathInfo(int start, int end) {
         this.pathInfoStart = start;
         this.pathInfoEnd = end;
+    }
+
+    @Override
+    public void setServletInfo(ServletInfo servletInfo) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

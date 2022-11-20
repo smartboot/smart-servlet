@@ -93,7 +93,7 @@ public class FilterMatchHandler extends Handler {
                             filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
                         }
                     } else if (filterInfo.getMappingType() == FilterMappingType.SERVLET) {
-                        if (handlerContext.getServlet() != null && StringUtils.equals(filterInfo.getServletNameMapping(), handlerContext.getServlet().getServletConfig().getServletName())) {
+                        if (handlerContext.getServletInfo() != null && StringUtils.equals(filterInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName())) {
                             filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
                         }
                     } else {
@@ -118,7 +118,7 @@ public class FilterMatchHandler extends Handler {
         if (map.isEmpty()) {
             return null;
         }
-        Servlet servlet = handlerContext.getServlet() == null ? NONE : handlerContext.getServlet();
+        Servlet servlet = handlerContext.getServletInfo() == null ? NONE : handlerContext.getServletInfo().getServlet();
         Map<String, List<Filter>> urlMap = map.get(servlet);
         return urlMap == null ? null : urlMap.get(handlerContext.getRequest().getRequestURI());
     }
@@ -135,7 +135,7 @@ public class FilterMatchHandler extends Handler {
             default:
                 return;
         }
-        Servlet servlet = handlerContext.getServlet() == null ? NONE : handlerContext.getServlet();
+        Servlet servlet = handlerContext.getServletInfo() == null ? NONE : handlerContext.getServletInfo().getServlet();
         Map<String, List<Filter>> urlMap = map.get(servlet);
         if (urlMap == null) {
             urlMap = new ConcurrentHashMap<>();

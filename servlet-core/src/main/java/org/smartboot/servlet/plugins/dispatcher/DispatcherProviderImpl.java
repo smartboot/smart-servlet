@@ -40,7 +40,7 @@ class DispatcherProviderImpl implements DispatcherProvider {
         if (servletInfo == null) {
             return null;
         }
-        return new RequestDispatcherImpl(servletContext, servletInfo.getServlet(), null);
+        return new RequestDispatcherImpl(servletContext, servletInfo, null);
     }
 
     @Override

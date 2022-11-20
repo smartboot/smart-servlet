@@ -11,6 +11,7 @@ package org.smartboot.servlet.conf;
 
 import org.smartboot.servlet.util.PathMatcherUtil;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +33,7 @@ public class ServletInfo {
     private Servlet servlet;
 
     private boolean dynamic;
+    private MultipartConfigElement multipartConfig;
 
     public int getLoadOnStartup() {
         return loadOnStartup;
@@ -102,5 +104,13 @@ public class ServletInfo {
 
     public void setDynamic(boolean dynamic) {
         this.dynamic = dynamic;
+    }
+
+    public MultipartConfigElement getMultipartConfig() {
+        return multipartConfig;
+    }
+
+    public void setMultipartConfig(MultipartConfigElement multipartConfig) {
+        this.multipartConfig = multipartConfig;
     }
 }

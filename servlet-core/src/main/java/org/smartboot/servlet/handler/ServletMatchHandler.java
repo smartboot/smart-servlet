@@ -43,21 +43,21 @@ public class ServletMatchHandler extends Handler {
 
         //通过ServletContext.getNamedDispatcher触发的请求已经指定了Servlet
         if (handlerContext.isNamedDispatcher()) {
-            if (handlerContext.getServlet() == null) {
+            if (handlerContext.getServletInfo() == null) {
                 throw new WrappedRuntimeException(new ServletException("servlet is null"));
             }
-        } else if (handlerContext.getServlet() != null) {
+        } else if (handlerContext.getServletInfo() != null) {
             throw new WrappedRuntimeException(new ServletException("servlet is not null"));
         }
         //通过缓存匹配Servlet
         CacheServlet cacheServlet = handlerContext.isNamedDispatcher() ? null : cacheServletMap.get(request.getRequestURI());
         if (cacheServlet != null) {
-            handlerContext.setServlet(cacheServlet.servlet);
+            handlerContext.setServletInfo(cacheServlet.servletInfo);
             request.setServletPath(cacheServlet.servletPathStart, cacheServlet.servletPathEnd);
             request.setPathInfo(cacheServlet.pathInfoStart, cacheServlet.pathInfoEnd);
         }
         //匹配Servlet
-        if (handlerContext.getServlet() == null) {
+        if (handlerContext.getServletInfo() == null) {
             Servlet servlet = null;
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
                 final ServletInfo servletInfo = entry.getValue();
@@ -87,11 +87,11 @@ public class ServletMatchHandler extends Handler {
                     }
                     request.setServletPath(servletPathStart, servletPathEnd);
                     request.setPathInfo(pathInfoStart, pathInfoEnd);
-                    cacheServletMap.put(request.getRequestURI(), new CacheServlet(servlet, servletPathStart, servletPathEnd, pathInfoStart, pathInfoEnd));
+                    cacheServletMap.put(request.getRequestURI(), new CacheServlet(servletInfo, servletPathStart, servletPathEnd, pathInfoStart, pathInfoEnd));
                     break;
                 }
                 if (servlet != null) {
-                    handlerContext.setServlet(servlet);
+                    handlerContext.setServletInfo(servletInfo);
                     break;
                 }
             }
@@ -101,14 +101,14 @@ public class ServletMatchHandler extends Handler {
     }
 
     static class CacheServlet {
-        private final Servlet servlet;
+        private final ServletInfo servletInfo;
         private final int servletPathStart;
         private final int servletPathEnd;
         private final int pathInfoStart;
         private final int pathInfoEnd;
 
-        public CacheServlet(Servlet servlet, int servletPathStart, int servletPathEnd, int pathInfoStart, int pathInfoEnd) {
-            this.servlet = servlet;
+        public CacheServlet(ServletInfo servletInfo, int servletPathStart, int servletPathEnd, int pathInfoStart, int pathInfoEnd) {
+            this.servletInfo = servletInfo;
             this.servletPathStart = servletPathStart;
             this.servletPathEnd = servletPathEnd;
             this.pathInfoStart = pathInfoStart;

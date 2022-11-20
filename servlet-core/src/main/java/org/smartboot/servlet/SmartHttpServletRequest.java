@@ -9,6 +9,8 @@
 
 package org.smartboot.servlet;
 
+import org.smartboot.servlet.conf.ServletInfo;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -33,4 +35,6 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
      * @param end   结束点位
      */
     void setPathInfo(int start, int end);
+
+    void setServletInfo(ServletInfo servletInfo);
 }

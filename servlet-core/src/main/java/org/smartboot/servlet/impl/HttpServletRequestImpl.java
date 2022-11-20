@@ -11,6 +11,7 @@ package org.smartboot.servlet.impl;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -19,6 +20,7 @@ import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.SmartHttpServletRequest;
+import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.fileupload.SmartHttpFileUpload;
 import org.smartboot.servlet.impl.fileupload.SmartHttpRequestContext;
 import org.smartboot.servlet.provider.SessionProvider;
@@ -26,7 +28,9 @@ import org.smartboot.servlet.util.DateUtil;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
@@ -37,6 +41,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
@@ -83,6 +88,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
      * sessionId是否来源于Cookie
      */
     private boolean sessionIdFromCookie;
+
+    /**
+     * 匹配的Servlet
+     */
+    private ServletInfo servletInfo;
 
     public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, DispatcherType dispatcherType) {
         this.request = request;
@@ -175,6 +185,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     public void setPathInfo(int start, int end) {
         this.pathInfoStart = start;
         this.pathInfoEnd = end;
+    }
+
+    @Override
+    public void setServletInfo(ServletInfo servletInfo) {
+        this.servletInfo = servletInfo;
     }
 
     @Override
@@ -342,12 +357,29 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             return;
         }
         try {
-            parts = new ArrayList<>();
+            MultipartConfigElement multipartConfigElement = servletInfo.getMultipartConfig();
+            if (multipartConfigElement == null) {
+                multipartConfigElement = new MultipartConfigElement("");
+            }
+            //获取文件存放目录
+            File location = getLocation(multipartConfigElement);
+            if (!location.isDirectory()) {
+                throw new IOException("there's no upload-file directory!");
+            }
+
+            DiskFileItemFactory factory = new DiskFileItemFactory();
+            factory.setRepository(location.getCanonicalFile());
+            factory.setSizeThreshold(multipartConfigElement.getFileSizeThreshold());
+
             SmartHttpFileUpload upload = new SmartHttpFileUpload();
+            upload.setFileItemFactory(factory);
+            upload.setFileSizeMax(multipartConfigElement.getMaxFileSize());
+            upload.setSizeMax(multipartConfigElement.getMaxRequestSize());
+            parts = new ArrayList<>();
+
             List<FileItem> items = upload.parseRequest(new SmartHttpRequestContext(request));
             for (FileItem item : items) {
-                //todo item
-                PartImpl part = new PartImpl(item,null);
+                PartImpl part = new PartImpl(item, location);
                 parts.add(part);
                 if (part.getSubmittedFileName() == null) {
                     String name = part.getName();
@@ -360,9 +392,34 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                     request.getParameters().put(name, new String[]{value});
                 }
             }
-        } catch (FileUploadException e) {
+        } catch (FileUploadException | IOException e) {
             partsParseException = e;
         }
+    }
+
+    private File getLocation(MultipartConfigElement multipartConfigElement) {
+        File location;
+        String locationStr = multipartConfigElement.getLocation();
+        //未指定location，采用临时目录
+        if (StringUtils.isBlank(locationStr)) {
+            location = ((File) servletContext.getAttribute(
+                    ServletContext.TEMPDIR));
+        } else {
+            location = new File(locationStr);
+            //非绝对路径，则存放于临时目录下
+            if (!location.isAbsolute()) {
+                location = new File(
+                        (File) servletContext.getAttribute(ServletContext.TEMPDIR),
+                        locationStr).getAbsoluteFile();
+            }
+        }
+        if (!location.exists()) {
+            LOGGER.warn("create upload-file directory：{}", location.getAbsolutePath());
+            if (!location.mkdirs()) {
+                LOGGER.warn("fail to create upload-file directory,{}", location.getAbsolutePath());
+            }
+        }
+        return location;
     }
 
     @Override

@@ -12,13 +12,13 @@ package org.smartboot.servlet.plugins.dispatcher;
 import org.smartboot.http.common.utils.HttpUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
+import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
@@ -37,10 +37,10 @@ import java.util.Map;
 class RequestDispatcherImpl implements RequestDispatcher {
     private final ServletContextImpl servletContext;
     private final boolean named;
-    private final Servlet dispatcherServlet;
+    private final ServletInfo dispatcherServlet;
     private final String dispatcherURL;
 
-    public RequestDispatcherImpl(ServletContextImpl servletContext, Servlet dispatcherServlet, String dispatcherURL) {
+    public RequestDispatcherImpl(ServletContextImpl servletContext, ServletInfo dispatcherServlet, String dispatcherURL) {
         if (dispatcherServlet == null && dispatcherURL == null) {
             throw new IllegalArgumentException();
         }
@@ -104,7 +104,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
 
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
         if (dispatcherServlet != null) {
-            handlerContext.setServlet(dispatcherServlet);
+            handlerContext.setServletInfo(dispatcherServlet);
         }
         servletContext.getPipeline().handleRequest(handlerContext);
     }
@@ -146,7 +146,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
 
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
         if (dispatcherServlet != null) {
-            handlerContext.setServlet(dispatcherServlet);
+            handlerContext.setServletInfo(dispatcherServlet);
         }
         servletContext.getPipeline().handleRequest(handlerContext);
     }
