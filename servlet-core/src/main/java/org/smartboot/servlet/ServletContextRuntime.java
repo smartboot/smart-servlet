@@ -28,8 +28,10 @@ import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -122,7 +124,6 @@ public class ServletContextRuntime {
         try {
             //有些场景下ServletContainerInitializer初始化依赖当前容器的类加载器
             Thread.currentThread().setContextClassLoader(deploymentInfo.getClassLoader());
-
             plugins.forEach(plugin -> plugin.willStartContainer(this));
 
             DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
@@ -178,6 +179,8 @@ public class ServletContextRuntime {
      * @param deploymentInfo 部署信息
      */
     private void initContainer(DeploymentInfo deploymentInfo) throws ServletException {
+        //注册临时目录
+        servletContext.setAttribute(ServletContext.TEMPDIR, new File(System.getProperty("java.io.tmpdir")));
         //扫描 handleType
         if (deploymentInfo.getHandlesTypesLoader() != null) {
             long start = System.currentTimeMillis();
