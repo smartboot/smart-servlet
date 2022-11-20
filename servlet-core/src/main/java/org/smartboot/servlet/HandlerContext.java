@@ -68,6 +68,7 @@ public class HandlerContext {
 
     public void setServletInfo(ServletInfo servletInfo) {
         this.servletInfo = servletInfo;
+        this.request.setServletInfo(servletInfo);
     }
 
     public boolean isNamedDispatcher() {
