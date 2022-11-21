@@ -120,7 +120,7 @@ class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implemen
 
     @Override
     public void setServletInfo(ServletInfo servletInfo) {
-        throw new UnsupportedOperationException();
+        this.request.setServletInfo(servletInfo);
     }
 
     @Override
