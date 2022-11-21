@@ -11,7 +11,6 @@
     <properties>
         <smarthttp.version>1.1.17</smarthttp.version>
         <smartservlet.version>0.1.8</smartservlet.version>
-        <commons.fileupload.version>1.4</commons.fileupload.version>
 
         <servlet.version>3.1.0</servlet.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
@@ -22,12 +21,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>commons-fileupload</groupId>
-                <artifactId>commons-fileupload</artifactId>
-                <!--            <scope>provided</scope>-->
-                <version>${commons.fileupload.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.smartboot.http</groupId>
                 <artifactId>smart-http-server</artifactId>
