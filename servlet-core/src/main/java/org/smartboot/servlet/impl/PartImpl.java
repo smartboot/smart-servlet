@@ -1,8 +1,8 @@
 package org.smartboot.servlet.impl;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.ParameterParser;
-import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.smartboot.servlet.third.commons.fileupload.FileItem;
+import org.smartboot.servlet.third.commons.fileupload.ParameterParser;
+import org.smartboot.servlet.third.commons.fileupload.disk.DiskFileItem;
 
 import javax.servlet.http.Part;
 import java.io.File;

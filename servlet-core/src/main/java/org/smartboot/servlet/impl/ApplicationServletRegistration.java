@@ -53,7 +53,7 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
 
     @Override
     public void setMultipartConfig(MultipartConfigElement multipartConfig) {
-        LOGGER.info("unSupport");
+        servletInfo.setMultipartConfig(multipartConfig);
     }
 
     @Override

@@ -9,9 +9,6 @@
 
 package org.smartboot.servlet.impl;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -21,10 +18,13 @@ import org.smartboot.http.server.HttpRequest;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
-import org.smartboot.servlet.impl.fileupload.SmartHttpFileUpload;
 import org.smartboot.servlet.impl.fileupload.SmartHttpRequestContext;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.util.DateUtil;
+import org.smartboot.servlet.third.commons.fileupload.FileItem;
+import org.smartboot.servlet.third.commons.fileupload.FileUpload;
+import org.smartboot.servlet.third.commons.fileupload.FileUploadException;
+import org.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
@@ -371,7 +371,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             factory.setRepository(location.getCanonicalFile());
             factory.setSizeThreshold(multipartConfigElement.getFileSizeThreshold());
 
-            SmartHttpFileUpload upload = new SmartHttpFileUpload();
+            FileUpload upload = new FileUpload();
             upload.setFileItemFactory(factory);
             upload.setFileSizeMax(multipartConfigElement.getMaxFileSize());
             upload.setSizeMax(multipartConfigElement.getMaxRequestSize());

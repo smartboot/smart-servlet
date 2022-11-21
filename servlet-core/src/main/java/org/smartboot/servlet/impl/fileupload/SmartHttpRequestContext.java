@@ -8,8 +8,8 @@
 
 package org.smartboot.servlet.impl.fileupload;
 
-import org.apache.commons.fileupload.FileUploadBase;
-import org.apache.commons.fileupload.UploadContext;
+import org.smartboot.servlet.third.commons.fileupload.FileUploadBase;
+import org.smartboot.servlet.third.commons.fileupload.UploadContext;
 import org.smartboot.http.server.HttpRequest;
 
 import java.io.IOException;
