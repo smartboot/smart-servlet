@@ -87,6 +87,7 @@ public class ContainerRuntime {
         }
         started = true;
         this.configuration = configuration;
+        configuration.serverName("smart-servlet");
         System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n :: smart-servlet :: (" + VERSION + ")");
         HandlerPipeline pipeline = new HandlerPipeline();
         pipeline.next(new ServletServiceHandler() {
