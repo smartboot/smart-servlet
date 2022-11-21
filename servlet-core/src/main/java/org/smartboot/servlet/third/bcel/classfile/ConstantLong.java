@@ -15,23 +15,40 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
+
+import org.smartboot.servlet.third.bcel.Const;
+
+import java.io.DataInput;
+import java.io.IOException;
 
 /**
- * Thrown when the BCEL attempts to read a class file and determines
- * that the file is malformed or otherwise cannot be interpreted as a
- * class file.
+ * This class is derived from the abstract {@link Constant}
+ * and represents a reference to a long object.
+ *
+ * @see     Constant
  */
-public class ClassFormatException extends RuntimeException {
+public final class ConstantLong extends Constant {
 
-    private static final long serialVersionUID = 3243149520175287759L;
+    private final long bytes;
 
-    public ClassFormatException() {
-        super();
+
+    /**
+     * Initialize instance from file data.
+     *
+     * @param file Input stream
+     * @throws IOException
+     */
+    ConstantLong(final DataInput input) throws IOException {
+        super(Const.CONSTANT_Long);
+        this.bytes = input.readLong();
     }
 
 
-    public ClassFormatException(final String s) {
-        super(s);
+    /**
+     * @return data, i.e., 8 bytes.
+     */
+    public final long getBytes() {
+        return bytes;
     }
 }

@@ -15,40 +15,40 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
 
-import org.smartboot.servlet.bcel.Const;
+import org.smartboot.servlet.third.bcel.Const;
 
 import java.io.DataInput;
 import java.io.IOException;
 
 /**
  * This class is derived from the abstract {@link Constant}
- * and represents a reference to a (external) class.
+ * and represents a reference to a float object.
  *
  * @see     Constant
  */
-public final class ConstantClass extends Constant {
+public final class ConstantFloat extends Constant {
 
-    private final int name_index; // Identical to ConstantString except for the name
+    private final float bytes;
 
 
     /**
-     * Constructs an instance from file data.
+     * Initialize instance from file data.
      *
-     * @param dataInput Input stream
-     * @throws IOException if an I/O error occurs reading from the given {@code dataInput}.
+     * @param file Input stream
+     * @throws IOException
      */
-    ConstantClass(final DataInput dataInput) throws IOException {
-        super(Const.CONSTANT_Class);
-        this.name_index = dataInput.readUnsignedShort();
+    ConstantFloat(final DataInput file) throws IOException {
+        super(Const.CONSTANT_Float);
+        this.bytes = file.readFloat();
     }
 
 
     /**
-     * @return Name index in constant pool of class name.
+     * @return data, i.e., 4 bytes.
      */
-    public final int getNameIndex() {
-        return name_index;
+    public final float getBytes() {
+        return bytes;
     }
 }

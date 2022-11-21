@@ -15,27 +15,23 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
 
-import org.smartboot.servlet.bcel.Const;
+/**
+ * Thrown when the BCEL attempts to read a class file and determines
+ * that the file is malformed or otherwise cannot be interpreted as a
+ * class file.
+ */
+public class ClassFormatException extends RuntimeException {
 
-public class EnumElementValue extends ElementValue
-{
-    private final int valueIdx;
+    private static final long serialVersionUID = 3243149520175287759L;
 
-    EnumElementValue(final int type, final int valueIdx, final ConstantPool cpool) {
-        super(type, cpool);
-        if (type != ENUM_CONSTANT)
-            throw new RuntimeException(
-                    "Only element values of type enum can be built with this ctor - type specified: " + type);
-        this.valueIdx = valueIdx;
+    public ClassFormatException() {
+        super();
     }
 
-    @Override
-    public String stringifyValue()
-    {
-        final ConstantUtf8 cu8 = (ConstantUtf8) super.getConstantPool().getConstant(valueIdx,
-                Const.CONSTANT_Utf8);
-        return cu8.getBytes();
+
+    public ClassFormatException(final String s) {
+        super(s);
     }
 }

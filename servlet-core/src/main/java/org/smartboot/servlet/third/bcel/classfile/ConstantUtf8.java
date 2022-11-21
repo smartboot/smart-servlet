@@ -13,42 +13,47 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
 
-import org.smartboot.servlet.bcel.Const;
+import org.smartboot.servlet.third.bcel.Const;
 
 import java.io.DataInput;
 import java.io.IOException;
 
 /**
- * This class is derived from the abstract {@link Constant}
- * and represents a reference to a long object.
+ * This class is derived from the abstract
+ * <A HREF="org.apache.tomcat.util.bcel.classfile.Constant.html">Constant</A> class
+ * and represents a reference to a Utf8 encoded string.
  *
  * @see     Constant
  */
-public final class ConstantLong extends Constant {
+public final class ConstantUtf8 extends Constant {
 
-    private final long bytes;
+    private final String bytes;
 
 
-    /**
-     * Initialize instance from file data.
-     *
-     * @param file Input stream
-     * @throws IOException
-     */
-    ConstantLong(final DataInput input) throws IOException {
-        super(Const.CONSTANT_Long);
-        this.bytes = input.readLong();
+    static ConstantUtf8 getInstance(final DataInput input) throws IOException {
+        return new ConstantUtf8(input.readUTF());
     }
 
 
     /**
-     * @return data, i.e., 8 bytes.
+     * @param bytes Data
      */
-    public final long getBytes() {
+    private ConstantUtf8(final String bytes) {
+        super(Const.CONSTANT_Utf8);
+        if (bytes == null) {
+            throw new IllegalArgumentException("bytes must not be null!");
+        }
+        this.bytes = bytes;
+    }
+
+
+    /**
+     * @return Data converted to string.
+     */
+    public final String getBytes() {
         return bytes;
     }
 }

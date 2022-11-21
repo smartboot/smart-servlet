@@ -13,47 +13,37 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
+ *
  */
-package org.smartboot.servlet.bcel.classfile;
-
-import org.smartboot.servlet.bcel.Const;
+package org.smartboot.servlet.third.bcel.classfile;
 
 import java.io.DataInput;
 import java.io.IOException;
 
 /**
- * This class is derived from the abstract
- * <A HREF="org.apache.tomcat.util.bcel.classfile.Constant.html">Constant</A> class
- * and represents a reference to a Utf8 encoded string.
- *
- * @see     Constant
+ * base class for annotations
  */
-public final class ConstantUtf8 extends Constant {
+public class Annotations {
 
-    private final String bytes;
-
-
-    static ConstantUtf8 getInstance(final DataInput input) throws IOException {
-        return new ConstantUtf8(input.readUTF());
-    }
-
+    private final AnnotationEntry[] annotation_table;
 
     /**
-     * @param bytes Data
+     * @param input Input stream
+     * @param constant_pool Array of constants
      */
-    private ConstantUtf8(final String bytes) {
-        super(Const.CONSTANT_Utf8);
-        if (bytes == null) {
-            throw new IllegalArgumentException("bytes must not be null!");
+    Annotations(final DataInput input, final ConstantPool constant_pool) throws IOException {
+        final int annotation_table_length = input.readUnsignedShort();
+        annotation_table = new AnnotationEntry[annotation_table_length];
+        for (int i = 0; i < annotation_table_length; i++) {
+            annotation_table[i] = new AnnotationEntry(input, constant_pool);
         }
-        this.bytes = bytes;
     }
 
 
     /**
-     * @return Data converted to string.
+     * @return the array of annotation entries in this annotation
      */
-    public final String getBytes() {
-        return bytes;
+    public AnnotationEntry[] getAnnotationEntries() {
+        return annotation_table;
     }
 }

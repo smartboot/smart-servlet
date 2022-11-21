@@ -15,42 +15,40 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
 
-import org.smartboot.servlet.bcel.Const;
+import org.smartboot.servlet.third.bcel.Const;
 
 import java.io.DataInput;
 import java.io.IOException;
 
-
 /**
- * an annotation's element value pair
+ * This class is derived from the abstract {@link Constant}
+ * and represents a reference to an int object.
  *
- * @since 6.0
+ * @see     Constant
  */
-public class ElementValuePair
-{
-    private final ElementValue elementValue;
+public final class ConstantInteger extends Constant {
 
-    private final ConstantPool constantPool;
+    private final int bytes;
 
-    private final int elementNameIndex;
 
-    ElementValuePair(final DataInput file, final ConstantPool constantPool) throws IOException {
-        this.constantPool = constantPool;
-        this.elementNameIndex = file.readUnsignedShort();
-        this.elementValue = ElementValue.readElementValue(file, constantPool);
+    /**
+     * Initialize instance from file data.
+     *
+     * @param file Input stream
+     * @throws IOException
+     */
+    ConstantInteger(final DataInput file) throws IOException {
+        super(Const.CONSTANT_Integer);
+        this.bytes = file.readInt();
     }
 
-    public String getNameString()
-    {
-        final ConstantUtf8 c = (ConstantUtf8) constantPool.getConstant(
-                elementNameIndex, Const.CONSTANT_Utf8);
-        return c.getBytes();
-    }
 
-    public final ElementValue getValue()
-    {
-        return elementValue;
+    /**
+     * @return data, i.e., 4 bytes.
+     */
+    public final int getBytes() {
+        return bytes;
     }
 }

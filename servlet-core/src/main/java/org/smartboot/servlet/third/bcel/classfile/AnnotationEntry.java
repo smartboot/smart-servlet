@@ -15,9 +15,9 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
 
-import org.smartboot.servlet.bcel.Const;
+import org.smartboot.servlet.third.bcel.Const;
 
 import java.io.DataInput;
 import java.io.IOException;

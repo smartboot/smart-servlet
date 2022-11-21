@@ -15,40 +15,40 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
 
-import org.smartboot.servlet.bcel.Const;
+import org.smartboot.servlet.third.bcel.Const;
 
 import java.io.DataInput;
 import java.io.IOException;
 
 /**
- * This class is derived from the abstract  {@link Constant}
- * and represents a reference to a Double object.
+ * This class is derived from the abstract {@link Constant}
+ * and represents a reference to a (external) class.
  *
  * @see     Constant
  */
-public final class ConstantDouble extends Constant {
+public final class ConstantClass extends Constant {
 
-    private final double bytes;
+    private final int name_index; // Identical to ConstantString except for the name
 
 
     /**
-     * Initialize instance from file data.
+     * Constructs an instance from file data.
      *
-     * @param file Input stream
-     * @throws IOException
+     * @param dataInput Input stream
+     * @throws IOException if an I/O error occurs reading from the given {@code dataInput}.
      */
-    ConstantDouble(final DataInput file) throws IOException {
-        super(Const.CONSTANT_Double);
-        this.bytes = file.readDouble();
+    ConstantClass(final DataInput dataInput) throws IOException {
+        super(Const.CONSTANT_Class);
+        this.name_index = dataInput.readUnsignedShort();
     }
 
 
     /**
-     * @return data, i.e., 8 bytes.
+     * @return Name index in constant pool of class name.
      */
-    public final double getBytes() {
-        return bytes;
+    public final int getNameIndex() {
+        return name_index;
     }
 }

@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
 
 /**
  * Represents a Java class, i.e., the data structures, constant pool,

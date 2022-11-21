@@ -15,41 +15,27 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
 
-public class ArrayElementValue extends ElementValue
+import org.smartboot.servlet.third.bcel.Const;
+
+public class EnumElementValue extends ElementValue
 {
-    // For array types, this is the array
-    private final ElementValue[] evalues;
+    private final int valueIdx;
 
-    ArrayElementValue(final int type, final ElementValue[] datums, final ConstantPool cpool)
-    {
+    EnumElementValue(final int type, final int valueIdx, final ConstantPool cpool) {
         super(type, cpool);
-        if (type != ARRAY) {
+        if (type != ENUM_CONSTANT)
             throw new RuntimeException(
-                    "Only element values of type array can be built with this ctor - type specified: " + type);
-        }
-        this.evalues = datums;
+                    "Only element values of type enum can be built with this ctor - type specified: " + type);
+        this.valueIdx = valueIdx;
     }
 
     @Override
     public String stringifyValue()
     {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < evalues.length; i++)
-        {
-            sb.append(evalues[i].stringifyValue());
-            if ((i + 1) < evalues.length) {
-                sb.append(",");
-            }
-        }
-        sb.append("]");
-        return sb.toString();
-    }
-
-    public ElementValue[] getElementValuesArray()
-    {
-        return evalues;
+        final ConstantUtf8 cu8 = (ConstantUtf8) super.getConstantPool().getConstant(valueIdx,
+                Const.CONSTANT_Utf8);
+        return cu8.getBytes();
     }
 }

@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel;
+package org.smartboot.servlet.third.bcel;
 
 /**
  * Constants for the project, mostly defined in the JVM specification.

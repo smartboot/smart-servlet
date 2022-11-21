@@ -15,40 +15,42 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
 
-import org.smartboot.servlet.bcel.Const;
+import org.smartboot.servlet.third.bcel.Const;
 
 import java.io.DataInput;
 import java.io.IOException;
 
+
 /**
- * This class is derived from the abstract {@link Constant}
- * and represents a reference to a float object.
+ * an annotation's element value pair
  *
- * @see     Constant
+ * @since 6.0
  */
-public final class ConstantFloat extends Constant {
+public class ElementValuePair
+{
+    private final ElementValue elementValue;
 
-    private final float bytes;
+    private final ConstantPool constantPool;
 
+    private final int elementNameIndex;
 
-    /**
-     * Initialize instance from file data.
-     *
-     * @param file Input stream
-     * @throws IOException
-     */
-    ConstantFloat(final DataInput file) throws IOException {
-        super(Const.CONSTANT_Float);
-        this.bytes = file.readFloat();
+    ElementValuePair(final DataInput file, final ConstantPool constantPool) throws IOException {
+        this.constantPool = constantPool;
+        this.elementNameIndex = file.readUnsignedShort();
+        this.elementValue = ElementValue.readElementValue(file, constantPool);
     }
 
+    public String getNameString()
+    {
+        final ConstantUtf8 c = (ConstantUtf8) constantPool.getConstant(
+                elementNameIndex, Const.CONSTANT_Utf8);
+        return c.getBytes();
+    }
 
-    /**
-     * @return data, i.e., 4 bytes.
-     */
-    public final float getBytes() {
-        return bytes;
+    public final ElementValue getValue()
+    {
+        return elementValue;
     }
 }

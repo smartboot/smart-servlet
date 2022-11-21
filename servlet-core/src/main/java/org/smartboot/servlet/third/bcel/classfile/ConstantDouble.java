@@ -15,28 +15,40 @@
  *  limitations under the License.
  *
  */
-package org.smartboot.servlet.bcel.classfile;
+package org.smartboot.servlet.third.bcel.classfile;
 
-import org.smartboot.servlet.bcel.Const;
+import org.smartboot.servlet.third.bcel.Const;
 
-public class ClassElementValue extends ElementValue
-{
-    // For primitive types and string type, this points to the value entry in
-    // the cpool
-    // For 'class' this points to the class entry in the cpool
-    private final int idx;
+import java.io.DataInput;
+import java.io.IOException;
 
-    ClassElementValue(final int type, final int idx, final ConstantPool cpool) {
-        super(type, cpool);
-        this.idx = idx;
+/**
+ * This class is derived from the abstract  {@link Constant}
+ * and represents a reference to a Double object.
+ *
+ * @see     Constant
+ */
+public final class ConstantDouble extends Constant {
+
+    private final double bytes;
+
+
+    /**
+     * Initialize instance from file data.
+     *
+     * @param file Input stream
+     * @throws IOException
+     */
+    ConstantDouble(final DataInput file) throws IOException {
+        super(Const.CONSTANT_Double);
+        this.bytes = file.readDouble();
     }
 
 
-    @Override
-    public String stringifyValue()
-    {
-        final ConstantUtf8 cu8 = (ConstantUtf8) super.getConstantPool().getConstant(idx,
-                Const.CONSTANT_Utf8);
-        return cu8.getBytes();
+    /**
+     * @return data, i.e., 8 bytes.
+     */
+    public final double getBytes() {
+        return bytes;
     }
 }
