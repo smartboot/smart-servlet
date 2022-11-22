@@ -58,7 +58,7 @@ public class SmartServletServer implements WebServer {
                 containerRuntime.doHandle(request, response);
             }
         });
-        bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024).debug(true);
+        bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024).debug(false);
         bootstrap.setPort(port);
         containerRuntime.start(this.bootstrap.configuration());
     }

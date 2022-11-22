@@ -59,7 +59,7 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
        <plugin>
          <groupId>org.smartboot.servlet</groupId>
          <artifactId>smart-servlet-maven-plugin</artifactId>
-         <version>0.1.8</version>
+         <version>0.1.9-SNAPSHOT</version>
          <configuration>
            <port>8080</port>
          </configuration>
@@ -67,12 +67,12 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
            <dependency>
              <groupId>org.smartboot.servlet</groupId>
              <artifactId>plugin-session</artifactId>
-             <version>0.1.8</version>
+             <version>0.1.9-SNAPSHOT</version>
            </dependency>
            <dependency>
              <groupId>org.smartboot.servlet</groupId>
              <artifactId>plugin-dispatcher</artifactId>
-             <version>0.1.8</version>
+             <version>0.1.9-SNAPSHOT</version>
            </dependency>
          </dependencies>
        </plugin>
@@ -102,7 +102,7 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
        <dependency>
          <groupId>org.smartboot.servlet</groupId>
          <artifactId>smart-servlet-spring-boot-starter</artifactId>
-         <version>0.1.8</version>
+         <version>0.1.9-SNAPSHOT</version>
        </dependency>
      </dependencies>
    </project>
