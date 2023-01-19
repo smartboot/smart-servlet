@@ -9,6 +9,7 @@
 
 package org.smartboot.servlet.plugins.dispatcher;
 
+import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
@@ -30,7 +31,7 @@ class DispatcherProviderImpl implements DispatcherProvider {
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException("");
         }
-        return new RequestDispatcherImpl(servletContext, null, path);
+        return new RequestDispatcherImpl(servletContext, null, StringUtils.isBlank(servletContext.getContextPath()) ? path : servletContext.getContextPath() + path);
     }
 
     @Override
@@ -45,9 +46,11 @@ class DispatcherProviderImpl implements DispatcherProvider {
 
     @Override
     public RequestDispatcher getRequestDispatcher(HttpServletRequestImpl request, String path) {
+        //If the path begins with a "/" it is interpreted as relative to the current context root
         if (path.startsWith("/")) {
             return getRequestDispatcher(request.getServletContext(), path);
         }
+        //If it is relative, it must be relative against the current servlet.
         if ("/".equals(request.getRequestURI())) {
             return getRequestDispatcher(request.getServletContext(), request.getRequestURI() + path);
         }
