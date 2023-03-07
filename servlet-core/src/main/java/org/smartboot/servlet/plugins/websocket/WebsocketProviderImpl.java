@@ -21,6 +21,8 @@ import org.smartboot.servlet.plugins.websocket.impl.SmartServerEndpointConfig;
 import org.smartboot.servlet.plugins.websocket.impl.WebsocketServerContainer;
 import org.smartboot.servlet.plugins.websocket.impl.WebsocketSession;
 import org.smartboot.servlet.provider.WebsocketProvider;
+import org.smartboot.socket.util.AttachKey;
+import org.smartboot.socket.util.Attachment;
 
 import javax.websocket.PongMessage;
 import javax.websocket.Session;
@@ -39,6 +41,8 @@ import java.util.Map;
  * @version V1.0 , 2021/3/31
  */
 public class WebsocketProviderImpl implements WebsocketProvider {
+
+    private static final AttachKey<WebsocketSession> WEBSOCKET_SESSION_ATTACH_KEY = AttachKey.valueOf("websocketSession");
     private final WebsocketServerContainer container;
 
     public WebsocketProviderImpl(WebsocketServerContainer container) {
@@ -48,7 +52,8 @@ public class WebsocketProviderImpl implements WebsocketProvider {
     @Override
     public void doHandle(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
         try {
-            WebsocketSession session = request.getAttachment();
+            Attachment attachment = request.getAttachment();
+            WebsocketSession session = attachment.get(WEBSOCKET_SESSION_ATTACH_KEY);
             switch (request.getFrameOpcode()) {
                 case WebSocketRequestImpl.OPCODE_TEXT:
                     handleTextMessage(session.getTextMessageHandler(), new String(request.getPayload(), StandardCharsets.UTF_8));
@@ -117,8 +122,13 @@ public class WebsocketProviderImpl implements WebsocketProvider {
             }
             AnnotatedEndpoint endpoint = new AnnotatedEndpoint(matchedServerEndpointConfig, data);
 
+            Attachment attachment = request.getAttachment();
+            if (attachment == null) {
+                attachment = new Attachment();
+                request.setAttachment(attachment);
+            }
             WebsocketSession websocketSession = new WebsocketSession(container, endpoint, URI.create(request.getRequestURI()));
-            request.setAttachment(websocketSession);
+            attachment.put(WEBSOCKET_SESSION_ATTACH_KEY, websocketSession);
 
             //注册 OnMessage 回调
             Map<String, String> finalData = data;
