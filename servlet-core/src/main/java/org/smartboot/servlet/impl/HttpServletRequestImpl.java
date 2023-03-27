@@ -20,11 +20,11 @@ import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.fileupload.SmartHttpRequestContext;
 import org.smartboot.servlet.provider.SessionProvider;
-import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.third.commons.fileupload.FileItem;
 import org.smartboot.servlet.third.commons.fileupload.FileUpload;
 import org.smartboot.servlet.third.commons.fileupload.FileUploadException;
 import org.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
+import org.smartboot.servlet.util.DateUtil;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
@@ -580,7 +580,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isSecure() {
-        throw new UnsupportedOperationException();
+        return request.isSecure();
     }
 
     @Override
