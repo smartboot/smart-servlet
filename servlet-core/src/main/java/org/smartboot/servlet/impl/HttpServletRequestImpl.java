@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2017-2020, org.smartboot. All rights reserved.
- * project name: smart-servlet
- * file name: HttpServletRequestImpl.java
- * Date: 2020-11-28
- * Author: sandao (zhengjunweimail@163.com)
+ *  Copyright (C) [2022] smartboot [zhengjunweimail@163.com]
  *
+ *  企业用户未经smartboot组织特别许可，需遵循AGPL-3.0开源协议合理合法使用本项目。
+ *
+ *   Enterprise users are required to use this project reasonably
+ *   and legally in accordance with the AGPL-3.0 open source agreement
+ *  without special permission from the smartboot organization.
  */
 
 package org.smartboot.servlet.impl;
@@ -20,11 +21,11 @@ import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.fileupload.SmartHttpRequestContext;
 import org.smartboot.servlet.provider.SessionProvider;
-import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.third.commons.fileupload.FileItem;
 import org.smartboot.servlet.third.commons.fileupload.FileUpload;
 import org.smartboot.servlet.third.commons.fileupload.FileUploadException;
 import org.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
+import org.smartboot.servlet.util.DateUtil;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
@@ -534,7 +535,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (index < 0) {
             return request.getRemoteAddress().getPort();
         } else {
-            return NumberUtils.toInt(host.substring(index), -1);
+            return NumberUtils.toInt(host.substring(index + 1), -1);
         }
     }
 
@@ -580,7 +581,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isSecure() {
-        throw new UnsupportedOperationException();
+        return request.isSecure();
     }
 
     @Override
