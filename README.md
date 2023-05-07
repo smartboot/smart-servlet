@@ -63,18 +63,6 @@ smart-servlet 在 smart-http 的架构之上，通过继承 HttpHandle 实现了
          <configuration>
            <port>8080</port>
          </configuration>
-         <dependencies>
-           <dependency>
-             <groupId>org.smartboot.servlet</groupId>
-             <artifactId>plugin-session</artifactId>
-             <version>0.2</version>
-           </dependency>
-           <dependency>
-             <groupId>org.smartboot.servlet</groupId>
-             <artifactId>plugin-dispatcher</artifactId>
-             <version>0.2</version>
-           </dependency>
-         </dependencies>
        </plugin>
      </plugins>  
    </build>
