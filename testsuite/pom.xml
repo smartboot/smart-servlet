@@ -73,7 +73,7 @@
             <plugin>
                 <groupId>org.smartboot.servlet</groupId>
                 <artifactId>smart-servlet-maven-plugin</artifactId>
-                <version>0.2</version><!--最新版本 -->
+                <version>0.2.1</version><!--最新版本 -->
                 <configuration>
                     <port>8081</port>
                     <path>/demo</path>
