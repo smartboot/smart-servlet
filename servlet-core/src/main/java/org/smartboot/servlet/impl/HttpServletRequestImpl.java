@@ -534,7 +534,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (index < 0) {
             return request.getRemoteAddress().getPort();
         } else {
-            return NumberUtils.toInt(host.substring(index), -1);
+            return NumberUtils.toInt(host.substring(index + 1), -1);
         }
     }
 
