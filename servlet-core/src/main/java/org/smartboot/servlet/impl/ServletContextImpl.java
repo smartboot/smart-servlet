@@ -63,7 +63,7 @@ public class ServletContextImpl implements ServletContext {
     private final ConcurrentMap<String, Object> attributes = new ConcurrentHashMap<>();
     private final ServletContextRuntime containerRuntime;
     private final DeploymentInfo deploymentInfo;
-    private final SessionCookieConfig sessionCookieConfig = new SessionCookieConfigImpl();
+    private final SessionCookieConfig sessionCookieConfig;
     private ServletContextPathType pathType = ServletContextPathType.PATH;
     /**
      * 请求执行管道
@@ -73,6 +73,7 @@ public class ServletContextImpl implements ServletContext {
     public ServletContextImpl(ServletContextRuntime containerRuntime) {
         this.containerRuntime = containerRuntime;
         this.deploymentInfo = containerRuntime.getDeploymentInfo();
+        sessionCookieConfig = new SessionCookieConfigImpl(containerRuntime);
     }
 
     @Override
@@ -301,7 +302,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public String getServletContextName() {
-        return deploymentInfo.getDisplayName();
+        return containerRuntime.getDisplayName();
     }
 
     @Override
@@ -326,6 +327,11 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public ServletRegistration.Dynamic addServlet(String servletName, Class<? extends Servlet> servletClass) {
         return addServlet(servletName, createServlet(servletClass));
+    }
+
+    @Override
+    public ServletRegistration.Dynamic addJspFile(String servletName, String jspFile) {
+        return null;
     }
 
     @Override
@@ -481,6 +487,36 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public String getVirtualServerName() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getSessionTimeout() {
+        return 0;
+    }
+
+    @Override
+    public void setSessionTimeout(int sessionTimeout) {
+
+    }
+
+    @Override
+    public String getRequestCharacterEncoding() {
+        return null;
+    }
+
+    @Override
+    public void setRequestCharacterEncoding(String encoding) {
+
+    }
+
+    @Override
+    public String getResponseCharacterEncoding() {
+        return null;
+    }
+
+    @Override
+    public void setResponseCharacterEncoding(String encoding) {
+
     }
 
     public DeploymentInfo getDeploymentInfo() {

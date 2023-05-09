@@ -13,6 +13,7 @@ package org.smartboot.servlet.plugins.session;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.provider.SessionProvider;
 
+import javax.servlet.SessionCookieConfig;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,7 +49,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
     public void clearExpireSession() {
         List<HttpSessionImpl> list = new ArrayList<>(sessionMap.values());
         list.stream().filter(httpSession -> httpSession.getMaxInactiveInterval() > 0
-                && httpSession.getLastAccessedTime() + httpSession.getMaxInactiveInterval() > System.currentTimeMillis())
+                        && httpSession.getLastAccessedTime() + httpSession.getMaxInactiveInterval() > System.currentTimeMillis())
                 .forEach(httpSession -> {
                     try {
                         httpSession.invalid();
@@ -83,8 +84,14 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
             //该sessionId生成策略缺乏安全性，后续重新设计
             httpSession = new HttpSessionImpl(this, String.valueOf(System.currentTimeMillis()), request.getServletContext());
             httpSession.setMaxInactiveInterval(maxInactiveInterval);
-            Cookie cookie = new Cookie(DEFAULT_SESSION_COOKIE_NAME, httpSession.getId());
-            cookie.setPath(httpSession.getServletContext().getContextPath());
+            SessionCookieConfig sessionCookieConfig = request.getServletContext().getSessionCookieConfig();
+            Cookie cookie = new Cookie(sessionCookieConfig.getName(), httpSession.getId());
+            cookie.setPath(request.getContextPath());
+            cookie.setComment(sessionCookieConfig.getComment());
+            cookie.setDomain(sessionCookieConfig.getDomain());
+            cookie.setHttpOnly(sessionCookieConfig.isHttpOnly());
+            cookie.setSecure(sessionCookieConfig.isSecure());
+            cookie.setMaxAge(sessionCookieConfig.getMaxAge());
             response.addCookie(cookie);
             sessionMap.put(httpSession.getId(), httpSession);
         }

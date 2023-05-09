@@ -11,80 +11,106 @@
 package org.smartboot.servlet.impl;
 
 import javax.servlet.SessionCookieConfig;
+import org.smartboot.servlet.ServletContextRuntime;
 
 /**
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
 public class SessionCookieConfigImpl implements SessionCookieConfig {
+    private String name;
+    private String path;
+    private String domain;
+    private int maxAge = -1;
+    private boolean secure;
+    private boolean httpOnly;
+    private String comment;
+    private final ServletContextRuntime servletContextRuntime;
+
+    public SessionCookieConfigImpl(ServletContextRuntime servletContextRuntime) {
+        this.servletContextRuntime = servletContextRuntime;
+    }
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
     public void setName(String name) {
-
+        check();
+        this.name = name;
     }
 
     @Override
     public String getDomain() {
-        return null;
+        return domain;
     }
 
     @Override
     public void setDomain(String domain) {
-
+        check();
+        this.domain = domain;
     }
 
     @Override
     public String getPath() {
-        return null;
+        return path;
+    }
+
+    private void check() {
+        if (servletContextRuntime.isStarted()) {
+            throw new IllegalStateException("sessionCookie can not be set after the web application has started");
+        }
     }
 
     @Override
     public void setPath(String path) {
-
+        check();
+        this.path = path;
     }
 
     @Override
     public String getComment() {
-        return null;
+        return comment;
     }
 
     @Override
     public void setComment(String comment) {
-
+        check();
+        this.comment = comment;
     }
 
     @Override
     public boolean isHttpOnly() {
-        return false;
+        return httpOnly;
     }
 
     @Override
     public void setHttpOnly(boolean httpOnly) {
-
+        check();
+        this.httpOnly = httpOnly;
     }
 
     @Override
     public boolean isSecure() {
-        return false;
+        return secure;
     }
 
     @Override
     public void setSecure(boolean secure) {
-
+        check();
+        this.secure = secure;
     }
 
     @Override
     public int getMaxAge() {
-        return 0;
+        return maxAge;
     }
 
     @Override
     public void setMaxAge(int maxAge) {
-
+        check();
+        this.maxAge = maxAge;
     }
 }
