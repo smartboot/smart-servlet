@@ -10,15 +10,16 @@
 
 package org.smartboot.servlet.impl;
 
-import javax.servlet.SessionCookieConfig;
+import jakarta.servlet.SessionCookieConfig;
 import org.smartboot.servlet.ServletContextRuntime;
+import org.smartboot.servlet.provider.SessionProvider;
 
 /**
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
 public class SessionCookieConfigImpl implements SessionCookieConfig {
-    private String name;
+    private String name = SessionProvider.DEFAULT_SESSION_COOKIE_NAME;
     private String path;
     private String domain;
     private int maxAge = -1;

@@ -15,8 +15,8 @@ import org.smartboot.servlet.third.bcel.classfile.AnnotationEntry;
 import org.smartboot.servlet.third.bcel.classfile.ClassParser;
 import org.smartboot.servlet.third.bcel.classfile.JavaClass;
 
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.annotation.HandlesTypes;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.annotation.HandlesTypes;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -13,8 +13,8 @@ package org.smartboot.servlet.impl;
 import org.smartboot.http.common.BufferOutputStream;
 import org.smartboot.socket.buffer.VirtualBuffer;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
 import java.io.IOException;
 
 /**

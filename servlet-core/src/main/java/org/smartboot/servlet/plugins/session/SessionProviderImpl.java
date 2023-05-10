@@ -10,15 +10,15 @@
 
 package org.smartboot.servlet.plugins.session;
 
+import jakarta.servlet.SessionCookieConfig;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSessionContext;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.provider.SessionProvider;
 
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -86,9 +86,11 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
             httpSession.setMaxInactiveInterval(maxInactiveInterval);
             SessionCookieConfig sessionCookieConfig = request.getServletContext().getSessionCookieConfig();
             Cookie cookie = new Cookie(sessionCookieConfig.getName(), httpSession.getId());
-            cookie.setPath(request.getContextPath());
+            cookie.setPath(request.getRequestURI());
             cookie.setComment(sessionCookieConfig.getComment());
-            cookie.setDomain(sessionCookieConfig.getDomain());
+            if (sessionCookieConfig.getDomain() != null) {
+                cookie.setDomain(sessionCookieConfig.getDomain());
+            }
             cookie.setHttpOnly(sessionCookieConfig.isHttpOnly());
             cookie.setSecure(sessionCookieConfig.isSecure());
             cookie.setMaxAge(sessionCookieConfig.getMaxAge());

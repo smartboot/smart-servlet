@@ -13,7 +13,7 @@ package org.smartboot.servlet.provider;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 
-import javax.servlet.RequestDispatcher;
+import jakarta.servlet.RequestDispatcher;
 
 /**
  * @author 三刀

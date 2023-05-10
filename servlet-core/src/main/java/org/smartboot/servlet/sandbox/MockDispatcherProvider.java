@@ -15,7 +15,7 @@ import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.PluginException;
 import org.smartboot.servlet.provider.DispatcherProvider;
 
-import javax.servlet.RequestDispatcher;
+import jakarta.servlet.RequestDispatcher;
 
 /**
  * @author 三刀

@@ -10,6 +10,9 @@
 
 package org.smartboot.servlet.impl;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
@@ -19,11 +22,9 @@ import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -39,9 +40,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     private final HttpServletRequest request;
     private final ServletContextRuntime containerRuntime;
     private String contentType;
+    private boolean charsetSet = false;
+    private String charset;
     private PrintWriter writer;
     private ServletOutputStreamImpl servletOutputStream;
     private int bufferSize = -1;
+
+    private Locale locale;
 
     public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response, ServletContextRuntime containerRuntime) {
         this.request = request;
@@ -51,15 +56,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void addCookie(Cookie cookie) {
-        org.smartboot.http.common.Cookie httpCookie = new org.smartboot.http.common.Cookie(cookie.getName(), cookie.getValue());
-        httpCookie.setComment(cookie.getComment());
-        httpCookie.setDomain(cookie.getDomain());
-        httpCookie.setHttpOnly(cookie.isHttpOnly());
-        httpCookie.setPath(cookie.getPath());
-        httpCookie.setMaxAge(cookie.getMaxAge());
-        httpCookie.setSecure(cookie.getSecure());
-        httpCookie.setVersion(cookie.getVersion());
-        response.addCookie(httpCookie);
+        response.setHeader(HeaderNameEnum.SET_COOKIE.getName(), cookie.toString());
     }
 
     @Override
@@ -185,23 +182,46 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String getCharacterEncoding() {
-        return response.getCharacterEncoding();
+        if (charset != null) {
+            return charset;
+        }
+        return StandardCharsets.ISO_8859_1.name();
     }
 
     @Override
     public void setCharacterEncoding(String charset) {
-        response.setCharacterEncoding(charset);
+        if (isCommitted()) {
+            return;
+        }
+        charsetSet = charset != null;
+        this.charset = charset;
+        if (contentType != null) {
+            response.setContentType(getContentType());
+        }
     }
 
     @Override
     public String getContentType() {
-        return contentType;
+        if (contentType != null && charsetSet) {
+            return contentType + ";charset=" + getCharacterEncoding();
+        } else {
+            return contentType;
+        }
     }
 
     @Override
     public void setContentType(String type) {
-        contentType = type;
-        response.setContentType(type);
+        if (isCommitted()) {
+            return;
+        }
+        int split = type.indexOf(";charset=");
+        if (split == -1) {
+            contentType = type;
+            response.setContentType(type);
+        } else {
+            contentType = type.substring(0, split);
+            setCharacterEncoding(type.substring(split + 10));
+        }
     }
 
     @Override
@@ -296,11 +316,15 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public Locale getLocale() {
-        throw new UnsupportedOperationException();
+        return locale == null ? Locale.getDefault() : locale;
     }
 
     @Override
     public void setLocale(Locale loc) {
-        LOGGER.info("unSupport setLocal now");
+        if (isCommitted()) {
+            return;
+        }
+        this.locale = loc;
+        setHeader(HeaderNameEnum.CONTENT_LANGUAGE.getName(), loc.getLanguage() + "-" + loc.getCountry());
     }
 }

@@ -10,6 +10,9 @@
 
 package org.smartboot.servlet;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -33,9 +36,6 @@ import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +46,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -306,6 +307,14 @@ public class ContainerRuntime {
 
 
         URLClassLoader urlClassLoader = getClassLoader(localPath, parentClassLoader);
+
+        //加载web-fragment.xml
+        Enumeration<URL> fragments = urlClassLoader.getResources("META-INF/web-fragment.xml");
+        while (fragments.hasMoreElements()) {
+            try (InputStream inputStream = fragments.nextElement().openStream()) {
+                engine.load(webAppInfo, inputStream);
+            }
+        }
         //new runtime object
         ServletContextRuntime servletRuntime = new ServletContextRuntime(localPath, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
         servletRuntime.setDisplayName(webAppInfo.getDisplayName());

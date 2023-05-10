@@ -12,8 +12,8 @@ package org.smartboot.servlet.conf;
 
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.Servlet;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.Servlet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
