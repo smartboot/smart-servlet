@@ -12,12 +12,12 @@ package org.smartboot.servlet.conf;
 
 import org.smartboot.servlet.HandlesTypesLoader;
 
-import jakarta.servlet.ServletContainerInitializer;
-import jakarta.servlet.ServletContextAttributeListener;
-import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.ServletRequestListener;
-import jakarta.servlet.annotation.HandlesTypes;
-import jakarta.servlet.http.HttpSessionListener;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContextAttributeListener;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequestListener;
+import javax.servlet.annotation.HandlesTypes;
+import javax.servlet.http.HttpSessionListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -10,7 +10,7 @@
 
 package org.smartboot.servlet.conf;
 
-import jakarta.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContainerInitializer;
 import java.util.Set;
 
 /**

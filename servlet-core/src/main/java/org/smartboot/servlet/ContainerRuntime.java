@@ -10,9 +10,9 @@
 
 package org.smartboot.servlet;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.ServletContainerInitializer;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.DispatcherType;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
