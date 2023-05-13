@@ -241,7 +241,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     @Override
     public PrintWriter getWriter() throws IOException {
         if (writer == null) {
-            writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding(), containerRuntime));
+            writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
         }
         return writer;
     }

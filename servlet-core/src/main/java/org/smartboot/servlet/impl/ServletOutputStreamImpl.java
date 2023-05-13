@@ -11,7 +11,6 @@
 package org.smartboot.servlet.impl;
 
 import org.smartboot.http.common.BufferOutputStream;
-import org.smartboot.socket.buffer.VirtualBuffer;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
@@ -76,10 +75,6 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         }
         buffer = null;
         outputStream.write(b, off, len);
-    }
-
-    public void write(VirtualBuffer buffer) throws IOException {
-        outputStream.write(buffer);
     }
 
     @Override
