@@ -12,8 +12,6 @@ package org.smartboot.servlet.impl;
 
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.servlet.ServletContextRuntime;
-import org.smartboot.socket.buffer.VirtualBuffer;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -30,12 +28,9 @@ public class ServletPrintWriter extends Writer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletPrintWriter.class);
     private final ServletOutputStreamImpl servletOutputStream;
     private final CharsetEncoder charsetEncoder;
-    private final ServletContextRuntime containerRuntime;
-    private VirtualBuffer virtualBuffer;
 
-    public ServletPrintWriter(ServletOutputStreamImpl servletOutputStream, String charset, ServletContextRuntime containerRuntime) {
+    public ServletPrintWriter(ServletOutputStreamImpl servletOutputStream, String charset) {
         super(servletOutputStream);
-        this.containerRuntime = containerRuntime;
         this.servletOutputStream = servletOutputStream;
         this.charsetEncoder = Charset.forName(charset).newEncoder();
     }
@@ -58,36 +53,14 @@ public class ServletPrintWriter extends Writer {
 
     private void write(CharBuffer buffer) throws IOException {
         while (buffer.hasRemaining()) {
-            VirtualBuffer virtualBuffer;
-            //第一步：匹配VirtualBuffer
-            boolean committed = servletOutputStream.isCommitted();
-            if (committed) {
-                //一个中文转成2个字节，预申请2倍空间
-                virtualBuffer = containerRuntime.getMemoryPoolProvider().getBufferPage().allocate(buffer.remaining() < 32 ? 32 : buffer.remaining() << 1);
-            } else {
-                //未提交前写入暂存区
-                if (this.virtualBuffer == null) {
-                    this.virtualBuffer = VirtualBuffer.wrap(ByteBuffer.wrap(servletOutputStream.getBuffer()));
-                }
-                this.virtualBuffer.buffer().clear().position(servletOutputStream.getCount());
-                virtualBuffer = this.virtualBuffer;
-            }
+            ByteBuffer virtualBuffer = ByteBuffer.allocate(buffer.remaining() < 32 ? 32 : buffer.remaining() << 1);
 
             //第二步：编码
-            charsetEncoder.encode(buffer, virtualBuffer.buffer(), true);
+            charsetEncoder.encode(buffer, virtualBuffer, true);
 
             //第三步：输出
-            virtualBuffer.buffer().flip();
-            if (committed) {
-                servletOutputStream.write(virtualBuffer);
-            } else {
-                //更新缓冲区计数
-                servletOutputStream.setCount(virtualBuffer.buffer().remaining());
-                //释放内存
-                if (servletOutputStream.isCommitted()) {
-                    this.virtualBuffer = null;
-                }
-            }
+            virtualBuffer.flip();
+            servletOutputStream.write(virtualBuffer.array(), 0, virtualBuffer.remaining());
             if (buffer.hasRemaining()) {
                 LOGGER.info("continue encoding ,remaining:" + buffer.remaining());
             }

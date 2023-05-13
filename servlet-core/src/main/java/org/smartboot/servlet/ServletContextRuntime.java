@@ -32,6 +32,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -185,11 +186,23 @@ public class ServletContextRuntime {
         //扫描 handleType
         if (deploymentInfo.getHandlesTypesLoader() != null) {
             long start = System.currentTimeMillis();
-            deploymentInfo.getHandlesTypesLoader().scanHandleTypes()
-                    .forEach((servletContainerInitializer, handlesTypes) -> {
-                        ServletContainerInitializerInfo initializerInfo = new ServletContainerInitializerInfo(servletContainerInitializer, handlesTypes);
-                        deploymentInfo.getServletContainerInitializers().add(initializerInfo);
-                    });
+            deploymentInfo.getHandlesTypesLoader().scanAnnotations();
+            deploymentInfo.getHandlesTypesLoader().getInitializerClassMap().forEach((servletContainerInitializer, handlesTypes) -> {
+                ServletContainerInitializerInfo initializerInfo = new ServletContainerInitializerInfo(servletContainerInitializer, handlesTypes);
+                deploymentInfo.getServletContainerInitializers().add(initializerInfo);
+            });
+            deploymentInfo.getHandlesTypesLoader().getAnnotations(WebListener.class).forEach(listener -> {
+                System.out.println(listener);
+                deploymentInfo.addEventListener(listener);
+            });
+            deploymentInfo.getHandlesTypesLoader().getServlets().values().forEach(servletInfo -> {
+                ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
+                if (webXmlInfo != null) {
+                    servletInfo.getInitParams().forEach(webXmlInfo::addInitParam);
+                } else {
+                    deploymentInfo.addServlet(servletInfo);
+                }
+            });
             deploymentInfo.getHandlesTypesLoader().clear();
             deploymentInfo.setHandlesTypesLoader(null);
             System.out.println("scanHandleTypes use :" + (System.currentTimeMillis() - start));

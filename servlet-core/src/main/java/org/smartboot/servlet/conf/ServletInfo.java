@@ -36,6 +36,8 @@ public class ServletInfo {
     private boolean dynamic;
     private MultipartConfigElement multipartConfig;
 
+    private boolean asyncSupported;
+
     public int getLoadOnStartup() {
         return loadOnStartup;
     }
@@ -113,5 +115,13 @@ public class ServletInfo {
 
     public void setMultipartConfig(MultipartConfigElement multipartConfig) {
         this.multipartConfig = multipartConfig;
+    }
+
+    public boolean isAsyncSupported() {
+        return asyncSupported;
+    }
+
+    public void setAsyncSupported(boolean asyncSupported) {
+        this.asyncSupported = asyncSupported;
     }
 }

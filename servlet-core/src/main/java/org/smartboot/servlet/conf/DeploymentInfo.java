@@ -10,13 +10,15 @@
 
 package org.smartboot.servlet.conf;
 
-import org.smartboot.servlet.HandlesTypesLoader;
+import org.smartboot.servlet.AnnotationsLoader;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.annotation.HandlesTypes;
+import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,12 +44,15 @@ public class DeploymentInfo {
     private List<ServletContextListener> servletContextListeners = new ArrayList<>();
     private List<HttpSessionListener> httpSessionListeners = new ArrayList<>();
     private List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
+
+    private List<HttpSessionAttributeListener> sessionAttributeListeners = new ArrayList<>();
+    private List<ServletRequestAttributeListener> requestAttributeListeners = new ArrayList<>();
     private List<String> welcomeFiles = Collections.emptyList();
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private String displayName;
     private URL contextUrl;
 
-    private HandlesTypesLoader handlesTypesLoader;
+    private AnnotationsLoader annotationsLoader;
     /**
      * 会话超时时间
      */
@@ -73,19 +78,19 @@ public class DeploymentInfo {
         HandlesTypes handlesTypesAnnotation = servletContainerInitializer.getClass().getDeclaredAnnotation(HandlesTypes.class);
         if (handlesTypesAnnotation != null) {
             for (Class<?> c : handlesTypesAnnotation.value()) {
-                handlesTypesLoader.add(servletContainerInitializer, c);
+                annotationsLoader.add(servletContainerInitializer, c);
             }
         } else {
             servletContainerInitializers.add(new ServletContainerInitializerInfo(servletContainerInitializer, null));
         }
     }
 
-    public HandlesTypesLoader getHandlesTypesLoader() {
-        return handlesTypesLoader;
+    public AnnotationsLoader getHandlesTypesLoader() {
+        return annotationsLoader;
     }
 
-    public void setHandlesTypesLoader(HandlesTypesLoader handlesTypesLoader) {
-        this.handlesTypesLoader = handlesTypesLoader;
+    public void setHandlesTypesLoader(AnnotationsLoader annotationsLoader) {
+        this.annotationsLoader = annotationsLoader;
     }
 
     public List<ServletContainerInitializerInfo> getServletContainerInitializers() {
@@ -130,6 +135,12 @@ public class DeploymentInfo {
         if (servletRequestListeners.isEmpty()) {
             servletRequestListeners = Collections.emptyList();
         }
+        if (sessionAttributeListeners.isEmpty()) {
+            sessionAttributeListeners = Collections.emptyList();
+        }
+        if (requestAttributeListeners.isEmpty()) {
+            requestAttributeListeners = Collections.emptyList();
+        }
     }
 
     public void addServletContextListener(ServletContextListener contextListener) {
@@ -142,6 +153,14 @@ public class DeploymentInfo {
 
     public void addServletRequestListener(ServletRequestListener requestListener) {
         servletRequestListeners.add(requestListener);
+    }
+
+    public void addSessionAttributeListener(HttpSessionAttributeListener requestListener) {
+        sessionAttributeListeners.add(requestListener);
+    }
+
+    public void addRequestAttributeListener(ServletRequestAttributeListener requestListener) {
+        requestAttributeListeners.add(requestListener);
     }
 
     public void addServletContextAttributeListener(ServletContextAttributeListener attributeListener) {
@@ -162,6 +181,14 @@ public class DeploymentInfo {
 
     public List<ServletRequestListener> getServletRequestListeners() {
         return servletRequestListeners;
+    }
+
+    public List<HttpSessionAttributeListener> getSessionAttributeListeners() {
+        return sessionAttributeListeners;
+    }
+
+    public List<ServletRequestAttributeListener> getRequestAttributeListeners() {
+        return requestAttributeListeners;
     }
 
     public Map<String, FilterInfo> getFilters() {

@@ -11,9 +11,11 @@
 package org.smartboot.servlet.plugins.session;
 
 import org.smartboot.servlet.impl.ServletContextImpl;
+import org.smartboot.servlet.util.CollectionUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionContext;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -115,7 +117,15 @@ class HttpSessionImpl implements HttpSession {
     @Override
     public void setAttribute(String name, Object value) {
         checkState();
-        attributes.put(name, value);
+        Object replace = attributes.put(name, value);
+        if (CollectionUtils.isNotEmpty(servletContext.getDeploymentInfo().getSessionAttributeListeners())) {
+            HttpSessionBindingEvent event = new HttpSessionBindingEvent(this, name, value);
+            if (replace == null) {
+                servletContext.getDeploymentInfo().getSessionAttributeListeners().forEach(request -> request.attributeAdded(event));
+            } else {
+                servletContext.getDeploymentInfo().getSessionAttributeListeners().forEach(request -> request.attributeReplaced(event));
+            }
+        }
     }
 
     @Override
@@ -127,7 +137,11 @@ class HttpSessionImpl implements HttpSession {
     @Override
     public void removeAttribute(String name) {
         checkState();
-        attributes.remove(name);
+        Object o = attributes.remove(name);
+        if (CollectionUtils.isNotEmpty(servletContext.getDeploymentInfo().getSessionAttributeListeners())) {
+            HttpSessionBindingEvent event = new HttpSessionBindingEvent(this, name, o);
+            servletContext.getDeploymentInfo().getSessionAttributeListeners().forEach(request -> request.attributeRemoved(event));
+        }
     }
 
     @Override

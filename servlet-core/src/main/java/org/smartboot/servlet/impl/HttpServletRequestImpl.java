@@ -25,6 +25,7 @@ import org.smartboot.servlet.third.commons.fileupload.FileItem;
 import org.smartboot.servlet.third.commons.fileupload.FileUpload;
 import org.smartboot.servlet.third.commons.fileupload.FileUploadException;
 import org.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
+import org.smartboot.servlet.util.CollectionUtils;
 import org.smartboot.servlet.util.DateUtil;
 
 import javax.servlet.AsyncContext;
@@ -35,6 +36,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestAttributeEvent;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -559,13 +561,27 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (attributes == null) {
             attributes = new HashMap<>();
         }
-        attributes.put(name, o);
+
+        Object replace = attributes.put(name, o);
+        if (CollectionUtils.isNotEmpty(runtime.getDeploymentInfo().getRequestAttributeListeners())) {
+            ServletRequestAttributeEvent event = new ServletRequestAttributeEvent(servletContext, this, name, o);
+            if (replace == null) {
+                runtime.getDeploymentInfo().getRequestAttributeListeners().forEach(request -> request.attributeAdded(event));
+            } else {
+                runtime.getDeploymentInfo().getRequestAttributeListeners().forEach(request -> request.attributeReplaced(event));
+            }
+        }
     }
 
     @Override
     public void removeAttribute(String name) {
-        if (attributes != null) {
-            attributes.remove(name);
+        if (attributes == null) {
+            return;
+        }
+        Object o = attributes.remove(name);
+        if (CollectionUtils.isNotEmpty(runtime.getDeploymentInfo().getRequestAttributeListeners())) {
+            ServletRequestAttributeEvent event = new ServletRequestAttributeEvent(servletContext, this, name, o);
+            runtime.getDeploymentInfo().getRequestAttributeListeners().forEach(request -> request.attributeRemoved(event));
         }
     }
 
@@ -643,7 +659,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isAsyncSupported() {
-        return false;
+        return servletInfo.isAsyncSupported();
     }
 
     @Override
