@@ -338,7 +338,7 @@ public class ContainerRuntime {
 
         deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 
-        deploymentInfo.setHandlesTypesLoader(new HandlesTypesLoader(deploymentInfo.getClassLoader()));
+        deploymentInfo.setHandlesTypesLoader(new AnnotationsLoader(deploymentInfo.getClassLoader()));
         for (ServletContainerInitializer containerInitializer : ServiceLoader.load(ServletContainerInitializer.class, deploymentInfo.getClassLoader())) {
             LOGGER.info("load ServletContainerInitializer:" + containerInitializer.getClass().getName());
             deploymentInfo.addServletContainerInitializer(containerInitializer);

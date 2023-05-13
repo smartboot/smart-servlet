@@ -33,10 +33,12 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.servlet.descriptor.JspConfigDescriptor;
+import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
 import java.io.File;
 import java.io.InputStream;
@@ -445,6 +447,10 @@ public class ServletContextImpl implements ServletContext {
             deploymentInfo.addServletContextAttributeListener((ServletContextAttributeListener) listener);
         } else if (HttpSessionListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addHttpSessionListener((HttpSessionListener) listener);
+        } else if (HttpSessionAttributeListener.class.isAssignableFrom(listener.getClass())) {
+            deploymentInfo.addSessionAttributeListener((HttpSessionAttributeListener) listener);
+        } else if (ServletRequestAttributeListener.class.isAssignableFrom(listener.getClass())) {
+            deploymentInfo.addRequestAttributeListener((ServletRequestAttributeListener) listener);
         } else {
             throw new RuntimeException(listener.toString());
         }

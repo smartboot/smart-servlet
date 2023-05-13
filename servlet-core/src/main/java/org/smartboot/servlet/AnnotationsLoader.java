@@ -14,9 +14,11 @@ import org.smartboot.servlet.third.bcel.Const;
 import org.smartboot.servlet.third.bcel.classfile.AnnotationEntry;
 import org.smartboot.servlet.third.bcel.classfile.ClassParser;
 import org.smartboot.servlet.third.bcel.classfile.JavaClass;
+import org.smartboot.servlet.util.CollectionUtils;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.HandlesTypes;
+import javax.servlet.annotation.WebListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,11 +26,13 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -41,7 +45,7 @@ import java.util.jar.JarFile;
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2021/6/27
  */
-public class HandlesTypesLoader {
+public class AnnotationsLoader {
     private final Map<ServletContainerInitializer, Set<Class<?>>> initializerClassMap =
             new LinkedHashMap<>();
     /**
@@ -62,7 +66,9 @@ public class HandlesTypesLoader {
      */
     private boolean handlesTypesNonAnnotations = false;
 
-    public HandlesTypesLoader(ClassLoader classLoader) {
+    private Map<Class, List<String>> annotations = new HashMap<>();
+
+    public AnnotationsLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
@@ -82,12 +88,9 @@ public class HandlesTypesLoader {
 
     private ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public Map<ServletContainerInitializer, Set<Class<?>>> scanHandleTypes() {
-        if (typeInitializerMap.isEmpty()) {
-            return Collections.emptyMap();
-        }
+    public void scanAnnotations() {
         if (!(classLoader instanceof URLClassLoader)) {
-            return Collections.emptyMap();
+            return;
         }
         Map<String, JavaClassCacheEntry> javaClassCache = new HashMap<>();
         URL[] urls = ((URLClassLoader) classLoader).getURLs();
@@ -119,7 +122,15 @@ public class HandlesTypesLoader {
             throw new RuntimeException(e);
         }
         javaClassCache.clear();
+    }
+
+    public Map<ServletContainerInitializer, Set<Class<?>>> getInitializerClassMap() {
         return initializerClassMap;
+    }
+
+    public List<String> getAnnotations(Class clazz) {
+        List<String> classes = annotations.get(clazz);
+        return CollectionUtils.isEmpty(classes) ? Collections.emptyList() : classes;
     }
 
     private void processAnnotationsJar(URL url, Map<String, JavaClassCacheEntry> javaClassCache) {
@@ -137,7 +148,7 @@ public class HandlesTypesLoader {
                     try {
                         ClassParser parser = new ClassParser(jarFile.getInputStream(jarEntry));
                         JavaClass clazz = parser.parse();
-                        checkHandlesTypes(clazz, javaClassCache);
+                        checkAnnotation(clazz, javaClassCache);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -163,7 +174,7 @@ public class HandlesTypesLoader {
             try (FileInputStream fis = new FileInputStream(file)) {
                 ClassParser parser = new ClassParser(fis);
                 JavaClass clazz = parser.parse();
-                checkHandlesTypes(clazz, javaClassCache);
+                checkAnnotation(clazz, javaClassCache);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -172,20 +183,27 @@ public class HandlesTypesLoader {
         }
     }
 
-    private void checkHandlesTypes(JavaClass javaClass,
-                                   Map<String, JavaClassCacheEntry> javaClassCache) {
-
-        // Skip this if we can
-        if (typeInitializerMap.size() == 0) {
-            return;
-        }
-
+    /**
+     * 检查是否包含待加载的注解
+     */
+    private void checkAnnotation(JavaClass javaClass,
+                                 Map<String, JavaClassCacheEntry> javaClassCache) {
         if ((javaClass.getAccessFlags() & Const.ACC_ANNOTATION) != 0) {
             // Skip annotations.
             return;
         }
 
         String className = javaClass.getClassName();
+
+        if (javaClass.getAnnotationEntries() != null) {
+            for (AnnotationEntry entry : javaClass.getAnnotationEntries()) {
+                System.out.println(entry.getAnnotationType() + " " + entry.getElementValuePairs());
+                String annotationName = getClassName(entry.getAnnotationType());
+                if (WebListener.class.getName().equals(annotationName)) {
+                    annotations.computeIfAbsent(WebListener.class, aClass -> new ArrayList<>()).add(className);
+                }
+            }
+        }
 
         Class<?> clazz = null;
         if (handlesTypesNonAnnotations) {
