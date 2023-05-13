@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.smartboot.servlet</groupId>
             <artifactId>servlet-core</artifactId>
-            <version>0.2.1</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.junit</groupId>

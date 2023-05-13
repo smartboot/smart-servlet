@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.smartboot.servlet</groupId>
     <artifactId>smart-servlet-parent</artifactId>
-    <version>0.2.1</version>
+    <version>0.3</version>
     <packaging>pom</packaging>
 
     <properties>
         <smarthttp.version>1.2.1</smarthttp.version>
-        <smartservlet.version>0.2.1</smartservlet.version>
+        <smartservlet.version>0.3</smartservlet.version>
 
         <servlet.version>4.0.1</servlet.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
