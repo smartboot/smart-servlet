@@ -659,7 +659,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isAsyncSupported() {
-        return false;
+        return servletInfo.isAsyncSupported();
     }
 
     @Override

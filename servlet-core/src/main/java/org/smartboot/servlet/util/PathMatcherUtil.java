@@ -92,15 +92,21 @@ public class PathMatcherUtil {
                 }
                 //舍去"/ab/*"最后一位"/*"
                 int matchLen = pattern.length() - 2;
-                if (uri.length() - startIndex < matchLen) {
+                int remainingLen = uri.length() - startIndex;
+                if (remainingLen < matchLen) {
                     return -1;
                 }
+                if (remainingLen >= matchLen + 1 && uri.charAt(startIndex + matchLen) != '/') {
+                    return -1;
+                }
+
                 //第一位肯定是"/",从第二位开始匹配
                 for (int i = 1; i < matchLen; i++) {
                     if (uri.charAt(startIndex + i) != pattern.charAt(i)) {
                         return -1;
                     }
                 }
+
                 servletPathEndIndex = startIndex + pattern.length() - 2;
                 break;
             //后缀匹配

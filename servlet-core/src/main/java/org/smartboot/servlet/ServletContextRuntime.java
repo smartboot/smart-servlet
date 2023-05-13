@@ -195,6 +195,14 @@ public class ServletContextRuntime {
                 System.out.println(listener);
                 deploymentInfo.addEventListener(listener);
             });
+            deploymentInfo.getHandlesTypesLoader().getServlets().values().forEach(servletInfo -> {
+                ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
+                if (webXmlInfo != null) {
+                    servletInfo.getInitParams().forEach(webXmlInfo::addInitParam);
+                } else {
+                    deploymentInfo.addServlet(servletInfo);
+                }
+            });
             deploymentInfo.getHandlesTypesLoader().clear();
             deploymentInfo.setHandlesTypesLoader(null);
             System.out.println("scanHandleTypes use :" + (System.currentTimeMillis() - start));

@@ -10,6 +10,8 @@
 
 package org.smartboot.servlet;
 
+import org.smartboot.http.common.utils.StringUtils;
+import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.third.bcel.Const;
 import org.smartboot.servlet.third.bcel.classfile.AnnotationEntry;
 import org.smartboot.servlet.third.bcel.classfile.ClassParser;
@@ -18,7 +20,9 @@ import org.smartboot.servlet.util.CollectionUtils;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.HandlesTypes;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebListener;
+import javax.servlet.annotation.WebServlet;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -67,6 +71,8 @@ public class AnnotationsLoader {
     private boolean handlesTypesNonAnnotations = false;
 
     private Map<Class, List<String>> annotations = new HashMap<>();
+
+    private final Map<String, ServletInfo> servlets = new HashMap<>();
 
     public AnnotationsLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -128,6 +134,10 @@ public class AnnotationsLoader {
         return initializerClassMap;
     }
 
+    public Map<String, ServletInfo> getServlets() {
+        return servlets;
+    }
+
     public List<String> getAnnotations(Class clazz) {
         List<String> classes = annotations.get(clazz);
         return CollectionUtils.isEmpty(classes) ? Collections.emptyList() : classes;
@@ -187,7 +197,7 @@ public class AnnotationsLoader {
      * 检查是否包含待加载的注解
      */
     private void checkAnnotation(JavaClass javaClass,
-                                 Map<String, JavaClassCacheEntry> javaClassCache) {
+                                 Map<String, JavaClassCacheEntry> javaClassCache) throws ClassNotFoundException {
         if ((javaClass.getAccessFlags() & Const.ACC_ANNOTATION) != 0) {
             // Skip annotations.
             return;
@@ -201,6 +211,28 @@ public class AnnotationsLoader {
                 String annotationName = getClassName(entry.getAnnotationType());
                 if (WebListener.class.getName().equals(annotationName)) {
                     annotations.computeIfAbsent(WebListener.class, aClass -> new ArrayList<>()).add(className);
+                } else if (WebServlet.class.getName().equals(annotationName)) {
+                    Class<?> clazz = classLoader.loadClass(className);
+                    WebServlet webServlet = clazz.getAnnotation(WebServlet.class);
+                    String name = webServlet.name();
+                    if (StringUtils.isBlank(name)) {
+                        name = className;
+                    }
+                    ServletInfo servletInfo = new ServletInfo();
+                    servletInfo.setServletName(name);
+                    servletInfo.setLoadOnStartup(webServlet.loadOnStartup());
+                    servletInfo.setServletClass(className);
+                    servletInfo.setAsyncSupported(webServlet.asyncSupported());
+                    for (WebInitParam param : webServlet.initParams()) {
+                        servletInfo.addInitParam(param.name(), param.value());
+                    }
+                    for (String urlPattern : webServlet.urlPatterns()) {
+                        servletInfo.addMapping(urlPattern);
+                    }
+                    for (String url : webServlet.value()) {
+                        servletInfo.addMapping(url);
+                    }
+                    servlets.put(name, servletInfo);
                 }
             }
         }

@@ -163,11 +163,12 @@ class WebXmlParseEngine {
         NodeList rootNodeList = parentElement.getElementsByTagName("servlet");
         for (int i = 0; i < rootNodeList.getLength(); i++) {
             Node node = rootNodeList.item(i);
-            Map<String, String> nodeMap = getNodeValue(node, Arrays.asList("servlet-name", "servlet-class", "load-on-startup"));
+            Map<String, String> nodeMap = getNodeValue(node, Arrays.asList("servlet-name", "servlet-class", "load-on-startup", "async-supported"));
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(nodeMap.get("servlet-name"));
             servletInfo.setServletClass(nodeMap.get("servlet-class"));
             servletInfo.setLoadOnStartup(NumberUtils.toInt(nodeMap.get("load-on-startup"), 0));
+            servletInfo.setAsyncSupported(Boolean.parseBoolean(nodeMap.get("async-supported")));
             Map<String, String> initParamMap = parseParam(node);
             initParamMap.forEach(servletInfo::addInitParam);
             servletInfo.setMultipartConfig(parseMultipartConfig(node));
@@ -197,15 +198,27 @@ class WebXmlParseEngine {
         return nodeMap;
     }
 
+    private List<String> getNodeValues(Node node, String nodeName) {
+        NodeList nodeList = node.getChildNodes();
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node childNode = nodeList.item(i);
+            if (childNode.getNodeName().equals(nodeName)) {
+                list.add(StringUtils.trim(childNode.getFirstChild().getNodeValue()));
+            }
+        }
+        return list;
+    }
+
     /**
      * 解析Servlet配置
      */
     private void parseServletMapping(WebAppInfo webAppInfo, Element parentElement) {
         List<Node> childNodeList = getChildNode(parentElement, "servlet-mapping");
         for (Node node : childNodeList) {
-            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("servlet-name", "url-pattern"));
+            Map<String, String> nodeData = getNodeValue(node, Collections.singletonList("servlet-name"));
             ServletInfo servletInfo = webAppInfo.getServlet(nodeData.get("servlet-name"));
-            servletInfo.addMapping(nodeData.get("url-pattern"));
+            getNodeValues(node, "url-pattern").forEach(servletInfo::addMapping);
         }
     }
 
