@@ -220,7 +220,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             response.setContentType(type);
         } else {
             contentType = type.substring(0, split);
-            setCharacterEncoding(type.substring(split + 10));
+            setCharacterEncoding(type.substring(split + 9));
         }
     }
 
