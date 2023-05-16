@@ -10,16 +10,16 @@
 
 package org.smartboot.servlet.conf;
 
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContextAttributeListener;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletRequestAttributeListener;
+import jakarta.servlet.ServletRequestListener;
+import jakarta.servlet.annotation.HandlesTypes;
+import jakarta.servlet.http.HttpSessionAttributeListener;
+import jakarta.servlet.http.HttpSessionListener;
 import org.smartboot.servlet.AnnotationsLoader;
 
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRequestAttributeListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.annotation.HandlesTypes;
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +35,9 @@ import java.util.Map;
  */
 public class DeploymentInfo {
     private final Map<String, ServletInfo> servlets = new HashMap<>();
+
+    private final Map<Integer, ErrorPageInfo> errorStatusPages = new HashMap<>();
+    private final Map<String, ErrorPageInfo> errorPages = new HashMap<>();
     private final Map<String, FilterInfo> filters = new HashMap<>();
     private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
     private final Map<String, String> initParameters = new HashMap<>();
@@ -103,6 +106,26 @@ public class DeploymentInfo {
 
     public Map<String, ServletInfo> getServlets() {
         return servlets;
+    }
+
+    public void addErrorPage(final ErrorPageInfo servlet) {
+        if (servlet.getErrorCode() != null) {
+            errorStatusPages.put(servlet.getErrorCode(), servlet);
+        }
+        if (servlet.getExceptionType() != null) {
+            errorPages.put(servlet.getExceptionType(), servlet);
+        }
+
+    }
+
+    public String getErrorPageLocation(int errorCode) {
+        ErrorPageInfo errorPage = errorStatusPages.get(errorCode);
+        return errorPage == null ? null : errorPage.getLocation();
+    }
+
+    public String getErrorPageLocation(Exception exception) {
+        ErrorPageInfo errorPage = errorPages.get(exception.getClass().getName());
+        return errorPage == null ? null : errorPage.getLocation();
     }
 
     public void addFilter(final FilterInfo filter) {

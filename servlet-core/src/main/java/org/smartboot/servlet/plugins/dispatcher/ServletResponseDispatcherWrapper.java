@@ -12,8 +12,8 @@ package org.smartboot.servlet.plugins.dispatcher;
 
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
 import java.util.Locale;
 

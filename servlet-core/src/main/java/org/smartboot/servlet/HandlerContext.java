@@ -13,7 +13,7 @@ package org.smartboot.servlet;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.ServletContextImpl;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * 请求处理上下文对象

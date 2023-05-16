@@ -26,8 +26,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.MultipartConfigElement;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.MultipartConfigElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -129,11 +129,7 @@ class WebXmlParseEngine {
         List<Node> childNodeList = getChildNode(parentElement, "error-page");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("error-code", "location", "exception-type"));
-            int errorCode = NumberUtils.toInt(nodeData.get("error-code"), -1);
-            if (errorCode < 0) {
-                continue;
-            }
-            webAppInfo.addErrorPage(new ErrorPageInfo(nodeData.get("location"), errorCode, nodeData.get("exception-type")));
+            webAppInfo.addErrorPage(new ErrorPageInfo(nodeData.get("location"), NumberUtils.toInt(nodeData.get("error-code"), -1), nodeData.get("exception-type")));
         }
     }
 

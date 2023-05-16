@@ -10,9 +10,9 @@
 
 package org.smartboot.servlet;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -238,9 +238,9 @@ public class ContainerRuntime {
         try {
             //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
             ServletContextRuntime runtime = matchRuntime(request.getRequestURI());
-            if (!runtime.isStarted()) {
-                throw new IllegalStateException("container is not started");
-            }
+//            if (!runtime.isStarted()) {
+//                throw new IllegalStateException("container is not started");
+//            }
             ServletContextImpl servletContext = runtime.getServletContext();
             Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
 
@@ -324,6 +324,8 @@ public class ContainerRuntime {
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
         //register Servlet into deploymentInfo
         webAppInfo.getServlets().values().forEach(deploymentInfo::addServlet);
+
+        webAppInfo.getErrorPages().forEach(deploymentInfo::addErrorPage);
 
         //register Filter
         webAppInfo.getFilters().values().forEach(deploymentInfo::addFilter);

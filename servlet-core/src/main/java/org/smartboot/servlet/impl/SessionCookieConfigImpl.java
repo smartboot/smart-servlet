@@ -10,7 +10,7 @@
 
 package org.smartboot.servlet.impl;
 
-import javax.servlet.SessionCookieConfig;
+import jakarta.servlet.SessionCookieConfig;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.provider.SessionProvider;
 
