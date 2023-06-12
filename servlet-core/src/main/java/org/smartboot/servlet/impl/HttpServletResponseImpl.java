@@ -10,9 +10,6 @@
 
 package org.smartboot.servlet.impl;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
@@ -22,6 +19,9 @@ import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -56,7 +56,15 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void addCookie(Cookie cookie) {
-        response.setHeader(HeaderNameEnum.SET_COOKIE.getName(), cookie.toString());
+        org.smartboot.http.common.Cookie httpCookie = new org.smartboot.http.common.Cookie(cookie.getName(), cookie.getValue());
+        httpCookie.setComment(cookie.getComment());
+        httpCookie.setDomain(cookie.getDomain());
+        httpCookie.setHttpOnly(cookie.isHttpOnly());
+        httpCookie.setPath(cookie.getPath());
+        httpCookie.setMaxAge(cookie.getMaxAge());
+        httpCookie.setSecure(cookie.getSecure());
+        httpCookie.setVersion(cookie.getVersion());
+        response.addCookie(httpCookie);
     }
 
     @Override
@@ -220,7 +228,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             response.setContentType(type);
         } else {
             contentType = type.substring(0, split);
-            setCharacterEncoding(type.substring(split + 10));
+            setCharacterEncoding(type.substring(split + 9));
         }
     }
 
