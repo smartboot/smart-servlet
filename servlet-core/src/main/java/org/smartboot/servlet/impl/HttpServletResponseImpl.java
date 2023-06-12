@@ -313,9 +313,9 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         }
         response.getHeaderNames().forEach(headerName -> response.setHeader(headerName, null));
         setContentLength(-1);
-        setContentType(null);
+        contentType = null;
         setCharacterEncoding(null);
-        response.setHttpStatus(null);
+        response.setHttpStatus(HttpStatus.OK);
         writer = null;
         if (servletOutputStream != null) {
             servletOutputStream.resetBuffer();
