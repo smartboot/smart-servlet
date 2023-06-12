@@ -12,8 +12,8 @@ package org.smartboot.servlet.provider;
 
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author 三刀

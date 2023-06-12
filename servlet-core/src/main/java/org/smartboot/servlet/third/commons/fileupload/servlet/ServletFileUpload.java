@@ -23,7 +23,7 @@ import org.smartboot.servlet.third.commons.fileupload.FileUpload;
 import org.smartboot.servlet.third.commons.fileupload.FileUploadBase;
 import org.smartboot.servlet.third.commons.fileupload.FileUploadException;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;

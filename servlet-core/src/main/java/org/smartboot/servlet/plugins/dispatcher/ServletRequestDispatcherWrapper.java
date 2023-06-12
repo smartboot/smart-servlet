@@ -16,9 +16,9 @@ import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.http.HttpServletRequestWrapper;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.DispatcherType;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -27,7 +27,7 @@ import java.util.Map;
  * @author 三刀
  * @version V1.0 , 2020/11/20
  */
-class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implements SmartHttpServletRequest {
+public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implements SmartHttpServletRequest {
     private final HttpServletRequestImpl request;
     private final DispatcherType dispatcherType;
     private final boolean named;
@@ -39,7 +39,7 @@ class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implemen
     private int pathInfoStart;
     private int pathInfoEnd;
     private String requestUri;
-    private Map<String, String[]> paramaters;
+    private Map<String, String[]> parameters;
 
     public ServletRequestDispatcherWrapper(HttpServletRequestImpl request, DispatcherType dispatcherType, boolean named) {
         super(request);
@@ -50,32 +50,32 @@ class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implemen
 
     @Override
     public String getParameter(String name) {
-        if (paramaters == null) {
+        if (parameters == null) {
             return null;
         }
-        String[] values = paramaters.get(name);
+        String[] values = parameters.get(name);
         return values == null || values.length == 0 ? null : values[0];
     }
 
     @Override
     public Map<String, String[]> getParameterMap() {
-        return paramaters == null ? Collections.emptyMap() : paramaters;
+        return parameters == null ? Collections.emptyMap() : parameters;
     }
 
     @Override
     public Enumeration<String> getParameterNames() {
-        if (paramaters == null) {
+        if (parameters == null) {
             return null;
         }
-        return Collections.enumeration(paramaters.keySet());
+        return Collections.enumeration(parameters.keySet());
     }
 
     @Override
     public String[] getParameterValues(String name) {
-        if (paramaters == null) {
+        if (parameters == null) {
             return null;
         }
-        return paramaters.get(name);
+        return parameters.get(name);
     }
 
     @Override
@@ -145,8 +145,8 @@ class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implemen
         this.servletPathEnd = end;
     }
 
-    public void setParamaters(Map<String, String[]> paramaters) {
-        this.paramaters = paramaters;
+    public void setParameters(Map<String, String[]> parameters) {
+        this.parameters = parameters;
     }
 
     @Override

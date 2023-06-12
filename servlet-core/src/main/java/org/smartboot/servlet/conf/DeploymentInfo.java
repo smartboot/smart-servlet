@@ -10,22 +10,24 @@
 
 package org.smartboot.servlet.conf;
 
-import jakarta.servlet.ServletContainerInitializer;
-import jakarta.servlet.ServletContextAttributeListener;
-import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.ServletRequestAttributeListener;
-import jakarta.servlet.ServletRequestListener;
-import jakarta.servlet.annotation.HandlesTypes;
-import jakarta.servlet.http.HttpSessionAttributeListener;
-import jakarta.servlet.http.HttpSessionListener;
 import org.smartboot.servlet.AnnotationsLoader;
 
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContextAttributeListener;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequestAttributeListener;
+import javax.servlet.ServletRequestListener;
+import javax.servlet.annotation.HandlesTypes;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 运行环境部署配置
@@ -60,6 +62,8 @@ public class DeploymentInfo {
      * 会话超时时间
      */
     private int sessionTimeout;
+
+    private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public URL getContextUrl() {
         return contextUrl;
@@ -257,5 +261,9 @@ public class DeploymentInfo {
 
     public void setSessionTimeout(int sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
     }
 }

@@ -10,9 +10,6 @@
 
 package org.smartboot.servlet;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.ServletContainerInitializer;
-import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -36,6 +33,9 @@ import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -98,7 +98,7 @@ public class ContainerRuntime {
             @Override
             public void handleRequest(HandlerContext handlerContext) {
                 try {
-                    HttpServletResponse response = handlerContext.getResponse();
+                    ServletResponse response = handlerContext.getResponse();
                     response.setContentLength(line.length);
                     response.getOutputStream().write(line);
                 } catch (IOException e) {

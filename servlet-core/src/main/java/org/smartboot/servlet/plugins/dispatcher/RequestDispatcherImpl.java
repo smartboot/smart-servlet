@@ -18,13 +18,13 @@ import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletRequestWrapper;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.ServletResponseWrapper;
+import javax.servlet.DispatcherType;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestWrapper;
+import javax.servlet.ServletResponse;
+import javax.servlet.ServletResponseWrapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,14 +91,14 @@ class RequestDispatcherImpl implements RequestDispatcher {
             requestWrapper.setRequestUri(requestWrapper.getRequest().getRequestURI());
             Map<String, String[]> parameters = new HashMap<>();
             HttpUtils.decodeParamString(requestWrapper.getQueryString(), parameters);
-            requestWrapper.setParamaters(parameters);
+            requestWrapper.setParameters(parameters);
         } else {
             String[] array = StringUtils.split(dispatcherURL, "?");
             requestWrapper.setRequestUri(array[0]);
             Map<String, String[]> parameters = new HashMap<>();
             if (array.length > 1) {
                 HttpUtils.decodeParamString(array[1], parameters);
-                requestWrapper.setParamaters(parameters);
+                requestWrapper.setParameters(parameters);
             }
         }
 

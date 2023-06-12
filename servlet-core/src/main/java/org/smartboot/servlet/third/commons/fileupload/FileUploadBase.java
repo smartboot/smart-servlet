@@ -25,7 +25,7 @@ import org.smartboot.servlet.third.commons.fileupload.util.FileItemHeadersImpl;
 import org.smartboot.servlet.third.commons.fileupload.util.LimitedInputStream;
 import org.smartboot.servlet.third.commons.fileupload.util.Streams;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;

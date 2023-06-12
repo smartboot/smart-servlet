@@ -28,21 +28,21 @@ import org.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
 import org.smartboot.servlet.util.CollectionUtils;
 import org.smartboot.servlet.util.DateUtil;
 
-import jakarta.servlet.AsyncContext;
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.MultipartConfigElement;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletRequestAttributeEvent;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.HttpUpgradeHandler;
-import jakarta.servlet.http.Part;
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestAttributeEvent;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
+import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -96,6 +96,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
      * 匹配的Servlet
      */
     private ServletInfo servletInfo;
+
+    private boolean asyncStarted = false;
 
     public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, DispatcherType dispatcherType) {
         this.request = request;
@@ -644,17 +646,24 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public AsyncContext startAsync() throws IllegalStateException {
-        throw new UnsupportedOperationException();
+        return startAsync(this, httpServletResponse);
     }
 
     @Override
     public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
-        throw new UnsupportedOperationException();
+        if (!isAsyncSupported()) {
+            throw new IllegalStateException();
+        }
+        if (asyncStarted) {
+            throw new IllegalStateException();
+        }
+        asyncStarted = true;
+        return new AsyncContextImpl(runtime, this, servletRequest, servletResponse);
     }
 
     @Override
     public boolean isAsyncStarted() {
-        return false;
+        return asyncStarted;
     }
 
     @Override
