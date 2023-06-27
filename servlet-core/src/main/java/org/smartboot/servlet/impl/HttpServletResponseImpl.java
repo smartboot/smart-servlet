@@ -190,10 +190,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String getCharacterEncoding() {
-        if (charset != null) {
-            return charset;
+        if (charset == null) {
+            setCharacterEncoding(StandardCharsets.ISO_8859_1.name());
         }
-        return StandardCharsets.ISO_8859_1.name();
+        return charset;
     }
 
     @Override
@@ -228,7 +228,9 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             response.setContentType(type);
         } else {
             contentType = type.substring(0, split);
-            setCharacterEncoding(type.substring(split + 9));
+            if (!charsetSet) {
+                setCharacterEncoding(type.substring(split + 9));
+            }
         }
     }
 
@@ -248,6 +250,9 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public PrintWriter getWriter() throws IOException {
+        if (servletOutputStream != null) {
+            throw new IllegalStateException("getOutputStream has already been called.");
+        }
         if (writer == null) {
             writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
         }
