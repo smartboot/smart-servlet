@@ -219,6 +219,8 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void setContentType(String type) {
+        //. It does not set the response's character
+        // encoding if it is called after getWriter has been called or after the response has been committed.
         if (isCommitted()) {
             return;
         }
@@ -228,7 +230,9 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             response.setContentType(type);
         } else {
             contentType = type.substring(0, split);
-            if (!charsetSet) {
+            if (charsetSet) {
+                response.setContentType(getContentType());
+            } else {
                 setCharacterEncoding(type.substring(split + 9));
             }
         }
