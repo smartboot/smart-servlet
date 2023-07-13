@@ -284,14 +284,15 @@ public class ServletContextImpl implements ServletContext {
         Object oldValue = attributes.put(name, object);
 
         List<ServletContextAttributeListener> listeners = deploymentInfo.getServletContextAttributeListeners();
-        ServletContextAttributeEvent event = listeners.isEmpty() ? null : new ServletContextAttributeEvent(this, name, object);
-        listeners.forEach(listener -> {
+        if (!listeners.isEmpty()) {
             if (oldValue == null) {
-                listener.attributeAdded(event);
+                ServletContextAttributeEvent event = new ServletContextAttributeEvent(this, name, object);
+                listeners.forEach(listener -> listener.attributeAdded(event));
             } else {
-                listener.attributeReplaced(event);
+                ServletContextAttributeEvent event = new ServletContextAttributeEvent(this, name, oldValue);
+                listeners.forEach(listener -> listener.attributeReplaced(event));
             }
-        });
+        }
     }
 
     @Override

@@ -159,10 +159,11 @@ class WebXmlParseEngine {
         NodeList rootNodeList = parentElement.getElementsByTagName("servlet");
         for (int i = 0; i < rootNodeList.getLength(); i++) {
             Node node = rootNodeList.item(i);
-            Map<String, String> nodeMap = getNodeValue(node, Arrays.asList("servlet-name", "servlet-class", "load-on-startup", "async-supported"));
+            Map<String, String> nodeMap = getNodeValue(node, Arrays.asList("servlet-name", "servlet-class", "load-on-startup", "async-supported", "jsp-file"));
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(nodeMap.get("servlet-name"));
             servletInfo.setServletClass(nodeMap.get("servlet-class"));
+            servletInfo.setJspFile(nodeMap.get("jsp-file"));
             servletInfo.setLoadOnStartup(NumberUtils.toInt(nodeMap.get("load-on-startup"), 0));
             servletInfo.setAsyncSupported(Boolean.parseBoolean(nodeMap.get("async-supported")));
             Map<String, String> initParamMap = parseParam(node);

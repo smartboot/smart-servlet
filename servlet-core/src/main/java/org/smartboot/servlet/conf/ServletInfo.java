@@ -33,6 +33,8 @@ public class ServletInfo {
     private int loadOnStartup;
     private Servlet servlet;
 
+    private String jspFile;
+
     private boolean dynamic;
     private MultipartConfigElement multipartConfig;
 
@@ -123,5 +125,13 @@ public class ServletInfo {
 
     public void setAsyncSupported(boolean asyncSupported) {
         this.asyncSupported = asyncSupported;
+    }
+
+    public String getJspFile() {
+        return jspFile;
+    }
+
+    public void setJspFile(String jspFile) {
+        this.jspFile = jspFile;
     }
 }

@@ -38,7 +38,11 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
         deployment.setClassLoader(getServletClassLoader());
         deployment.setDisplayName(getDisplayName());
         deployment.addServletContainerInitializer(initializer);
-        return new SmartServletServer(servletRuntime, getPort());
+        try {
+            return new SmartServletServer(servletRuntime, getPort());
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

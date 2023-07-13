@@ -83,7 +83,7 @@ public class ContainerRuntime {
      */
     private HttpServerConfiguration configuration;
 
-    public void start(HttpServerConfiguration configuration) {
+    public void start(HttpServerConfiguration configuration) throws Throwable {
         if (started) {
             return;
         }
@@ -112,7 +112,9 @@ public class ContainerRuntime {
         loadAndInstallPlugins();
 
         //启动运行环境
-        runtimes.forEach(ServletContextRuntime::start);
+        for (ServletContextRuntime runtime : runtimes) {
+            runtime.start();
+        }
 
 
     }

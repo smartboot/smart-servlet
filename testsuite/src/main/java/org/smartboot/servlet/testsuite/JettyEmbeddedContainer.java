@@ -23,7 +23,13 @@ import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 import org.smartboot.http.common.utils.Mimetypes;
-import org.smartboot.http.server.*;
+import org.smartboot.http.server.HttpBootstrap;
+import org.smartboot.http.server.HttpRequest;
+import org.smartboot.http.server.HttpResponse;
+import org.smartboot.http.server.HttpServerHandler;
+import org.smartboot.http.server.WebSocketHandler;
+import org.smartboot.http.server.WebSocketRequest;
+import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
 import org.smartboot.servlet.ContainerRuntime;
@@ -103,7 +109,11 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         });
         bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024).debug(true);
 
-        containerRuntime.start(this.bootstrap.configuration());
+        try {
+            containerRuntime.start(this.bootstrap.configuration());
+        } catch (Throwable e) {
+            throw new LifecycleException(e.getMessage(), e);
+        }
         bootstrap.setPort(containerConfig.getBindHttpPort()).start();
         listeningHost = "127.0.0.1";
 //        listeningHost = containerConfig.getBindAddress();
@@ -151,7 +161,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
         try {
-            ServletContextRuntime app = appProvider.createApp(containerRuntime,archive);
+            ServletContextRuntime app = appProvider.createApp(containerRuntime, archive);
 
             app.start();
 
@@ -163,7 +173,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                 httpContext.add(new Servlet(servlet.getServletName(), app.getContextPath()));
             }
             return new ProtocolMetaData().addContext(httpContext);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DeploymentException("Could not deploy " + archive.getName(), e);
         }
     }

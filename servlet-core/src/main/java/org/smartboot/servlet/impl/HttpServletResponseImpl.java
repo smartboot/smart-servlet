@@ -254,7 +254,8 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        if (servletOutputStream != null) {
+        //if the getOutputStream method has already been called for this response object
+        if (servletOutputStream != null && servletOutputStream.isCommitted()) {
             throw new IllegalStateException("getOutputStream has already been called.");
         }
         if (writer == null) {
