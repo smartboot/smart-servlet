@@ -44,7 +44,7 @@ public class WebAppInfo {
 
     private final Map<String, String> contextParams = new HashMap<>();
 
-    private final Map<Integer, ErrorPageInfo> errorPages = new HashMap<>();
+    private final List<ErrorPageInfo> errorPages = new ArrayList<>();
 
     private final List<String> welcomeFileList = new ArrayList<>();
 
@@ -75,7 +75,7 @@ public class WebAppInfo {
     }
 
     public void addErrorPage(ErrorPageInfo errorPageInfo) {
-        errorPages.put(errorPageInfo.getErrorCode(), errorPageInfo);
+        errorPages.add(errorPageInfo);
     }
 
     public int getSessionTimeout() {
@@ -106,7 +106,7 @@ public class WebAppInfo {
         return contextParams;
     }
 
-    public Map<Integer, ErrorPageInfo> getErrorPages() {
+    public List<ErrorPageInfo> getErrorPages() {
         return errorPages;
     }
 

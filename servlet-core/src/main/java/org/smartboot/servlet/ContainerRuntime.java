@@ -10,9 +10,6 @@
 
 package org.smartboot.servlet;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -36,6 +33,9 @@ import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +64,7 @@ public class ContainerRuntime {
      * Font Name: Puffy
      */
     private static final String BANNER = "                               _                                 _           _   \n" + "                              ( )_                              (_ )        ( )_ \n" + "  ___   ___ ___     _ _  _ __ | ,_)     ___    __   _ __  _   _  | |    __  | ,_)\n" + "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" + "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" + "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
-    public static final String VERSION = "0.3";
+    public static final String VERSION = "0.4";
     /**
      * 注册在当前 Servlet 容器中的运行环境
      */
@@ -83,7 +83,7 @@ public class ContainerRuntime {
      */
     private HttpServerConfiguration configuration;
 
-    public void start(HttpServerConfiguration configuration) {
+    public void start(HttpServerConfiguration configuration) throws Throwable {
         if (started) {
             return;
         }
@@ -98,7 +98,7 @@ public class ContainerRuntime {
             @Override
             public void handleRequest(HandlerContext handlerContext) {
                 try {
-                    HttpServletResponse response = handlerContext.getResponse();
+                    ServletResponse response = handlerContext.getResponse();
                     response.setContentLength(line.length);
                     response.getOutputStream().write(line);
                 } catch (IOException e) {
@@ -112,7 +112,9 @@ public class ContainerRuntime {
         loadAndInstallPlugins();
 
         //启动运行环境
-        runtimes.forEach(ServletContextRuntime::start);
+        for (ServletContextRuntime runtime : runtimes) {
+            runtime.start();
+        }
 
 
     }
@@ -238,9 +240,9 @@ public class ContainerRuntime {
         try {
             //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
             ServletContextRuntime runtime = matchRuntime(request.getRequestURI());
-            if (!runtime.isStarted()) {
-                throw new IllegalStateException("container is not started");
-            }
+//            if (!runtime.isStarted()) {
+//                throw new IllegalStateException("container is not started");
+//            }
             ServletContextImpl servletContext = runtime.getServletContext();
             Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
 
@@ -324,6 +326,8 @@ public class ContainerRuntime {
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
         //register Servlet into deploymentInfo
         webAppInfo.getServlets().values().forEach(deploymentInfo::addServlet);
+
+        webAppInfo.getErrorPages().forEach(deploymentInfo::addErrorPage);
 
         //register Filter
         webAppInfo.getFilters().values().forEach(deploymentInfo::addFilter);

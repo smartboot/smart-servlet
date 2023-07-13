@@ -129,11 +129,7 @@ class WebXmlParseEngine {
         List<Node> childNodeList = getChildNode(parentElement, "error-page");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("error-code", "location", "exception-type"));
-            int errorCode = NumberUtils.toInt(nodeData.get("error-code"), -1);
-            if (errorCode < 0) {
-                continue;
-            }
-            webAppInfo.addErrorPage(new ErrorPageInfo(nodeData.get("location"), errorCode, nodeData.get("exception-type")));
+            webAppInfo.addErrorPage(new ErrorPageInfo(nodeData.get("location"), NumberUtils.toInt(nodeData.get("error-code"), -1), nodeData.get("exception-type")));
         }
     }
 
@@ -163,10 +159,11 @@ class WebXmlParseEngine {
         NodeList rootNodeList = parentElement.getElementsByTagName("servlet");
         for (int i = 0; i < rootNodeList.getLength(); i++) {
             Node node = rootNodeList.item(i);
-            Map<String, String> nodeMap = getNodeValue(node, Arrays.asList("servlet-name", "servlet-class", "load-on-startup", "async-supported"));
+            Map<String, String> nodeMap = getNodeValue(node, Arrays.asList("servlet-name", "servlet-class", "load-on-startup", "async-supported", "jsp-file"));
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(nodeMap.get("servlet-name"));
             servletInfo.setServletClass(nodeMap.get("servlet-class"));
+            servletInfo.setJspFile(nodeMap.get("jsp-file"));
             servletInfo.setLoadOnStartup(NumberUtils.toInt(nodeMap.get("load-on-startup"), 0));
             servletInfo.setAsyncSupported(Boolean.parseBoolean(nodeMap.get("async-supported")));
             Map<String, String> initParamMap = parseParam(node);

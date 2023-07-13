@@ -97,6 +97,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
      */
     private ServletInfo servletInfo;
 
+    private boolean asyncStarted = false;
+
     public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, DispatcherType dispatcherType) {
         this.request = request;
         this.dispatcherType = dispatcherType;
@@ -644,17 +646,24 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public AsyncContext startAsync() throws IllegalStateException {
-        throw new UnsupportedOperationException();
+        return startAsync(this, httpServletResponse);
     }
 
     @Override
     public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
-        throw new UnsupportedOperationException();
+        if (!isAsyncSupported()) {
+            throw new IllegalStateException();
+        }
+        if (asyncStarted) {
+            throw new IllegalStateException();
+        }
+        asyncStarted = true;
+        return new AsyncContextImpl(runtime, this, servletRequest, servletResponse);
     }
 
     @Override
     public boolean isAsyncStarted() {
-        return false;
+        return asyncStarted;
     }
 
     @Override

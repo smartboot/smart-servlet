@@ -10,6 +10,9 @@
 
 package org.smartboot.servlet;
 
+import org.smartboot.http.common.enums.HttpStatus;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
@@ -27,13 +30,19 @@ import org.smartboot.servlet.sandbox.SandBox;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,6 +56,7 @@ import java.util.List;
  * @version V1.0 , 2019/12/11
  */
 public class ServletContextRuntime {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextRuntime.class);
     private String displayName;
     private String description;
     /**
@@ -121,7 +131,7 @@ public class ServletContextRuntime {
     /**
      * 启动容器
      */
-    public void start() {
+    public void start() throws Throwable {
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             //有些场景下ServletContainerInitializer初始化依赖当前容器的类加载器
@@ -153,6 +163,7 @@ public class ServletContextRuntime {
         } catch (Exception e) {
             e.printStackTrace();
             plugins.forEach(plugin -> plugin.whenContainerStartError(this, e));
+            throw e;
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
@@ -161,6 +172,9 @@ public class ServletContextRuntime {
     private void newServletsInstance(DeploymentInfo deploymentInfo) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         for (ServletInfo servletInfo : deploymentInfo.getServlets().values()) {
             if (!servletInfo.isDynamic()) {
+                if (servletInfo.getJspFile() != null) {
+                    throw new UnsupportedOperationException();
+                }
                 Servlet servlet = (Servlet) deploymentInfo.getClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
                 servletInfo.setServlet(servlet);
             }
@@ -223,7 +237,40 @@ public class ServletContextRuntime {
 
         for (ServletInfo servletInfo : servletInfoList) {
             ServletConfig servletConfig = new ServletConfigImpl(servletInfo, servletContext);
-            servletInfo.getServlet().init(servletConfig);
+            try {
+                servletInfo.getServlet().init(servletConfig);
+            } catch (UnavailableException e) {
+                e.printStackTrace();
+                //占用该Servlet的URL mappings
+                servletInfo.setServlet(new HttpServlet() {
+                    @Override
+                    protected void service(HttpServletRequest req, HttpServletResponse resp) {
+                        resp.setStatus(HttpStatus.NOT_FOUND.value());
+                    }
+                });
+            } catch (ServletException e) {
+//                e.printStackTrace();
+                String location = deploymentInfo.getErrorPageLocation(e);
+                if (location == null) {
+                    location = deploymentInfo.getErrorPageLocation(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                }
+                String finalLocation = location;
+                servletInfo.setServlet(new HttpServlet() {
+                    @Override
+                    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                        resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                        req.setAttribute(RequestDispatcher.ERROR_EXCEPTION, e);
+                        req.setAttribute(RequestDispatcher.ERROR_MESSAGE, e.getMessage());
+                        req.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.INTERNAL_SERVER_ERROR.value());
+                        if (finalLocation != null) {
+                            req.getRequestDispatcher(finalLocation).forward(req, resp);
+                        } else {
+                            LOGGER.error("error location is null");
+                            e.printStackTrace(resp.getWriter());
+                        }
+                    }
+                });
+            }
         }
     }
 

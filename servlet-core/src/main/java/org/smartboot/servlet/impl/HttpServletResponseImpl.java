@@ -10,9 +10,6 @@
 
 package org.smartboot.servlet.impl;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
@@ -22,6 +19,9 @@ import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -56,7 +56,15 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void addCookie(Cookie cookie) {
-        response.setHeader(HeaderNameEnum.SET_COOKIE.getName(), cookie.toString());
+        org.smartboot.http.common.Cookie httpCookie = new org.smartboot.http.common.Cookie(cookie.getName(), cookie.getValue());
+        httpCookie.setComment(cookie.getComment());
+        httpCookie.setDomain(cookie.getDomain());
+        httpCookie.setHttpOnly(cookie.isHttpOnly());
+        httpCookie.setPath(cookie.getPath());
+        httpCookie.setMaxAge(cookie.getMaxAge());
+        httpCookie.setSecure(cookie.getSecure());
+        httpCookie.setVersion(cookie.getVersion());
+        response.addCookie(httpCookie);
     }
 
     @Override
@@ -182,10 +190,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String getCharacterEncoding() {
-        if (charset != null) {
-            return charset;
+        if (charset == null) {
+            setCharacterEncoding(StandardCharsets.ISO_8859_1.name());
         }
-        return StandardCharsets.ISO_8859_1.name();
+        return charset;
     }
 
     @Override
@@ -211,6 +219,8 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void setContentType(String type) {
+        //. It does not set the response's character
+        // encoding if it is called after getWriter has been called or after the response has been committed.
         if (isCommitted()) {
             return;
         }
@@ -220,7 +230,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             response.setContentType(type);
         } else {
             contentType = type.substring(0, split);
-            setCharacterEncoding(type.substring(split + 10));
+            if (charsetSet) {
+                response.setContentType(getContentType());
+            } else {
+                setCharacterEncoding(type.substring(split + 9));
+            }
         }
     }
 
@@ -240,9 +254,14 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        if (writer == null) {
-            writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
+        if (writer != null) {
+            return writer;
         }
+        //if the getOutputStream method has already been called for this response object
+        if (servletOutputStream != null) {
+            throw new IllegalStateException("getOutputStream has already been called.");
+        }
+        writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
         return writer;
     }
 
@@ -305,9 +324,9 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         }
         response.getHeaderNames().forEach(headerName -> response.setHeader(headerName, null));
         setContentLength(-1);
-        setContentType(null);
+        contentType = null;
         setCharacterEncoding(null);
-        response.setHttpStatus(null);
+        response.setHttpStatus(HttpStatus.OK);
         writer = null;
         if (servletOutputStream != null) {
             servletOutputStream.resetBuffer();

@@ -284,14 +284,15 @@ public class ServletContextImpl implements ServletContext {
         Object oldValue = attributes.put(name, object);
 
         List<ServletContextAttributeListener> listeners = deploymentInfo.getServletContextAttributeListeners();
-        ServletContextAttributeEvent event = listeners.isEmpty() ? null : new ServletContextAttributeEvent(this, name, object);
-        listeners.forEach(listener -> {
+        if (!listeners.isEmpty()) {
             if (oldValue == null) {
-                listener.attributeAdded(event);
+                ServletContextAttributeEvent event = new ServletContextAttributeEvent(this, name, object);
+                listeners.forEach(listener -> listener.attributeAdded(event));
             } else {
-                listener.attributeReplaced(event);
+                ServletContextAttributeEvent event = new ServletContextAttributeEvent(this, name, oldValue);
+                listeners.forEach(listener -> listener.attributeReplaced(event));
             }
-        });
+        }
     }
 
     @Override
@@ -441,18 +442,21 @@ public class ServletContextImpl implements ServletContext {
             ServletContextEvent event = new ServletContextEvent(this);
             contextListener.contextInitialized(event);
             deploymentInfo.addServletContextListener(contextListener);
-        } else if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
+        }
+        if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletRequestListener((ServletRequestListener) listener);
-        } else if (ServletContextAttributeListener.class.isAssignableFrom(listener.getClass())) {
+        }
+        if (ServletContextAttributeListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletContextAttributeListener((ServletContextAttributeListener) listener);
-        } else if (HttpSessionListener.class.isAssignableFrom(listener.getClass())) {
+        }
+        if (HttpSessionListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addHttpSessionListener((HttpSessionListener) listener);
-        } else if (HttpSessionAttributeListener.class.isAssignableFrom(listener.getClass())) {
+        }
+        if (HttpSessionAttributeListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addSessionAttributeListener((HttpSessionAttributeListener) listener);
-        } else if (ServletRequestAttributeListener.class.isAssignableFrom(listener.getClass())) {
+        }
+        if (ServletRequestAttributeListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addRequestAttributeListener((ServletRequestAttributeListener) listener);
-        } else {
-            throw new RuntimeException(listener.toString());
         }
     }
 

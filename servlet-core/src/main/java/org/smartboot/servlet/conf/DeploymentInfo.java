@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 运行环境部署配置
@@ -35,6 +37,9 @@ import java.util.Map;
  */
 public class DeploymentInfo {
     private final Map<String, ServletInfo> servlets = new HashMap<>();
+
+    private final Map<Integer, ErrorPageInfo> errorStatusPages = new HashMap<>();
+    private final Map<String, ErrorPageInfo> errorPages = new HashMap<>();
     private final Map<String, FilterInfo> filters = new HashMap<>();
     private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
     private final Map<String, String> initParameters = new HashMap<>();
@@ -57,6 +62,8 @@ public class DeploymentInfo {
      * 会话超时时间
      */
     private int sessionTimeout;
+
+    private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public URL getContextUrl() {
         return contextUrl;
@@ -103,6 +110,26 @@ public class DeploymentInfo {
 
     public Map<String, ServletInfo> getServlets() {
         return servlets;
+    }
+
+    public void addErrorPage(final ErrorPageInfo servlet) {
+        if (servlet.getErrorCode() != null) {
+            errorStatusPages.put(servlet.getErrorCode(), servlet);
+        }
+        if (servlet.getExceptionType() != null) {
+            errorPages.put(servlet.getExceptionType(), servlet);
+        }
+
+    }
+
+    public String getErrorPageLocation(int errorCode) {
+        ErrorPageInfo errorPage = errorStatusPages.get(errorCode);
+        return errorPage == null ? null : errorPage.getLocation();
+    }
+
+    public String getErrorPageLocation(Exception exception) {
+        ErrorPageInfo errorPage = errorPages.get(exception.getClass().getName());
+        return errorPage == null ? null : errorPage.getLocation();
     }
 
     public void addFilter(final FilterInfo filter) {
@@ -234,5 +261,9 @@ public class DeploymentInfo {
 
     public void setSessionTimeout(int sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
     }
 }

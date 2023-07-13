@@ -28,6 +28,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
      */
     private byte[] buffer;
     private int count;
+    private byte[] cacheByte;
 
     public ServletOutputStreamImpl(BufferOutputStream outputStream, byte[] buffer) {
         this.outputStream = outputStream;
@@ -46,8 +47,19 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     }
 
     @Override
-    public void write(int b) {
-        throw new UnsupportedOperationException();
+    public void write(int v) throws IOException {
+        initCacheBytes();
+        cacheByte[0] = (byte) v;
+        write(cacheByte, 0, 1);
+    }
+
+    /**
+     * 初始化8字节的缓存数值
+     */
+    private void initCacheBytes() {
+        if (cacheByte == null) {
+            cacheByte = new byte[8];
+        }
     }
 
     @Override

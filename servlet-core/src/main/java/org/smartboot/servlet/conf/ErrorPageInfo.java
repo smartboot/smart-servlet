@@ -15,9 +15,9 @@ package org.smartboot.servlet.conf;
  * @version V1.0 , 2019/12/13
  */
 public class ErrorPageInfo {
-    private String location;
-    private Integer errorCode;
-    private String exceptionType;
+    private final String location;
+    private final Integer errorCode;
+    private final String exceptionType;
 
     public ErrorPageInfo(String location, Integer errorCode, String exceptionType) {
         this.location = location;

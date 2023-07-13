@@ -36,7 +36,7 @@ public class SmartServletServer implements WebServer {
     private final int port;
 
 
-    public SmartServletServer(ServletContextRuntime runtime, int port) {
+    public SmartServletServer(ServletContextRuntime runtime, int port) throws Throwable {
         this.port = port;
         containerRuntime = new ContainerRuntime();
         containerRuntime.addRuntime(runtime);
