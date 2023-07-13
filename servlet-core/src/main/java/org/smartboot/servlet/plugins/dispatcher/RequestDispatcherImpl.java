@@ -122,7 +122,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
         // 如果包含后续请求，那么这些属性 会被后面包含请求的相应属性值替换。
         //如果通过 getNamedDispatcher 方法获得包含的 servlet，那么不能设置这些属性。
 
-        Object requestUri = requestImpl.getRequestURI();
+        String requestUri = requestImpl.getRequestURI();
         Object contextPath = requestImpl.getContextPath();
         Object servletPath = requestImpl.getServletPath();
         Object pathInfo = requestImpl.getPathInfo();
@@ -143,6 +143,8 @@ class RequestDispatcherImpl implements RequestDispatcher {
             if (queryString != null) {
                 requestWrapper.setAttribute(INCLUDE_QUERY_STRING, queryString);
             }
+            String[] array = StringUtils.split(dispatcherURL, "?");
+            requestWrapper.setRequestUri(array[0]);
         }
 
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);

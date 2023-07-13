@@ -262,7 +262,12 @@ public class ServletContextRuntime {
                         req.setAttribute(RequestDispatcher.ERROR_EXCEPTION, e);
                         req.setAttribute(RequestDispatcher.ERROR_MESSAGE, e.getMessage());
                         req.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.INTERNAL_SERVER_ERROR.value());
-                        req.getRequestDispatcher(finalLocation).forward(req, resp);
+                        if (finalLocation != null) {
+                            req.getRequestDispatcher(finalLocation).forward(req, resp);
+                        } else {
+                            LOGGER.error("error location is null");
+                            e.printStackTrace(resp.getWriter());
+                        }
                     }
                 });
             }

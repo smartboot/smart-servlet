@@ -254,13 +254,14 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public PrintWriter getWriter() throws IOException {
+        if (writer != null) {
+            return writer;
+        }
         //if the getOutputStream method has already been called for this response object
-        if (servletOutputStream != null && servletOutputStream.isCommitted()) {
+        if (servletOutputStream != null) {
             throw new IllegalStateException("getOutputStream has already been called.");
         }
-        if (writer == null) {
-            writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
-        }
+        writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
         return writer;
     }
 

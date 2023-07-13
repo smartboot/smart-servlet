@@ -442,18 +442,21 @@ public class ServletContextImpl implements ServletContext {
             ServletContextEvent event = new ServletContextEvent(this);
             contextListener.contextInitialized(event);
             deploymentInfo.addServletContextListener(contextListener);
-        } else if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
+        }
+        if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletRequestListener((ServletRequestListener) listener);
-        } else if (ServletContextAttributeListener.class.isAssignableFrom(listener.getClass())) {
+        }
+        if (ServletContextAttributeListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletContextAttributeListener((ServletContextAttributeListener) listener);
-        } else if (HttpSessionListener.class.isAssignableFrom(listener.getClass())) {
+        }
+        if (HttpSessionListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addHttpSessionListener((HttpSessionListener) listener);
-        } else if (HttpSessionAttributeListener.class.isAssignableFrom(listener.getClass())) {
+        }
+        if (HttpSessionAttributeListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addSessionAttributeListener((HttpSessionAttributeListener) listener);
-        } else if (ServletRequestAttributeListener.class.isAssignableFrom(listener.getClass())) {
+        }
+        if (ServletRequestAttributeListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addRequestAttributeListener((ServletRequestAttributeListener) listener);
-        } else {
-            throw new RuntimeException(listener.toString());
         }
     }
 

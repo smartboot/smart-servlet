@@ -11,6 +11,20 @@
 package org.smartboot.servlet.testsuite.test;
 
 import com.sun.ts.tests.servlet.api.jakarta_servlet.genericservlet.URLClient;
+import org.junit.jupiter.api.Test;
+
+import java.util.Properties;
 
 public class GenericServletTest extends URLClient {
+    @Test
+    public void init_ServletConfigServletExceptionTest() throws Exception {
+        String testName = "init_ServletConfigServletExceptionTest";
+        TEST_PROPS.setProperty("testname", testName);
+        TEST_PROPS.setProperty("status-code", "500");
+        Properties var10000 = TEST_PROPS;
+        String var10002 = this.getContextRoot();
+        var10000.setProperty("request", "GET " + var10002 + "/" + testName + " HTTP/1.1");
+        TEST_PROPS.setProperty("search_string", "Status Code: 500|Exception: javax.servlet.ServletException: in init of Init_ServletConfigServletExceptionTestServlet");
+        this.invoke();
+    }
 }
