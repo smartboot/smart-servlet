@@ -2,9 +2,6 @@
 smart-servlet 是一款实现了Servlet 3.1规范，支持多应用隔离部署的的 Web 容器。
 除此之外，smart-servlet 还是一款插件化容器，基于内置的沙箱环境确保 smart-servlet 拥有最精简的运行能力，用户还可以通过自定义插件扩展容器的服务能力。
 
- **体验服：** 
-- [http://124.222.67.243:8080/](http://124.222.67.243:8080/)
-- [http://82.157.162.230:8081/](http://82.157.162.230:8081/)
 
 <img src="smart-servlet-servlet-container.png" height="50%" width="50%"/>
 
