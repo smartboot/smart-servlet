@@ -10,15 +10,14 @@
 
 package org.smartboot.servlet.impl;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterRegistration;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.FilterMappingInfo;
-import org.smartboot.servlet.conf.ServletMappingInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.FilterRegistration;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -66,8 +65,8 @@ public class ApplicationFilterRegistration
     @Override
     public Collection<String> getServletNameMappings() {
         return context.getFilterMappings().stream()
-                .filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.URL)
-                .map(FilterMappingInfo::getServletUrlMapping).map(ServletMappingInfo::getMapping).collect(Collectors.toList());
+                .filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.SERVLET)
+                .map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
     }
 
     @Override

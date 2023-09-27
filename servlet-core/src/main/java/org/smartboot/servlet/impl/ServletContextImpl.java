@@ -10,18 +10,6 @@
 
 package org.smartboot.servlet.impl;
 
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.utils.Mimetypes;
-import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.servlet.ServletContextRuntime;
-import org.smartboot.servlet.conf.DeploymentInfo;
-import org.smartboot.servlet.conf.FilterInfo;
-import org.smartboot.servlet.conf.ServletInfo;
-import org.smartboot.servlet.enums.ServletContextPathType;
-import org.smartboot.servlet.exception.WrappedRuntimeException;
-import org.smartboot.servlet.handler.HandlerPipeline;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.RequestDispatcher;
@@ -40,6 +28,18 @@ import jakarta.servlet.SessionTrackingMode;
 import jakarta.servlet.descriptor.JspConfigDescriptor;
 import jakarta.servlet.http.HttpSessionAttributeListener;
 import jakarta.servlet.http.HttpSessionListener;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.Mimetypes;
+import org.smartboot.http.common.utils.StringUtils;
+import org.smartboot.servlet.ServletContextRuntime;
+import org.smartboot.servlet.conf.DeploymentInfo;
+import org.smartboot.servlet.conf.FilterInfo;
+import org.smartboot.servlet.conf.ServletInfo;
+import org.smartboot.servlet.enums.ServletContextPathType;
+import org.smartboot.servlet.exception.WrappedRuntimeException;
+import org.smartboot.servlet.handler.HandlerPipeline;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -329,7 +329,11 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public ServletRegistration.Dynamic addServlet(String servletName, Class<? extends Servlet> servletClass) {
-        return addServlet(servletName, createServlet(servletClass));
+        try {
+            return addServlet(servletName, createServlet(servletClass));
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -338,7 +342,7 @@ public class ServletContextImpl implements ServletContext {
     }
 
     @Override
-    public <T extends Servlet> T createServlet(Class<T> clazz) {
+    public <T extends Servlet> T createServlet(Class<T> clazz) throws ServletException {
         return newInstance(clazz);
     }
 
@@ -388,11 +392,15 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, Class<? extends Filter> filterClass) {
-        return addFilter(filterName, createFilter(filterClass));
+        try {
+            return addFilter(filterName, createFilter(filterClass));
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public <T extends Filter> T createFilter(Class<T> clazz) {
+    public <T extends Filter> T createFilter(Class<T> clazz) throws ServletException {
         return newInstance(clazz);
     }
 
@@ -470,11 +478,11 @@ public class ServletContextImpl implements ServletContext {
         return newInstance(clazz);
     }
 
-    private <T> T newInstance(Class<T> clazz) {
+    private <T> T newInstance(Class<T> clazz) throws ServletException {
         try {
             return clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new WrappedRuntimeException(e);
+            throw new ServletException(e);
         }
     }
 
