@@ -36,7 +36,7 @@ import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.conf.ServletInfo;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import java.io.File;
 import java.util.Map;
 import java.util.Set;

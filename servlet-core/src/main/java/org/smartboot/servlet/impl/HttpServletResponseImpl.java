@@ -19,9 +19,9 @@ import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -210,11 +210,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String getContentType() {
-        if (contentType != null && charsetSet) {
-            return contentType + ";charset=" + getCharacterEncoding();
-        } else {
-            return contentType;
+        if (contentType == null) {
+            return null;
         }
+        return contentType + ";charset=" + getCharacterEncoding();
+
     }
 
     @Override
@@ -227,14 +227,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         int split = type.indexOf(";charset=");
         if (split == -1) {
             contentType = type;
-            response.setContentType(type);
+            response.setContentType(getContentType());
         } else {
             contentType = type.substring(0, split);
-            if (charsetSet) {
-                response.setContentType(getContentType());
-            } else {
-                setCharacterEncoding(type.substring(split + 9));
-            }
+            setCharacterEncoding(type.substring(split + 9));
         }
     }
 

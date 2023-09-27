@@ -14,7 +14,7 @@ import org.smartboot.servlet.third.commons.fileupload.FileItem;
 import org.smartboot.servlet.third.commons.fileupload.ParameterParser;
 import org.smartboot.servlet.third.commons.fileupload.disk.DiskFileItem;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

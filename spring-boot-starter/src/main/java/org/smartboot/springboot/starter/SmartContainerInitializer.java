@@ -12,9 +12,9 @@ package org.smartboot.springboot.starter;
 
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import java.util.Set;
 
 /**

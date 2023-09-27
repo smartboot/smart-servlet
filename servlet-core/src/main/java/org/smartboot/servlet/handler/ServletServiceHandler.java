@@ -14,9 +14,9 @@ import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**

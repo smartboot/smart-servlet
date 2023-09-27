@@ -25,9 +25,9 @@ import org.smartboot.servlet.provider.WebsocketProvider;
 import org.smartboot.socket.util.AttachKey;
 import org.smartboot.socket.util.Attachment;
 
-import javax.websocket.PongMessage;
-import javax.websocket.Session;
-import javax.websocket.server.PathParam;
+import jakarta.websocket.PongMessage;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.PathParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

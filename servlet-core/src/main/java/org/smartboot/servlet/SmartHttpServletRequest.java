@@ -12,7 +12,7 @@ package org.smartboot.servlet;
 
 import org.smartboot.servlet.conf.ServletInfo;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author 三刀

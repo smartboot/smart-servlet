@@ -16,7 +16,7 @@
  */
 package org.smartboot.servlet.third.commons.fileupload;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.List;
 

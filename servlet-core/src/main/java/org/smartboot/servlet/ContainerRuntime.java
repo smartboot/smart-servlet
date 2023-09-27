@@ -33,9 +33,9 @@ import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,39 +83,43 @@ public class ContainerRuntime {
      */
     private HttpServerConfiguration configuration;
 
-    public void start(HttpServerConfiguration configuration) throws Throwable {
-        if (started) {
-            return;
-        }
-        started = true;
-        this.configuration = configuration;
-        configuration.serverName("smart-servlet");
-        System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n :: smart-servlet :: (" + VERSION + ")");
-        HandlerPipeline pipeline = new HandlerPipeline();
-        pipeline.next(new ServletServiceHandler() {
-            final byte[] line = "欢迎使用 smart-socket！".getBytes(StandardCharsets.UTF_8);
+    public void start(HttpServerConfiguration configuration) {
+        try {
 
-            @Override
-            public void handleRequest(HandlerContext handlerContext) {
-                try {
-                    ServletResponse response = handlerContext.getResponse();
-                    response.setContentLength(line.length);
-                    response.getOutputStream().write(line);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            if (started) {
+                return;
             }
-        });
-        defaultRuntime.getServletContext().setPipeline(pipeline);
-        defaultRuntime.start();
-        //扫描插件
-        loadAndInstallPlugins();
+            started = true;
+            this.configuration = configuration;
+            configuration.serverName("smart-servlet");
+            System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n :: smart-servlet :: (" + VERSION + ")");
+            HandlerPipeline pipeline = new HandlerPipeline();
+            pipeline.next(new ServletServiceHandler() {
+                final byte[] line = "欢迎使用 smart-socket！".getBytes(StandardCharsets.UTF_8);
 
-        //启动运行环境
-        for (ServletContextRuntime runtime : runtimes) {
-            runtime.start();
+                @Override
+                public void handleRequest(HandlerContext handlerContext) {
+                    try {
+                        ServletResponse response = handlerContext.getResponse();
+                        response.setContentLength(line.length);
+                        response.getOutputStream().write(line);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            defaultRuntime.getServletContext().setPipeline(pipeline);
+            defaultRuntime.start();
+            //扫描插件
+            loadAndInstallPlugins();
+
+            //启动运行环境
+            for (ServletContextRuntime runtime : runtimes) {
+                runtime.start();
+            }
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
         }
-
 
     }
 
