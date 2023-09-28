@@ -53,7 +53,7 @@ public class SmartServletServer implements WebServer {
             }
 
             @Override
-            public void handle(WebSocketRequest request, WebSocketResponse response) {
+            public void handle(WebSocketRequest request, WebSocketResponse response) throws Throwable {
                 containerRuntime.doHandle(request, response);
             }
         });

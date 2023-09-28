@@ -10,7 +10,10 @@
 
 package org.smartboot.servlet.handler;
 
+import jakarta.servlet.ServletException;
 import org.smartboot.servlet.HandlerContext;
+
+import java.io.IOException;
 
 /**
  * 请求处理器
@@ -30,7 +33,7 @@ abstract class Handler {
      * @param handlerContext
      * @throws Exception
      */
-    public abstract void handleRequest(HandlerContext handlerContext);
+    public abstract void handleRequest(HandlerContext handlerContext) throws ServletException, IOException;
 
     /**
      * 执行下一层处理器
@@ -38,7 +41,7 @@ abstract class Handler {
      * @param handlerContext
      * @throws Exception
      */
-    protected final void doNext(HandlerContext handlerContext) {
+    protected final void doNext(HandlerContext handlerContext) throws ServletException, IOException {
         if (nextHandler != null) {
             nextHandler.handleRequest(handlerContext);
         }

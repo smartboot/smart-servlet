@@ -11,15 +11,6 @@
 package org.smartboot.servlet;
 
 
-import org.smartboot.http.common.enums.HeaderNameEnum;
-import org.smartboot.http.common.enums.HttpMethodEnum;
-import org.smartboot.http.common.enums.HttpStatus;
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.utils.Mimetypes;
-import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.servlet.exception.WrappedRuntimeException;
-
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
@@ -27,6 +18,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.smartboot.http.common.enums.HeaderNameEnum;
+import org.smartboot.http.common.enums.HttpMethodEnum;
+import org.smartboot.http.common.enums.HttpStatus;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.Mimetypes;
+import org.smartboot.http.common.utils.StringUtils;
+import org.smartboot.servlet.conf.DeploymentInfo;
+import org.smartboot.servlet.exception.WrappedRuntimeException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,10 +39,8 @@ import java.net.URL;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -69,15 +68,11 @@ class DefaultServlet extends HttpServlet {
     /**
      * 默认页面
      */
-    private final List<String> welcomeFiles;
     private long faviconModifyTime;
+    private DeploymentInfo deploymentInfo;
 
-    public DefaultServlet() {
-        this.welcomeFiles = Collections.emptyList();
-    }
-
-    public DefaultServlet(List<String> welcomeFiles) {
-        this.welcomeFiles = welcomeFiles;
+    public DefaultServlet(DeploymentInfo deploymentInfo) {
+        this.deploymentInfo = deploymentInfo;
     }
 
     @Override
@@ -187,33 +182,33 @@ class DefaultServlet extends HttpServlet {
      */
     private void forwardWelcome(HttpServletRequest request, HttpServletResponse response, String method) throws URISyntaxException, IOException, ServletException {
         String welcome = matchForwardWelcome(request);
-        // 404
-        if (welcome == null) {
-            LOGGER.info("file:" + request.getRequestURI() + " not found!");
-            //《Servlet3.1规范中文版》9.3 include 方法
-            //如果默认的 servlet 是 RequestDispatch.include()的目标 servlet，
-            // 而且请求的资源不存在，那么默认的 servlet 必须抛出 FileNotFoundException 异常。
-            // 如果这个异常没有被捕获和处理，以及响应还未􏰀交，则响应状态 码必须被设置为 500。
-            if (request.getDispatcherType() == DispatcherType.INCLUDE) {
-                response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-                throw new FileNotFoundException();
-            }
-            response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
-            response.setHeader(HeaderNameEnum.CONTENT_TYPE.getName(), "text/html; charset=utf-8");
-
-            if (!HttpMethodEnum.HEAD.getMethod().equals(method)) {
-                response.getOutputStream().write(URL_404.getBytes());
-            }
-            return;
-        }
-        if (welcome.endsWith("/")) {
-            // 以"/"通过302跳转触发 welcome file逻辑
-            LOGGER.info("执行 welcome 302跳转...");
-            response.sendRedirect(welcome);
-        } else {
+        if (StringUtils.isNotBlank(welcome)) {
             //找到有效welcome file，执行服务端跳转
             LOGGER.info("执行 welcome 服务端跳转...");
             request.getRequestDispatcher(welcome).forward(request, response);
+            return;
+        }
+        // 404
+        LOGGER.info("file:" + request.getRequestURI() + " not found!");
+        //《Servlet3.1规范中文版》9.3 include 方法
+        //如果默认的 servlet 是 RequestDispatch.include()的目标 servlet，
+        // 而且请求的资源不存在，那么默认的 servlet 必须抛出 FileNotFoundException 异常。
+        // 如果这个异常没有被捕获和处理，以及响应还未􏰀交，则响应状态 码必须被设置为 500。
+        if (request.getDispatcherType() == DispatcherType.INCLUDE) {
+            response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+            throw new FileNotFoundException();
+        }
+
+        response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+        String location = deploymentInfo.getErrorPageLocation(HttpStatus.NOT_FOUND.value());
+        if (StringUtils.isNotBlank(location)) {
+            request.getRequestDispatcher(location).forward(request, response);
+            return;
+        }
+        response.setHeader(HeaderNameEnum.CONTENT_TYPE.getName(), "text/html; charset=utf-8");
+
+        if (!HttpMethodEnum.HEAD.getMethod().equals(method)) {
+            response.getOutputStream().write(URL_404.getBytes());
         }
     }
 
@@ -221,7 +216,7 @@ class DefaultServlet extends HttpServlet {
         String requestUri = request.getRequestURI();
         ServletContext servletContext = request.getServletContext();
         if (requestUri.endsWith("/")) {
-            for (String file : welcomeFiles) {
+            for (String file : deploymentInfo.getWelcomeFiles()) {
                 String uri = requestUri.substring(request.getContextPath().length());
                 URL welcomeUrl = servletContext.getResource(uri + file);
                 if (welcomeUrl != null) {

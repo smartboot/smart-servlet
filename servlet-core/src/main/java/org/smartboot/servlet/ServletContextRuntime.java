@@ -10,6 +10,21 @@
 
 package org.smartboot.servlet;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.UnavailableException;
+import jakarta.servlet.annotation.WebListener;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.jsp.JspFactory;
+import org.apache.jasper.servlet.JspServlet;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -28,19 +43,6 @@ import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.provider.WebsocketProvider;
 import org.smartboot.servlet.sandbox.SandBox;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.Servlet;
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.UnavailableException;
-import jakarta.servlet.annotation.WebListener;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -173,7 +175,10 @@ public class ServletContextRuntime {
         for (ServletInfo servletInfo : deploymentInfo.getServlets().values()) {
             if (!servletInfo.isDynamic()) {
                 if (servletInfo.getJspFile() != null) {
-                    throw new UnsupportedOperationException();
+                    LOGGER.error("unSupport jsp");
+                    servletInfo.setServlet(new JspServlet());
+                    servletInfo.addInitParam("jspFile", servletInfo.getJspFile());
+                    continue;
                 }
                 Servlet servlet = (Servlet) deploymentInfo.getClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
                 servletInfo.setServlet(servlet);
@@ -183,7 +188,7 @@ public class ServletContextRuntime {
         if (!deploymentInfo.getServlets().containsKey(ServletInfo.DEFAULT_SERVLET_NAME)) {
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
-            servletInfo.setServlet(new DefaultServlet(deploymentInfo.getWelcomeFiles()));
+            servletInfo.setServlet(new DefaultServlet(deploymentInfo));
             deploymentInfo.addServlet(servletInfo);
         }
     }
@@ -221,6 +226,11 @@ public class ServletContextRuntime {
             deploymentInfo.setHandlesTypesLoader(null);
             System.out.println("scanHandleTypes use :" + (System.currentTimeMillis() - start));
         }
+        ServletInfo jspServletInfo = new ServletInfo();
+        jspServletInfo.setServletClass(JspServlet.class.getName());
+        jspServletInfo.setServletName("jsp");
+        jspServletInfo.addMapping("*.jsp");
+        deploymentInfo.addServlet(jspServletInfo);
         for (ServletContainerInitializerInfo servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
             servletContainerInitializer.getServletContainerInitializer().onStartup(servletContainerInitializer.getHandlesTypes(), servletContext);
         }
@@ -249,7 +259,7 @@ public class ServletContextRuntime {
                     }
                 });
             } catch (ServletException e) {
-//                e.printStackTrace();
+                e.printStackTrace();
                 String location = deploymentInfo.getErrorPageLocation(e);
                 if (location == null) {
                     location = deploymentInfo.getErrorPageLocation(HttpStatus.INTERNAL_SERVER_ERROR.value());

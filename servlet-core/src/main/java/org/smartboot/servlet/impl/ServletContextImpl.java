@@ -49,8 +49,10 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -67,10 +69,16 @@ public class ServletContextImpl implements ServletContext {
     private final DeploymentInfo deploymentInfo;
     private final SessionCookieConfig sessionCookieConfig;
     private ServletContextPathType pathType = ServletContextPathType.PATH;
+
+    private JspConfigDescriptor jspConfigDescriptor = new JspConfigDescriptorImpl();
     /**
      * 请求执行管道
      */
     private HandlerPipeline pipeline;
+
+    private String responseCharacterEncoding;
+
+    private String requestCharacterEncoding;
 
     public ServletContextImpl(ServletContextRuntime containerRuntime) {
         this.containerRuntime = containerRuntime;
@@ -121,8 +129,20 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public Set<String> getResourcePaths(String path) {
-        //todo 暂时 返回 null 使org.apache.jasper.servlet.JasperInitializer#onStartup 可以执行
-        return null;
+        try {
+            URL url = getResource(path);
+            File file = new File(url.toURI());
+            if (file.isDirectory()) {
+                Set<String> set = new HashSet<>();
+                for (String fileName : Objects.requireNonNull(file.list())) {
+                    set.add(path + fileName);
+                }
+                return set;
+            }
+        } catch (Exception e) {
+            LOGGER.error("getResourcePaths exception", e);
+        }
+        return Collections.emptySet();
     }
 
     @Override
@@ -489,7 +509,7 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public JspConfigDescriptor getJspConfigDescriptor() {
         //todo 暂时 返回 null 使org.apache.jasper.servlet.JasperInitializer#onStartup 可以执行
-        return null;
+        return jspConfigDescriptor;
     }
 
     @Override
@@ -519,22 +539,22 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public String getRequestCharacterEncoding() {
-        return null;
+        return requestCharacterEncoding;
     }
 
     @Override
     public void setRequestCharacterEncoding(String encoding) {
-
+        this.requestCharacterEncoding = encoding;
     }
 
     @Override
     public String getResponseCharacterEncoding() {
-        return null;
+        return responseCharacterEncoding;
     }
 
     @Override
     public void setResponseCharacterEncoding(String encoding) {
-
+        this.responseCharacterEncoding = encoding;
     }
 
     public DeploymentInfo getDeploymentInfo() {

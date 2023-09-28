@@ -10,7 +10,10 @@
 
 package org.smartboot.servlet.handler;
 
+import jakarta.servlet.ServletException;
 import org.smartboot.servlet.HandlerContext;
+
+import java.io.IOException;
 
 /**
  * @author 三刀
@@ -42,7 +45,7 @@ public final class HandlerPipeline extends Handler {
     }
 
     @Override
-    public void handleRequest(HandlerContext handlerContext) {
+    public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
         nextHandler.handleRequest(handlerContext);
     }
 }

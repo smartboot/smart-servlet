@@ -10,6 +10,9 @@
 
 package org.smartboot.servlet.impl;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
@@ -19,9 +22,6 @@ import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -236,6 +236,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public ServletOutputStreamImpl getOutputStream() {
+        if (servletOutputStream != null) {
+
+        }
+        if (writer != null) {
+            reset();
+            throw new IllegalStateException("getWriter has already been called.");
+        }
         if (servletOutputStream == null) {
             byte[] buffer = null;
             if (bufferSize == -1) {
@@ -294,7 +301,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     }
 
     public void flushServletBuffer() throws IOException {
-        getOutputStream().flushServletBuffer();
+        if (writer != null) {
+            writer.flush();
+        } else {
+            getOutputStream().flushServletBuffer();
+        }
     }
 
     @Override
