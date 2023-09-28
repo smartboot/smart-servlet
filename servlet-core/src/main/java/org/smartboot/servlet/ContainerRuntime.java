@@ -83,44 +83,38 @@ public class ContainerRuntime {
      */
     private HttpServerConfiguration configuration;
 
-    public void start(HttpServerConfiguration configuration) {
-        try {
-
-            if (started) {
-                return;
-            }
-            started = true;
-            this.configuration = configuration;
-            configuration.serverName("smart-servlet");
-            System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n :: smart-servlet :: (" + VERSION + ")");
-            HandlerPipeline pipeline = new HandlerPipeline();
-            pipeline.next(new ServletServiceHandler() {
-                final byte[] line = "欢迎使用 smart-socket！".getBytes(StandardCharsets.UTF_8);
-
-                @Override
-                public void handleRequest(HandlerContext handlerContext) {
-                    try {
-                        ServletResponse response = handlerContext.getResponse();
-                        response.setContentLength(line.length);
-                        response.getOutputStream().write(line);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-            defaultRuntime.getServletContext().setPipeline(pipeline);
-            defaultRuntime.start();
-            //扫描插件
-            loadAndInstallPlugins();
-
-            //启动运行环境
-            for (ServletContextRuntime runtime : runtimes) {
-                runtime.start();
-            }
-        } catch (Throwable throwable) {
-            throw new RuntimeException(throwable);
+    public void start(HttpServerConfiguration configuration) throws Throwable {
+        if (started) {
+            return;
         }
+        started = true;
+        this.configuration = configuration;
+        configuration.serverName("smart-servlet");
+        System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n :: smart-servlet :: (" + VERSION + ")");
+        HandlerPipeline pipeline = new HandlerPipeline();
+        pipeline.next(new ServletServiceHandler() {
+            final byte[] line = "欢迎使用 smart-socket！".getBytes(StandardCharsets.UTF_8);
 
+            @Override
+            public void handleRequest(HandlerContext handlerContext) {
+                try {
+                    ServletResponse response = handlerContext.getResponse();
+                    response.setContentLength(line.length);
+                    response.getOutputStream().write(line);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        defaultRuntime.getServletContext().setPipeline(pipeline);
+        defaultRuntime.start();
+        //扫描插件
+        loadAndInstallPlugins();
+
+        //启动运行环境
+        for (ServletContextRuntime runtime : runtimes) {
+            runtime.start();
+        }
     }
 
     /**
