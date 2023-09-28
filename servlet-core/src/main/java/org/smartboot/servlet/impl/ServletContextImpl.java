@@ -10,6 +10,24 @@
 
 package org.smartboot.servlet.impl;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextAttributeEvent;
+import jakarta.servlet.ServletContextAttributeListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.ServletRequestAttributeListener;
+import jakarta.servlet.ServletRequestListener;
+import jakarta.servlet.SessionCookieConfig;
+import jakarta.servlet.SessionTrackingMode;
+import jakarta.servlet.descriptor.JspConfigDescriptor;
+import jakarta.servlet.http.HttpSessionAttributeListener;
+import jakarta.servlet.http.HttpSessionListener;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.Mimetypes;
@@ -22,24 +40,6 @@ import org.smartboot.servlet.enums.ServletContextPathType;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.HandlerPipeline;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeEvent;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRequestAttributeListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.descriptor.JspConfigDescriptor;
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionListener;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -49,8 +49,10 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -67,10 +69,16 @@ public class ServletContextImpl implements ServletContext {
     private final DeploymentInfo deploymentInfo;
     private final SessionCookieConfig sessionCookieConfig;
     private ServletContextPathType pathType = ServletContextPathType.PATH;
+
+    private JspConfigDescriptor jspConfigDescriptor = new JspConfigDescriptorImpl();
     /**
      * 请求执行管道
      */
     private HandlerPipeline pipeline;
+
+    private String responseCharacterEncoding;
+
+    private String requestCharacterEncoding;
 
     public ServletContextImpl(ServletContextRuntime containerRuntime) {
         this.containerRuntime = containerRuntime;
@@ -121,8 +129,20 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public Set<String> getResourcePaths(String path) {
-        //todo 暂时 返回 null 使org.apache.jasper.servlet.JasperInitializer#onStartup 可以执行
-        return null;
+        try {
+            URL url = getResource(path);
+            File file = new File(url.toURI());
+            if (file.isDirectory()) {
+                Set<String> set = new HashSet<>();
+                for (String fileName : Objects.requireNonNull(file.list())) {
+                    set.add(path + fileName);
+                }
+                return set;
+            }
+        } catch (Exception e) {
+            LOGGER.error("getResourcePaths exception", e);
+        }
+        return Collections.emptySet();
     }
 
     @Override
@@ -329,7 +349,11 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public ServletRegistration.Dynamic addServlet(String servletName, Class<? extends Servlet> servletClass) {
-        return addServlet(servletName, createServlet(servletClass));
+        try {
+            return addServlet(servletName, createServlet(servletClass));
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -338,7 +362,7 @@ public class ServletContextImpl implements ServletContext {
     }
 
     @Override
-    public <T extends Servlet> T createServlet(Class<T> clazz) {
+    public <T extends Servlet> T createServlet(Class<T> clazz) throws ServletException {
         return newInstance(clazz);
     }
 
@@ -388,11 +412,15 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, Class<? extends Filter> filterClass) {
-        return addFilter(filterName, createFilter(filterClass));
+        try {
+            return addFilter(filterName, createFilter(filterClass));
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public <T extends Filter> T createFilter(Class<T> clazz) {
+    public <T extends Filter> T createFilter(Class<T> clazz) throws ServletException {
         return newInstance(clazz);
     }
 
@@ -470,18 +498,18 @@ public class ServletContextImpl implements ServletContext {
         return newInstance(clazz);
     }
 
-    private <T> T newInstance(Class<T> clazz) {
+    private <T> T newInstance(Class<T> clazz) throws ServletException {
         try {
             return clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new WrappedRuntimeException(e);
+            throw new ServletException(e);
         }
     }
 
     @Override
     public JspConfigDescriptor getJspConfigDescriptor() {
         //todo 暂时 返回 null 使org.apache.jasper.servlet.JasperInitializer#onStartup 可以执行
-        return null;
+        return jspConfigDescriptor;
     }
 
     @Override
@@ -511,22 +539,22 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public String getRequestCharacterEncoding() {
-        return null;
+        return requestCharacterEncoding;
     }
 
     @Override
     public void setRequestCharacterEncoding(String encoding) {
-
+        this.requestCharacterEncoding = encoding;
     }
 
     @Override
     public String getResponseCharacterEncoding() {
-        return null;
+        return responseCharacterEncoding;
     }
 
     @Override
     public void setResponseCharacterEncoding(String encoding) {
-
+        this.responseCharacterEncoding = encoding;
     }
 
     public DeploymentInfo getDeploymentInfo() {

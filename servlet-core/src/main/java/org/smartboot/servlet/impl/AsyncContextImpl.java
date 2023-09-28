@@ -10,18 +10,19 @@
 
 package org.smartboot.servlet.impl;
 
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.AsyncEvent;
+import jakarta.servlet.AsyncListener;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.ServletContextRuntime;
+import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.plugins.dispatcher.ServletRequestDispatcherWrapper;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,7 +95,11 @@ public class AsyncContextImpl implements AsyncContext {
             public void run() {
                 ServletRequestDispatcherWrapper wrapper = new ServletRequestDispatcherWrapper(originalRequest, DispatcherType.ASYNC, false);
                 HandlerContext handlerContext = new HandlerContext(wrapper, response, originalRequest.getServletContext(), false);
-                servletContextRuntime.getServletContext().getPipeline().handleRequest(handlerContext);
+                try {
+                    servletContextRuntime.getServletContext().getPipeline().handleRequest(handlerContext);
+                } catch (Throwable e) {
+                    throw new WrappedRuntimeException(e);
+                }
             }
         });
 

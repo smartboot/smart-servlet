@@ -41,7 +41,7 @@ public class Starter {
             }
         }).webSocketHandler(new WebSocketHandler() {
             @Override
-            public void handle(WebSocketRequest request, WebSocketResponse response) throws IOException {
+            public void handle(WebSocketRequest request, WebSocketResponse response) throws Throwable {
                 containerRuntime.doHandle(request, response);
             }
         });

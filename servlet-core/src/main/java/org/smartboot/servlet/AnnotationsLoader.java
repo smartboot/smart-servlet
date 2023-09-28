@@ -18,11 +18,11 @@ import org.smartboot.servlet.third.bcel.classfile.ClassParser;
 import org.smartboot.servlet.third.bcel.classfile.JavaClass;
 import org.smartboot.servlet.util.CollectionUtils;
 
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.annotation.HandlesTypes;
-import javax.servlet.annotation.WebInitParam;
-import javax.servlet.annotation.WebListener;
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.annotation.HandlesTypes;
+import jakarta.servlet.annotation.WebInitParam;
+import jakarta.servlet.annotation.WebListener;
+import jakarta.servlet.annotation.WebServlet;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

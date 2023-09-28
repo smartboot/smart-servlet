@@ -10,22 +10,21 @@
 
 package org.smartboot.servlet.handler;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.FilterMappingInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
-import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +55,7 @@ public class FilterMatchHandler extends Handler {
     private final ThreadLocal<FilterChainImpl> filterChainThreadLocal = ThreadLocal.withInitial(FilterChainImpl::new);
 
     @Override
-    public void handleRequest(HandlerContext handlerContext) {
+    public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
         //查找缓存中的 Filter 集合
         List<Filter> filters = filterCacheFilterList(handlerContext);
         if (filters == null) {
@@ -70,8 +69,6 @@ public class FilterMatchHandler extends Handler {
         filterChain.init(filters, handlerContext);
         try {
             filterChain.doFilter(handlerContext.getRequest(), handlerContext.getResponse());
-        } catch (IOException | ServletException e) {
-            throw new WrappedRuntimeException(e);
         } finally {
             filterChain.init(null, null);
         }

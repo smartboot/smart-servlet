@@ -18,8 +18,10 @@ import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletException;
+
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,7 +38,7 @@ public class ServletMatchHandler extends Handler {
     private final Map<String, CacheServlet> cacheServletMap = new ConcurrentHashMap<>();
 
     @Override
-    public void handleRequest(HandlerContext handlerContext) {
+    public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
         ServletContextImpl servletContext = handlerContext.getServletContext();
         String contextPath = servletContext.getContextPath();
         Map<String, ServletInfo> servletInfoMap = handlerContext.getServletContext().getDeploymentInfo().getServlets();

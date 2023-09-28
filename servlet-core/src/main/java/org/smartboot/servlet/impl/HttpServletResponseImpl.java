@@ -10,6 +10,9 @@
 
 package org.smartboot.servlet.impl;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
@@ -19,9 +22,6 @@ import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -198,7 +198,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void setCharacterEncoding(String charset) {
-        if (isCommitted()) {
+        if (isCommitted() || writer != null) {
             return;
         }
         charsetSet = charset != null;
@@ -210,11 +210,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String getContentType() {
-        if (contentType != null && charsetSet) {
-            return contentType + ";charset=" + getCharacterEncoding();
-        } else {
-            return contentType;
+        if (contentType == null) {
+            return null;
         }
+        return contentType + ";charset=" + getCharacterEncoding();
+
     }
 
     @Override
@@ -227,19 +227,22 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         int split = type.indexOf(";charset=");
         if (split == -1) {
             contentType = type;
-            response.setContentType(type);
         } else {
             contentType = type.substring(0, split);
-            if (charsetSet) {
-                response.setContentType(getContentType());
-            } else {
-                setCharacterEncoding(type.substring(split + 9));
-            }
+            setCharacterEncoding(type.substring(split + 9));
         }
+        response.setContentType(getContentType());
     }
 
     @Override
     public ServletOutputStreamImpl getOutputStream() {
+        if (servletOutputStream != null) {
+
+        }
+        if (writer != null) {
+            reset();
+            throw new IllegalStateException("getWriter has already been called.");
+        }
         if (servletOutputStream == null) {
             byte[] buffer = null;
             if (bufferSize == -1) {
@@ -298,7 +301,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     }
 
     public void flushServletBuffer() throws IOException {
-        getOutputStream().flushServletBuffer();
+        if (writer != null) {
+            writer.flush();
+        } else {
+            getOutputStream().flushServletBuffer();
+        }
     }
 
     @Override

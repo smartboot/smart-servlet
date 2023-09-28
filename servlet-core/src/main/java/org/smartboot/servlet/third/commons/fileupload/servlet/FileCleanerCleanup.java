@@ -18,9 +18,9 @@ package org.smartboot.servlet.third.commons.fileupload.servlet;
 
 import org.smartboot.servlet.third.commons.io.FileCleaningTracker;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 /**
  * A servlet context listener, which ensures that the

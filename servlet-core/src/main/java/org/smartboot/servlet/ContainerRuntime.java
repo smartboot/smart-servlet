@@ -10,6 +10,9 @@
 
 package org.smartboot.servlet;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -33,9 +36,6 @@ import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -115,8 +115,6 @@ public class ContainerRuntime {
         for (ServletContextRuntime runtime : runtimes) {
             runtime.start();
         }
-
-
     }
 
     /**
@@ -221,12 +219,9 @@ public class ContainerRuntime {
             ServletContextImpl servletContext = runtime.getServletContext();
             Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
             runtime.getWebsocketProvider().doHandle(runtime, request, response);
-        } catch (Exception e) {
-            throw new WrappedRuntimeException(e);
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
-
     }
 
     /**
