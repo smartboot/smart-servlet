@@ -113,6 +113,9 @@ public class PathMatcherUtil {
             case EXTENSION_MATCH:
                 // 不比较"*.xx" 中的 *
                 int uriStartIndex = uri.length() - pattern.length();
+                if (uriStartIndex <= 0) {
+                    return -1;
+                }
                 for (int i = 1; i < pattern.length(); i++) {
                     if (uri.charAt(uriStartIndex + i) != pattern.charAt(i)) {
                         return -1;

@@ -131,6 +131,10 @@ public class ServletContextImpl implements ServletContext {
     public Set<String> getResourcePaths(String path) {
         try {
             URL url = getResource(path);
+            if (url == null) {
+                LOGGER.warn(path + " resource not exists");
+                return Collections.emptySet();
+            }
             File file = new File(url.toURI());
             if (file.isDirectory()) {
                 Set<String> set = new HashSet<>();
