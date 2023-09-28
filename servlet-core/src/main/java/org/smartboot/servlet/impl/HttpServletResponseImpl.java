@@ -198,7 +198,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void setCharacterEncoding(String charset) {
-        if (isCommitted()) {
+        if (isCommitted() || writer != null) {
             return;
         }
         charsetSet = charset != null;
@@ -227,11 +227,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         int split = type.indexOf(";charset=");
         if (split == -1) {
             contentType = type;
-            response.setContentType(getContentType());
         } else {
             contentType = type.substring(0, split);
             setCharacterEncoding(type.substring(split + 9));
         }
+        response.setContentType(getContentType());
     }
 
     @Override
