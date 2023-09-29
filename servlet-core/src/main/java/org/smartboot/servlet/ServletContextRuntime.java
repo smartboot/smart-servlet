@@ -23,8 +23,6 @@ import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.jsp.JspFactory;
-import org.apache.jasper.servlet.JspServlet;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -176,7 +174,7 @@ public class ServletContextRuntime {
             if (!servletInfo.isDynamic()) {
                 if (servletInfo.getJspFile() != null) {
                     LOGGER.error("unSupport jsp");
-                    servletInfo.setServlet(new JspServlet());
+                    servletInfo.setServlet(new DefaultServlet(deploymentInfo));
                     servletInfo.addInitParam("jspFile", servletInfo.getJspFile());
                     continue;
                 }
@@ -226,11 +224,11 @@ public class ServletContextRuntime {
             deploymentInfo.setHandlesTypesLoader(null);
             System.out.println("scanHandleTypes use :" + (System.currentTimeMillis() - start));
         }
-        ServletInfo jspServletInfo = new ServletInfo();
-        jspServletInfo.setServletClass(JspServlet.class.getName());
-        jspServletInfo.setServletName("jsp");
-        jspServletInfo.addMapping("*.jsp");
-        deploymentInfo.addServlet(jspServletInfo);
+//        ServletInfo jspServletInfo = new ServletInfo();
+//        jspServletInfo.setServletClass(JspServlet.class.getName());
+//        jspServletInfo.setServletName("jsp");
+//        jspServletInfo.addMapping("*.jsp");
+//        deploymentInfo.addServlet(jspServletInfo);
         for (ServletContainerInitializerInfo servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
             servletContainerInitializer.getServletContainerInitializer().onStartup(servletContainerInitializer.getHandlesTypes(), servletContext);
         }

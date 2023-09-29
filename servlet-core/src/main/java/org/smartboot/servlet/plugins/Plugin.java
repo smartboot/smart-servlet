@@ -56,11 +56,11 @@ public abstract class Plugin {
      * 初始化插件
      */
     protected void initPlugin(ContainerRuntime containerRuntime) {
-        LOGGER.info("plugin:[" + pluginName() + "] do nothing when initPlugin!");
+//        LOGGER.info("plugin:[" + pluginName() + "] do nothing when initPlugin!");
     }
 
     public void addServletContext(ServletContextRuntime runtime) {
-        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + runtime.getContextPath() + " when addServletContext!");
+//        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + runtime.getContextPath() + " when addServletContext!");
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class Plugin {
      * @param containerRuntime 当前启动成功的子容器
      */
     public void onContainerStartSuccess(ServletContextRuntime containerRuntime) {
-        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start success!");
+//        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start success!");
     }
 
 
@@ -79,7 +79,7 @@ public abstract class Plugin {
      * @param containerRuntime 当前即将被启动的子容器
      */
     public void willStartContainer(ServletContextRuntime containerRuntime) {
-        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " before start!");
+//        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " before start!");
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class Plugin {
      * @param containerRuntime 当前启动失败的子容器
      */
     public void whenContainerStartError(ServletContextRuntime containerRuntime, Throwable throwable) {
-        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start error!");
+//        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start error!");
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class Plugin {
      * @param containerRuntime 即将被消耗的子容器
      */
     public void willStopContainer(ServletContextRuntime containerRuntime) {
-        LOGGER.info("plugin:[" + pluginName() + "]do nothing for container: " + containerRuntime.getContextPath() + " before stop!");
+//        LOGGER.info("plugin:[" + pluginName() + "]do nothing for container: " + containerRuntime.getContextPath() + " before stop!");
     }
 
     /**
@@ -106,7 +106,7 @@ public abstract class Plugin {
      * @param containerRuntime 当前被消耗的子容器
      */
     public void onContainerStopped(ServletContextRuntime containerRuntime) {
-        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when stop!");
+//        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when stop!");
     }
 
     /**
