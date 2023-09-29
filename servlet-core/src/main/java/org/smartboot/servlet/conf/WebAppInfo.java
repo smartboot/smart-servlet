@@ -48,6 +48,8 @@ public class WebAppInfo {
 
     private final List<String> welcomeFileList = new ArrayList<>();
 
+    private final Map<String, String> localeEncodingMappings = new HashMap<>();
+
     private int sessionTimeout = 0;
 
     public void addServlet(ServletInfo servletInfo) {
@@ -132,5 +134,9 @@ public class WebAppInfo {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Map<String, String> getLocaleEncodingMappings() {
+        return localeEncodingMappings;
     }
 }

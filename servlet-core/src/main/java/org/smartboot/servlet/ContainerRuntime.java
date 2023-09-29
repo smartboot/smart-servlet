@@ -35,6 +35,7 @@ import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
+import org.smartboot.servlet.third.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -288,15 +289,16 @@ public class ContainerRuntime {
     private ServletContextRuntime getServletRuntime(String localPath, String contextPath, ClassLoader parentClassLoader) throws Exception {
         WebAppInfo webAppInfo = new WebAppInfo();
         WebXmlParseEngine engine = new WebXmlParseEngine();
-//        //加载classpath内的web.xml
-//        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("web.xml")) {
-//            engine.load(webAppInfo, stream);
-//        }
+        //加载内置的web.xml
+        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("smart_web.xml")) {
+            engine.load(webAppInfo, stream);
+        }
 
         //load web.xml file
         File contextFile = new File(localPath);
         File webXmlFile = new File(contextFile, "WEB-INF" + File.separatorChar + "web.xml");
         if (webXmlFile.isFile()) {
+            LOGGER.info("web.xml info:" + IOUtils.toString(webXmlFile.toURI()));
             try (InputStream inputStream = Files.newInputStream(webXmlFile.toPath())) {
                 engine.load(webAppInfo, inputStream);
             }
@@ -334,6 +336,8 @@ public class ContainerRuntime {
 
         //register filterMapping into deploymentInfo
         webAppInfo.getFilterMappings().forEach(deploymentInfo::addFilterMapping);
+
+        webAppInfo.getLocaleEncodingMappings().forEach(deploymentInfo::addLocaleEncodingMapping);
 
         deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 

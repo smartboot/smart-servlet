@@ -10,8 +10,6 @@
 
 package org.smartboot.servlet.conf;
 
-import org.smartboot.servlet.AnnotationsLoader;
-
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletContextAttributeListener;
 import jakarta.servlet.ServletContextListener;
@@ -20,6 +18,8 @@ import jakarta.servlet.ServletRequestListener;
 import jakarta.servlet.annotation.HandlesTypes;
 import jakarta.servlet.http.HttpSessionAttributeListener;
 import jakarta.servlet.http.HttpSessionListener;
+import org.smartboot.servlet.AnnotationsLoader;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,6 +53,8 @@ public class DeploymentInfo {
     private List<HttpSessionAttributeListener> sessionAttributeListeners = new ArrayList<>();
     private List<ServletRequestAttributeListener> requestAttributeListeners = new ArrayList<>();
     private List<String> welcomeFiles = Collections.emptyList();
+
+    private final Map<String, String> localeEncodingMappings = new HashMap<>();
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private String displayName;
     private URL contextUrl;
@@ -254,6 +256,13 @@ public class DeploymentInfo {
         this.welcomeFiles = welcomeFiles;
     }
 
+    public void addLocaleEncodingMapping(String locale, String encoding) {
+        localeEncodingMappings.put(locale, encoding);
+    }
+
+    public Map<String, String> getLocaleEncodingMappings() {
+        return localeEncodingMappings;
+    }
 
     public int getSessionTimeout() {
         return sessionTimeout;

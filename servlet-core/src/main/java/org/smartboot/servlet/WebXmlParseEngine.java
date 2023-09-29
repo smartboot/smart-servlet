@@ -10,6 +10,8 @@
 
 package org.smartboot.servlet;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.MultipartConfigElement;
 import org.smartboot.http.common.utils.NumberUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.conf.ErrorPageInfo;
@@ -26,8 +28,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.MultipartConfigElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -75,6 +75,8 @@ class WebXmlParseEngine {
         parseSessionConfig(webAppInfo, parentElement);
 
         parseWelcomeFile(webAppInfo, parentElement);
+
+        parseLocaleEncodingMappings(webAppInfo, parentElement);
     }
 
     private void parseBasicInfo(WebAppInfo webAppInfo, Element parentElement) {
@@ -253,6 +255,22 @@ class WebXmlParseEngine {
         List<Node> welcomeFileElement = getChildNode(childNodeList.get(0), "welcome-file");
         for (Node node : welcomeFileElement) {
             webAppInfo.addWelcomeFile(StringUtils.trim(node.getFirstChild().getNodeValue()));
+        }
+    }
+
+
+    /**
+     * 解析 <locale-encoding-mapping-list/>
+     */
+    private void parseLocaleEncodingMappings(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNode(parentElement, "locale-encoding-mapping-list");
+        if (CollectionUtils.isEmpty(childNodeList)) {
+            return;
+        }
+        List<Node> mappings = getChildNode(childNodeList.get(0), "locale-encoding-mapping");
+        for (Node node : mappings) {
+            Map<String, String> mapping = getNodeValue(node, Arrays.asList("locale", "encoding"));
+            webAppInfo.getLocaleEncodingMappings().put(mapping.get("locale"), mapping.get("encoding"));
         }
     }
 }

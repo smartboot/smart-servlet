@@ -17,6 +17,7 @@ import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpResponse;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.util.DateUtil;
@@ -351,6 +352,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             return;
         }
         this.locale = loc;
+        String encoding = containerRuntime.getDeploymentInfo().getLocaleEncodingMappings().get(loc.getLanguage());
+        if (StringUtils.isNotBlank(encoding)) {
+            setCharacterEncoding(encoding);
+        }
         setHeader(HeaderNameEnum.CONTENT_LANGUAGE.getName(), loc.getLanguage() + "-" + loc.getCountry());
     }
 }
