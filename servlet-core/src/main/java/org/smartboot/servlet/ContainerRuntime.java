@@ -250,7 +250,7 @@ public class ContainerRuntime {
             // just do it
             servletContext.getPipeline().handleRequest(handlerContext);
             //输出buffer中的数据
-            servletResponse.flushServletBuffer();
+            servletResponse.flushBuffer();
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         } finally {

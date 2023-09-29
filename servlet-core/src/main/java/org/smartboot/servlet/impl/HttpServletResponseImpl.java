@@ -298,14 +298,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void flushBuffer() throws IOException {
-        getOutputStream().flush();
-    }
-
-    public void flushServletBuffer() throws IOException {
         if (writer != null) {
             writer.flush();
         } else {
-            getOutputStream().flushServletBuffer();
+            getOutputStream().flush();
         }
     }
 
