@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.smartboot.servlet</groupId>
     <artifactId>smart-servlet-parent</artifactId>
-    <version>0.5</version>
+    <version>0.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
         <smarthttp.version>1.3.5</smarthttp.version>
-        <smartservlet.version>0.5</smartservlet.version>
+        <smartservlet.version>0.6-SNAPSHOT</smartservlet.version>
 
         <servlet.version>4.0.1</servlet.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
@@ -117,8 +117,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>17</source>
+                    <target>17</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -230,11 +230,11 @@
         </pluginManagement>
     </build>
     <repositories>
-        <repository>
-            <id>alimaven</id>
-            <name>aliyun maven</name>
-            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public</url>
-        </repository>
+<!--        <repository>-->
+<!--            <id>alimaven</id>-->
+<!--            <name>aliyun maven</name>-->
+<!--            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public</url>-->
+<!--        </repository>-->
         <repository>
             <id>sonatype-nexus-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
