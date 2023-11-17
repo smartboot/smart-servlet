@@ -18,7 +18,6 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.plugins.dispatcher.ServletRequestDispatcherWrapper;
@@ -26,26 +25,29 @@ import org.smartboot.servlet.plugins.dispatcher.ServletRequestDispatcherWrapper;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2022/11/23
  */
 public class AsyncContextImpl implements AsyncContext {
-    private List<ListenerUnit> listeners = new LinkedList<>();
-    private HttpServletRequestImpl originalRequest;
+    private final List<ListenerUnit> listeners = new LinkedList<>();
+    private final HttpServletRequestImpl originalRequest;
     private final ServletRequest request;
     private final ServletResponse response;
     private long timeout = 5000;
     private boolean dispatched;
     private boolean complete;
     private final ServletContextRuntime servletContextRuntime;
+    private final CompletableFuture<Object> future;
 
-    public AsyncContextImpl(ServletContextRuntime deployment, HttpServletRequestImpl originalRequest, ServletRequest request, ServletResponse response) {
+    public AsyncContextImpl(ServletContextRuntime deployment, HttpServletRequestImpl originalRequest, ServletRequest request, ServletResponse response, CompletableFuture<Object> future) {
         this.originalRequest = originalRequest;
         this.request = request;
         this.response = response;
         this.servletContextRuntime = deployment;
+        this.future = future;
     }
 
     @Override
@@ -90,16 +92,22 @@ public class AsyncContextImpl implements AsyncContext {
             throw new IllegalStateException();
         }
         dispatched = true;
-        servletContextRuntime.getDeploymentInfo().getExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                ServletRequestDispatcherWrapper wrapper = new ServletRequestDispatcherWrapper(originalRequest, DispatcherType.ASYNC, false);
-                HandlerContext handlerContext = new HandlerContext(wrapper, response, originalRequest.getServletContext(), false);
-                try {
-                    servletContextRuntime.getServletContext().getPipeline().handleRequest(handlerContext);
-                } catch (Throwable e) {
-                    throw new WrappedRuntimeException(e);
-                }
+        ServletRequestDispatcherWrapper wrapper = new ServletRequestDispatcherWrapper(originalRequest, DispatcherType.ASYNC, false);
+        wrapper.setRequestUri(originalRequest.getRequestURI());
+        wrapper.setAttribute(ASYNC_REQUEST_URI, originalRequest.getRequestURI());
+        wrapper.setAttribute(ASYNC_CONTEXT_PATH, originalRequest.getContextPath());
+        wrapper.setAttribute(ASYNC_SERVLET_PATH, originalRequest.getServletPath());
+        wrapper.setAttribute(ASYNC_PATH_INFO, originalRequest.getPathInfo());
+        wrapper.setAttribute(ASYNC_QUERY_STRING, originalRequest.getQueryString());
+        wrapper.setAttribute(ASYNC_MAPPING, originalRequest.getHttpServletMapping());
+        servletContextRuntime.getDeploymentInfo().getExecutor().execute(() -> {
+
+            try {
+                context.getRequestDispatcher(path).forward(wrapper, response);
+            } catch (Throwable e) {
+                throw new WrappedRuntimeException(e);
+            } finally {
+                future.complete(null);
             }
         });
 

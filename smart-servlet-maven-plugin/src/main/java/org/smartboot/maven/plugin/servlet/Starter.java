@@ -20,6 +20,7 @@ import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.servlet.ContainerRuntime;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author 三刀
@@ -35,9 +36,10 @@ public class Starter {
         HttpBootstrap bootstrap = new HttpBootstrap();
         bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024);
         bootstrap.httpHandler(new HttpServerHandler() {
+
             @Override
-            public void handle(HttpRequest request, HttpResponse response) {
-                containerRuntime.doHandle(request, response);
+            public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
+                containerRuntime.doHandle(request, response,completableFuture);
             }
         }).webSocketHandler(new WebSocketHandler() {
             @Override

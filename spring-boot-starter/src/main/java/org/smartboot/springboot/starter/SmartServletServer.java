@@ -24,6 +24,8 @@ import org.smartboot.servlet.ServletContextRuntime;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * @author 三刀
  * @version V1.0 , 2020/10/12
@@ -43,8 +45,8 @@ public class SmartServletServer implements WebServer {
         this.bootstrap = new HttpBootstrap();
         bootstrap.httpHandler(new HttpServerHandler() {
             @Override
-            public void handle(HttpRequest request, HttpResponse response) {
-                containerRuntime.doHandle(request, response);
+            public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
+                containerRuntime.doHandle(request, response, completableFuture);
             }
         }).webSocketHandler(new WebSocketHandler() {
             @Override

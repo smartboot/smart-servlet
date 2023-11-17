@@ -35,7 +35,6 @@ import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
-import org.smartboot.servlet.third.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +49,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -231,8 +231,9 @@ public class ContainerRuntime {
      * @param request
      * @param response
      */
-    public void doHandle(HttpRequest request, HttpResponse response) {
+    public void doHandle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        boolean async = false;
         try {
             //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
             ServletContextRuntime runtime = matchRuntime(request.getRequestURI());
@@ -243,18 +244,24 @@ public class ContainerRuntime {
             Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
 
             //封装上下文对象
-            HttpServletRequestImpl servletRequest = new HttpServletRequestImpl(request, runtime, DispatcherType.REQUEST);
+            HttpServletRequestImpl servletRequest = new HttpServletRequestImpl(request, runtime, DispatcherType.REQUEST, completableFuture);
             HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response, runtime);
             servletRequest.setHttpServletResponse(servletResponse);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
             // just do it
             servletContext.getPipeline().handleRequest(handlerContext);
+            async = servletRequest.isAsyncStarted();
             //输出buffer中的数据
-            servletResponse.flushBuffer();
+            if (!async) {
+                servletResponse.flushBuffer();
+            }
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
+            if (!async) {
+                completableFuture.complete(null);
+            }
         }
 
     }
@@ -298,7 +305,7 @@ public class ContainerRuntime {
         File contextFile = new File(localPath);
         File webXmlFile = new File(contextFile, "WEB-INF" + File.separatorChar + "web.xml");
         if (webXmlFile.isFile()) {
-            LOGGER.info("web.xml info:" + IOUtils.toString(webXmlFile.toURI()));
+//            LOGGER.info("web.xml info:" + IOUtils.toString(webXmlFile.toURI()));
             try (InputStream inputStream = Files.newInputStream(webXmlFile.toPath())) {
                 engine.load(webAppInfo, inputStream);
             }

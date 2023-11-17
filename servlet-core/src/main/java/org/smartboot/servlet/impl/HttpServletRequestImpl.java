@@ -10,6 +10,21 @@
 
 package org.smartboot.servlet.impl;
 
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletRequestAttributeEvent;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -28,21 +43,6 @@ import org.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
 import org.smartboot.servlet.util.CollectionUtils;
 import org.smartboot.servlet.util.DateUtil;
 
-import jakarta.servlet.AsyncContext;
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.MultipartConfigElement;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletRequestAttributeEvent;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.HttpUpgradeHandler;
-import jakarta.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author 三刀
@@ -99,11 +100,15 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     private boolean asyncStarted = false;
 
-    public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, DispatcherType dispatcherType) {
+    private volatile AsyncContextImpl asyncContext = null;
+    private final CompletableFuture<Object> completableFuture;
+
+    public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, DispatcherType dispatcherType, CompletableFuture<Object> completableFuture) {
         this.request = request;
         this.dispatcherType = dispatcherType;
         this.servletContext = runtime.getServletContext();
         this.runtime = runtime;
+        this.completableFuture = completableFuture;
         this.requestUri = request.getRequestURI();
     }
 
@@ -654,11 +659,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (!isAsyncSupported()) {
             throw new IllegalStateException();
         }
-        if (asyncStarted) {
-            throw new IllegalStateException();
+        if (asyncContext == null) {
+            asyncContext = new AsyncContextImpl(runtime, this, servletRequest, servletResponse, completableFuture);
         }
         asyncStarted = true;
-        return new AsyncContextImpl(runtime, this, servletRequest, servletResponse);
+        return asyncContext;
     }
 
     @Override
@@ -673,7 +678,10 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public AsyncContext getAsyncContext() {
-        throw new UnsupportedOperationException();
+        if (isAsyncStarted()) {
+            return asyncContext;
+        }
+        throw new IllegalStateException();
     }
 
     @Override
