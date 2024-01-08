@@ -10,7 +10,11 @@
 
 package org.smartboot.servlet.plugins.websocket;
 
+import jakarta.websocket.PongMessage;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.PathParam;
 import org.smartboot.http.common.utils.StringUtils;
+import org.smartboot.http.common.utils.WebSocketUtil;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
@@ -25,9 +29,6 @@ import org.smartboot.servlet.provider.WebsocketProvider;
 import org.smartboot.socket.util.AttachKey;
 import org.smartboot.socket.util.Attachment;
 
-import jakarta.websocket.PongMessage;
-import jakarta.websocket.Session;
-import jakarta.websocket.server.PathParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -53,27 +54,27 @@ public class WebsocketProviderImpl implements WebsocketProvider {
     @Override
     public void doHandle(ServletContextRuntime runtime, WebSocketRequest request, WebSocketResponse response) {
         try {
-            Attachment attachment = request.getAttachment();
+            Attachment attachment = ((WebSocketRequestImpl) request).getAttachment();
             WebsocketSession session = attachment.get(WEBSOCKET_SESSION_ATTACH_KEY);
             switch (request.getFrameOpcode()) {
-                case WebSocketRequestImpl.OPCODE_TEXT:
+                case WebSocketUtil.OPCODE_TEXT:
                     handleTextMessage(session.getTextMessageHandler(), new String(request.getPayload(), StandardCharsets.UTF_8));
                     break;
-                case WebSocketRequestImpl.OPCODE_BINARY:
+                case WebSocketUtil.OPCODE_BINARY:
                     handleBinaryMessage(session.getBinaryMessageHandler(), request.getPayload());
                     break;
-                case WebSocketRequestImpl.OPCODE_CLOSE:
+                case WebSocketUtil.OPCODE_CLOSE:
                     try {
                         onClose(request, response);
                     } finally {
                         response.close();
                     }
                     break;
-                case WebSocketRequestImpl.OPCODE_PING:
+                case WebSocketUtil.OPCODE_PING:
 //                            onPing(request, response);
                     throw new UnsupportedOperationException();
 //                            break;
-                case WebSocketRequestImpl.OPCODE_PONG:
+                case WebSocketUtil.OPCODE_PONG:
                     onPong(request, session.getPongMessageHandler());
                     break;
                 default:
@@ -123,10 +124,11 @@ public class WebsocketProviderImpl implements WebsocketProvider {
             }
             AnnotatedEndpoint endpoint = new AnnotatedEndpoint(matchedServerEndpointConfig, data);
 
-            Attachment attachment = request.getAttachment();
+            WebSocketRequestImpl requestImpl = (WebSocketRequestImpl) request;
+            Attachment attachment = requestImpl.getAttachment();
             if (attachment == null) {
                 attachment = new Attachment();
-                request.setAttachment(attachment);
+                requestImpl.setAttachment(attachment);
             }
             WebsocketSession websocketSession = new WebsocketSession(container, endpoint, URI.create(request.getRequestURI()));
             attachment.put(WEBSOCKET_SESSION_ATTACH_KEY, websocketSession);
