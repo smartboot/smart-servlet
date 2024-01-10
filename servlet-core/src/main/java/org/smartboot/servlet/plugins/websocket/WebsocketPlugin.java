@@ -14,7 +14,7 @@ import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.plugins.websocket.impl.WebsocketServerContainer;
 
-import jakarta.websocket.server.ServerContainer;
+import javax.websocket.server.ServerContainer;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）

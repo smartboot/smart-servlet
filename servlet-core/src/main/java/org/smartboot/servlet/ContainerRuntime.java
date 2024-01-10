@@ -10,9 +10,9 @@
 
 package org.smartboot.servlet;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.ServletContainerInitializer;
-import jakarta.servlet.ServletResponse;
+import javax.servlet.DispatcherType;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -91,7 +91,7 @@ public class ContainerRuntime {
         started = true;
         this.configuration = configuration;
         configuration.serverName("smart-servlet");
-        System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n :: smart-servlet :: (" + VERSION + ")");
+        System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
         HandlerPipeline pipeline = new HandlerPipeline();
         pipeline.next(new ServletServiceHandler() {
             final byte[] line = "欢迎使用 smart-socket！".getBytes(StandardCharsets.UTF_8);
@@ -130,12 +130,12 @@ public class ContainerRuntime {
             }
         });
         for (Plugin plugin : ServiceLoader.load(Plugin.class, ContainerRuntime.class.getClassLoader())) {
-            LOGGER.info("load plugin: " + plugin.pluginName());
+            LOGGER.debug("load plugin: " + plugin.pluginName());
             plugins.add(plugin);
         }
         //安装插件
         plugins.forEach(plugin -> {
-            LOGGER.info("install plugin: " + plugin.pluginName());
+            LOGGER.debug("install plugin: " + plugin.pluginName());
             plugin.install(this);
         });
         runtimes.forEach(runtime -> plugins.forEach(plugin -> plugin.addServletContext(runtime)));

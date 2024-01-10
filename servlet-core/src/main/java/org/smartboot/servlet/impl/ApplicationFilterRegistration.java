@@ -10,8 +10,8 @@
 
 package org.smartboot.servlet.impl;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.FilterRegistration;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.FilterMappingInfo;

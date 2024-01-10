@@ -10,14 +10,14 @@
 
 package org.smartboot.servlet.plugins.websocket.impl;
 
-import jakarta.websocket.ClientEndpointConfig;
-import jakarta.websocket.DeploymentException;
-import jakarta.websocket.Endpoint;
-import jakarta.websocket.Extension;
-import jakarta.websocket.Session;
-import jakarta.websocket.server.ServerContainer;
-import jakarta.websocket.server.ServerEndpoint;
-import jakarta.websocket.server.ServerEndpointConfig;
+import javax.websocket.ClientEndpointConfig;
+import javax.websocket.DeploymentException;
+import javax.websocket.Endpoint;
+import javax.websocket.Extension;
+import javax.websocket.Session;
+import javax.websocket.server.ServerContainer;
+import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;

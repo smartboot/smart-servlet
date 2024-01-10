@@ -10,7 +10,7 @@
 
 package org.smartboot.servlet.handler;
 
-import jakarta.servlet.ServletException;
+import javax.servlet.ServletException;
 import org.smartboot.servlet.HandlerContext;
 
 import java.io.IOException;

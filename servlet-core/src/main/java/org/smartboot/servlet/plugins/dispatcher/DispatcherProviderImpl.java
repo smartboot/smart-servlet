@@ -16,7 +16,7 @@ import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.provider.DispatcherProvider;
 
-import jakarta.servlet.RequestDispatcher;
+import javax.servlet.RequestDispatcher;
 
 /**
  * @author 三刀

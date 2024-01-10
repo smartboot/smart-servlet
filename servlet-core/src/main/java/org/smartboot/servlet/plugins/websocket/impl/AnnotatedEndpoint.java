@@ -10,11 +10,11 @@
 
 package org.smartboot.servlet.plugins.websocket.impl;
 
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.Endpoint;
-import jakarta.websocket.EndpointConfig;
-import jakarta.websocket.Session;
-import jakarta.websocket.server.PathParam;
+import javax.websocket.CloseReason;
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

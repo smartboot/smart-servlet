@@ -12,8 +12,8 @@ package org.smartboot.servlet.impl;
 
 import org.smartboot.servlet.conf.FilterInfo;
 
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletContext;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import java.util.Collections;
 import java.util.Enumeration;
 

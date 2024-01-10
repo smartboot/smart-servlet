@@ -10,8 +10,8 @@
 
 package org.smartboot.servlet;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.MultipartConfigElement;
+import javax.servlet.DispatcherType;
+import javax.servlet.MultipartConfigElement;
 import org.smartboot.http.common.utils.NumberUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.conf.ErrorPageInfo;

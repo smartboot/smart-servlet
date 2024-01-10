@@ -12,8 +12,6 @@
         <smarthttp.version>1.3.7-SNAPSHOT</smarthttp.version>
         <smartservlet.version>0.6-SNAPSHOT</smartservlet.version>
 
-        <servlet.version>4.0.1</servlet.version>
-        <javax.annotation.version>1.3.2</javax.annotation.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.compiler.debug>false</maven.compiler.debug>
@@ -37,24 +35,21 @@
                 <artifactId>servlet-core</artifactId>
                 <version>${smartservlet.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>jakarta.servlet</groupId>
-                <artifactId>jakarta.servlet-api</artifactId>
-                <version>5.0.0</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
-            <dependency>
-                <groupId>jakarta.annotation</groupId>
-                <artifactId>jakarta.annotation-api</artifactId>
-                <version>2.0.0</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/jakarta.websocket/jakarta.websocket-api -->
-            <dependency>
-                <groupId>jakarta.websocket</groupId>
-                <artifactId>jakarta.websocket-api</artifactId>
-                <version>2.0.0</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>jakarta.servlet</groupId>-->
+<!--                <artifactId>jakarta.servlet-api</artifactId>-->
+<!--                <version>5.0.0</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>jakarta.annotation</groupId>-->
+<!--                <artifactId>jakarta.annotation-api</artifactId>-->
+<!--                <version>2.0.0</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>jakarta.websocket</groupId>-->
+<!--                <artifactId>jakarta.websocket-api</artifactId>-->
+<!--                <version>2.0.0</version>-->
+<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
     <url>http://git.oschina.net/smartboot/smart-servlet</url>
@@ -117,8 +112,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

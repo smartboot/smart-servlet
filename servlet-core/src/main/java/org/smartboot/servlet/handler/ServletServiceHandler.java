@@ -10,9 +10,9 @@
 
 package org.smartboot.servlet.handler;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.conf.ServletInfo;
 

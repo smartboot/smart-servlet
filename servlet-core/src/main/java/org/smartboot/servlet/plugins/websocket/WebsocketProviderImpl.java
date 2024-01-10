@@ -10,9 +10,9 @@
 
 package org.smartboot.servlet.plugins.websocket;
 
-import jakarta.websocket.PongMessage;
-import jakarta.websocket.Session;
-import jakarta.websocket.server.PathParam;
+import javax.websocket.PongMessage;
+import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.common.utils.WebSocketUtil;
 import org.smartboot.http.server.WebSocketRequest;
