@@ -13,7 +13,7 @@ package org.smartboot.servlet.handler;
 import javax.servlet.ServletException;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import org.smartboot.servlet.HandlerContext;
+
 import org.smartboot.servlet.conf.ServletInfo;
 
 import java.io.IOException;

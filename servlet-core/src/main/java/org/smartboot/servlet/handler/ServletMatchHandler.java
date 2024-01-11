@@ -10,7 +10,6 @@
 
 package org.smartboot.servlet.handler;
 
-import org.smartboot.servlet.HandlerContext;
 import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;

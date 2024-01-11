@@ -8,8 +8,9 @@
  *  without special permission from the smartboot organization.
  */
 
-package org.smartboot.servlet;
+package org.smartboot.servlet.handler;
 
+import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.ServletContextImpl;
 

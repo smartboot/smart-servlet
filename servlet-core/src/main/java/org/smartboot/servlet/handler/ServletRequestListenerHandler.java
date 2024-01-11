@@ -16,7 +16,6 @@ import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.servlet.HandlerContext;
 
 import java.io.IOException;
 import java.util.List;

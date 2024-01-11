@@ -11,7 +11,6 @@
 package org.smartboot.servlet.handler;
 
 import javax.servlet.ServletException;
-import org.smartboot.servlet.HandlerContext;
 
 import java.io.IOException;
 
