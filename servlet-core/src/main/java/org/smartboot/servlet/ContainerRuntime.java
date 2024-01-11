@@ -94,7 +94,7 @@ public class ContainerRuntime {
         System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
         HandlerPipeline pipeline = new HandlerPipeline();
         pipeline.next(new ServletServiceHandler() {
-            final byte[] line = "欢迎使用 smart-socket！".getBytes(StandardCharsets.UTF_8);
+            final byte[] line = "欢迎使用 smart-servlet！".getBytes(StandardCharsets.UTF_8);
 
             @Override
             public void handleRequest(HandlerContext handlerContext) {
