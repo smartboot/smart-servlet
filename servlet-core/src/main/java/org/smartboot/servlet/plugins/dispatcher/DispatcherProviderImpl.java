@@ -51,17 +51,11 @@ class DispatcherProviderImpl implements DispatcherProvider {
         if (path.startsWith("/")) {
             return getRequestDispatcher(request.getServletContext(), path);
         }
-        //If it is relative, it must be relative against the current servlet.
-        if ("/".equals(request.getRequestURI())) {
-            return getRequestDispatcher(request.getServletContext(), request.getRequestURI() + path);
-        }
         int lastIndex = request.getRequestURI().lastIndexOf("/");
-        //  "/doc"
-        if (lastIndex == 0) {
-            return getRequestDispatcher(request.getServletContext(), request.getRequestURI() + "/" + path);
+        if (lastIndex != -1) {
+            return getRequestDispatcher(request.getServletContext(), request.getRequestURI().substring(0, lastIndex + 1) + path);
         } else {
-            // "/doc/"
-            return getRequestDispatcher(request.getServletContext(), request.getRequestURI().substring(0, lastIndex) + "/" + path);
+            return null;
         }
     }
 }
