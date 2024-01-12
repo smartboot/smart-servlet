@@ -19,6 +19,8 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
 
 /**
  * @author 三刀
@@ -33,6 +35,8 @@ public class ServletPrintWriter extends Writer {
         super(servletOutputStream);
         this.servletOutputStream = servletOutputStream;
         this.charsetEncoder = Charset.forName(charset).newEncoder();
+        charsetEncoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+        charsetEncoder.onMalformedInput(CodingErrorAction.REPLACE);
     }
 
     @Override
@@ -56,7 +60,10 @@ public class ServletPrintWriter extends Writer {
             ByteBuffer virtualBuffer = ByteBuffer.allocate(buffer.remaining() < 32 ? 32 : buffer.remaining() << 1);
 
             //第二步：编码
-            charsetEncoder.encode(buffer, virtualBuffer, true);
+            CoderResult result = charsetEncoder.encode(buffer, virtualBuffer, true);
+            if (result.isError()) {
+                LOGGER.info("encoding result:{} ,remaining", result);
+            }
 
             //第三步：输出
             virtualBuffer.flip();
