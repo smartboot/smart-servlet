@@ -53,7 +53,7 @@ class DispatcherProviderImpl implements DispatcherProvider {
         }
         int lastIndex = request.getRequestURI().lastIndexOf("/");
         if (lastIndex != -1) {
-            return getRequestDispatcher(request.getServletContext(), request.getRequestURI().substring(0, lastIndex + 1) + path);
+            return getRequestDispatcher(request.getServletContext(), request.getRequestURI().substring(request.getContextPath().length(), lastIndex + 1) + path);
         } else {
             return null;
         }
