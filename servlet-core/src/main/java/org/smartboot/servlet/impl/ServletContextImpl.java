@@ -10,6 +10,18 @@
 
 package org.smartboot.servlet.impl;
 
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.Mimetypes;
+import org.smartboot.http.common.utils.StringUtils;
+import org.smartboot.servlet.ServletContextRuntime;
+import org.smartboot.servlet.conf.DeploymentInfo;
+import org.smartboot.servlet.conf.FilterInfo;
+import org.smartboot.servlet.conf.ServletInfo;
+import org.smartboot.servlet.enums.ServletContextPathType;
+import org.smartboot.servlet.exception.WrappedRuntimeException;
+import org.smartboot.servlet.handler.HandlerPipeline;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
 import javax.servlet.RequestDispatcher;
@@ -28,18 +40,6 @@ import javax.servlet.SessionTrackingMode;
 import javax.servlet.descriptor.JspConfigDescriptor;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.utils.Mimetypes;
-import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.servlet.ServletContextRuntime;
-import org.smartboot.servlet.conf.DeploymentInfo;
-import org.smartboot.servlet.conf.FilterInfo;
-import org.smartboot.servlet.conf.ServletInfo;
-import org.smartboot.servlet.enums.ServletContextPathType;
-import org.smartboot.servlet.exception.WrappedRuntimeException;
-import org.smartboot.servlet.handler.HandlerPipeline;
-
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -138,8 +138,12 @@ public class ServletContextImpl implements ServletContext {
             File file = new File(url.toURI());
             if (file.isDirectory()) {
                 Set<String> set = new HashSet<>();
-                for (String fileName : Objects.requireNonNull(file.list())) {
-                    set.add(path + fileName);
+                for (File subFile : Objects.requireNonNull(file.listFiles())) {
+                    if (subFile.isDirectory()) {
+                        set.add(path + "/" + subFile.getName() + "/");
+                    } else {
+                        set.add(path + "/" + subFile.getName());
+                    }
                 }
                 return set;
             }
