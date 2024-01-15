@@ -10,19 +10,6 @@
 
 package org.smartboot.servlet;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
-import javax.servlet.annotation.WebListener;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -41,6 +28,19 @@ import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.provider.WebsocketProvider;
 import org.smartboot.servlet.sandbox.SandBox;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -174,8 +174,8 @@ public class ServletContextRuntime {
             if (!servletInfo.isDynamic()) {
                 if (servletInfo.getJspFile() != null) {
                     LOGGER.error("unSupport jsp");
-                    servletInfo.setServlet(new DefaultServlet(deploymentInfo));
-                    servletInfo.addInitParam("jspFile", servletInfo.getJspFile());
+//                    servletInfo.setServlet(new JspServlet());
+//                    servletInfo.addInitParam("jspFile", servletInfo.getJspFile());
                     continue;
                 }
                 Servlet servlet = (Servlet) deploymentInfo.getClassLoader().loadClass(servletInfo.getServletClass()).newInstance();

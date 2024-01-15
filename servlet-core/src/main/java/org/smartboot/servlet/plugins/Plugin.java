@@ -10,10 +10,12 @@
 
 package org.smartboot.servlet.plugins;
 
+import org.apache.jasper.servlet.JspServlet;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.ServletContextRuntime;
+import org.smartboot.servlet.conf.ServletInfo;
 
 /**
  * @author 三刀
@@ -61,6 +63,12 @@ public abstract class Plugin {
 
     public void addServletContext(ServletContextRuntime runtime) {
 //        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + runtime.getContextPath() + " when addServletContext!");
+        // TODO huqiang
+        ServletInfo servletInfo = new ServletInfo();
+        servletInfo.setServletName("default jsp servlet");
+        servletInfo.setServlet(new JspServlet());
+        servletInfo.addMapping("*.jsp");
+        runtime.getDeploymentInfo().addServlet(servletInfo);
     }
 
     /**

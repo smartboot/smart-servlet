@@ -77,7 +77,8 @@ public class RunMojo extends AbstractMojo {
             URL[] urls = new URL[urlList.size()];
             urlList.toArray(urls);
             URLClassLoader classLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
-            File webFile = new File(configurationDir, artifactId + "-" + version);
+//            File webFile = new File(configurationDir, artifactId + "-" + version);
+            File webFile = new File(configurationDir, "/");
             Class<?> clazz = classLoader.loadClass("org.smartboot.maven.plugin.servlet.Starter");
             clazz.getConstructor(String.class, String.class, int.class, ClassLoader.class).newInstance(webFile.getAbsolutePath(), path, port, classLoader);
         } catch (Exception e) {

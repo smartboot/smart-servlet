@@ -59,6 +59,15 @@
             <version>1.1</version>
         </dependency>
 
+        <!-- jsp支持 -->
+        <!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>8.5.98</version>
+        </dependency>
+
+
         <!--        <dependency>-->
         <!--            <groupId>org.mortbay.jasper</groupId>-->
         <!--            <artifactId>apache-jsp</artifactId>-->
