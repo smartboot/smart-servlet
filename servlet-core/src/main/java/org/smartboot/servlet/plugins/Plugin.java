@@ -66,7 +66,7 @@ public abstract class Plugin {
         // TODO huqiang
         ServletInfo servletInfo = new ServletInfo();
         servletInfo.setServletName("default jsp servlet");
-        servletInfo.setServlet(new JspServlet());
+        servletInfo.setServletClass(JspServlet.class.getName());
         servletInfo.addMapping("*.jsp");
         runtime.getDeploymentInfo().addServlet(servletInfo);
     }
