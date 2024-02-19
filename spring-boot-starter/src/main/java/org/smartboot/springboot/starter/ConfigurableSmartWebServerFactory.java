@@ -29,6 +29,7 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
 
     @Override
     public WebServer getWebServer(ServletContextInitializer... initializers) {
+        System.setProperty("smart-servlet-spring-boot-starter", "true");
         File root = getValidDocumentRoot();
         File docBase = (root != null) ? root : createTempDir("smart-servlet");
         System.out.println(docBase.getAbsoluteFile());
