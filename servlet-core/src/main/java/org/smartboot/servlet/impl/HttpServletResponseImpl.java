@@ -191,9 +191,14 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public String getCharacterEncoding() {
-        if (charset == null) {
-            setCharacterEncoding(StandardCharsets.ISO_8859_1.name());
+        if (charset != null) {
+            return charset;
         }
+        String charset = containerRuntime.getServletContext().getResponseCharacterEncoding();
+        if (charset == null) {
+            charset = StandardCharsets.ISO_8859_1.name();
+        }
+        setCharacterEncoding(charset);
         return charset;
     }
 
