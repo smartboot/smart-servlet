@@ -10,21 +10,6 @@
 
 package org.smartboot.servlet.impl;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestAttributeEvent;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.Part;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -43,6 +28,21 @@ import org.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
 import org.smartboot.servlet.util.CollectionUtils;
 import org.smartboot.servlet.util.DateUtil;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestAttributeEvent;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
+import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -118,7 +118,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getAuthType() {
-        throw new UnsupportedOperationException();
+        return runtime.getSecurityProvider().getAuthType();
     }
 
     @Override
@@ -225,13 +225,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isUserInRole(String role) {
-        throw new UnsupportedOperationException();
+        return runtime.getSecurityProvider().isUserInRole(role);
     }
 
     @Override
     public Principal getUserPrincipal() {
-        LOGGER.info("unSupport getUserPrincipal");
-        return null;
+        return runtime.getSecurityProvider().getUserPrincipal();
     }
 
     @Override
@@ -333,17 +332,17 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
-        throw new UnsupportedOperationException();
+        return runtime.getSecurityProvider().authenticate(response);
     }
 
     @Override
     public void login(String username, String password) throws ServletException {
-        throw new UnsupportedOperationException();
+        runtime.getSecurityProvider().login(username, password);
     }
 
     @Override
     public void logout() throws ServletException {
-        throw new UnsupportedOperationException();
+        runtime.getSecurityProvider().logout();
     }
 
     @Override

@@ -10,19 +10,6 @@
 
 package org.smartboot.servlet;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
-import javax.servlet.annotation.WebListener;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -37,10 +24,24 @@ import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.provider.DispatcherProvider;
 import org.smartboot.servlet.provider.MemoryPoolProvider;
+import org.smartboot.servlet.provider.SecurityProvider;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.provider.WebsocketProvider;
 import org.smartboot.servlet.sandbox.SandBox;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -88,6 +89,8 @@ public class ServletContextRuntime {
      * Websocket服务提供者
      */
     private WebsocketProvider websocketProvider = SandBox.INSTANCE.getWebsocketProvider();
+
+    private SecurityProvider securityProvider = SandBox.INSTANCE.getSecurityProvider();
     /**
      * 关联至本运行环境的插件集合
      */
@@ -340,6 +343,14 @@ public class ServletContextRuntime {
 
     public void setWebsocketProvider(WebsocketProvider websocketProvider) {
         this.websocketProvider = websocketProvider;
+    }
+
+    public SecurityProvider getSecurityProvider() {
+        return securityProvider;
+    }
+
+    public void setSecurityProvider(SecurityProvider securityProvider) {
+        this.securityProvider = securityProvider;
     }
 
     public String getContextPath() {
