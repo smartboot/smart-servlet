@@ -10,42 +10,37 @@
 
 package org.smartboot.servlet.sandbox;
 
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.provider.SecurityProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Principal;
 
 public class MockSecurityProvider implements SecurityProvider {
-    @Override
-    public void login(String username, String password) throws ServletException {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MockSecurityProvider.class);
 
+    @Override
+    public void login(String username, String password, HttpServletRequestImpl httpServletRequest) throws ServletException {
+        LOGGER.warn("unSupport login");
     }
 
     @Override
-    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
+    public boolean authenticate(HttpServletRequestImpl httpServletRequest, HttpServletResponse response) throws IOException, ServletException {
         return false;
     }
 
     @Override
-    public boolean isUserInRole(String role) {
+    public boolean isUserInRole(String role, HttpServletRequestImpl httpServletRequest) {
         return false;
     }
 
-    @Override
-    public Principal getUserPrincipal() {
-        //实现该规范
-        return null;
-    }
 
     @Override
-    public String getAuthType() {
-        return null;
+    public void logout(HttpServletRequestImpl httpServletRequest) throws ServletException {
+        LOGGER.warn("unSupport logout");
     }
 
-    @Override
-    public void logout() throws ServletException {
-
-    }
 }

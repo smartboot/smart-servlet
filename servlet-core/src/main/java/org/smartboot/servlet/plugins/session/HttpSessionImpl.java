@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionContext;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -39,6 +40,9 @@ class HttpSessionImpl implements HttpSession {
     private volatile long lastAccessed;
     private volatile int maxInactiveInterval;
     private volatile boolean invalid;
+
+    private String authType;
+    private Principal principal = null;
 
     public HttpSessionImpl(HttpSessionContext httpSessionContext, String sessionId, ServletContextImpl servletContext) {
         this.httpSessionContext = httpSessionContext;

@@ -102,6 +102,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     private volatile AsyncContextImpl asyncContext = null;
     private final CompletableFuture<Object> completableFuture;
+    private Principal userPrincipal;
+    private String authType;
 
     public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, DispatcherType dispatcherType, CompletableFuture<Object> completableFuture) {
         this.request = request;
@@ -118,7 +120,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getAuthType() {
-        return runtime.getSecurityProvider().getAuthType();
+        return authType;
     }
 
     @Override
@@ -225,12 +227,20 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isUserInRole(String role) {
-        return runtime.getSecurityProvider().isUserInRole(role);
+        return runtime.getSecurityProvider().isUserInRole(role, this);
     }
 
     @Override
     public Principal getUserPrincipal() {
-        return runtime.getSecurityProvider().getUserPrincipal();
+        return userPrincipal;
+    }
+
+    public void setUserPrincipal(Principal userPrincipal) {
+        this.userPrincipal = userPrincipal;
+    }
+
+    public void setAuthType(String authType) {
+        this.authType = authType;
     }
 
     @Override
@@ -332,17 +342,17 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
-        return runtime.getSecurityProvider().authenticate(response);
+        return runtime.getSecurityProvider().authenticate(this, response);
     }
 
     @Override
     public void login(String username, String password) throws ServletException {
-        runtime.getSecurityProvider().login(username, password);
+        runtime.getSecurityProvider().login(username, password, this);
     }
 
     @Override
     public void logout() throws ServletException {
-        runtime.getSecurityProvider().logout();
+        runtime.getSecurityProvider().logout(this);
     }
 
     @Override
@@ -411,15 +421,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         String locationStr = multipartConfigElement.getLocation();
         //未指定location，采用临时目录
         if (StringUtils.isBlank(locationStr)) {
-            location = ((File) servletContext.getAttribute(
-                    ServletContext.TEMPDIR));
+            location = ((File) servletContext.getAttribute(ServletContext.TEMPDIR));
         } else {
             location = new File(locationStr);
             //非绝对路径，则存放于临时目录下
             if (!location.isAbsolute()) {
-                location = new File(
-                        (File) servletContext.getAttribute(ServletContext.TEMPDIR),
-                        locationStr).getAbsoluteFile();
+                location = new File((File) servletContext.getAttribute(ServletContext.TEMPDIR), locationStr).getAbsoluteFile();
             }
         }
         if (!location.exists()) {
@@ -458,7 +465,15 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getCharacterEncoding() {
-        return characterEncoding;
+        if (characterEncoding != null) {
+            return characterEncoding;
+        }
+        String value = getHeader(HeaderNameEnum.CONTENT_TYPE.name());
+        String charset = StringUtils.substringAfter(value, "charset=");
+        if (StringUtils.isNotBlank(charset)) {
+            return charset;
+        }
+        return runtime.getServletContext().getRequestCharacterEncoding();
     }
 
     @Override

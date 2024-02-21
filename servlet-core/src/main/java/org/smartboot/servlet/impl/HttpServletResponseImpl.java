@@ -245,9 +245,6 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public ServletOutputStreamImpl getOutputStream() {
-        if (servletOutputStream != null) {
-
-        }
         if (writer != null) {
             reset();
             throw new IllegalStateException("getWriter has already been called.");

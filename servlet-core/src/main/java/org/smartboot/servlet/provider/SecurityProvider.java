@@ -10,16 +10,19 @@
 
 package org.smartboot.servlet.provider;
 
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Principal;
 
 public interface SecurityProvider {
-    public void login(String username, String password) throws ServletException;
-    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException;
-    public boolean isUserInRole(String role);
-    public Principal getUserPrincipal();
-    public String getAuthType();
-    public void logout() throws ServletException;
+    public void login(String username, String password, HttpServletRequestImpl httpServletRequest) throws ServletException;
+
+    public boolean authenticate(HttpServletRequestImpl httpServletRequest, HttpServletResponse response) throws IOException, ServletException;
+
+    public boolean isUserInRole(String role, HttpServletRequestImpl httpServletRequest);
+
+
+    public void logout(HttpServletRequestImpl httpServletRequest) throws ServletException;
 }
