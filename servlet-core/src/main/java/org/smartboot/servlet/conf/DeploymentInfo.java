@@ -10,6 +10,8 @@
 
 package org.smartboot.servlet.conf;
 
+import org.smartboot.servlet.AnnotationsLoader;
+
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextListener;
@@ -18,14 +20,14 @@ import javax.servlet.ServletRequestListener;
 import javax.servlet.annotation.HandlesTypes;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
-import org.smartboot.servlet.AnnotationsLoader;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,7 +55,7 @@ public class DeploymentInfo {
     private List<HttpSessionAttributeListener> sessionAttributeListeners = new ArrayList<>();
     private List<ServletRequestAttributeListener> requestAttributeListeners = new ArrayList<>();
     private List<String> welcomeFiles = Collections.emptyList();
-
+    private final Set<String> securityRoles = new HashSet<>();
     private final Map<String, String> localeEncodingMappings = new HashMap<>();
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private String displayName;
@@ -274,5 +276,9 @@ public class DeploymentInfo {
 
     public ExecutorService getExecutor() {
         return executor;
+    }
+
+    public Set<String> getSecurityRoles() {
+        return securityRoles;
     }
 }
