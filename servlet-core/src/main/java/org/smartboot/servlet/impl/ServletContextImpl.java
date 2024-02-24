@@ -45,6 +45,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
@@ -527,7 +528,17 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void declareRoles(String... roleNames) {
-        throw new UnsupportedOperationException();
+        if (containerRuntime.isStarted()) {
+            throw new IllegalStateException("ServletContext has already been initialized");
+        }
+        if (roleNames != null) {
+            for (String role : roleNames) {
+                if (StringUtils.isBlank(role)) {
+                    throw new IllegalArgumentException("roleName is null or an empty String");
+                }
+            }
+            deploymentInfo.getSecurityRoles().addAll(Arrays.asList(roleNames));
+        }
     }
 
     @Override
@@ -537,12 +548,12 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public int getSessionTimeout() {
-        return 0;
+        return deploymentInfo.getSessionTimeout();
     }
 
     @Override
     public void setSessionTimeout(int sessionTimeout) {
-
+        deploymentInfo.setSessionTimeout(sessionTimeout);
     }
 
     @Override
