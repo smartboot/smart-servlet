@@ -72,6 +72,8 @@ public class ServletContextImpl implements ServletContext {
     private ServletContextPathType pathType = ServletContextPathType.PATH;
 
     private JspConfigDescriptor jspConfigDescriptor = new JspConfigDescriptorImpl();
+    private final Set<SessionTrackingMode> defaultSessionTrackingModes = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(SessionTrackingMode.COOKIE, SessionTrackingMode.URL)));
+    private Set<SessionTrackingMode> sessionTrackingModes = defaultSessionTrackingModes;
     /**
      * 请求执行管道
      */
@@ -159,7 +161,7 @@ public class ServletContextImpl implements ServletContext {
         if (path == null || deploymentInfo.getContextUrl() == null) {
             return null;
         }
-        if (path.length() == 0) {
+        if (path.isEmpty()) {
             path = "/";
         } else if (path.charAt(0) != '/') {
             path = "/" + path;
@@ -453,17 +455,19 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) {
-        throw new UnsupportedOperationException();
+        this.sessionTrackingModes = sessionTrackingModes;
     }
 
     @Override
     public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
-        throw new UnsupportedOperationException();
+        return defaultSessionTrackingModes;
     }
 
     @Override
     public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
-        throw new UnsupportedOperationException();
+        //The returned set is not backed by the ServletContext object,
+        // so changes in the returned set are not reflected in the ServletContext object, and vice-versa.
+        return Collections.unmodifiableSet(sessionTrackingModes);
     }
 
     @Override
