@@ -46,6 +46,7 @@ import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.security.Principal;
@@ -83,6 +84,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private String requestUri;
     private HttpServletResponse httpServletResponse;
     private ServletInputStream servletInputStream;
+    private BufferedReader reader;
     /**
      * 请求中携带的sessionId
      */
@@ -498,6 +500,9 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
+        if (reader != null) {
+            throw new IllegalStateException("getReader method has already been called for this request");
+        }
         if (servletInputStream == null) {
             servletInputStream = new ServletInputStreamImpl(request.getInputStream());
         }
@@ -564,7 +569,13 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public BufferedReader getReader() throws IOException {
-        throw new UnsupportedOperationException();
+        if (reader == null) {
+            if (servletInputStream != null) {
+                throw new IllegalStateException("getInputStream method has been called on this request");
+            }
+            reader = new BufferedReader(new InputStreamReader(getInputStream(), getCharacterEncoding()));
+        }
+        return reader;
     }
 
     @Override
