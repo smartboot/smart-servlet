@@ -10,6 +10,7 @@
 
 package org.smartboot.springboot.starter;
 
+import org.smartboot.http.common.codec.websocket.CloseReason;
 import org.smartboot.http.server.HttpBootstrap;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
@@ -21,6 +22,7 @@ import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
 import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.ServletContextRuntime;
+import org.smartboot.servlet.provider.WebsocketProvider;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 
@@ -52,7 +54,13 @@ public class SmartServletServer implements WebServer {
             @Override
             public void whenHeaderComplete(WebSocketRequestImpl request, WebSocketResponseImpl response) {
                 CompletableFuture<Object> completableFuture = new CompletableFuture<>();
-                containerRuntime.doHandle(request, response, completableFuture);
+                try {
+                    containerRuntime.doHandle(request, response, completableFuture);
+                } finally {
+                    if (request.getAttachment() == null || request.getAttachment().get(WebsocketProvider.WEBSOCKET_SESSION_ATTACH_KEY) == null) {
+                        response.close(CloseReason.UNEXPECTED_ERROR, "");
+                    }
+                }
             }
 
             @Override
