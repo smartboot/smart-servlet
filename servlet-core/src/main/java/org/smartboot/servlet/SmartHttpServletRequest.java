@@ -11,6 +11,7 @@
 package org.smartboot.servlet;
 
 import org.smartboot.servlet.conf.ServletInfo;
+import org.smartboot.socket.util.Attachment;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,4 +39,18 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
     void setPathInfo(int start, int end);
 
     void setServletInfo(ServletInfo servletInfo);
+
+    /**
+     * 获取附件对象
+     *
+     * @return 附件
+     */
+    Attachment getAttachment();
+
+    /**
+     * 存放附件，支持任意类型
+     *
+     * @param attachment 附件对象
+     */
+    void setAttachment(Attachment attachment);
 }

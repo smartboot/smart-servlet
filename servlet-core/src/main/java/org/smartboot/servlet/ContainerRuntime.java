@@ -10,9 +10,6 @@
 
 package org.smartboot.servlet;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -21,22 +18,23 @@ import org.smartboot.http.server.HttpResponse;
 import org.smartboot.http.server.HttpServerConfiguration;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
-import org.smartboot.http.server.impl.Request;
-import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.WebAppInfo;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.FilterMatchHandler;
+import org.smartboot.servlet.handler.HandlerContext;
 import org.smartboot.servlet.handler.HandlerPipeline;
 import org.smartboot.servlet.handler.ServletMatchHandler;
 import org.smartboot.servlet.handler.ServletRequestListenerHandler;
 import org.smartboot.servlet.handler.ServletServiceHandler;
-import org.smartboot.servlet.handler.HandlerContext;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -190,26 +188,6 @@ public class ContainerRuntime {
         return contextRuntime;
     }
 
-    public void onHeaderComplete(Request request) {
-        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
-            ServletContextRuntime runtime = matchRuntime(request.getRequestURI());
-            if (!runtime.isStarted()) {
-                throw new IllegalStateException("container is not started");
-            }
-
-            ServletContextImpl servletContext = runtime.getServletContext();
-            Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
-            WebSocketRequestImpl webSocketRequest = request.newWebsocketRequest();
-            runtime.getWebsocketProvider().onHandShark(runtime, webSocketRequest, webSocketRequest.getResponse());
-        } catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        } finally {
-            Thread.currentThread().setContextClassLoader(classLoader);
-        }
-    }
-
     public void doHandle(WebSocketRequest request, WebSocketResponse response) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
@@ -220,7 +198,7 @@ public class ContainerRuntime {
             }
             ServletContextImpl servletContext = runtime.getServletContext();
             Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
-            runtime.getWebsocketProvider().doHandle(runtime, request, response);
+            runtime.getWebsocketProvider().doHandle(request, response);
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
         }

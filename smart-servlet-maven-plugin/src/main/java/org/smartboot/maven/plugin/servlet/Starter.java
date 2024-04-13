@@ -17,9 +17,10 @@ import org.smartboot.http.server.HttpServerHandler;
 import org.smartboot.http.server.WebSocketHandler;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
+import org.smartboot.http.server.impl.WebSocketRequestImpl;
+import org.smartboot.http.server.impl.WebSocketResponseImpl;
 import org.smartboot.servlet.ContainerRuntime;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -39,9 +40,15 @@ public class Starter {
 
             @Override
             public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
-                containerRuntime.doHandle(request, response,completableFuture);
+                containerRuntime.doHandle(request, response, completableFuture);
             }
         }).webSocketHandler(new WebSocketHandler() {
+            @Override
+            public void whenHeaderComplete(WebSocketRequestImpl request, WebSocketResponseImpl response) {
+                CompletableFuture<Object> completableFuture = new CompletableFuture<>();
+                containerRuntime.doHandle(request, response, completableFuture);
+            }
+
             @Override
             public void handle(WebSocketRequest request, WebSocketResponse response) throws Throwable {
                 containerRuntime.doHandle(request, response);

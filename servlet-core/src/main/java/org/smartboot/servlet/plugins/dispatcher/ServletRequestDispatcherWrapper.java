@@ -15,6 +15,7 @@ import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
+import org.smartboot.socket.util.Attachment;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -122,6 +123,16 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     @Override
     public void setServletInfo(ServletInfo servletInfo) {
         this.request.setServletInfo(servletInfo);
+    }
+
+    @Override
+    public Attachment getAttachment() {
+        return request.getAttachment();
+    }
+
+    @Override
+    public void setAttachment(Attachment attachment) {
+        request.setAttachment(attachment);
     }
 
     @Override

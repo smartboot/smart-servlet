@@ -51,11 +51,12 @@ public class SmartServletServer implements WebServer {
         }).webSocketHandler(new WebSocketHandler() {
             @Override
             public void whenHeaderComplete(WebSocketRequestImpl request, WebSocketResponseImpl response) {
-                containerRuntime.onHeaderComplete(request.getRequest());
+                CompletableFuture<Object> completableFuture = new CompletableFuture<>();
+                containerRuntime.doHandle(request, response, completableFuture);
             }
 
             @Override
-            public void handle(WebSocketRequest request, WebSocketResponse response) throws Throwable {
+            public void handle(WebSocketRequest request, WebSocketResponse response, CompletableFuture<Object> completableFuture) {
                 containerRuntime.doHandle(request, response);
             }
         });

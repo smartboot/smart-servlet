@@ -27,6 +27,7 @@ import org.smartboot.servlet.third.commons.fileupload.FileUploadException;
 import org.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
 import org.smartboot.servlet.util.CollectionUtils;
 import org.smartboot.servlet.util.DateUtil;
+import org.smartboot.socket.util.Attachment;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
@@ -204,6 +205,16 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public void setServletInfo(ServletInfo servletInfo) {
         this.servletInfo = servletInfo;
+    }
+
+    @Override
+    public Attachment getAttachment() {
+        return request.getAttachment();
+    }
+
+    @Override
+    public void setAttachment(Attachment attachment) {
+        request.setAttachment(attachment);
     }
 
     @Override
