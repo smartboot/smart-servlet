@@ -42,7 +42,7 @@ public class MockWebsocketProvider implements WebsocketProvider {
         return new WebSocketServerContainer() {
             @Override
             public void doUpgrade(HttpServletRequest request, HttpServletResponse response, ServerEndpointConfig sec, Endpoint endpoint, Map<String, String> pathParams) throws ServletException, IOException {
-                throw new PluginException(SandBox.UPGRADE_MESSAGE);
+                throw new PluginException(SandBox.UPGRADE_MESSAGE_ZH);
             }
 
             @Override
@@ -124,6 +124,6 @@ public class MockWebsocketProvider implements WebsocketProvider {
 
     @Override
     public void doHandle(WebSocketRequest request, WebSocketResponse response) {
-        throw new PluginException(SandBox.UPGRADE_MESSAGE);
+        throw new PluginException(SandBox.UPGRADE_MESSAGE_ZH);
     }
 }
