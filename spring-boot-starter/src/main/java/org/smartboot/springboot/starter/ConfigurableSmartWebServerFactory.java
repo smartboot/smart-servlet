@@ -18,6 +18,7 @@ import org.springframework.boot.web.servlet.server.AbstractServletWebServerFacto
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 
+import javax.websocket.server.ServerContainer;
 import java.io.File;
 
 /**
@@ -35,6 +36,7 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
         System.out.println(docBase.getAbsoluteFile());
         SmartContainerInitializer initializer = new SmartContainerInitializer(initializers);
         ServletContextRuntime servletRuntime = new ServletContextRuntime(getContextPath());
+        servletRuntime.getServletContext().setAttribute(ServerContainer.class.getName(), servletRuntime.getWebsocketProvider().getWebSocketServerContainer());
         DeploymentInfo deployment = servletRuntime.getDeploymentInfo();
         deployment.setClassLoader(getServletClassLoader());
         deployment.setDisplayName(getDisplayName());

@@ -12,11 +12,14 @@ package org.smartboot.servlet.provider;
 
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
+import org.smartboot.servlet.WebSocketServerContainer;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2021/3/28
  */
 public interface WebsocketProvider {
+    WebSocketServerContainer getWebSocketServerContainer();
+
     void doHandle(WebSocketRequest request, WebSocketResponse response);
 }
