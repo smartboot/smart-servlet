@@ -64,7 +64,7 @@ public class SmartServletServer implements WebServer {
             }
 
             @Override
-            public void handle(WebSocketRequest request, WebSocketResponse response, CompletableFuture<Object> completableFuture) {
+            public void handle(WebSocketRequest request, WebSocketResponse response) {
                 containerRuntime.doHandle(request, response);
             }
         });
