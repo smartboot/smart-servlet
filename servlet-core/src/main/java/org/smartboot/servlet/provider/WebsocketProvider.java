@@ -15,12 +15,14 @@ import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.servlet.WebSocketServerContainer;
 import org.smartboot.socket.util.AttachKey;
 
+import javax.websocket.Session;
+
 /**
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2021/3/28
  */
 public interface WebsocketProvider {
-    AttachKey WEBSOCKET_SESSION_ATTACH_KEY = AttachKey.valueOf("websocketSession");
+    AttachKey<? super Session> WEBSOCKET_SESSION_ATTACH_KEY = AttachKey.valueOf("websocketSession");
 
     WebSocketServerContainer getWebSocketServerContainer();
 
