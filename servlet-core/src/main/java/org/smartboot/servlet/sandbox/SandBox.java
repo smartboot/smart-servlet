@@ -23,7 +23,6 @@ import org.smartboot.servlet.provider.WebsocketProvider;
  * @version V1.0 , 2020/11/28
  */
 public class SandBox {
-    public static final String UPGRADE_MESSAGE_EN = "Please upgrade to the smart-servlet enterprise edition.";
     public static final String UPGRADE_MESSAGE_ZH = "请升级至 smart-servlet 企业版以启用该功能";
     public static final SandBox INSTANCE = new SandBox();
     private final DispatcherProvider dispatcherProvider = new MockDispatcherProvider();

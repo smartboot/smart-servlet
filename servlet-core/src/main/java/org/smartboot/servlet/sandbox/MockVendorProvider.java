@@ -19,10 +19,10 @@ public class MockVendorProvider implements VendorProvider {
     @Override
     public void signature(HttpServletResponse response) {
         response.addHeader("X-Powered-By", "smartboot");
-        response.addHeader("X-Version", "smart-servlet " + ContainerRuntime.VERSION + " (unAuthorized)");
+        response.addHeader("X-Version", ContainerRuntime.VERSION);
         response.addHeader("X-System", getBasicInfo());
         response.addHeader("X-Open-Source", "https://gitee.com/smartboot/smart-servlet");
-        response.addHeader("X-Tip", SandBox.UPGRADE_MESSAGE_EN);
+        response.addHeader("X-Tip", "The current version is not authorized.");
     }
 
     private String getBasicInfo() {
