@@ -23,9 +23,9 @@ import org.smartboot.servlet.impl.ServletConfigImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.provider.DispatcherProvider;
-import org.smartboot.servlet.provider.MemoryPoolProvider;
 import org.smartboot.servlet.provider.SecurityProvider;
 import org.smartboot.servlet.provider.SessionProvider;
+import org.smartboot.servlet.provider.VendorProvider;
 import org.smartboot.servlet.provider.WebsocketProvider;
 import org.smartboot.servlet.sandbox.SandBox;
 
@@ -80,10 +80,6 @@ public class ServletContextRuntime {
      * Session服务提供者
      */
     private SessionProvider sessionProvider = SandBox.INSTANCE.getSessionProvider();
-    /**
-     * 内存池服务提供者
-     */
-    private MemoryPoolProvider memoryPoolProvider = SandBox.INSTANCE.getMemoryPoolProvider();
 
     /**
      * Websocket服务提供者
@@ -91,6 +87,8 @@ public class ServletContextRuntime {
     private WebsocketProvider websocketProvider = SandBox.INSTANCE.getWebsocketProvider();
 
     private SecurityProvider securityProvider = SandBox.INSTANCE.getSecurityProvider();
+
+    private VendorProvider vendorProvider = SandBox.INSTANCE.getVendorProvider();
     /**
      * 关联至本运行环境的插件集合
      */
@@ -329,13 +327,6 @@ public class ServletContextRuntime {
         this.sessionProvider = sessionProvider;
     }
 
-    public MemoryPoolProvider getMemoryPoolProvider() {
-        return memoryPoolProvider;
-    }
-
-    public void setMemoryPoolProvider(MemoryPoolProvider memoryPoolProvider) {
-        this.memoryPoolProvider = memoryPoolProvider;
-    }
 
     public WebsocketProvider getWebsocketProvider() {
         return websocketProvider;
@@ -351,6 +342,14 @@ public class ServletContextRuntime {
 
     public void setSecurityProvider(SecurityProvider securityProvider) {
         this.securityProvider = securityProvider;
+    }
+
+    public VendorProvider getVendorProvider() {
+        return vendorProvider;
+    }
+
+    public void setVendorProvider(VendorProvider vendorProvider) {
+        this.vendorProvider = vendorProvider;
     }
 
     public String getContextPath() {

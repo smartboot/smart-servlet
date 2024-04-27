@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
 public class ServletContextImpl implements ServletContext {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextImpl.class);
     private final ConcurrentMap<String, Object> attributes = new ConcurrentHashMap<>();
-    private final ServletContextRuntime containerRuntime;
+    private final ServletContextRuntime runtime;
     private final DeploymentInfo deploymentInfo;
     private final SessionCookieConfig sessionCookieConfig;
     private ServletContextPathType pathType = ServletContextPathType.PATH;
@@ -83,15 +83,15 @@ public class ServletContextImpl implements ServletContext {
 
     private String requestCharacterEncoding;
 
-    public ServletContextImpl(ServletContextRuntime containerRuntime) {
-        this.containerRuntime = containerRuntime;
-        this.deploymentInfo = containerRuntime.getDeploymentInfo();
-        sessionCookieConfig = new SessionCookieConfigImpl(containerRuntime);
+    public ServletContextImpl(ServletContextRuntime runtime) {
+        this.runtime = runtime;
+        this.deploymentInfo = runtime.getDeploymentInfo();
+        sessionCookieConfig = new SessionCookieConfigImpl(runtime);
     }
 
     @Override
     public String getContextPath() {
-        String contextPath = containerRuntime.getContextPath();
+        String contextPath = runtime.getContextPath();
         if ("/".equals(contextPath)) {
             return "";
         }
@@ -208,7 +208,7 @@ public class ServletContextImpl implements ServletContext {
      */
     @Override
     public RequestDispatcher getRequestDispatcher(String path) {
-        return containerRuntime.getDispatcherProvider().getRequestDispatcher(this, path);
+        return runtime.getDispatcherProvider().getRequestDispatcher(this, path);
     }
 
     /**
@@ -224,7 +224,7 @@ public class ServletContextImpl implements ServletContext {
      */
     @Override
     public RequestDispatcher getNamedDispatcher(String name) {
-        return containerRuntime.getDispatcherProvider().getNamedDispatcher(this, name);
+        return runtime.getDispatcherProvider().getNamedDispatcher(this, name);
     }
 
     @Override
@@ -336,7 +336,11 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public String getServletContextName() {
-        return containerRuntime.getDisplayName();
+        return runtime.getDisplayName();
+    }
+
+    public ServletContextRuntime getRuntime() {
+        return runtime;
     }
 
     @Override
@@ -403,7 +407,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
-        if (containerRuntime.isStarted()) {
+        if (runtime.isStarted()) {
             throw new IllegalStateException("ServletContext has already been initialized");
         }
         if (StringUtils.isBlank(filterName)) {
@@ -532,7 +536,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void declareRoles(String... roleNames) {
-        if (containerRuntime.isStarted()) {
+        if (runtime.isStarted()) {
             throw new IllegalStateException("ServletContext has already been initialized");
         }
         if (roleNames != null) {

@@ -11,9 +11,9 @@
 package org.smartboot.servlet.sandbox;
 
 import org.smartboot.servlet.provider.DispatcherProvider;
-import org.smartboot.servlet.provider.MemoryPoolProvider;
 import org.smartboot.servlet.provider.SecurityProvider;
 import org.smartboot.servlet.provider.SessionProvider;
+import org.smartboot.servlet.provider.VendorProvider;
 import org.smartboot.servlet.provider.WebsocketProvider;
 
 /**
@@ -30,13 +30,13 @@ public class SandBox {
     private final SessionProvider sessionProvider = new MockSessionProvider();
     private final WebsocketProvider websocketProvider = new MockWebsocketProvider();
 
-    private final MemoryPoolProvider memoryPoolProvider = new MockMemoryPoolProvider();
+    private final VendorProvider vendorProvider = new MockVendorProvider();
+
+    public VendorProvider getVendorProvider() {
+        return vendorProvider;
+    }
 
     private final SecurityProvider securityProvider = new MockSecurityProvider();
-
-    public MemoryPoolProvider getMemoryPoolProvider() {
-        return memoryPoolProvider;
-    }
 
     public DispatcherProvider getDispatcherProvider() {
         return dispatcherProvider;

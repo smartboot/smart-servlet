@@ -10,17 +10,8 @@
 
 package org.smartboot.servlet.provider;
 
-import org.smartboot.socket.buffer.BufferPage;
+import javax.servlet.http.HttpServletResponse;
 
-/**
- * @author 三刀
- * @version V1.0 , 2020/12/8
- */
-public interface MemoryPoolProvider {
-    /**
-     * 获取内存页
-     *
-     * @return
-     */
-    BufferPage getBufferPage();
+public interface VendorProvider {
+    void signature(HttpServletResponse response);
 }
