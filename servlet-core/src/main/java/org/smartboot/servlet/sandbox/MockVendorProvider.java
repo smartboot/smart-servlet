@@ -22,6 +22,7 @@ public class MockVendorProvider implements VendorProvider {
         response.addHeader("X-Version", "smart-servlet " + ContainerRuntime.VERSION + " (unAuthorized)");
         response.addHeader("X-System", getBasicInfo());
         response.addHeader("X-Open-Source", "https://gitee.com/smartboot/smart-servlet");
+        response.addHeader("X-Tip", SandBox.UPGRADE_MESSAGE_EN);
     }
 
     private String getBasicInfo() {
