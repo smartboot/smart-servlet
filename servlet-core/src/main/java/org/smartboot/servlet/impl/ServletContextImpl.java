@@ -359,7 +359,7 @@ public class ServletContextImpl implements ServletContext {
         servletInfo.setServlet(servlet);
         servletInfo.setDynamic(true);
         deploymentInfo.addServlet(servletInfo);
-        return new ApplicationServletRegistration(servletInfo, deploymentInfo);
+        return new ApplicationServletRegistration(servletInfo);
     }
 
     @Override
@@ -384,14 +384,14 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public ServletRegistration getServletRegistration(String servletName) {
         ServletInfo servletInfo = deploymentInfo.getServlets().get(servletName);
-        return servletInfo == null ? null : new ApplicationServletRegistration(servletInfo, deploymentInfo);
+        return servletInfo == null ? null : new ApplicationServletRegistration(servletInfo);
     }
 
     @Override
     public Map<String, ? extends ServletRegistration> getServletRegistrations() {
         Map<String, ApplicationServletRegistration> map = new HashMap<>();
         deploymentInfo.getServlets().forEach((servletName, servletInfo) -> {
-            map.put(servletName, new ApplicationServletRegistration(servletInfo, deploymentInfo));
+            map.put(servletName, new ApplicationServletRegistration(servletInfo));
         });
         return map;
     }

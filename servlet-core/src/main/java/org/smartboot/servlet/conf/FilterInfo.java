@@ -26,6 +26,7 @@ public class FilterInfo {
     private String filterName;
     private Filter filter;
     private boolean dynamic;
+    private boolean asyncSupported;
 
     public Filter getFilter() {
         return filter;
@@ -66,6 +67,14 @@ public class FilterInfo {
 
     public void setDynamic(boolean dynamic) {
         this.dynamic = dynamic;
+    }
+
+    public boolean isAsyncSupported() {
+        return asyncSupported;
+    }
+
+    public void setAsyncSupported(boolean asyncSupported) {
+        this.asyncSupported = asyncSupported;
     }
 
     @Override

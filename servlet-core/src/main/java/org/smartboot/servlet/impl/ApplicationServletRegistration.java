@@ -12,7 +12,6 @@ package org.smartboot.servlet.impl;
 
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
 
@@ -33,12 +32,10 @@ import java.util.stream.Collectors;
  */
 public class ApplicationServletRegistration implements ServletRegistration.Dynamic {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationServletRegistration.class);
-    private ServletInfo servletInfo;
-    private DeploymentInfo deploymentInfo;
+    private final ServletInfo servletInfo;
 
-    public ApplicationServletRegistration(ServletInfo servletInfo, DeploymentInfo deploymentInfo) {
+    public ApplicationServletRegistration(ServletInfo servletInfo) {
         this.servletInfo = servletInfo;
-        this.deploymentInfo = deploymentInfo;
     }
 
     @Override
@@ -59,7 +56,7 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
 
     @Override
     public void setAsyncSupported(boolean isAsyncSupported) {
-        LOGGER.info("unSupport");
+        servletInfo.setAsyncSupported(isAsyncSupported);
     }
 
     @Override
@@ -111,7 +108,7 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
 
     @Override
     public Set<String> setInitParameters(Map<String, String> initParameters) {
-        initParameters.forEach((key, value) -> servletInfo.addInitParam(key, value));
+        initParameters.forEach(servletInfo::addInitParam);
         return servletInfo.getInitParams().keySet();
     }
 

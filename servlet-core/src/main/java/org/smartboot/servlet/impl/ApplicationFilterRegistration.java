@@ -10,14 +10,14 @@
 
 package org.smartboot.servlet.impl;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterRegistration;
 import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.FilterMappingInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -133,9 +133,7 @@ public class ApplicationFilterRegistration
 
     @Override
     public void setAsyncSupported(boolean asyncSupported) {
-        System.out.println("setAsyncSupported:" + asyncSupported);
-//        throw new UnsupportedOperationException();
-//        filterDef.setAsyncSupported(Boolean.valueOf(asyncSupported).toString());
+        filterDef.setAsyncSupported(asyncSupported);
     }
 
 }
