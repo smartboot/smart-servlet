@@ -16,12 +16,10 @@ import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpResponse;
-import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,8 +36,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     private static final int DEFAULT_BUFFER_SIZE = 512;
     private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[DEFAULT_BUFFER_SIZE]);
     private final HttpResponse response;
-    private final HttpServletRequest request;
-    private final ServletContextRuntime containerRuntime;
+    private final HttpServletRequestImpl request;
     private String contentType;
     private boolean charsetSet = false;
     private String charset;
@@ -49,10 +46,9 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     private Locale locale;
 
-    public HttpServletResponseImpl(HttpServletRequest request, HttpResponse response, ServletContextRuntime containerRuntime) {
+    public HttpServletResponseImpl(HttpServletRequestImpl request, HttpResponse response) {
         this.request = request;
         this.response = response;
-        this.containerRuntime = containerRuntime;
     }
 
     @Override
@@ -194,7 +190,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (charset != null) {
             return charset;
         }
-        String charset = containerRuntime.getServletContext().getResponseCharacterEncoding();
+        String charset = request.getServletContext().getResponseCharacterEncoding();
         if (charset == null) {
             charset = StandardCharsets.ISO_8859_1.name();
         }
@@ -297,10 +293,6 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         bufferSize = size;
     }
 
-    public int unWriteSize() {
-        return servletOutputStream == null ? 0 : servletOutputStream.getCount();
-    }
-
     @Override
     public void flushBuffer() throws IOException {
         if (writer != null) {
@@ -353,7 +345,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             return;
         }
         this.locale = loc;
-        String encoding = containerRuntime.getDeploymentInfo().getLocaleEncodingMappings().get(loc.getLanguage());
+        String encoding = request.getServletContext().getDeploymentInfo().getLocaleEncodingMappings().get(loc.getLanguage());
         if (StringUtils.isNotBlank(encoding)) {
             setCharacterEncoding(encoding);
         }
