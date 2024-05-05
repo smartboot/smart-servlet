@@ -16,13 +16,14 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/10/19
  */
 public class ServletOutputStreamImpl extends ServletOutputStream {
-    private final BufferedOutputStream outputStream;
+    private final OutputStream outputStream;
     private boolean committed = false;
     /**
      * buffer仅用于提供response.resetBuffer能力,commit之后即失效
@@ -33,6 +34,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     public ServletOutputStreamImpl(BufferOutputStream outputStream, byte[] buffer) {
         this.outputStream = new BufferedOutputStream(outputStream, 1024);
+//        this.outputStream = outputStream;
         this.buffer = buffer;
     }
 
