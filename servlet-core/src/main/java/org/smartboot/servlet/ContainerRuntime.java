@@ -32,6 +32,7 @@ import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletResponse;
@@ -155,6 +156,7 @@ public class ContainerRuntime {
         pipeline.next(new ServletRequestListenerHandler()).next(new ServletMatchHandler()).next(new FilterMatchHandler()).next(new ServletServiceHandler());
         runtime.getServletContext().setPipeline(pipeline);
         runtime.setPlugins(plugins);
+        runtime.setContainerRuntime(this);
         runtimes.add(runtime);
         //按contextPath长度倒序,防止被"/"优先匹配
         runtimes.sort((o1, o2) -> {
@@ -212,7 +214,7 @@ public class ContainerRuntime {
      */
     public void doHandle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        boolean async = false;
+        AsyncContext asyncContext = null;
         try {
             //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
             ServletContextRuntime runtime = matchRuntime(request.getRequestURI());
@@ -224,21 +226,23 @@ public class ContainerRuntime {
 
             //封装上下文对象
             HttpServletRequestImpl servletRequest = new HttpServletRequestImpl(request, runtime, DispatcherType.REQUEST, completableFuture);
-            HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response, runtime);
+            HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
             servletRequest.setHttpServletResponse(servletResponse);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
             // just do it
             servletContext.getPipeline().handleRequest(handlerContext);
-            async = servletRequest.isAsyncStarted();
             //输出buffer中的数据
-            if (!async) {
+            asyncContext = servletRequest.getInternalAsyncContext();
+            if (asyncContext == null) {
                 servletResponse.flushBuffer();
             }
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
-            if (!async) {
+            if (asyncContext != null) {
+                asyncContext.complete();
+            } else {
                 completableFuture.complete(null);
             }
         }
@@ -261,7 +265,7 @@ public class ContainerRuntime {
 
     private final ServletContextRuntime defaultRuntime = new ServletContextRuntime("/");
 
-    private ServletContextRuntime matchRuntime(String requestUri) {
+    public ServletContextRuntime matchRuntime(String requestUri) {
         for (ServletContextRuntime matchRuntime : runtimes) {
             String contextPath = matchRuntime.getContextPath();
             if (requestUri.startsWith(contextPath)) {
