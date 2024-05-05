@@ -22,6 +22,7 @@ import org.smartboot.servlet.impl.FilterConfigImpl;
 import org.smartboot.servlet.impl.ServletConfigImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
+import org.smartboot.servlet.provider.AsyncContextProvider;
 import org.smartboot.servlet.provider.DispatcherProvider;
 import org.smartboot.servlet.provider.SecurityProvider;
 import org.smartboot.servlet.provider.SessionProvider;
@@ -89,6 +90,7 @@ public class ServletContextRuntime {
     private SecurityProvider securityProvider = SandBox.INSTANCE.getSecurityProvider();
 
     private VendorProvider vendorProvider = SandBox.INSTANCE.getVendorProvider();
+    private AsyncContextProvider asyncContextProvider = SandBox.INSTANCE.getAsyncContextProvider();
     /**
      * 关联至本运行环境的插件集合
      */
@@ -351,6 +353,14 @@ public class ServletContextRuntime {
 
     public void setVendorProvider(VendorProvider vendorProvider) {
         this.vendorProvider = vendorProvider;
+    }
+
+    public AsyncContextProvider getAsyncContextProvider() {
+        return asyncContextProvider;
+    }
+
+    public void setAsyncContextProvider(AsyncContextProvider asyncContextProvider) {
+        this.asyncContextProvider = asyncContextProvider;
     }
 
     public String getContextPath() {

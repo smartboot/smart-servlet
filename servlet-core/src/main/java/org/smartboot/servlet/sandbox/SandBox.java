@@ -10,6 +10,7 @@
 
 package org.smartboot.servlet.sandbox;
 
+import org.smartboot.servlet.provider.AsyncContextProvider;
 import org.smartboot.servlet.provider.DispatcherProvider;
 import org.smartboot.servlet.provider.SecurityProvider;
 import org.smartboot.servlet.provider.SessionProvider;
@@ -30,6 +31,7 @@ public class SandBox {
     private final WebsocketProvider websocketProvider = new MockWebsocketProvider();
 
     private final VendorProvider vendorProvider = new MockVendorProvider();
+    private final AsyncContextProvider asyncContextProvider = new MockAsyncContextProvider();
 
     public VendorProvider getVendorProvider() {
         return vendorProvider;
@@ -51,5 +53,9 @@ public class SandBox {
 
     public SecurityProvider getSecurityProvider() {
         return securityProvider;
+    }
+
+    public AsyncContextProvider getAsyncContextProvider() {
+        return asyncContextProvider;
     }
 }

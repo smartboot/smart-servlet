@@ -69,7 +69,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpServletRequestImpl.class);
     private static final Cookie[] NONE_COOKIE = new Cookie[0];
     private final HttpRequest request;
-    private final ServletContextImpl servletContext;
+    private ServletContextImpl servletContext;
     private final DispatcherType dispatcherType;
     private final ServletContextRuntime runtime;
     private String characterEncoding;
@@ -103,7 +103,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     private boolean asyncStarted = false;
 
-    private volatile AsyncContextImpl asyncContext = null;
+    private volatile AsyncContext asyncContext = null;
     private final CompletableFuture<Object> completableFuture;
     private Principal userPrincipal;
     private String authType;
@@ -680,6 +680,10 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         return request.getLocalAddress().getPort();
     }
 
+    public void setServletContext(ServletContextImpl servletContext) {
+        this.servletContext = servletContext;
+    }
+
     @Override
     public ServletContextImpl getServletContext() {
         return servletContext;
@@ -694,11 +698,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
         if (!isAsyncSupported()) {
             throw new IllegalStateException();
-        }
-        if (asyncContext == null) {
-            asyncContext = new AsyncContextImpl(runtime, this, servletRequest, servletResponse, completableFuture);
+        } else if (asyncStarted) {
+            throw new IllegalStateException();
         }
         asyncStarted = true;
+        asyncContext = runtime.getAsyncContextProvider().startAsync(this, servletRequest, servletResponse, asyncContext);
         return asyncContext;
     }
 
@@ -706,6 +710,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     public boolean isAsyncStarted() {
         return asyncStarted;
     }
+
+    public void resetAsyncStarted() {
+        asyncStarted = false;
+    }
+
 
     @Override
     public boolean isAsyncSupported() {
@@ -720,8 +729,16 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         throw new IllegalStateException();
     }
 
+    public AsyncContext getInternalAsyncContext() {
+        return asyncContext;
+    }
+
     @Override
     public DispatcherType getDispatcherType() {
         return dispatcherType;
+    }
+
+    public CompletableFuture<Object> getCompletableFuture() {
+        return completableFuture;
     }
 }
