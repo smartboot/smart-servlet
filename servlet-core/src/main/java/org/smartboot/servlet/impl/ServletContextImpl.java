@@ -102,7 +102,7 @@ public class ServletContextImpl implements ServletContext {
     public ServletContext getContext(String uripath) {
         //获取uri归属的 DeploymentRuntime
 //        LOGGER.error("unSupport now");
-        return null;
+        return runtime.getContainerRuntime().matchRuntime(uripath).getServletContext();
     }
 
     @Override
