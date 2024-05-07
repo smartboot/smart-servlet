@@ -14,7 +14,7 @@ import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.ServletContextImpl;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletResponse;
 
 /**
  * 请求处理上下文对象
@@ -30,7 +30,7 @@ public class HandlerContext {
     /**
      * 响应
      */
-    private final HttpServletResponse response;
+    private final ServletResponse response;
     /**
      * 匹配的Servlet上下文
      */
@@ -42,7 +42,7 @@ public class HandlerContext {
      */
     private ServletInfo servletInfo;
 
-    public HandlerContext(SmartHttpServletRequest request, HttpServletResponse response, ServletContextImpl servletContext, boolean namedDispatcher) {
+    public HandlerContext(SmartHttpServletRequest request, ServletResponse response, ServletContextImpl servletContext, boolean namedDispatcher) {
         this.request = request;
         this.response = response;
         this.servletContext = servletContext;
@@ -59,7 +59,7 @@ public class HandlerContext {
     }
 
 
-    public HttpServletResponse getResponse() {
+    public ServletResponse getResponse() {
         return response;
     }
 

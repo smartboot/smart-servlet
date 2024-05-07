@@ -229,6 +229,7 @@ public class ContainerRuntime {
             HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
             servletRequest.setHttpServletResponse(servletResponse);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
+            runtime.getVendorProvider().signature(servletResponse);
             // just do it
             servletContext.getPipeline().handleRequest(handlerContext);
             //输出buffer中的数据
