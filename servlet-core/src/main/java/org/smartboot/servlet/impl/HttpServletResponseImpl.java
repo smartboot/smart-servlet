@@ -93,8 +93,15 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void sendError(int sc, String msg) throws IOException {
-        HttpStatus httpStatus = HttpStatus.valueOf(sc);
-        response.setHttpStatus(httpStatus);
+        //If the response has already been committed, this method throws an IllegalStateException.
+        if (isCommitted()) {
+            throw new IllegalStateException();
+        }
+        //After using this method, the response should be considered to be committed and should not be written to.
+        if (servletOutputStream != null) {
+            servletOutputStream.resetBuffer();
+        }
+        response.setHttpStatus(sc, msg);
     }
 
     @Override
@@ -105,6 +112,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void sendRedirect(String location) throws IOException {
+        //If the response has already been committed, this method throws an IllegalStateException
+        if(isCommitted()){
+            throw new IllegalStateException();
+        }
         response.setHttpStatus(HttpStatus.FOUND);
         LOGGER.info("location:" + location);
         String redirect;
