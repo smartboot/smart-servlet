@@ -11,6 +11,7 @@
 package org.smartboot.servlet.conf;
 
 import org.smartboot.servlet.AnnotationsLoader;
+import org.smartboot.servlet.impl.ServletContextWrapperListener;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContextAttributeListener;
@@ -47,7 +48,9 @@ public class DeploymentInfo {
     private final Map<String, String> initParameters = new HashMap<>();
     private List<ServletContainerInitializerInfo> servletContainerInitializers = new ArrayList<>();
     private List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
-    private List<ServletContextListener> servletContextListeners = new ArrayList<>();
+    private List<ServletContextWrapperListener> servletContextListeners = new ArrayList<>();
+    //是否处于动态listener阶段
+    private boolean dynamicListenerState;
     private List<HttpSessionListener> httpSessionListeners = new ArrayList<>();
     private List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
 
@@ -164,10 +167,10 @@ public class DeploymentInfo {
     }
 
     public void addServletContextListener(ServletContextListener contextListener) {
-        servletContextListeners.add(contextListener);
+        servletContextListeners.add(new ServletContextWrapperListener(contextListener, dynamicListenerState));
     }
 
-    public List<ServletContextListener> getServletContextListeners() {
+    public List<ServletContextWrapperListener> getServletContextListeners() {
         return servletContextListeners;
     }
 
@@ -269,5 +272,13 @@ public class DeploymentInfo {
 
     public Set<String> getSecurityRoles() {
         return securityRoles;
+    }
+
+    public void setDynamicListenerState(boolean dynamicListenerState) {
+        this.dynamicListenerState = dynamicListenerState;
+    }
+
+    public boolean isDynamicListenerState() {
+        return dynamicListenerState;
     }
 }

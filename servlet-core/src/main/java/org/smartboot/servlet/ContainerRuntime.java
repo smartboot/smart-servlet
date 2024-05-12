@@ -324,6 +324,7 @@ public class ContainerRuntime {
 
         //register ServletContextListener into deploymentInfo
         webAppInfo.getListeners().forEach(listener -> servletRuntime.getServletContext().addListener(listener));
+        deploymentInfo.setDynamicListenerState(true);
 
         //register filterMapping into deploymentInfo
         webAppInfo.getFilterMappings().forEach(deploymentInfo::addFilterMapping);

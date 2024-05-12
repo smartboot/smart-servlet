@@ -81,13 +81,8 @@ public class ServletContextImpl implements ServletContext {
     private String responseCharacterEncoding;
 
     private String requestCharacterEncoding;
-    /**
-     * 监听器状态
-     * 0:初始状态
-     * 1:初始化中
-     * 2:完成初始化
-     */
-    private int listenerState = 0;
+
+    private ServletContextWrapperListener currentInitializeContext;
 
     public ServletContextImpl(ServletContextRuntime runtime) {
         this.runtime = runtime;
@@ -418,9 +413,13 @@ public class ServletContextImpl implements ServletContext {
         }
         //if this ServletContext was passed to the ServletContextListener.contextInitialized method
         // of a ServletContextListener that was neither declared in web. xml or web-fragment.
-        if (listenerState == 2) {
+        if (!deploymentInfo.isDynamicListenerState()) {
             throw new UnsupportedOperationException();
         }
+        if (currentInitializeContext != null && currentInitializeContext.isDynamic()) {
+            throw new UnsupportedOperationException();
+        }
+
         if (StringUtils.isBlank(filterName)) {
             throw new IllegalArgumentException("filterName is null or an empty String");
         }
@@ -500,13 +499,18 @@ public class ServletContextImpl implements ServletContext {
         if (runtime.isStarted()) {
             throw new IllegalStateException("ServletContext has already been initialized");
         }
-        if (listenerState == 2) {
-            throw new UnsupportedOperationException();
-        }
-        if (listenerState == 1
-                && !ServletContextListener.class.isAssignableFrom(listener.getClass())) {
-            throw new IllegalArgumentException();
-        }
+//        if (deploymentInfo.isDynamicListenerState()) {
+//            if(currentServletContextListener==null)
+//            if (currentServletContextListener.isDynamic()) {
+//                if (!ServletContextListener.class.isAssignableFrom(listener.getClass())) {
+//                    throw new IllegalArgumentException();
+//                }
+//            } else {
+//                throw new UnsupportedOperationException();
+//            }
+//
+//        }
+
         LOGGER.info(listener.getClass().getSimpleName() + " listener: " + listener);
         if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletContextListener((ServletContextListener) listener);
@@ -623,7 +627,7 @@ public class ServletContextImpl implements ServletContext {
         this.pipeline = pipeline;
     }
 
-    public void setListenerState(int listenerState) {
-        this.listenerState = listenerState;
+    public void setCurrentInitializeContext(ServletContextWrapperListener currentInitializeContext) {
+        this.currentInitializeContext = currentInitializeContext;
     }
 }

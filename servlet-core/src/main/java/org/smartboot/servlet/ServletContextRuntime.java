@@ -21,6 +21,7 @@ import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.FilterConfigImpl;
 import org.smartboot.servlet.impl.ServletConfigImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
+import org.smartboot.servlet.impl.ServletContextWrapperListener;
 import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.provider.AsyncContextProvider;
 import org.smartboot.servlet.provider.DispatcherProvider;
@@ -37,7 +38,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebListener;
@@ -49,7 +49,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EventListener;
 import java.util.List;
 
 /**
@@ -153,16 +152,11 @@ public class ServletContextRuntime {
             newServletsInstance(deploymentInfo);
 
             //启动Listener
-            servletContext.setListenerState(1);
-            for (EventListener listener : deploymentInfo.getServletContextListeners()) {
-//                servletContext.addListener(listener);
-                if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
-                    ServletContextListener contextListener = (ServletContextListener) listener;
-                    ServletContextEvent event = new ServletContextEvent(servletContext);
-                    contextListener.contextInitialized(event);
-                }
+            for (ServletContextWrapperListener wrapperListener : deploymentInfo.getServletContextListeners()) {
+                servletContext.setCurrentInitializeContext(wrapperListener);
+                ServletContextEvent event = new ServletContextEvent(servletContext);
+                wrapperListener.getListener().contextInitialized(event);
             }
-            servletContext.setListenerState(2);
 
             //启动Servlet
             initServlet(deploymentInfo);
@@ -317,7 +311,7 @@ public class ServletContextRuntime {
         plugins.forEach(plugin -> plugin.willStopContainer(this));
         deploymentInfo.getServlets().values().forEach(servletInfo -> servletInfo.getServlet().destroy());
         ServletContextEvent event = deploymentInfo.getServletContextListeners().isEmpty() ? null : new ServletContextEvent(servletContext);
-        deploymentInfo.getServletContextListeners().forEach(servletContextListener -> servletContextListener.contextDestroyed(event));
+        deploymentInfo.getServletContextListeners().forEach(servletContextListener -> servletContextListener.getListener().contextDestroyed(event));
 
         plugins.forEach(plugin -> plugin.onContainerStopped(this));
     }
