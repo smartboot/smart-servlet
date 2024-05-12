@@ -46,18 +46,23 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.smartboot.servlet</groupId>
-            <artifactId>smart-servlet-spring-boot-starter</artifactId>
-            <version>1.2</version><!--最新版本 -->
-        </dependency>
-        <dependency>
-            <groupId>org.smartboot.servlet</groupId>
-            <artifactId>base</artifactId>
-            <version>1.0</version><!--无需修改此配置-->
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/lib/base-1.2.jar</systemPath><!--根据实际情况修改路径-->
-        </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-undertow</artifactId>
+                    <version>2.7.3</version>
+                </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.smartboot.servlet</groupId>-->
+<!--            <artifactId>smart-servlet-spring-boot-starter</artifactId>-->
+<!--            <version>1.2</version>&lt;!&ndash;最新版本 &ndash;&gt;-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.smartboot.servlet</groupId>-->
+<!--            <artifactId>base</artifactId>-->
+<!--            <version>1.0</version>&lt;!&ndash;无需修改此配置&ndash;&gt;-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${pom.basedir}/lib/base-1.2.jar</systemPath>&lt;!&ndash;根据实际情况修改路径&ndash;&gt;-->
+<!--        </dependency>-->
     </dependencies>
     <build>
         <plugins>

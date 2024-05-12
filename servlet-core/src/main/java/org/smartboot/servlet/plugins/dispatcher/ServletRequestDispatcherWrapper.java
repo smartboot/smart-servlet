@@ -40,6 +40,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     private int pathInfoStart;
     private int pathInfoEnd;
     private String requestUri;
+    private String queryString;
     private Map<String, String[]> parameters;
 
     public ServletRequestDispatcherWrapper(HttpServletRequestImpl request, DispatcherType dispatcherType, boolean named) {
@@ -97,6 +98,15 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     @Override
     public void setRequestUri(String requestURI) {
         this.requestUri = requestURI;
+    }
+
+    @Override
+    public String getQueryString() {
+        return named ? super.getQueryString() : queryString;
+    }
+
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
     }
 
     @Override

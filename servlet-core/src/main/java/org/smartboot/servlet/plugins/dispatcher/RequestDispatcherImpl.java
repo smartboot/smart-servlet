@@ -99,6 +99,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
             if (array.length > 1) {
                 HttpUtils.decodeParamString(array[1], parameters);
                 requestWrapper.setParameters(parameters);
+                requestWrapper.setQueryString(array[1]);
             }
         }
 
