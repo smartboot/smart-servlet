@@ -37,6 +37,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebListener;
@@ -152,12 +153,16 @@ public class ServletContextRuntime {
             newServletsInstance(deploymentInfo);
 
             //启动Listener
-            servletContext.setStatus(1);
-            for (Class eventListenerInfo : deploymentInfo.getEventListeners()) {
-                EventListener listener = servletContext.createListener(eventListenerInfo);
-                servletContext.addListener(listener);
+            servletContext.setListenerState(1);
+            for (EventListener listener : deploymentInfo.getServletContextListeners()) {
+//                servletContext.addListener(listener);
+                if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
+                    ServletContextListener contextListener = (ServletContextListener) listener;
+                    ServletContextEvent event = new ServletContextEvent(servletContext);
+                    contextListener.contextInitialized(event);
+                }
             }
-            servletContext.setStatus(2);
+            servletContext.setListenerState(2);
 
             //启动Servlet
             initServlet(deploymentInfo);

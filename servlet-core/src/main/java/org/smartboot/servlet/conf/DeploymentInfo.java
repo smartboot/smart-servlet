@@ -45,7 +45,6 @@ public class DeploymentInfo {
     private final Map<String, FilterInfo> filters = new HashMap<>();
     private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
     private final Map<String, String> initParameters = new HashMap<>();
-    private List<Class> eventListeners = new ArrayList<>();
     private List<ServletContainerInitializerInfo> servletContainerInitializers = new ArrayList<>();
     private List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
     private List<ServletContextListener> servletContextListeners = new ArrayList<>();
@@ -140,17 +139,7 @@ public class DeploymentInfo {
         filters.put(filter.getFilterName(), filter);
     }
 
-    public void addEventListener(final Class listenerInfo) {
-        eventListeners.add(listenerInfo);
-    }
-
-    public List<Class> getEventListeners() {
-        return eventListeners;
-    }
-
     public void amazing() {
-        eventListeners.clear();
-        eventListeners = null;
         if (servletContainerInitializers.isEmpty()) {
             servletContainerInitializers = Collections.emptyList();
         }

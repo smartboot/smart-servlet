@@ -29,7 +29,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
@@ -82,7 +81,13 @@ public class ServletContextImpl implements ServletContext {
     private String responseCharacterEncoding;
 
     private String requestCharacterEncoding;
-    private int status = 0;
+    /**
+     * 监听器状态
+     * 0:初始状态
+     * 1:初始化中
+     * 2:完成初始化
+     */
+    private int listenerState = 0;
 
     public ServletContextImpl(ServletContextRuntime runtime) {
         this.runtime = runtime;
@@ -411,7 +416,9 @@ public class ServletContextImpl implements ServletContext {
         if (runtime.isStarted()) {
             throw new IllegalStateException("ServletContext has already been initialized");
         }
-        if (status != 0) {
+        //if this ServletContext was passed to the ServletContextListener.contextInitialized method
+        // of a ServletContextListener that was neither declared in web. xml or web-fragment.
+        if (listenerState != 0) {
             throw new UnsupportedOperationException();
         }
         if (StringUtils.isBlank(filterName)) {
@@ -493,15 +500,16 @@ public class ServletContextImpl implements ServletContext {
         if (runtime.isStarted()) {
             throw new IllegalStateException("ServletContext has already been initialized");
         }
-        if (status == 2 || (status == 1 && !ServletContextListener.class.isAssignableFrom(listener.getClass()))) {
+        if (listenerState == 2) {
             throw new UnsupportedOperationException();
+        }
+        if (listenerState == 1
+                && !ServletContextListener.class.isAssignableFrom(listener.getClass())) {
+            throw new IllegalArgumentException();
         }
         LOGGER.info(listener.getClass().getSimpleName() + " listener: " + listener);
         if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
-            ServletContextListener contextListener = (ServletContextListener) listener;
-            ServletContextEvent event = new ServletContextEvent(this);
-            contextListener.contextInitialized(event);
-            deploymentInfo.addServletContextListener(contextListener);
+            deploymentInfo.addServletContextListener((ServletContextListener) listener);
         }
         if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletRequestListener((ServletRequestListener) listener);
@@ -522,13 +530,11 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void addListener(Class<? extends EventListener> listenerClass) {
-        if (runtime.isStarted()) {
-            throw new IllegalStateException("ServletContext has already been initialized");
+        try {
+            addListener(createListener(listenerClass));
+        } catch (ServletException e) {
+            throw new IllegalArgumentException(e);
         }
-        if (status == 2 || (status == 1 && !listenerClass.isAssignableFrom(ServletContextListener.class))) {
-            throw new UnsupportedOperationException();
-        }
-        deploymentInfo.addEventListener(listenerClass);
     }
 
     @Override
@@ -617,7 +623,7 @@ public class ServletContextImpl implements ServletContext {
         this.pipeline = pipeline;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setListenerState(int listenerState) {
+        this.listenerState = listenerState;
     }
 }
