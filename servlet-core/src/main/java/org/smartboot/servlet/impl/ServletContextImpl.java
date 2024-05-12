@@ -411,11 +411,6 @@ public class ServletContextImpl implements ServletContext {
         if (runtime.isStarted()) {
             throw new IllegalStateException("ServletContext has already been initialized");
         }
-        //if this ServletContext was passed to the ServletContextListener.contextInitialized method
-        // of a ServletContextListener that was neither declared in web. xml or web-fragment.
-        if (!deploymentInfo.isDynamicListenerState()) {
-            throw new UnsupportedOperationException();
-        }
         if (currentInitializeContext != null && currentInitializeContext.isDynamic()) {
             throw new UnsupportedOperationException();
         }
