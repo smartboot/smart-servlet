@@ -264,7 +264,7 @@ public class ContainerRuntime {
         return configuration;
     }
 
-    private final ServletContextRuntime defaultRuntime = new ServletContextRuntime("/");
+    private final ServletContextRuntime defaultRuntime = new ServletContextRuntime(null, Thread.currentThread().getContextClassLoader(), "/");
 
     public ServletContextRuntime matchRuntime(String requestUri) {
         for (ServletContextRuntime matchRuntime : runtimes) {
@@ -323,7 +323,7 @@ public class ContainerRuntime {
         webAppInfo.getContextParams().forEach(deploymentInfo::addInitParameter);
 
         //register ServletContextListener into deploymentInfo
-        webAppInfo.getListeners().forEach(deploymentInfo::addEventListener);
+        webAppInfo.getListeners().forEach(listener -> servletRuntime.getServletContext().addListener(listener));
 
         //register filterMapping into deploymentInfo
         webAppInfo.getFilterMappings().forEach(deploymentInfo::addFilterMapping);

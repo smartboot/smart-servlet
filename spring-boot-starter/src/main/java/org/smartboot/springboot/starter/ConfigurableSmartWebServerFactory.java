@@ -35,10 +35,9 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
         File docBase = (root != null) ? root : createTempDir("smart-servlet");
         System.out.println(docBase.getAbsoluteFile());
         SmartContainerInitializer initializer = new SmartContainerInitializer(initializers);
-        ServletContextRuntime servletRuntime = new ServletContextRuntime(getContextPath());
+        ServletContextRuntime servletRuntime = new ServletContextRuntime(null, getServletClassLoader(), getContextPath());
         servletRuntime.getServletContext().setAttribute(ServerContainer.class.getName(), servletRuntime.getWebsocketProvider().getWebSocketServerContainer());
         DeploymentInfo deployment = servletRuntime.getDeploymentInfo();
-        deployment.setClassLoader(getServletClassLoader());
         deployment.setDisplayName(getDisplayName());
         deployment.addServletContainerInitializer(initializer);
         try {

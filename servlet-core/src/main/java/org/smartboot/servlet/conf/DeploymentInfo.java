@@ -45,7 +45,7 @@ public class DeploymentInfo {
     private final Map<String, FilterInfo> filters = new HashMap<>();
     private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
     private final Map<String, String> initParameters = new HashMap<>();
-    private List<String> eventListeners = new ArrayList<>();
+    private List<Class> eventListeners = new ArrayList<>();
     private List<ServletContainerInitializerInfo> servletContainerInitializers = new ArrayList<>();
     private List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
     private List<ServletContextListener> servletContextListeners = new ArrayList<>();
@@ -57,7 +57,7 @@ public class DeploymentInfo {
     private List<String> welcomeFiles = Collections.emptyList();
     private final Set<String> securityRoles = new HashSet<>();
     private final Map<String, String> localeEncodingMappings = new HashMap<>();
-    private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    private final ClassLoader classLoader;
     private String displayName;
     private URL contextUrl;
 
@@ -77,12 +77,12 @@ public class DeploymentInfo {
         this.contextUrl = contextUrl;
     }
 
-    public ClassLoader getClassLoader() {
-        return classLoader;
+    public DeploymentInfo(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
-    public void setClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
+    public ClassLoader getClassLoader() {
+        return classLoader;
     }
 
     public void addServletContainerInitializer(final ServletContainerInitializer servletContainerInitializer) {
@@ -140,11 +140,11 @@ public class DeploymentInfo {
         filters.put(filter.getFilterName(), filter);
     }
 
-    public void addEventListener(final String listenerInfo) {
+    public void addEventListener(final Class listenerInfo) {
         eventListeners.add(listenerInfo);
     }
 
-    public List<String> getEventListeners() {
+    public List<Class> getEventListeners() {
         return eventListeners;
     }
 

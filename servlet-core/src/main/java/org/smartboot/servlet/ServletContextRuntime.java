@@ -64,11 +64,11 @@ public class ServletContextRuntime {
     /**
      * 容器部署信息
      */
-    private final DeploymentInfo deploymentInfo = new DeploymentInfo();
+    private final DeploymentInfo deploymentInfo;
     /**
      * 服务上下文
      */
-    private final ServletContextImpl servletContext = new ServletContextImpl(this);
+    private final ServletContextImpl servletContext;
     /**
      * 上下文路径
      */
@@ -103,9 +103,9 @@ public class ServletContextRuntime {
     private final String localPath;
     private ContainerRuntime containerRuntime;
 
-    public ServletContextRuntime(String contextPath) {
-        this(null, Thread.currentThread().getContextClassLoader(), contextPath);
-    }
+//    public ServletContextRuntime(String contextPath) {
+//        this(null, Thread.currentThread().getContextClassLoader(), contextPath);
+//    }
 
     public ServletContextRuntime(String localPath, ClassLoader classLoader, String contextPath) {
         this.localPath = localPath;
@@ -114,7 +114,8 @@ public class ServletContextRuntime {
         } else {
             this.contextPath = contextPath;
         }
-        this.deploymentInfo.setClassLoader(classLoader);
+        deploymentInfo = new DeploymentInfo(classLoader);
+        servletContext = new ServletContextImpl(this);
     }
 
     /**
@@ -151,10 +152,12 @@ public class ServletContextRuntime {
             newServletsInstance(deploymentInfo);
 
             //启动Listener
-            for (String eventListenerInfo : deploymentInfo.getEventListeners()) {
-                EventListener listener = (EventListener) deploymentInfo.getClassLoader().loadClass(eventListenerInfo).newInstance();
+            servletContext.setStatus(1);
+            for (Class eventListenerInfo : deploymentInfo.getEventListeners()) {
+                EventListener listener = servletContext.createListener(eventListenerInfo);
                 servletContext.addListener(listener);
             }
+            servletContext.setStatus(2);
 
             //启动Servlet
             initServlet(deploymentInfo);
@@ -214,7 +217,7 @@ public class ServletContextRuntime {
             });
             deploymentInfo.getHandlesTypesLoader().getAnnotations(WebListener.class).forEach(listener -> {
                 System.out.println(listener);
-                deploymentInfo.addEventListener(listener);
+                servletContext.addListener(listener);
             });
             deploymentInfo.getHandlesTypesLoader().getServlets().values().forEach(servletInfo -> {
                 ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());

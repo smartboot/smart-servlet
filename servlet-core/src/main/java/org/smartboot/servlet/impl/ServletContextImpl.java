@@ -82,6 +82,7 @@ public class ServletContextImpl implements ServletContext {
     private String responseCharacterEncoding;
 
     private String requestCharacterEncoding;
+    private int status = 0;
 
     public ServletContextImpl(ServletContextRuntime runtime) {
         this.runtime = runtime;
@@ -410,6 +411,9 @@ public class ServletContextImpl implements ServletContext {
         if (runtime.isStarted()) {
             throw new IllegalStateException("ServletContext has already been initialized");
         }
+        if (status != 0) {
+            throw new UnsupportedOperationException();
+        }
         if (StringUtils.isBlank(filterName)) {
             throw new IllegalArgumentException("filterName is null or an empty String");
         }
@@ -476,11 +480,22 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void addListener(String className) {
-        deploymentInfo.addEventListener(className);
+        try {
+            Class<? extends EventListener> clazz = (Class<? extends EventListener>) getClassLoader().loadClass(className);
+            addListener(clazz);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public <T extends EventListener> void addListener(T listener) {
+        if (runtime.isStarted()) {
+            throw new IllegalStateException("ServletContext has already been initialized");
+        }
+        if (status == 2 || (status == 1 && !ServletContextListener.class.isAssignableFrom(listener.getClass()))) {
+            throw new UnsupportedOperationException();
+        }
         LOGGER.info(listener.getClass().getSimpleName() + " listener: " + listener);
         if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
             ServletContextListener contextListener = (ServletContextListener) listener;
@@ -507,7 +522,13 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void addListener(Class<? extends EventListener> listenerClass) {
-        addListener(listenerClass.getName());
+        if (runtime.isStarted()) {
+            throw new IllegalStateException("ServletContext has already been initialized");
+        }
+        if (status == 2 || (status == 1 && !listenerClass.isAssignableFrom(ServletContextListener.class))) {
+            throw new UnsupportedOperationException();
+        }
+        deploymentInfo.addEventListener(listenerClass);
     }
 
     @Override
@@ -594,5 +615,9 @@ public class ServletContextImpl implements ServletContext {
 
     public void setPipeline(HandlerPipeline pipeline) {
         this.pipeline = pipeline;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }
