@@ -331,6 +331,8 @@ public class ContainerRuntime {
 
         webAppInfo.getLocaleEncodingMappings().forEach(deploymentInfo::addLocaleEncodingMapping);
 
+        webAppInfo.getMimeMappings().forEach((key, value) -> servletRuntime.getServletContext().putMimeTypes(key, value));
+
         deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 
         deploymentInfo.setHandlesTypesLoader(new AnnotationsLoader(deploymentInfo.getClassLoader()));

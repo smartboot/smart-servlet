@@ -49,6 +49,7 @@ public class WebAppInfo {
     private final List<String> welcomeFileList = new ArrayList<>();
 
     private final Map<String, String> localeEncodingMappings = new HashMap<>();
+    private final Map<String, String> mimeMappings = new HashMap<>();
 
     private int sessionTimeout = 0;
 
@@ -138,5 +139,9 @@ public class WebAppInfo {
 
     public Map<String, String> getLocaleEncodingMappings() {
         return localeEncodingMappings;
+    }
+
+    public Map<String, String> getMimeMappings() {
+        return mimeMappings;
     }
 }

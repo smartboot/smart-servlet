@@ -73,6 +73,7 @@ public class ServletContextImpl implements ServletContext {
     private JspConfigDescriptor jspConfigDescriptor = new JspConfigDescriptorImpl();
     private final Set<SessionTrackingMode> defaultSessionTrackingModes = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(SessionTrackingMode.COOKIE, SessionTrackingMode.URL)));
     private Set<SessionTrackingMode> sessionTrackingModes = defaultSessionTrackingModes;
+    private Map<String, String> mimetypes = new HashMap<>();
     /**
      * 请求执行管道
      */
@@ -118,17 +119,31 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public int getEffectiveMajorVersion() {
+        checkContextInitializeState();
         return 0;
     }
 
     @Override
     public int getEffectiveMinorVersion() {
+        checkContextInitializeState();
         return 0;
     }
 
     @Override
     public String getMimeType(String file) {
+        int lastPeriodIndex = file.lastIndexOf(".");
+        if (lastPeriodIndex > 0 && lastPeriodIndex + 1 < file.length()) {
+            String type = mimetypes.get(file.substring(lastPeriodIndex + 1).toLowerCase());
+            if (type != null) {
+                return type;
+            }
+        }
+
         return Mimetypes.getInstance().getMimetype(file);
+    }
+
+    public void putMimeTypes(String file, String type) {
+        mimetypes.put(file, type);
     }
 
     @Override
@@ -358,9 +373,7 @@ public class ServletContextImpl implements ServletContext {
         if (runtime.isStarted()) {
             throw new IllegalStateException("ServletContext has already been initialized");
         }
-        if (currentInitializeContext != null && currentInitializeContext.isDynamic()) {
-            throw new UnsupportedOperationException();
-        }
+        checkContextInitializeState();
 
         ServletInfo servletInfo = new ServletInfo();
         servletInfo.setServletName(servletName);
@@ -389,9 +402,7 @@ public class ServletContextImpl implements ServletContext {
         if (runtime.isStarted()) {
             throw new IllegalStateException("ServletContext has already been initialized");
         }
-        if (currentInitializeContext != null && currentInitializeContext.isDynamic()) {
-            throw new UnsupportedOperationException();
-        }
+        checkContextInitializeState();
         return newInstance(clazz);
     }
 
@@ -424,9 +435,7 @@ public class ServletContextImpl implements ServletContext {
         if (runtime.isStarted()) {
             throw new IllegalStateException("ServletContext has already been initialized");
         }
-        if (currentInitializeContext != null && currentInitializeContext.isDynamic()) {
-            throw new UnsupportedOperationException();
-        }
+        checkContextInitializeState();
 
         if (StringUtils.isBlank(filterName)) {
             throw new IllegalArgumentException("filterName is null or an empty String");
@@ -482,11 +491,19 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
+        checkContextInitializeState();
         return defaultSessionTrackingModes;
+    }
+
+    private void checkContextInitializeState() {
+        if (currentInitializeContext != null && currentInitializeContext.isDynamic()) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
     public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
+        checkContextInitializeState();
         //The returned set is not backed by the ServletContext object,
         // so changes in the returned set are not reflected in the ServletContext object, and vice-versa.
         return Collections.unmodifiableSet(sessionTrackingModes);

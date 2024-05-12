@@ -10,8 +10,6 @@
 
 package org.smartboot.servlet;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.MultipartConfigElement;
 import org.smartboot.http.common.utils.NumberUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.servlet.conf.ErrorPageInfo;
@@ -28,6 +26,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.MultipartConfigElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -77,6 +77,8 @@ class WebXmlParseEngine {
         parseWelcomeFile(webAppInfo, parentElement);
 
         parseLocaleEncodingMappings(webAppInfo, parentElement);
+
+        parseMimeMapping(webAppInfo, parentElement);
     }
 
     private void parseBasicInfo(WebAppInfo webAppInfo, Element parentElement) {
@@ -102,6 +104,14 @@ class WebXmlParseEngine {
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("param-name", "param-value"));
             webAppInfo.addContextParam(nodeData.get("param-name"), nodeData.get("param-value"));
+        }
+    }
+
+    private void parseMimeMapping(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNode(parentElement, "mime-mapping");
+        for (Node node : childNodeList) {
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("extension", "mime-type"));
+            webAppInfo.getMimeMappings().put(nodeData.get("extension"), nodeData.get("mime-type"));
         }
     }
 
