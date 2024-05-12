@@ -355,6 +355,13 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public ServletRegistration.Dynamic addServlet(String servletName, Servlet servlet) {
+        if (runtime.isStarted()) {
+            throw new IllegalStateException("ServletContext has already been initialized");
+        }
+        if (currentInitializeContext != null && currentInitializeContext.isDynamic()) {
+            throw new UnsupportedOperationException();
+        }
+
         ServletInfo servletInfo = new ServletInfo();
         servletInfo.setServletName(servletName);
         servletInfo.setServlet(servlet);
@@ -379,6 +386,12 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public <T extends Servlet> T createServlet(Class<T> clazz) throws ServletException {
+        if (runtime.isStarted()) {
+            throw new IllegalStateException("ServletContext has already been initialized");
+        }
+        if (currentInitializeContext != null && currentInitializeContext.isDynamic()) {
+            throw new UnsupportedOperationException();
+        }
         return newInstance(clazz);
     }
 
