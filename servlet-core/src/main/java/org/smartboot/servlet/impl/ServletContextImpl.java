@@ -418,7 +418,7 @@ public class ServletContextImpl implements ServletContext {
         }
         //if this ServletContext was passed to the ServletContextListener.contextInitialized method
         // of a ServletContextListener that was neither declared in web. xml or web-fragment.
-        if (listenerState != 0) {
+        if (listenerState == 2) {
             throw new UnsupportedOperationException();
         }
         if (StringUtils.isBlank(filterName)) {
