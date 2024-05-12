@@ -131,15 +131,12 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public String getMimeType(String file) {
-        int lastPeriodIndex = file.lastIndexOf(".");
-        if (lastPeriodIndex > 0 && lastPeriodIndex + 1 < file.length()) {
-            String type = mimetypes.get(file.substring(lastPeriodIndex + 1).toLowerCase());
-            if (type != null) {
-                return type;
-            }
+        String ext = Mimetypes.getFileExtension(file);
+        String type = mimetypes.get(ext);
+        if (type != null) {
+            return type;
         }
-
-        return Mimetypes.getInstance().getMimetype(file);
+        return Mimetypes.getInstance().getMimetypeByExtension(ext);
     }
 
     public void putMimeTypes(String file, String type) {
