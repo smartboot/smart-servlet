@@ -136,7 +136,9 @@ public class ServletContextImpl implements ServletContext {
         if (type != null) {
             return type;
         }
-        return Mimetypes.getInstance().getMimetypeByExtension(ext);
+        type = Mimetypes.getInstance().getMimetypeByExtension(ext);
+        //Returns the MIME type of the specified file, or null if the MIME type is not known.
+        return type == Mimetypes.DEFAULT_MIMETYPE ? null : type;
     }
 
     public void putMimeTypes(String file, String type) {
