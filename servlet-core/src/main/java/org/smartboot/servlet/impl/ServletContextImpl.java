@@ -536,8 +536,14 @@ public class ServletContextImpl implements ServletContext {
 //            }
 //
 //        }
-        if (currentInitializeContext != null && ServletContextListener.class.isAssignableFrom(listener.getClass())) {
-            throw new UnsupportedOperationException();
+        if (currentInitializeContext != null) {
+            if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
+                if (currentInitializeContext.isDynamic()) {
+                    throw new UnsupportedOperationException();
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            }
         }
 
         LOGGER.info(listener.getClass().getSimpleName() + " listener: " + listener);

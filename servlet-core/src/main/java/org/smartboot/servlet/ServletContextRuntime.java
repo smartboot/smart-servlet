@@ -157,6 +157,7 @@ public class ServletContextRuntime {
                 ServletContextEvent event = new ServletContextEvent(servletContext);
                 wrapperListener.getListener().contextInitialized(event);
             }
+            servletContext.setCurrentInitializeContext(null);
 
             //启动Servlet
             initServlet(deploymentInfo);
