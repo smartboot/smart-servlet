@@ -372,6 +372,10 @@ public class ServletContextImpl implements ServletContext {
         }
         checkContextInitializeState();
 
+        if (deploymentInfo.getServlets().containsKey(servletName)) {
+            return null;
+        }
+
         ServletInfo servletInfo = new ServletInfo();
         servletInfo.setServletName(servletName);
         servletInfo.setServlet(servlet);
