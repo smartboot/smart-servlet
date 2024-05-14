@@ -25,6 +25,7 @@ import org.smartboot.servlet.impl.ServletContextWrapperListener;
 import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.provider.AsyncContextProvider;
 import org.smartboot.servlet.provider.DispatcherProvider;
+import org.smartboot.servlet.provider.FaviconProvider;
 import org.smartboot.servlet.provider.SecurityProvider;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.provider.VendorProvider;
@@ -91,6 +92,7 @@ public class ServletContextRuntime {
 
     private VendorProvider vendorProvider = SandBox.INSTANCE.getVendorProvider();
     private AsyncContextProvider asyncContextProvider = SandBox.INSTANCE.getAsyncContextProvider();
+    private FaviconProvider faviconProvider = SandBox.INSTANCE.getFaviconProvider();
     /**
      * 关联至本运行环境的插件集合
      */
@@ -196,6 +198,7 @@ public class ServletContextRuntime {
             servletInfo.setServlet(new DefaultServlet(deploymentInfo));
             deploymentInfo.addServlet(servletInfo);
         }
+
     }
 
 
@@ -236,6 +239,8 @@ public class ServletContextRuntime {
 //        jspServletInfo.setServletName("jsp");
 //        jspServletInfo.addMapping("*.jsp");
 //        deploymentInfo.addServlet(jspServletInfo);
+        faviconProvider.resister(this);
+
         for (ServletContainerInitializerInfo servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
             servletContainerInitializer.getServletContainerInitializer().onStartup(servletContainerInitializer.getHandlesTypes(), servletContext);
         }
@@ -364,6 +369,14 @@ public class ServletContextRuntime {
 
     public void setAsyncContextProvider(AsyncContextProvider asyncContextProvider) {
         this.asyncContextProvider = asyncContextProvider;
+    }
+
+    public FaviconProvider getFaviconProvider() {
+        return faviconProvider;
+    }
+
+    public void setFaviconProvider(FaviconProvider faviconProvider) {
+        this.faviconProvider = faviconProvider;
     }
 
     public String getContextPath() {

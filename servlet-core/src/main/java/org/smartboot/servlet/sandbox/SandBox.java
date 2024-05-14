@@ -12,6 +12,7 @@ package org.smartboot.servlet.sandbox;
 
 import org.smartboot.servlet.provider.AsyncContextProvider;
 import org.smartboot.servlet.provider.DispatcherProvider;
+import org.smartboot.servlet.provider.FaviconProvider;
 import org.smartboot.servlet.provider.SecurityProvider;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.provider.VendorProvider;
@@ -32,6 +33,7 @@ public class SandBox {
 
     private final VendorProvider vendorProvider = new MockVendorProvider();
     private final AsyncContextProvider asyncContextProvider = new MockAsyncContextProvider();
+    private final FaviconProvider faviconProvider = new MockFaviconProvider();
 
     public VendorProvider getVendorProvider() {
         return vendorProvider;
@@ -57,5 +59,9 @@ public class SandBox {
 
     public AsyncContextProvider getAsyncContextProvider() {
         return asyncContextProvider;
+    }
+
+    public FaviconProvider getFaviconProvider() {
+        return faviconProvider;
     }
 }
