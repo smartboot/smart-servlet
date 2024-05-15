@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -49,6 +50,7 @@ import java.util.Locale;
 class DefaultServlet extends HttpServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServlet.class);
     private static final int READ_BUFFER = 1024 * 1024;
+    private static final String FAVICON_NAME = "favicon.ico";
     private static final String URL_404 =
             "<html>" +
                     "<head>" +
@@ -56,13 +58,18 @@ class DefaultServlet extends HttpServlet {
                     "</head>" +
                     "<body><h1>smart-http 找不到你所请求的地址资源，404</h1></body>" +
                     "</html>";
+    private static byte[] faviconBytes = null;
     private final ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
         @Override
         protected SimpleDateFormat initialValue() {
             return new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
         }
     };
-    private final DeploymentInfo deploymentInfo;
+    /**
+     * 默认页面
+     */
+    private long faviconModifyTime;
+    private DeploymentInfo deploymentInfo;
 
     public DefaultServlet(DeploymentInfo deploymentInfo) {
         this.deploymentInfo = deploymentInfo;
@@ -76,9 +83,33 @@ class DefaultServlet extends HttpServlet {
             String name = enumeration.nextElement();
             LOGGER.info("servlet parameter name:" + name + " ,value:" + config.getInitParameter(name));
         }
-
+        loadDefaultFavicon();
     }
 
+    private void loadDefaultFavicon() {
+        if (faviconBytes != null) {
+            return;
+        }
+        InputStream inputStream = null;
+        try {
+            inputStream = DefaultServlet.class.getClassLoader().getResourceAsStream(FAVICON_NAME);
+            if (inputStream != null) {
+                faviconBytes = new byte[inputStream.available()];
+                inputStream.read(faviconBytes);
+                faviconModifyTime = System.currentTimeMillis() / 1000 * 1000;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -86,6 +117,7 @@ class DefaultServlet extends HttpServlet {
         String method = request.getMethod();
         URL url = request.getServletContext().getResource(fileName.substring(request.getContextPath().length()));
         File file = null;
+        boolean defaultFavicon = url == null && fileName.endsWith(FAVICON_NAME) && faviconBytes != null;
 
         try {
             if (url != null) {
@@ -93,7 +125,7 @@ class DefaultServlet extends HttpServlet {
                 file = new File(url.toURI());
             }
             //资源文件不存在，尝试跳转welcome文件
-            boolean forwardWelcome = (file == null || !file.isFile());
+            boolean forwardWelcome = !defaultFavicon && (file == null || !file.isFile());
             if (forwardWelcome) {
                 forwardWelcome(request, response, method);
                 return;
@@ -103,7 +135,7 @@ class DefaultServlet extends HttpServlet {
         }
 
         //304
-        long lastModifiedTime = file.lastModified();
+        long lastModifiedTime = defaultFavicon ? faviconModifyTime : file.lastModified();
         try {
             String requestModified = request.getHeader(HeaderNameEnum.IF_MODIFIED_SINCE.getName());
             if (StringUtils.isNotBlank(requestModified) && lastModifiedTime <= sdf.get().parse(requestModified).getTime()) {
@@ -115,13 +147,21 @@ class DefaultServlet extends HttpServlet {
         }
         response.setHeader(HeaderNameEnum.LAST_MODIFIED.getName(), sdf.get().format(new Date(lastModifiedTime)));
 
-        String contentType = Mimetypes.getInstance().getMimetype(file);
-        response.setHeader(HeaderNameEnum.CONTENT_TYPE.getName(), contentType + "; charset=utf-8");
+        if (defaultFavicon) {
+            response.setContentType("image/x-icon");
+        } else {
+            String contentType = Mimetypes.getInstance().getMimetype(file);
+            response.setHeader(HeaderNameEnum.CONTENT_TYPE.getName(), contentType + "; charset=utf-8");
+        }
         //HEAD不输出内容
         if (HttpMethodEnum.HEAD.getMethod().equals(method)) {
             return;
         }
-       
+        if (defaultFavicon) {
+            response.setContentLength(faviconBytes.length);
+            response.getOutputStream().write(faviconBytes);
+            return;
+        }
         LOGGER.info("load file:" + fileName);
         FileInputStream fis = new FileInputStream(file);
         FileChannel fileChannel = fis.getChannel();

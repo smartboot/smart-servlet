@@ -181,6 +181,7 @@ class WebXmlParseEngine {
             Map<String, String> initParamMap = parseParam(node);
             initParamMap.forEach(servletInfo::addInitParam);
             servletInfo.setMultipartConfig(parseMultipartConfig(node));
+            parseSecurityRole(node).forEach(servletInfo::addSecurityRole);
             webAppInfo.addServlet(servletInfo);
         }
     }
@@ -242,6 +243,16 @@ class WebXmlParseEngine {
         Node node = paramElementList.get(0);
         Map<String, String> nodeMap = getNodeValue(node, Arrays.asList("location", "max-file-size", "max-request-size", "file-size-threshold"));
         return new MultipartConfigElement(nodeMap.get("location"), NumberUtils.toInt(nodeMap.get("max-file-size"), -1), NumberUtils.toInt(nodeMap.get("max-request-size"), -1), NumberUtils.toInt(nodeMap.get("file-size-threshold"), -1));
+    }
+
+    private Map<String, String> parseSecurityRole(Node parentElement) {
+        Map<String, String> roles = new HashMap<>();
+        List<Node> childNodeList = getChildNode(parentElement, "security-role-ref");
+        for (Node node : childNodeList) {
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("role-name", "role-link"));
+            roles.put(nodeData.get("role-name"), nodeData.get("role-link"));
+        }
+        return roles;
     }
 
     private Map<String, String> parseParam(Node parentElement) {

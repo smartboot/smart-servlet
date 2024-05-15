@@ -28,6 +28,7 @@ public class ServletInfo {
     public static final String DEFAULT_SERVLET_NAME = "default";
     private final List<ServletMappingInfo> mappings = new ArrayList<>();
     private final Map<String, String> initParams = new HashMap<>();
+    private final Map<String, String> securityRoles = new HashMap<>();
     private String servletClass;
     private String servletName;
     private int loadOnStartup;
@@ -133,5 +134,14 @@ public class ServletInfo {
 
     public void setJspFile(String jspFile) {
         this.jspFile = jspFile;
+    }
+
+    public ServletInfo addSecurityRole(String name, String link) {
+        this.securityRoles.put(name, link);
+        return this;
+    }
+
+    public Map<String, String> getSecurityRoles() {
+        return securityRoles;
     }
 }
