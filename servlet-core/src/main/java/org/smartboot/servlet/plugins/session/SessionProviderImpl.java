@@ -10,15 +10,15 @@
 
 package org.smartboot.servlet.plugins.session;
 
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
+import org.smartboot.servlet.provider.SessionProvider;
+
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
-import org.smartboot.servlet.impl.HttpServletRequestImpl;
-import org.smartboot.servlet.provider.SessionProvider;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -71,7 +71,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
 
 
     @Override
-    public HttpSession getSession(HttpServletRequestImpl request, HttpServletResponse response, boolean create) {
+    public HttpSessionImpl getSession(HttpServletRequestImpl request, HttpServletResponse response, boolean create) {
         HttpSessionImpl httpSession = getSession(request);
         if (create && httpSession == null) {
             /**
@@ -98,6 +98,16 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
             sessionMap.put(httpSession.getId(), httpSession);
         }
         return httpSession;
+    }
+
+    @Override
+    public void changeSessionId(HttpSession httpSession) {
+        if (!(httpSession instanceof HttpSessionImpl)) {
+            throw new IllegalStateException();
+        }
+        HttpSessionImpl session = sessionMap.remove(httpSession.getId());
+        session.changeSessionId(String.valueOf(System.currentTimeMillis()));
+        sessionMap.put(session.getId(), session);
     }
 
     private HttpSessionImpl getSession(HttpServletRequest request) {

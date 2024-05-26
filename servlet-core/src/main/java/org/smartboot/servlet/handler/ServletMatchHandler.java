@@ -41,7 +41,7 @@ public class ServletMatchHandler extends Handler {
         ServletContextImpl servletContext = handlerContext.getServletContext();
         String contextPath = servletContext.getContextPath();
         Map<String, ServletInfo> servletInfoMap = handlerContext.getServletContext().getDeploymentInfo().getServlets();
-        SmartHttpServletRequest request = handlerContext.getRequest();
+        SmartHttpServletRequest request = handlerContext.getOriginalRequest();
 
         //通过ServletContext.getNamedDispatcher触发的请求已经指定了Servlet
         if (handlerContext.isNamedDispatcher()) {

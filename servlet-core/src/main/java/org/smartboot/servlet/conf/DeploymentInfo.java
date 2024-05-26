@@ -20,6 +20,7 @@ import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.annotation.HandlesTypes;
 import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionIdListener;
 import javax.servlet.http.HttpSessionListener;
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class DeploymentInfo {
     //是否处于动态listener阶段
     private boolean dynamicListenerState;
     private List<HttpSessionListener> httpSessionListeners = new ArrayList<>();
+    private List<HttpSessionIdListener> httpSessionIdListeners = new ArrayList<>();
     private List<ServletRequestListener> servletRequestListeners = new ArrayList<>();
 
     private List<HttpSessionAttributeListener> sessionAttributeListeners = new ArrayList<>();
@@ -155,6 +157,9 @@ public class DeploymentInfo {
         if (httpSessionListeners.isEmpty()) {
             httpSessionListeners = Collections.emptyList();
         }
+        if (httpSessionIdListeners.isEmpty()) {
+            httpSessionIdListeners = Collections.emptyList();
+        }
         if (servletRequestListeners.isEmpty()) {
             servletRequestListeners = Collections.emptyList();
         }
@@ -194,8 +199,16 @@ public class DeploymentInfo {
         httpSessionListeners.add(httpSessionListener);
     }
 
+    public void addHttpSessionIdListener(HttpSessionIdListener httpSessionIdListener) {
+        httpSessionIdListeners.add(httpSessionIdListener);
+    }
+
     public List<HttpSessionListener> getHttpSessionListeners() {
         return httpSessionListeners;
+    }
+
+    public List<HttpSessionIdListener> getHttpSessionIdListeners() {
+        return httpSessionIdListeners;
     }
 
     public List<ServletContextAttributeListener> getServletContextAttributeListeners() {

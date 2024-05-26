@@ -18,6 +18,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionContext;
 import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionIdListener;
 import javax.servlet.http.HttpSessionListener;
 import java.security.Principal;
 import java.util.Collections;
@@ -34,7 +35,7 @@ class HttpSessionImpl implements HttpSession {
 
     private final long creationTime = System.currentTimeMillis();
     private final Map<String, Object> attributes = new HashMap<>();
-    private final String sessionId;
+    private String sessionId;
     private final ServletContextImpl servletContext;
     private final HttpSessionContext httpSessionContext;
     private volatile long lastAccessed;
@@ -167,6 +168,13 @@ class HttpSessionImpl implements HttpSession {
         invalid = true;
     }
 
+    public void changeSessionId(String sessionId) {
+        String oldSessionId = this.sessionId;
+        this.sessionId = sessionId;
+        List<HttpSessionIdListener> sessionListeners = servletContext.getDeploymentInfo().getHttpSessionIdListeners();
+        HttpSessionEvent httpSessionEvent = sessionListeners.isEmpty() ? null : new HttpSessionEvent(this);
+        sessionListeners.forEach(httpSessionListener -> httpSessionListener.sessionIdChanged(httpSessionEvent, oldSessionId));
+    }
 
     @Override
     public boolean isNew() {

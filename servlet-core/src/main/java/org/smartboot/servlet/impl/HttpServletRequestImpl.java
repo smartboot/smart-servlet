@@ -330,7 +330,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String changeSessionId() {
-        throw new UnsupportedOperationException();
+        HttpSession session = getSession(false);
+        if (session == null) {
+            throw new IllegalStateException();
+        }
+        runtime.getSessionProvider().changeSessionId(session);
+        return session.getId();
     }
 
     @Override

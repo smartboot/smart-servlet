@@ -14,6 +14,7 @@ import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.ServletContextImpl;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
@@ -26,11 +27,11 @@ public class HandlerContext {
     /**
      * 请求
      */
-    private final SmartHttpServletRequest request;
+    private final SmartHttpServletRequest originalRequest;
     /**
      * 响应
      */
-    private final ServletResponse response;
+    private ServletResponse response;
     /**
      * 匹配的Servlet上下文
      */
@@ -42,11 +43,14 @@ public class HandlerContext {
      */
     private ServletInfo servletInfo;
 
-    public HandlerContext(SmartHttpServletRequest request, ServletResponse response, ServletContextImpl servletContext, boolean namedDispatcher) {
-        this.request = request;
+    private ServletRequest request;
+
+    public HandlerContext(SmartHttpServletRequest originalRequest, ServletResponse response, ServletContextImpl servletContext, boolean namedDispatcher) {
+        this.originalRequest = originalRequest;
         this.response = response;
         this.servletContext = servletContext;
         this.namedDispatcher = namedDispatcher;
+        this.request = originalRequest;
     }
 
     public ServletContextImpl getServletContext() {
@@ -54,15 +58,25 @@ public class HandlerContext {
     }
 
 
-    public SmartHttpServletRequest getRequest() {
-        return request;
+    public SmartHttpServletRequest getOriginalRequest() {
+        return originalRequest;
     }
-
 
     public ServletResponse getResponse() {
         return response;
     }
 
+    public void setResponse(ServletResponse response) {
+        this.response = response;
+    }
+
+    public ServletRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(ServletRequest request) {
+        this.request = request;
+    }
 
     public ServletInfo getServletInfo() {
         return servletInfo;
@@ -70,7 +84,7 @@ public class HandlerContext {
 
     public void setServletInfo(ServletInfo servletInfo) {
         this.servletInfo = servletInfo;
-        this.request.setServletInfo(servletInfo);
+        this.originalRequest.setServletInfo(servletInfo);
     }
 
     public boolean isNamedDispatcher() {

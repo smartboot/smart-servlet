@@ -38,6 +38,7 @@ import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.servlet.descriptor.JspConfigDescriptor;
 import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionIdListener;
 import javax.servlet.http.HttpSessionListener;
 import java.io.File;
 import java.io.InputStream;
@@ -560,6 +561,9 @@ public class ServletContextImpl implements ServletContext {
         }
         if (HttpSessionListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addHttpSessionListener((HttpSessionListener) listener);
+        }
+        if (HttpSessionIdListener.class.isAssignableFrom(listener.getClass())) {
+            deploymentInfo.addHttpSessionIdListener((HttpSessionIdListener) listener);
         }
         if (HttpSessionAttributeListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addSessionAttributeListener((HttpSessionAttributeListener) listener);

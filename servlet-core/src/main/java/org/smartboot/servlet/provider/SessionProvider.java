@@ -24,4 +24,6 @@ public interface SessionProvider {
     String DEFAULT_SESSION_COOKIE_NAME = "JSESSIONID";
 
     HttpSession getSession(HttpServletRequestImpl request, HttpServletResponse response, boolean create);
+
+    void changeSessionId(HttpSession httpSession);
 }

@@ -15,12 +15,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+
 @RestController
 @SpringBootApplication
 public class Bootstrap {
 
-    @RequestMapping("/")
-    String home() {
+    @RequestMapping("/index")
+    String home(HttpServletRequest request) throws ServletException {
+        Principal principal = request.getUserPrincipal();
+        System.out.println(principal);
         return "Hello World!";
     }
 

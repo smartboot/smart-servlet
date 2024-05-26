@@ -13,8 +13,8 @@ package org.smartboot.servlet.handler;
 import org.smartboot.servlet.conf.ServletInfo;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -27,7 +27,7 @@ public class ServletServiceHandler extends Handler {
 
     @Override
     public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
-        HttpServletRequest request = handlerContext.getRequest();
+        ServletRequest request = handlerContext.getRequest();
         ServletResponse response = handlerContext.getResponse();
         //成功匹配到Servlet,直接执行
         if (handlerContext.getServletInfo() != null) {
