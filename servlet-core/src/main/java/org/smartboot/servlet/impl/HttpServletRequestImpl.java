@@ -240,7 +240,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isUserInRole(String role) {
-        return runtime.getSecurityProvider().isUserInRole(role, this);
+        throw new UnsupportedOperationException();
+//        return runtime.getSecurityProvider().isUserInRole(role, this);
     }
 
     @Override
@@ -248,13 +249,13 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         return userPrincipal;
     }
 
-    public void setUserPrincipal(Principal userPrincipal) {
-        this.userPrincipal = userPrincipal;
-    }
+//    public void setUserPrincipal(Principal userPrincipal) {
+//        this.userPrincipal = userPrincipal;
+//    }
 
-    public void setAuthType(String authType) {
-        this.authType = authType;
-    }
+//    public void setAuthType(String authType) {
+//        this.authType = authType;
+//    }
 
     @Override
     public String getRequestedSessionId() {
@@ -360,17 +361,20 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
-        return runtime.getSecurityProvider().authenticate(this, response);
+        throw new UnsupportedOperationException();
+//        return runtime.getSecurityProvider().authenticate(this, response);
     }
 
     @Override
     public void login(String username, String password) throws ServletException {
-        runtime.getSecurityProvider().login(username, password, this);
+        throw new UnsupportedOperationException();
+//        runtime.getSecurityProvider().login(username, password, this);
     }
 
     @Override
     public void logout() throws ServletException {
-        runtime.getSecurityProvider().logout(this);
+        throw new UnsupportedOperationException();
+//        runtime.getSecurityProvider().logout(this);
     }
 
     @Override
