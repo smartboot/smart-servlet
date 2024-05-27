@@ -157,11 +157,21 @@ public class ServletContextImpl implements ServletContext {
             File file = new File(url.toURI());
             if (file.isDirectory()) {
                 Set<String> set = new HashSet<>();
+                boolean endWith = path.endsWith("/");
                 for (File subFile : Objects.requireNonNull(file.listFiles())) {
                     if (subFile.isDirectory()) {
-                        set.add(path + "/" + subFile.getName() + "/");
+                        if (endWith) {
+                            set.add(path + "/" + subFile.getName() + "/");
+                        } else {
+                            set.add(path + subFile.getName() + "/");
+                        }
                     } else {
-                        set.add(path + "/" + subFile.getName());
+                        if (endWith) {
+                            set.add(path + subFile.getName());
+                        } else {
+                            set.add(path + "/" + subFile.getName());
+                        }
+
                     }
                 }
                 return set;

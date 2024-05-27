@@ -154,21 +154,15 @@ public class FilterMatchHandler extends Handler {
 
         @Override
         public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
-            ServletRequest oldReq = handlerContext.getRequest();
-            ServletResponse oldRes = handlerContext.getResponse();
             int index = location++;
+            if (index < filters.size()) {
+                filters.get(index).doFilter(request, response, this);
+                return;
+            }
+
             handlerContext.setRequest(request);
             handlerContext.setResponse(response);
-            try {
-                if (index < filters.size()) {
-                    filters.get(index).doFilter(request, response, this);
-                } else {
-                    FilterMatchHandler.this.doNext(handlerContext);
-                }
-            } finally {
-                handlerContext.setRequest(oldReq);
-                handlerContext.setResponse(oldRes);
-            }
+            FilterMatchHandler.this.doNext(handlerContext);
         }
     }
 
