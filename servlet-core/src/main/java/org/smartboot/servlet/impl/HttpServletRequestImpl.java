@@ -243,7 +243,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public Principal getUserPrincipal() {
-        throw new IllegalStateException();
+        return null;
     }
 
     @Override
