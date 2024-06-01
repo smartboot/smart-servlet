@@ -19,7 +19,6 @@ import org.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,6 +62,9 @@ public class ServletMatchHandler extends Handler {
             Servlet servlet = null;
             for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
                 final ServletInfo servletInfo = entry.getValue();
+                if (!servletInfo.initialized()) {
+                    servletInfo.init(handlerContext.getServletContext());
+                }
                 if (ServletInfo.DEFAULT_SERVLET_NAME.equals(servletInfo.getServletName())) {
                     continue;
                 }
