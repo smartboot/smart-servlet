@@ -105,8 +105,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     private volatile AsyncContext asyncContext = null;
     private final CompletableFuture<Object> completableFuture;
-    private Principal userPrincipal;
-    private String authType;
 
     public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, DispatcherType dispatcherType, CompletableFuture<Object> completableFuture) {
         this.request = request;
@@ -123,7 +121,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getAuthType() {
-        return authType;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -241,21 +239,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public boolean isUserInRole(String role) {
         throw new UnsupportedOperationException();
-//        return runtime.getSecurityProvider().isUserInRole(role, this);
     }
 
     @Override
     public Principal getUserPrincipal() {
-        return userPrincipal;
+        throw new IllegalStateException();
     }
-
-//    public void setUserPrincipal(Principal userPrincipal) {
-//        this.userPrincipal = userPrincipal;
-//    }
-
-//    public void setAuthType(String authType) {
-//        this.authType = authType;
-//    }
 
     @Override
     public String getRequestedSessionId() {
@@ -360,21 +349,18 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     }
 
     @Override
-    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
+    public boolean authenticate(HttpServletResponse response) {
         throw new UnsupportedOperationException();
-//        return runtime.getSecurityProvider().authenticate(this, response);
     }
 
     @Override
-    public void login(String username, String password) throws ServletException {
+    public void login(String username, String password) {
         throw new UnsupportedOperationException();
-//        runtime.getSecurityProvider().login(username, password, this);
     }
 
     @Override
-    public void logout() throws ServletException {
+    public void logout() {
         throw new UnsupportedOperationException();
-//        runtime.getSecurityProvider().logout(this);
     }
 
     @Override

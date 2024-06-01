@@ -24,7 +24,6 @@ import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.provider.AsyncContextProvider;
 import org.smartboot.servlet.provider.DispatcherProvider;
 import org.smartboot.servlet.provider.FaviconProvider;
-import org.smartboot.servlet.provider.SecurityProvider;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.provider.VendorProvider;
 import org.smartboot.servlet.provider.WebsocketProvider;
@@ -78,8 +77,6 @@ public class ServletContextRuntime {
      * Websocket服务提供者
      */
     private WebsocketProvider websocketProvider = SandBox.INSTANCE.getWebsocketProvider();
-
-    private SecurityProvider securityProvider = SandBox.INSTANCE.getSecurityProvider();
 
     private VendorProvider vendorProvider = SandBox.INSTANCE.getVendorProvider();
     private AsyncContextProvider asyncContextProvider = SandBox.INSTANCE.getAsyncContextProvider();
@@ -311,14 +308,6 @@ public class ServletContextRuntime {
 
     public void setWebsocketProvider(WebsocketProvider websocketProvider) {
         this.websocketProvider = websocketProvider;
-    }
-
-    public SecurityProvider getSecurityProvider() {
-        return securityProvider;
-    }
-
-    public void setSecurityProvider(SecurityProvider securityProvider) {
-        this.securityProvider = securityProvider;
     }
 
     public VendorProvider getVendorProvider() {
