@@ -14,7 +14,6 @@ import org.smartboot.http.common.BufferOutputStream;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -33,8 +32,8 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     private byte[] cacheByte;
 
     public ServletOutputStreamImpl(BufferOutputStream outputStream, byte[] buffer) {
-        this.outputStream = new BufferedOutputStream(outputStream, 1024);
-//        this.outputStream = outputStream;
+//        this.outputStream = new BufferedOutputStream(outputStream, 1024);
+        this.outputStream = outputStream;
         this.buffer = buffer;
     }
 

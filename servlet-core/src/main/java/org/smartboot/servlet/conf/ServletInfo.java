@@ -56,7 +56,10 @@ public class ServletInfo {
     private boolean asyncSupported;
     private boolean init = false;
 
-    public void init(ServletContextImpl servletContext) {
+    public synchronized void init(ServletContextImpl servletContext) {
+        if (init) {
+            return;
+        }
         ServletConfig servletConfig = new ServletConfigImpl(this, servletContext);
         try {
             servlet.init(servletConfig);
