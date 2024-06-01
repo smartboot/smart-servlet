@@ -15,7 +15,7 @@
     <parent>
         <artifactId>smart-servlet-parent</artifactId>
         <groupId>org.smartboot.servlet</groupId>
-        <version>1.4</version>
+        <version>1.5-SNAPSHOT</version>
     </parent>
     <properties>
         <springboot.version>2.7.18</springboot.version>
@@ -56,7 +56,7 @@
 <!--        <dependency>-->
 <!--            <groupId>org.smartboot.servlet.enterprise</groupId>-->
 <!--            <artifactId>base</artifactId>-->
-<!--            <version>1.4</version>-->
+<!--            <version>1.5-SNAPSHOT</version>-->
 <!--            <scope>test</scope>-->
 <!--            <optional>true</optional>-->
 <!--        </dependency>-->

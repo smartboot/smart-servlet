@@ -113,7 +113,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     @Override
     public void sendRedirect(String location) throws IOException {
         //If the response has already been committed, this method throws an IllegalStateException
-        if(isCommitted()){
+        if (isCommitted()) {
             throw new IllegalStateException();
         }
         response.setHttpStatus(HttpStatus.FOUND);
@@ -310,6 +310,12 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             writer.flush();
         } else {
             getOutputStream().flush();
+        }
+    }
+
+    public void flushServletBuffer() throws IOException {
+        if (servletOutputStream != null) {
+            servletOutputStream.flushServletBuffer();
         }
     }
 

@@ -65,7 +65,7 @@ public class ContainerRuntime {
      * Font Name: Puffy
      */
     private static final String BANNER = "                               _                                 _           _   \n" + "                              ( )_                              (_ )        ( )_ \n" + "  ___   ___ ___     _ _  _ __ | ,_)     ___    __   _ __  _   _  | |    __  | ,_)\n" + "/',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| |  \n" + "\\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_ \n" + "(____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)";
-    public static final String VERSION = "v1.4";
+    public static final String VERSION = "v1.5";
     /**
      * 注册在当前 Servlet 容器中的运行环境
      */
@@ -235,7 +235,7 @@ public class ContainerRuntime {
             //输出buffer中的数据
             asyncContext = servletRequest.getInternalAsyncContext();
             if (asyncContext == null) {
-                servletResponse.flushBuffer();
+                servletResponse.flushServletBuffer();
             }
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
