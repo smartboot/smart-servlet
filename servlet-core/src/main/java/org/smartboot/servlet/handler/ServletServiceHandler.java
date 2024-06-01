@@ -31,6 +31,9 @@ public class ServletServiceHandler extends Handler {
         ServletResponse response = handlerContext.getResponse();
         //成功匹配到Servlet,直接执行
         if (handlerContext.getServletInfo() != null) {
+            if (!handlerContext.getServletInfo().initialized()) {
+                handlerContext.getServletInfo().init(handlerContext.getServletContext());
+            }
             handlerContext.getServletInfo().getServlet().service(request, response);
         } else {
             handlerContext.getServletContext().getServlet(ServletInfo.DEFAULT_SERVLET_NAME).service(request, response);

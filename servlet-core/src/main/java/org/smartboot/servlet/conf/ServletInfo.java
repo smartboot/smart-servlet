@@ -10,10 +10,23 @@
 
 package org.smartboot.servlet.conf;
 
+import org.smartboot.http.common.enums.HttpStatus;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.servlet.impl.ServletConfigImpl;
+import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.servlet.MultipartConfigElement;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +38,7 @@ import java.util.Map;
  * @version V1.0 , 2019/12/11
  */
 public class ServletInfo {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletInfo.class);
     public static final String DEFAULT_SERVLET_NAME = "default";
     private final List<ServletMappingInfo> mappings = new ArrayList<>();
     private final Map<String, String> initParams = new HashMap<>();
@@ -40,6 +54,47 @@ public class ServletInfo {
     private MultipartConfigElement multipartConfig;
 
     private boolean asyncSupported;
+    private boolean init = false;
+
+    public void init(ServletContextImpl servletContext) {
+        ServletConfig servletConfig = new ServletConfigImpl(this, servletContext);
+        try {
+            servlet.init(servletConfig);
+        } catch (UnavailableException e) {
+            e.printStackTrace();
+            //占用该Servlet的URL mappings
+            servlet = new HttpServlet() {
+                @Override
+                protected void service(HttpServletRequest req, HttpServletResponse resp) {
+                    resp.setStatus(HttpStatus.NOT_FOUND.value());
+                }
+            };
+        } catch (ServletException e) {
+            e.printStackTrace();
+            String location = servletContext.getDeploymentInfo().getErrorPageLocation(e);
+            if (location == null) {
+                location = servletContext.getDeploymentInfo().getErrorPageLocation(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
+            String finalLocation = location;
+            servlet = new HttpServlet() {
+                @Override
+                protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                    resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    req.setAttribute(RequestDispatcher.ERROR_EXCEPTION, e);
+                    req.setAttribute(RequestDispatcher.ERROR_MESSAGE, e.getMessage());
+                    req.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    if (finalLocation != null) {
+                        req.getRequestDispatcher(finalLocation).forward(req, resp);
+                    } else {
+                        LOGGER.error("error location is null");
+                        e.printStackTrace(resp.getWriter());
+                    }
+                }
+            };
+        } finally {
+            init = true;
+        }
+    }
 
     public int getLoadOnStartup() {
         return loadOnStartup;
@@ -143,5 +198,13 @@ public class ServletInfo {
 
     public Map<String, String> getSecurityRoles() {
         return securityRoles;
+    }
+
+    /**
+     * 是否已经完成初始化
+     * @return
+     */
+    public boolean initialized() {
+        return init;
     }
 }

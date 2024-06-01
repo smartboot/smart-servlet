@@ -10,7 +10,6 @@
 
 package org.smartboot.servlet;
 
-import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -19,7 +18,6 @@ import org.smartboot.servlet.conf.FilterInfo;
 import org.smartboot.servlet.conf.ServletContainerInitializerInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.FilterConfigImpl;
-import org.smartboot.servlet.impl.ServletConfigImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.impl.ServletContextWrapperListener;
 import org.smartboot.servlet.plugins.Plugin;
@@ -34,19 +32,12 @@ import org.smartboot.servlet.sandbox.SandBox;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebListener;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -196,6 +187,7 @@ public class ServletContextRuntime {
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
             servletInfo.setServlet(new DefaultServlet(deploymentInfo));
+            servletInfo.setLoadOnStartup(1);
             deploymentInfo.addServlet(servletInfo);
         }
 
@@ -256,40 +248,14 @@ public class ServletContextRuntime {
         servletInfoList.sort(Comparator.comparingInt(ServletInfo::getLoadOnStartup));
 
         for (ServletInfo servletInfo : servletInfoList) {
-            ServletConfig servletConfig = new ServletConfigImpl(servletInfo, servletContext);
-            try {
-                servletInfo.getServlet().init(servletConfig);
-            } catch (UnavailableException e) {
-                e.printStackTrace();
-                //占用该Servlet的URL mappings
-                servletInfo.setServlet(new HttpServlet() {
-                    @Override
-                    protected void service(HttpServletRequest req, HttpServletResponse resp) {
-                        resp.setStatus(HttpStatus.NOT_FOUND.value());
-                    }
-                });
-            } catch (ServletException e) {
-                e.printStackTrace();
-                String location = deploymentInfo.getErrorPageLocation(e);
-                if (location == null) {
-                    location = deploymentInfo.getErrorPageLocation(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                }
-                String finalLocation = location;
-                servletInfo.setServlet(new HttpServlet() {
-                    @Override
-                    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-                        resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                        req.setAttribute(RequestDispatcher.ERROR_EXCEPTION, e);
-                        req.setAttribute(RequestDispatcher.ERROR_MESSAGE, e.getMessage());
-                        req.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.INTERNAL_SERVER_ERROR.value());
-                        if (finalLocation != null) {
-                            req.getRequestDispatcher(finalLocation).forward(req, resp);
-                        } else {
-                            LOGGER.error("error location is null");
-                            e.printStackTrace(resp.getWriter());
-                        }
-                    }
-                });
+            //load-on-startup 元素表示该 servlet 应该在 Web 应用程序启动时加载（实例化并调用它的 init()方法）。
+            // 该元素的元素内容必须是一个整数，表示 servlet 应该被加载的顺序。
+            // 如果该值是一个负整数，或不存在该元素，容器自由选择什么时候加载这个 servlet。
+            // 如果该值是一个正整数或 0，当应用部署后容器必须加载和初始化这个 servlet。容器必须保证较小整数标记的 servlet 在较大整数标记的 servlet 之前加载。
+            // 容器可以选择具有相同 load-on-startup值的 servlet 的加载顺序。
+            //PS：对于loadOnStartup为负数的情况需要延迟初始化，不然spring项目在某些情况下会出问题
+            if (servletInfo.getLoadOnStartup() > 0) {
+                servletInfo.init(servletContext);
             }
         }
     }
