@@ -122,23 +122,4 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     public int getCount() {
         return count;
     }
-
-    public void setCount(int count) throws IOException {
-        //此段逻辑必须只由ServletPrintWrite#write触发
-        boolean commit = count == this.buffer.length || count == this.count;
-        this.count = count;
-        if (commit) {
-            flush();
-        } else if (count > this.buffer.length) {
-            throw new IndexOutOfBoundsException("count:" + count + " ,limit:" + buffer.length);
-        }
-    }
-
-    public byte[] getBuffer() {
-        if (committed) {
-            return null;
-        }
-        return buffer;
-    }
-
 }
