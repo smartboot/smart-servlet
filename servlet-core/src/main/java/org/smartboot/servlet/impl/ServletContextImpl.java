@@ -110,7 +110,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public int getMajorVersion() {
-        return 0;
+        return 5;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public int getEffectiveMajorVersion() {
         checkContextInitializeState();
-        return 0;
+        return 5;
     }
 
     @Override
@@ -184,14 +184,11 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public URL getResource(String path) throws MalformedURLException {
-        if (path == null || deploymentInfo.getContextUrl() == null) {
-            return null;
+        //The path must begin with a /
+        if (!path.startsWith("/")) {
+            throw new MalformedURLException();
         }
-        if (path.isEmpty()) {
-            path = "/";
-        } else if (path.charAt(0) != '/') {
-            path = "/" + path;
-        }
+
         URL pathUrl = new URL(deploymentInfo.getContextUrl(), path.substring(1));
         //todo 判断文件是否存在
         URL url = null;
