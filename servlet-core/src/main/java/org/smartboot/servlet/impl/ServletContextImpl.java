@@ -378,9 +378,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public ServletRegistration.Dynamic addServlet(String servletName, Servlet servlet) {
-        if (runtime.isStarted()) {
-            throw new IllegalStateException("ServletContext has already been initialized");
-        }
+        checkServletContextState();
         checkContextInitializeState();
 
         if (deploymentInfo.getServlets().containsKey(servletName)) {
@@ -411,9 +409,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public <T extends Servlet> T createServlet(Class<T> clazz) throws ServletException {
-        if (runtime.isStarted()) {
-            throw new IllegalStateException("ServletContext has already been initialized");
-        }
+        checkServletContextState();
         checkContextInitializeState();
         return newInstance(clazz);
     }
@@ -437,6 +433,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, String className) {
+        checkServletContextState();
         try {
             return addFilter(filterName, (Class<? extends Filter>) getClassLoader().loadClass(className));
         } catch (ClassNotFoundException e) {
@@ -446,9 +443,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
-        if (runtime.isStarted()) {
-            throw new IllegalStateException("ServletContext has already been initialized");
-        }
+        checkServletContextState();
         checkContextInitializeState();
 
         if (StringUtils.isBlank(filterName)) {
@@ -464,6 +459,12 @@ public class ServletContextImpl implements ServletContext {
         filterInfo.setDynamic(true);
         deploymentInfo.addFilter(filterInfo);
         return new ApplicationFilterRegistration(filterInfo, deploymentInfo);
+    }
+
+    private void checkServletContextState() {
+        if (runtime.isStarted()) {
+            throw new IllegalStateException("ServletContext has already been initialized");
+        }
     }
 
     @Override
@@ -539,20 +540,9 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public <T extends EventListener> void addListener(T listener) {
-        if (runtime.isStarted()) {
-            throw new IllegalStateException("ServletContext has already been initialized");
-        }
-//        if (deploymentInfo.isDynamicListenerState()) {
-//            if(currentServletContextListener==null)
-//            if (currentServletContextListener.isDynamic()) {
-//                if (!ServletContextListener.class.isAssignableFrom(listener.getClass())) {
-//                    throw new IllegalArgumentException();
-//                }
-//            } else {
-//                throw new UnsupportedOperationException();
-//            }
-//
-//        }
+        checkServletContextState();
+        checkListenerClass(listener.getClass());
+
         if (currentInitializeContext != null) {
             if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
                 if (currentInitializeContext.isDynamic()) {
@@ -598,7 +588,16 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public <T extends EventListener> T createListener(Class<T> clazz) throws ServletException {
+        checkContextInitializeState();
+        checkListenerClass(clazz);
         return newInstance(clazz);
+    }
+
+    private <T extends EventListener> void checkListenerClass(Class<T> clazz) {
+        if (ServletContextListener.class.isAssignableFrom(clazz) || ServletContextAttributeListener.class.isAssignableFrom(clazz) || ServletRequestListener.class.isAssignableFrom(clazz) || ServletRequestAttributeListener.class.isAssignableFrom(clazz) || HttpSessionAttributeListener.class.isAssignableFrom(clazz) || HttpSessionIdListener.class.isAssignableFrom(clazz) || HttpSessionListener.class.isAssignableFrom(clazz)) {
+            return;
+        }
+        throw new IllegalArgumentException();
     }
 
     private <T> T newInstance(Class<T> clazz) throws ServletException {
@@ -622,9 +621,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void declareRoles(String... roleNames) {
-        if (runtime.isStarted()) {
-            throw new IllegalStateException("ServletContext has already been initialized");
-        }
+        checkServletContextState();
         if (roleNames != null) {
             for (String role : roleNames) {
                 if (StringUtils.isBlank(role)) {
