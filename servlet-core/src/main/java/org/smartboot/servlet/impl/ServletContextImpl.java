@@ -311,6 +311,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public boolean setInitParameter(String name, String value) {
+        checkContextInitializeState();
         if (deploymentInfo.getInitParameters().containsKey(name)) {
             return false;
         }
@@ -419,12 +420,14 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public ServletRegistration getServletRegistration(String servletName) {
+        checkContextInitializeState();
         ServletInfo servletInfo = deploymentInfo.getServlets().get(servletName);
         return servletInfo == null ? null : new ApplicationServletRegistration(servletInfo);
     }
 
     @Override
     public Map<String, ? extends ServletRegistration> getServletRegistrations() {
+        checkContextInitializeState();
         Map<String, ApplicationServletRegistration> map = new HashMap<>();
         deploymentInfo.getServlets().forEach((servletName, servletInfo) -> {
             map.put(servletName, new ApplicationServletRegistration(servletInfo));
@@ -479,12 +482,14 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public FilterRegistration getFilterRegistration(String filterName) {
+        checkContextInitializeState();
         FilterInfo filterInfo = deploymentInfo.getFilters().get(filterName);
         return new ApplicationFilterRegistration(filterInfo, deploymentInfo);
     }
 
     @Override
     public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
+        checkContextInitializeState();
         Map<String, ApplicationFilterRegistration> filterMap = new HashMap<>();
         deploymentInfo.getFilters().forEach((filterName, filterInfo) -> filterMap.put(filterName, new ApplicationFilterRegistration(filterInfo, deploymentInfo)));
         return filterMap;
@@ -492,11 +497,13 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public SessionCookieConfig getSessionCookieConfig() {
+        checkContextInitializeState();
         return sessionCookieConfig;
     }
 
     @Override
     public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) {
+        checkContextInitializeState();
         this.sessionTrackingModes = sessionTrackingModes;
     }
 
