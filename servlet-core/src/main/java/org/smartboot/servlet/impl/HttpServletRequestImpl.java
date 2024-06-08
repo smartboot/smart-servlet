@@ -50,6 +50,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,7 +74,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private ServletContextImpl servletContext;
     private final DispatcherType dispatcherType;
     private final ServletContextRuntime runtime;
-    private String characterEncoding;
+    private Charset characterEncoding;
     private Map<String, Object> attributes;
     private HttpSession httpSession;
     private Cookie[] cookies;
@@ -474,9 +476,9 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public String getCharacterEncoding() {
         if (characterEncoding != null) {
-            return characterEncoding;
+            return characterEncoding.name();
         }
-        String value = getHeader(HeaderNameEnum.CONTENT_TYPE.name());
+        String value = getHeader(HeaderNameEnum.CONTENT_TYPE.getName());
         String charset = StringUtils.substringAfter(value, "charset=");
         if (StringUtils.isNotBlank(charset)) {
             return charset;
@@ -486,7 +488,15 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public void setCharacterEncoding(String characterEncoding) throws UnsupportedEncodingException {
-        this.characterEncoding = characterEncoding;
+        if (servletInputStream != null) {
+            return;
+        }
+        try {
+            this.characterEncoding = Charset.forName(characterEncoding);
+        } catch (UnsupportedCharsetException e) {
+            throw new UnsupportedEncodingException();
+        }
+
     }
 
     @Override
@@ -579,7 +589,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             if (servletInputStream != null) {
                 throw new IllegalStateException("getInputStream method has been called on this request");
             }
-            reader = new BufferedReader(new InputStreamReader(getInputStream(), getCharacterEncoding()));
+            String character = getCharacterEncoding();
+            if (StringUtils.isBlank(character)) {
+                reader = new BufferedReader(new InputStreamReader(getInputStream()));
+            } else {
+                reader = new BufferedReader(new InputStreamReader(getInputStream(), character));
+            }
         }
         return reader;
     }
