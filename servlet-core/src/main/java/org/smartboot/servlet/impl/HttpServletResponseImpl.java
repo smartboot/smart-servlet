@@ -33,12 +33,9 @@ import java.util.Locale;
  */
 public class HttpServletResponseImpl implements HttpServletResponse {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpServletResponseImpl.class);
-    private static final int DEFAULT_BUFFER_SIZE = 512;
-    private static final ThreadLocal<byte[]> FIRST_BUFFER = ThreadLocal.withInitial(() -> new byte[DEFAULT_BUFFER_SIZE]);
     private final HttpResponse response;
     private final HttpServletRequestImpl request;
     private String contentType;
-    private boolean charsetSet = false;
     private String charset;
     private PrintWriter writer;
     private ServletOutputStreamImpl servletOutputStream;
@@ -214,7 +211,6 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (isCommitted() || writer != null) {
             return;
         }
-        charsetSet = charset != null;
         this.charset = charset;
         if (contentType != null) {
             response.setContentType(getContentType());
@@ -259,7 +255,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (servletOutputStream == null) {
             byte[] buffer = null;
             if (bufferSize == -1) {
-                buffer = FIRST_BUFFER.get();
+                buffer = new byte[512];
             } else if (bufferSize > 0) {
                 buffer = new byte[bufferSize];
             }
