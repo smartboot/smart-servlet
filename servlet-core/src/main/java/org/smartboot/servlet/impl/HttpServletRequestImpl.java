@@ -123,7 +123,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getAuthType() {
-        throw new UnsupportedOperationException();
+        servletContext.log("unSupport getAuthType");
+        return null;
     }
 
     @Override

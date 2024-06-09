@@ -82,7 +82,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
                 throw new IllegalStateException("response has already committed!");
             }
             //该sessionId生成策略缺乏安全性，后续重新设计
-            httpSession = new HttpSessionImpl(this, String.valueOf(System.currentTimeMillis()), request.getServletContext());
+            httpSession = new HttpSessionImpl(this, createSessionId(), request.getServletContext());
             httpSession.setMaxInactiveInterval(maxInactiveInterval);
             SessionCookieConfig sessionCookieConfig = request.getServletContext().getSessionCookieConfig();
             Cookie cookie = new Cookie(sessionCookieConfig.getName(), httpSession.getId());
@@ -125,5 +125,9 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
 
     public void setMaxInactiveInterval(int maxInactiveInterval) {
         this.maxInactiveInterval = maxInactiveInterval;
+    }
+
+    private String createSessionId() {
+        return "smart-servlet:" + System.nanoTime();
     }
 }
