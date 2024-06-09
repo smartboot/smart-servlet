@@ -121,10 +121,11 @@ class HttpSessionImpl implements HttpSession {
         checkState();
         Object replace = attributes.put(name, value);
         if (CollectionUtils.isNotEmpty(servletContext.getDeploymentInfo().getSessionAttributeListeners())) {
-            HttpSessionBindingEvent event = new HttpSessionBindingEvent(this, name, value);
             if (replace == null) {
+                HttpSessionBindingEvent event = new HttpSessionBindingEvent(this, name, value);
                 servletContext.getDeploymentInfo().getSessionAttributeListeners().forEach(request -> request.attributeAdded(event));
             } else {
+                HttpSessionBindingEvent event = new HttpSessionBindingEvent(this, name, replace);
                 servletContext.getDeploymentInfo().getSessionAttributeListeners().forEach(request -> request.attributeReplaced(event));
             }
         }
@@ -176,7 +177,7 @@ class HttpSessionImpl implements HttpSession {
     @Override
     public boolean isNew() {
         checkState();
-        return false;
+        return creationTime == lastAccessed;
     }
 
     private void checkState() {
