@@ -16,6 +16,7 @@ import org.smartboot.servlet.util.CollectionUtils;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionContext;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionIdListener;
@@ -129,6 +130,16 @@ class HttpSessionImpl implements HttpSession {
                 servletContext.getDeploymentInfo().getSessionAttributeListeners().forEach(request -> request.attributeReplaced(event));
             }
         }
+
+        //After this method executes, and if the new object implements HttpSessionBindingListener, the container calls HttpSessionBindingListener.valueBound.
+        // The container then notifies any HttpSessionAttributeListeners in the web application.
+        //If an object was already bound to this session of this name that implements HttpSessionBindingListener, its HttpSessionBindingListener. valueUnbound method is called.
+        if (replace != value && replace instanceof HttpSessionBindingListener) {
+            ((HttpSessionBindingListener) replace).valueUnbound(new HttpSessionBindingEvent(this, name, replace));
+        }
+        if (value instanceof HttpSessionBindingListener) {
+            ((HttpSessionBindingListener) value).valueBound(new HttpSessionBindingEvent(this, name, value));
+        }
     }
 
     @Override
@@ -144,6 +155,9 @@ class HttpSessionImpl implements HttpSession {
         if (CollectionUtils.isNotEmpty(servletContext.getDeploymentInfo().getSessionAttributeListeners())) {
             HttpSessionBindingEvent event = new HttpSessionBindingEvent(this, name, o);
             servletContext.getDeploymentInfo().getSessionAttributeListeners().forEach(request -> request.attributeRemoved(event));
+        }
+        if (o instanceof HttpSessionBindingListener) {
+            ((HttpSessionBindingListener) o).valueUnbound(new HttpSessionBindingEvent(this, name, o));
         }
     }
 
