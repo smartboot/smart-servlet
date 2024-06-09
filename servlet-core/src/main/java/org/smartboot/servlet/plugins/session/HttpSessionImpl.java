@@ -20,7 +20,6 @@ import javax.servlet.http.HttpSessionContext;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionIdListener;
 import javax.servlet.http.HttpSessionListener;
-import java.security.Principal;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -38,12 +37,9 @@ class HttpSessionImpl implements HttpSession {
     private String sessionId;
     private final ServletContextImpl servletContext;
     private final HttpSessionContext httpSessionContext;
-    private volatile long lastAccessed;
+    private volatile long lastAccessed = creationTime;
     private volatile int maxInactiveInterval;
     private volatile boolean invalid;
-
-    private String authType;
-    private Principal principal = null;
 
     public HttpSessionImpl(HttpSessionContext httpSessionContext, String sessionId, ServletContextImpl servletContext) {
         this.httpSessionContext = httpSessionContext;
@@ -57,6 +53,7 @@ class HttpSessionImpl implements HttpSession {
 
     @Override
     public long getCreationTime() {
+        checkState();
         return creationTime;
     }
 

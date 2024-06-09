@@ -49,7 +49,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
     public void clearExpireSession() {
         List<HttpSessionImpl> list = new ArrayList<>(sessionMap.values());
         list.stream().filter(httpSession -> httpSession.getMaxInactiveInterval() > 0
-                        && httpSession.getLastAccessedTime() + httpSession.getMaxInactiveInterval() > System.currentTimeMillis())
+                        && httpSession.getLastAccessedTime() + httpSession.getMaxInactiveInterval() * 1000 > System.currentTimeMillis())
                 .forEach(httpSession -> {
                     try {
                         httpSession.invalid();
@@ -110,13 +110,17 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
         sessionMap.put(session.getId(), session);
     }
 
-    private HttpSessionImpl getSession(HttpServletRequest request) {
-        String sessionId = request.getRequestedSessionId();
-        HttpSessionImpl session = sessionId == null ? null : sessionMap.get(sessionId);
+    @Override
+    public void updateAccessTime(HttpServletRequestImpl request) {
+        HttpSessionImpl session = getSession(request);
         if (session != null) {
             session.setLastAccessed(System.currentTimeMillis());
         }
-        return session;
+    }
+
+    private HttpSessionImpl getSession(HttpServletRequest request) {
+        String sessionId = request.getRequestedSessionId();
+        return sessionId == null ? null : sessionMap.get(sessionId);
     }
 
     public void setMaxInactiveInterval(int maxInactiveInterval) {

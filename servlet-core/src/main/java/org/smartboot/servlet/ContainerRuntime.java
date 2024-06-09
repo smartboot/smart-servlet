@@ -159,9 +159,7 @@ public class ContainerRuntime {
         runtime.setContainerRuntime(this);
         runtimes.add(runtime);
         //按contextPath长度倒序,防止被"/"优先匹配
-        runtimes.sort((o1, o2) -> {
-            return o2.getContextPath().length() - o1.getContextPath().length();
-        });
+        runtimes.sort((o1, o2) -> o2.getContextPath().length() - o1.getContextPath().length());
         plugins.forEach(plugin -> plugin.addServletContext(runtime));
     }
 
@@ -232,6 +230,7 @@ public class ContainerRuntime {
             runtime.getVendorProvider().signature(servletResponse);
             // just do it
             servletContext.getPipeline().handleRequest(handlerContext);
+            runtime.getSessionProvider().updateAccessTime(servletRequest);
             //输出buffer中的数据
             asyncContext = servletRequest.getInternalAsyncContext();
             if (asyncContext == null) {

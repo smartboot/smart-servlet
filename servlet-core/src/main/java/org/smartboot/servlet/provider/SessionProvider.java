@@ -26,4 +26,6 @@ public interface SessionProvider {
     HttpSession getSession(HttpServletRequestImpl request, HttpServletResponse response, boolean create);
 
     void changeSessionId(HttpSession httpSession);
+
+    void updateAccessTime(HttpServletRequestImpl request);
 }
