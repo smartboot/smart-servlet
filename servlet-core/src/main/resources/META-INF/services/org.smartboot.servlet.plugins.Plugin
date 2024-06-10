@@ -11,3 +11,5 @@
 org.smartboot.servlet.plugins.session.SessionPlugin
 org.smartboot.servlet.plugins.dispatcher.DispatcherPlugin
 org.smartboot.servlet.plugins.contact.ContactPlugin
+org.smartboot.servlet.plugins.websocket.WebsocketPlugin
+org.smartboot.servlet.plugins.async.AsyncContextPlugin
