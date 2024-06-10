@@ -10,6 +10,8 @@
 
 package org.smartboot.servlet.plugins.session;
 
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.provider.SessionProvider;
 
@@ -32,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 class SessionProviderImpl implements SessionProvider, HttpSessionContext {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderImpl.class);
     /**
      * 默认超时时间：30分钟
      */
@@ -49,9 +52,10 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
     public void clearExpireSession() {
         List<HttpSessionImpl> list = new ArrayList<>(sessionMap.values());
         list.stream().filter(httpSession -> httpSession.getMaxInactiveInterval() > 0
-                        && httpSession.getLastAccessedTime() + httpSession.getMaxInactiveInterval() * 1000 > System.currentTimeMillis())
+                        && httpSession.getLastAccessedTime() + httpSession.getMaxInactiveInterval() * 1000 < System.currentTimeMillis())
                 .forEach(httpSession -> {
                     try {
+                        LOGGER.info("sessionId:{} will be expired", httpSession.getId());
                         httpSession.invalid();
                     } finally {
                         sessionMap.remove(httpSession.getId());
