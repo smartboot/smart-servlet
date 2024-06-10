@@ -283,6 +283,9 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public String getRealPath(String path) {
+        if (path == null) {
+            return null;
+        }
         try {
             URL url = getResource(path);
             if (url != null) {

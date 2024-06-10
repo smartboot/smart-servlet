@@ -177,7 +177,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public int getIntHeader(String name) {
-        return NumberUtils.toInt(getHeader(name), -1);
+        String strVal = getHeader(name);
+        //If the request does not have a header of the specified name, this method returns -1.
+        if (strVal == null) {
+            return -1;
+        }
+        return Integer.parseInt(strVal);
     }
 
     @Override
@@ -220,7 +225,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getPathTranslated() {
-        throw new UnsupportedOperationException();
+        return getRealPath(getPathInfo());
     }
 
     @Override
