@@ -51,16 +51,14 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
 
     public void clearExpireSession() {
         List<HttpSessionImpl> list = new ArrayList<>(sessionMap.values());
-        list.stream().filter(httpSession -> httpSession.getMaxInactiveInterval() > 0
-                        && httpSession.getLastAccessedTime() + httpSession.getMaxInactiveInterval() * 1000 < System.currentTimeMillis())
-                .forEach(httpSession -> {
-                    try {
-                        LOGGER.info("sessionId:{} will be expired, lastAccessedTime:{} ,maxInactiveInterval:{}", httpSession.getId(), httpSession.getLastAccessedTime(), httpSession.getMaxInactiveInterval());
-                        httpSession.invalid();
-                    } finally {
-                        sessionMap.remove(httpSession.getId());
-                    }
-                });
+        list.stream().filter(httpSession -> httpSession.getMaxInactiveInterval() > 0 && httpSession.getLastAccessedTime() + httpSession.getMaxInactiveInterval() * 1000 < System.currentTimeMillis()).forEach(httpSession -> {
+            try {
+                LOGGER.info("sessionId:{} will be expired, lastAccessedTime:{} ,maxInactiveInterval:{}", httpSession.getId(), httpSession.getLastAccessedTime(), httpSession.getMaxInactiveInterval());
+                httpSession.invalid();
+            } finally {
+                sessionMap.remove(httpSession.getId());
+            }
+        });
     }
 
     @Override
@@ -128,15 +126,19 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
         if (session == null) {
             return false;
         }
-        if (session.isInvalid()) {
-            return false;
-        }
         return session.getId().equals(request.getRequestedSessionId());
     }
 
     private HttpSessionImpl getSession(HttpServletRequest request) {
         String sessionId = request.getRequestedSessionId();
-        return sessionId == null ? null : sessionMap.get(sessionId);
+        if (sessionId == null) {
+            return null;
+        }
+        HttpSessionImpl session = sessionMap.get(sessionId);
+        if (session == null || session.isInvalid()) {
+            return null;
+        }
+        return session;
     }
 
     public void setMaxInactiveInterval(int maxInactiveInterval) {

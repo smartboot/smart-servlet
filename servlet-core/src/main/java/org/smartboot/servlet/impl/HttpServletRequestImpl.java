@@ -76,7 +76,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private final ServletContextRuntime runtime;
     private Charset characterEncoding;
     private Map<String, Object> attributes;
-    private HttpSession httpSession;
     private Cookie[] cookies;
     private String servletPath;
     private int servletPathStart;
@@ -314,11 +313,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public HttpSession getSession(boolean create) {
-        if (httpSession != null) {
-            return httpSession;
-        }
-        httpSession = runtime.getSessionProvider().getSession(this, httpServletResponse, create);
-        return httpSession;
+        return runtime.getSessionProvider().getSession(this, httpServletResponse, create);
     }
 
     @Override
