@@ -21,10 +21,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * @author 三刀
@@ -33,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 class SessionProviderImpl implements SessionProvider, HttpSessionContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderImpl.class);
+    private Function<HttpServletRequestImpl, String> sessionIdFactory = request -> "smart-servlet:" + new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis());
     /**
      * 默认超时时间：30分钟
      */
@@ -71,7 +74,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
                 throw new IllegalStateException("response has already committed!");
             }
             //该sessionId生成策略缺乏安全性，后续重新设计
-            httpSession = new HttpSessionImpl(this, createSessionId(), request.getServletContext()) {
+            httpSession = new HttpSessionImpl(this, sessionIdFactory.apply(request), request.getServletContext()) {
                 @Override
                 public void invalid() {
                     try {
@@ -126,6 +129,11 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
         return session.getId().equals(request.getRequestedSessionId());
     }
 
+    @Override
+    public void sessionIdFactory(Function<HttpServletRequestImpl, String> factory) {
+        this.sessionIdFactory = factory;
+    }
+
     private HttpSessionImpl getSession(HttpServletRequestImpl request) {
         String sessionId = request.getActualSessionId();
         if (sessionId == null) {
@@ -143,10 +151,6 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
 
     public void setMaxInactiveInterval(int maxInactiveInterval) {
         this.maxInactiveInterval = maxInactiveInterval;
-    }
-
-    private String createSessionId() {
-        return "smart-servlet:" + System.nanoTime();
     }
 
     public HashedWheelTimer getTimer() {

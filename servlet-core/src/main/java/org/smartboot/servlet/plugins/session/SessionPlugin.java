@@ -14,9 +14,6 @@ import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.plugins.Plugin;
 
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 /**
  * @author 三刀
  * @version V1.0 , 2020/11/27
@@ -25,12 +22,7 @@ public class SessionPlugin extends Plugin {
 
     @Override
     public void initPlugin(ContainerRuntime containerRuntime) {
-        //Session定期清理
-        ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1, r -> {
-            Thread thread = new Thread(r, "SessionMonitor");
-            thread.setDaemon(true);
-            return thread;
-        });
+
     }
 
     @Override

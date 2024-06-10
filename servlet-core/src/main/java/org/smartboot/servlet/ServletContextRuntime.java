@@ -71,7 +71,7 @@ public class ServletContextRuntime {
     /**
      * Session服务提供者
      */
-    private SessionProvider sessionProvider = SandBox.INSTANCE.getSessionProvider();
+    private SessionProvider sessionProvider;
 
     /**
      * Websocket服务提供者

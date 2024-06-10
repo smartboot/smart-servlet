@@ -13,7 +13,6 @@ package org.smartboot.servlet.sandbox;
 import org.smartboot.servlet.provider.AsyncContextProvider;
 import org.smartboot.servlet.provider.DispatcherProvider;
 import org.smartboot.servlet.provider.FaviconProvider;
-import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.servlet.provider.VendorProvider;
 import org.smartboot.servlet.provider.WebsocketProvider;
 
@@ -27,7 +26,6 @@ public class SandBox {
     public static final String UPGRADE_MESSAGE_ZH = "请升级至 smart-servlet 企业版以启用该功能";
     public static final SandBox INSTANCE = new SandBox();
     private final DispatcherProvider dispatcherProvider = new MockDispatcherProvider();
-    private final SessionProvider sessionProvider = new MockSessionProvider();
     private final WebsocketProvider websocketProvider = new MockWebsocketProvider();
 
     private final VendorProvider vendorProvider = new MockVendorProvider();
@@ -40,10 +38,6 @@ public class SandBox {
 
     public DispatcherProvider getDispatcherProvider() {
         return dispatcherProvider;
-    }
-
-    public SessionProvider getSessionProvider() {
-        return sessionProvider;
     }
 
     public WebsocketProvider getWebsocketProvider() {

@@ -14,6 +14,7 @@ import org.smartboot.servlet.impl.HttpServletRequestImpl;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.function.Function;
 
 /**
  * @author 三刀
@@ -30,4 +31,6 @@ public interface SessionProvider {
     void updateAccessTime(HttpServletRequestImpl request);
 
     boolean isRequestedSessionIdValid(HttpServletRequestImpl request);
+
+    void sessionIdFactory(Function<HttpServletRequestImpl, String> factory);
 }
