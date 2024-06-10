@@ -95,6 +95,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
             cookie.setMaxAge(sessionCookieConfig.getMaxAge());
             response.addCookie(cookie);
             sessionMap.put(httpSession.getId(), httpSession);
+            request.setRequestedSessionId(httpSession.getId());
         }
         return httpSession;
     }

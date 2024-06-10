@@ -278,6 +278,10 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         return getRequestedSessionId();
     }
 
+    public void setRequestedSessionId(String requestedSessionId) {
+        this.requestedSessionId = requestedSessionId;
+    }
+
     @Override
     public String getRequestURI() {
         return requestUri;
@@ -328,6 +332,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             throw new IllegalStateException();
         }
         runtime.getSessionProvider().changeSessionId(session);
+        setRequestedSessionId(session.getId());
         return session.getId();
     }
 
