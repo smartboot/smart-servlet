@@ -180,6 +180,10 @@ class HttpSessionImpl implements HttpSession {
         invalid = true;
     }
 
+    public boolean isInvalid() {
+        return invalid;
+    }
+
     public void changeSessionId(String sessionId) {
         String oldSessionId = this.sessionId;
         this.sessionId = sessionId;

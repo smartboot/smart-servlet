@@ -122,6 +122,18 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
         }
     }
 
+    @Override
+    public boolean isRequestedSessionIdValid(HttpServletRequestImpl request) {
+        HttpSessionImpl session = getSession(request);
+        if (session == null) {
+            return false;
+        }
+        if (session.isInvalid()) {
+            return false;
+        }
+        return session.getId().equals(request.getRequestedSessionId());
+    }
+
     private HttpSessionImpl getSession(HttpServletRequest request) {
         String sessionId = request.getRequestedSessionId();
         return sessionId == null ? null : sessionMap.get(sessionId);

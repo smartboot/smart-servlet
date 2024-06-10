@@ -10,16 +10,13 @@
 
 package org.smartboot.servlet.plugins.dispatcher;
 
-import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
-import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.socket.util.Attachment;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -32,7 +29,6 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     private final HttpServletRequestImpl request;
     private final DispatcherType dispatcherType;
     private final boolean named;
-    private HttpServletResponseImpl response;
     private String servletPath;
     private int servletPathStart;
     private int servletPathEnd;
@@ -170,23 +166,4 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
         this.parameters = parameters;
     }
 
-    @Override
-    public HttpSession getSession(boolean create) {
-        if (dispatcherType == DispatcherType.INCLUDE && response.containsHeader(HeaderNameEnum.COOKIE.getName())) {
-            throw new IllegalStateException();
-        }
-        return super.getSession(create);
-    }
-
-    @Override
-    public HttpSession getSession() {
-        if (dispatcherType == DispatcherType.INCLUDE && response.containsHeader(HeaderNameEnum.COOKIE.getName())) {
-            throw new IllegalStateException();
-        }
-        return super.getSession();
-    }
-
-    public void setResponse(HttpServletResponseImpl response) {
-        this.response = response;
-    }
 }

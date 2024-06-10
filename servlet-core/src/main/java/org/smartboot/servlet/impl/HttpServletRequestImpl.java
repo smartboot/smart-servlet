@@ -338,7 +338,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isRequestedSessionIdValid() {
-        return getSession(false) != null;
+        return runtime.getSessionProvider().isRequestedSessionIdValid(this);
     }
 
     @Override

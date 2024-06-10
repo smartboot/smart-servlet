@@ -37,4 +37,9 @@ class MockSessionProvider implements SessionProvider {
     public void updateAccessTime(HttpServletRequestImpl request) {
         throw new IllegalStateException();
     }
+
+    @Override
+    public boolean isRequestedSessionIdValid(HttpServletRequestImpl request) {
+        throw new IllegalStateException();
+    }
 }
