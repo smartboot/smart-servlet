@@ -14,19 +14,14 @@ import org.smartboot.servlet.ContainerRuntime;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.plugins.Plugin;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/11/27
  */
 public class SessionPlugin extends Plugin {
-
-    private final List<SessionProviderImpl> providerList = new ArrayList<>();
 
     @Override
     public void initPlugin(ContainerRuntime containerRuntime) {
@@ -36,8 +31,6 @@ public class SessionPlugin extends Plugin {
             thread.setDaemon(true);
             return thread;
         });
-        executorService.scheduleWithFixedDelay(() -> providerList.forEach(SessionProviderImpl::clearExpireSession)
-                , 500, 500, TimeUnit.MICROSECONDS);
     }
 
     @Override
@@ -45,7 +38,6 @@ public class SessionPlugin extends Plugin {
         SessionProviderImpl sessionProvider = new SessionProviderImpl();
         sessionProvider.setMaxInactiveInterval(containerRuntime.getDeploymentInfo().getSessionTimeout());
         containerRuntime.setSessionProvider(sessionProvider);
-        providerList.add(sessionProvider);
     }
 
 }

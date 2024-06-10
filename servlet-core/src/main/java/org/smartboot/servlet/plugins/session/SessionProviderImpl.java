@@ -14,6 +14,7 @@ import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.provider.SessionProvider;
+import org.smartboot.socket.timer.HashedWheelTimer;
 
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.http.Cookie;
@@ -21,10 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,18 +47,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
      */
     private int maxInactiveInterval = DEFAULT_MAX_INACTIVE_INTERVAL;
 
-
-    public void clearExpireSession() {
-        List<HttpSessionImpl> list = new ArrayList<>(sessionMap.values());
-        list.stream().filter(httpSession -> httpSession.getMaxInactiveInterval() > 0 && httpSession.getLastAccessedTime() + httpSession.getMaxInactiveInterval() * 1000 < System.currentTimeMillis()).forEach(httpSession -> {
-            try {
-                LOGGER.info("sessionId:{} will be expired, lastAccessedTime:{} ,maxInactiveInterval:{}", httpSession.getId(), httpSession.getLastAccessedTime(), httpSession.getMaxInactiveInterval());
-                httpSession.invalid();
-            } finally {
-                sessionMap.remove(httpSession.getId());
-            }
-        });
-    }
+    private final HashedWheelTimer timer = new HashedWheelTimer(r -> new Thread(r, "smartboot-session-timer"), 100, 64);
 
     @Override
     public HttpSession getSession(String sessionId) {
@@ -84,7 +72,16 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
                 throw new IllegalStateException("response has already committed!");
             }
             //该sessionId生成策略缺乏安全性，后续重新设计
-            httpSession = new HttpSessionImpl(this, createSessionId(), request.getServletContext());
+            httpSession = new HttpSessionImpl(this, createSessionId(), request.getServletContext()) {
+                @Override
+                public void invalid() {
+                    try {
+                        super.invalid();
+                    } finally {
+                        sessionMap.remove(getId());
+                    }
+                }
+            };
             httpSession.setMaxInactiveInterval(maxInactiveInterval);
             SessionCookieConfig sessionCookieConfig = request.getServletContext().getSessionCookieConfig();
             Cookie cookie = new Cookie(sessionCookieConfig.getName(), httpSession.getId());
@@ -147,5 +144,9 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
 
     private String createSessionId() {
         return "smart-servlet:" + System.nanoTime();
+    }
+
+    public HashedWheelTimer getTimer() {
+        return timer;
     }
 }

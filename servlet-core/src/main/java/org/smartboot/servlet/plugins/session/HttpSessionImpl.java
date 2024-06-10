@@ -10,8 +10,11 @@
 
 package org.smartboot.servlet.plugins.session;
 
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.CollectionUtils;
+import org.smartboot.socket.timer.TimerTask;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -26,24 +29,26 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 三刀
  * @version V1.0 , 2019/12/19
  */
 class HttpSessionImpl implements HttpSession {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpSessionImpl.class);
     private final long creationTime = System.currentTimeMillis();
     private final Map<String, Object> attributes = new HashMap<>();
     private String sessionId;
     private final ServletContextImpl servletContext;
-    private final HttpSessionContext httpSessionContext;
+    private final SessionProviderImpl sessionProvider;
     private volatile long lastAccessed = creationTime;
     private volatile int maxInactiveInterval;
     private volatile boolean invalid;
+    private TimerTask timerTask;
 
-    public HttpSessionImpl(HttpSessionContext httpSessionContext, String sessionId, ServletContextImpl servletContext) {
-        this.httpSessionContext = httpSessionContext;
+    public HttpSessionImpl(SessionProviderImpl sessionProvider, String sessionId, ServletContextImpl servletContext) {
+        this.sessionProvider = sessionProvider;
         this.sessionId = sessionId;
         this.servletContext = servletContext;
 
@@ -71,6 +76,7 @@ class HttpSessionImpl implements HttpSession {
 
     public void setLastAccessed(long lastAccessed) {
         this.lastAccessed = lastAccessed;
+        updateTimeoutTask();
     }
 
     @Override
@@ -86,11 +92,26 @@ class HttpSessionImpl implements HttpSession {
     @Override
     public void setMaxInactiveInterval(int interval) {
         this.maxInactiveInterval = interval;
+        updateTimeoutTask();
+    }
+
+    private synchronized void updateTimeoutTask() {
+        if (timerTask != null) {
+            timerTask.cancel();
+            timerTask = null;
+        }
+        if (maxInactiveInterval <= 0) {
+            return;
+        }
+        timerTask = sessionProvider.getTimer().schedule(() -> {
+            LOGGER.info("sessionId:{} will be expired, lastAccessedTime:{} ,maxInactiveInterval:{}", sessionId, lastAccessed, maxInactiveInterval);
+            invalid();
+        }, maxInactiveInterval, TimeUnit.SECONDS);
     }
 
     @Override
     public HttpSessionContext getSessionContext() {
-        return httpSessionContext;
+        return sessionProvider;
     }
 
     @Override
