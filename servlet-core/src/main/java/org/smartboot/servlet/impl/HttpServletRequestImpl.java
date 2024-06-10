@@ -473,6 +473,14 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
         throw new UnsupportedOperationException();
+//        T t = null;
+//        try {
+//            t = handlerClass.newInstance();
+//            t.init();
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//        return t;
     }
 
     @Override
