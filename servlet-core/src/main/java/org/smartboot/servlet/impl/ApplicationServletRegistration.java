@@ -12,13 +12,16 @@ package org.smartboot.servlet.impl;
 
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletRegistration;
 import javax.servlet.ServletSecurityElement;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,8 +36,10 @@ import java.util.stream.Collectors;
 public class ApplicationServletRegistration implements ServletRegistration.Dynamic {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationServletRegistration.class);
     private final ServletInfo servletInfo;
+    private final DeploymentInfo deploymentInfo;
 
-    public ApplicationServletRegistration(ServletInfo servletInfo) {
+    public ApplicationServletRegistration(DeploymentInfo deploymentInfo, ServletInfo servletInfo) {
+        this.deploymentInfo = deploymentInfo;
         this.servletInfo = servletInfo;
     }
 
@@ -61,18 +66,22 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
 
     @Override
     public Set<String> addMapping(String... urlPatterns) {
-        Set<String> mappingSet = new HashSet<>();
+        //If any of the specified URL patterns are already mapped to a different Servlet, no updates will be performed.
+        Set<String> mappingSet = new HashSet<>(Arrays.asList(urlPatterns));
+        Set<String> existingMapping = deploymentInfo.getServlets().values().stream().map(ServletInfo::getMappings).flatMap(Collection::stream).map(ServletMappingInfo::getMapping).filter(mappingSet::contains).collect(Collectors.toSet());
+        if (!existingMapping.isEmpty()) {
+            //the (possibly empty) Set of URL patterns that are already mapped to a different Servlet
+            return existingMapping;
+        }
         for (String urlPattern : urlPatterns) {
             servletInfo.addMapping(urlPattern);
-            mappingSet.add(urlPattern);
         }
-        return mappingSet;
+        return Collections.emptySet();
     }
 
     @Override
     public Collection<String> getMappings() {
-        return servletInfo.getMappings().stream()
-                .map(ServletMappingInfo::getMapping).collect(Collectors.toList());
+        return servletInfo.getMappings().stream().map(ServletMappingInfo::getMapping).collect(Collectors.toList());
     }
 
     @Override
