@@ -18,7 +18,6 @@ import org.smartboot.socket.timer.HashedWheelTimer;
 
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
@@ -47,7 +46,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
      */
     private int maxInactiveInterval = DEFAULT_MAX_INACTIVE_INTERVAL;
 
-    private final HashedWheelTimer timer = new HashedWheelTimer(r -> new Thread(r, "smartboot-session-timer"), 100, 64);
+    private final HashedWheelTimer timer = new HashedWheelTimer(r -> new Thread(r, "smartboot-session-timer"), 10, 64);
 
     @Override
     public HttpSession getSession(String sessionId) {
@@ -95,7 +94,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
             cookie.setMaxAge(sessionCookieConfig.getMaxAge());
             response.addCookie(cookie);
             sessionMap.put(httpSession.getId(), httpSession);
-            request.setRequestedSessionId(httpSession.getId());
+            request.setActualSessionId(httpSession.getId());
         }
         return httpSession;
     }
@@ -127,8 +126,11 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
         return session.getId().equals(request.getRequestedSessionId());
     }
 
-    private HttpSessionImpl getSession(HttpServletRequest request) {
-        String sessionId = request.getRequestedSessionId();
+    private HttpSessionImpl getSession(HttpServletRequestImpl request) {
+        String sessionId = request.getActualSessionId();
+        if (sessionId == null) {
+            sessionId = request.getRequestedSessionId();
+        }
         if (sessionId == null) {
             return null;
         }

@@ -92,6 +92,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
      */
     private String requestedSessionId;
 
+    private String actualSessionId;
+
     /**
      * sessionId是否来源于Cookie
      */
@@ -278,8 +280,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         return getRequestedSessionId();
     }
 
-    public void setRequestedSessionId(String requestedSessionId) {
-        this.requestedSessionId = requestedSessionId;
+    public void setActualSessionId(String sessionId) {
+        this.actualSessionId = sessionId;
+    }
+
+    public String getActualSessionId() {
+        return actualSessionId;
     }
 
     @Override
@@ -332,7 +338,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             throw new IllegalStateException();
         }
         runtime.getSessionProvider().changeSessionId(session);
-        setRequestedSessionId(session.getId());
+        setActualSessionId(session.getId());
         return session.getId();
     }
 
