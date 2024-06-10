@@ -37,7 +37,7 @@ public class SessionPlugin extends Plugin {
             return thread;
         });
         executorService.scheduleWithFixedDelay(() -> providerList.forEach(SessionProviderImpl::clearExpireSession)
-                , 1, 1, TimeUnit.SECONDS);
+                , 500, 500, TimeUnit.MICROSECONDS);
     }
 
     @Override

@@ -55,7 +55,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
                         && httpSession.getLastAccessedTime() + httpSession.getMaxInactiveInterval() * 1000 < System.currentTimeMillis())
                 .forEach(httpSession -> {
                     try {
-                        LOGGER.info("sessionId:{} will be expired", httpSession.getId());
+                        LOGGER.info("sessionId:{} will be expired, lastAccessedTime:{} ,maxInactiveInterval:{}", httpSession.getId(), httpSession.getLastAccessedTime(), httpSession.getMaxInactiveInterval());
                         httpSession.invalid();
                     } finally {
                         sessionMap.remove(httpSession.getId());
