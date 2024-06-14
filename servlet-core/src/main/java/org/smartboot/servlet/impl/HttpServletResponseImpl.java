@@ -48,8 +48,19 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         this.response = response;
     }
 
+    private org.smartboot.http.common.Cookie sessionCookie;
+
     @Override
     public void addCookie(Cookie cookie) {
+        if (sessionCookie != null && cookie.getName().equals(request.getServletContext().getSessionCookieConfig().getName())) {
+            sessionCookie.setValue(cookie.getValue());
+            sessionCookie.setPath(cookie.getPath());
+            sessionCookie.setDomain(cookie.getDomain());
+            sessionCookie.setMaxAge(cookie.getMaxAge());
+            sessionCookie.setSecure(cookie.getSecure());
+            sessionCookie.setVersion(cookie.getVersion());
+            return;
+        }
         org.smartboot.http.common.Cookie httpCookie = new org.smartboot.http.common.Cookie(cookie.getName(), cookie.getValue());
         httpCookie.setComment(cookie.getComment());
         httpCookie.setDomain(cookie.getDomain());
@@ -59,6 +70,9 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         httpCookie.setSecure(cookie.getSecure());
         httpCookie.setVersion(cookie.getVersion());
         response.addCookie(httpCookie);
+        if (cookie.getName().equals(request.getServletContext().getSessionCookieConfig().getName())) {
+            sessionCookie = httpCookie;
+        }
     }
 
     @Override

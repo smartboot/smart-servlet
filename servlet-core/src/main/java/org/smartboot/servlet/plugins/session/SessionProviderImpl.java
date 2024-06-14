@@ -87,7 +87,7 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
             httpSession.setMaxInactiveInterval(maxInactiveInterval);
             SessionCookieConfig sessionCookieConfig = request.getServletContext().getSessionCookieConfig();
             Cookie cookie = new Cookie(sessionCookieConfig.getName(), httpSession.getId());
-            cookie.setPath(request.getRequestURI());
+            cookie.setPath(request.getContextPath());
             cookie.setComment(sessionCookieConfig.getComment());
             if (sessionCookieConfig.getDomain() != null) {
                 cookie.setDomain(sessionCookieConfig.getDomain());
@@ -98,6 +98,9 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
             response.addCookie(cookie);
             sessionMap.put(httpSession.getId(), httpSession);
             request.setActualSessionId(httpSession.getId());
+        }
+        if (httpSession != null) {
+            httpSession.setResponse(response);
         }
         return httpSession;
     }
