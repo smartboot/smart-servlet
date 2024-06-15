@@ -10,7 +10,7 @@
 
 package org.smartboot.servlet.plugins.session;
 
-import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.Container;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.plugins.Plugin;
 
@@ -21,7 +21,7 @@ import org.smartboot.servlet.plugins.Plugin;
 public class SessionPlugin extends Plugin {
 
     @Override
-    public void initPlugin(ContainerRuntime containerRuntime) {
+    public void initPlugin(Container container) {
 
     }
 

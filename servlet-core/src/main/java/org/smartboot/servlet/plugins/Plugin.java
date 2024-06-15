@@ -12,7 +12,7 @@ package org.smartboot.servlet.plugins;
 
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.servlet.ContainerRuntime;
+import org.smartboot.servlet.Container;
 import org.smartboot.servlet.ServletContextRuntime;
 
 /**
@@ -46,16 +46,16 @@ public abstract class Plugin {
     /**
      * 安装插件,需要在servlet服务启动前调用
      */
-    public final void install(ContainerRuntime containerRuntime) {
+    public final void install(Container container) {
         checkSate();
-        initPlugin(containerRuntime);
+        initPlugin(container);
         installed = true;
     }
 
     /**
      * 初始化插件
      */
-    protected void initPlugin(ContainerRuntime containerRuntime) {
+    protected void initPlugin(Container container) {
 //        LOGGER.info("plugin:[" + pluginName() + "] do nothing when initPlugin!");
     }
 

@@ -91,7 +91,7 @@ public class ServletContextRuntime {
     private boolean started = false;
 
     private final String localPath;
-    private ContainerRuntime containerRuntime;
+    private Container container;
 
 //    public ServletContextRuntime(String contextPath) {
 //        this(null, Thread.currentThread().getContextClassLoader(), contextPath);
@@ -366,11 +366,11 @@ public class ServletContextRuntime {
         this.description = description;
     }
 
-    public ContainerRuntime getContainerRuntime() {
-        return containerRuntime;
+    public Container getContainerRuntime() {
+        return container;
     }
 
-    public void setContainerRuntime(ContainerRuntime containerRuntime) {
-        this.containerRuntime = containerRuntime;
+    public void setContainerRuntime(Container container) {
+        this.container = container;
     }
 }

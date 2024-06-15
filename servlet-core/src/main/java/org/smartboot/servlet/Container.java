@@ -58,8 +58,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2020/12/31
  */
-public class ContainerRuntime {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContainerRuntime.class);
+public class Container {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Container.class);
     /**
      * http://patorjk.com/software/taag/
      * Font Name: Puffy
@@ -129,7 +129,7 @@ public class ContainerRuntime {
                 runtimes.remove(containerRuntime);
             }
         });
-        for (Plugin plugin : ServiceLoader.load(Plugin.class, ContainerRuntime.class.getClassLoader())) {
+        for (Plugin plugin : ServiceLoader.load(Plugin.class, Container.class.getClassLoader())) {
             LOGGER.debug("load plugin: " + plugin.pluginName());
             plugins.add(plugin);
         }
