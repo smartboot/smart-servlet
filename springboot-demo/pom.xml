@@ -64,13 +64,13 @@
 <!--            <version>2.7.3</version>-->
 <!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.smartboot.servlet.enterprise</groupId>
-            <artifactId>base</artifactId>
-            <version>1.5</version><!--无需修改此配置-->
-<!--            <scope>system</scope>-->
-<!--            <systemPath>${pom.basedir}/lib/base-1.5.jar</systemPath>&lt;!&ndash;根据实际情况修改路径&ndash;&gt;-->
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.smartboot.servlet.enterprise</groupId>-->
+<!--            <artifactId>base</artifactId>-->
+<!--            <version>1.5</version>&lt;!&ndash;无需修改此配置&ndash;&gt;-->
+<!--&lt;!&ndash;            <scope>system</scope>&ndash;&gt;-->
+<!--&lt;!&ndash;            <systemPath>${pom.basedir}/lib/base-1.5.jar</systemPath>&lt;!&ndash;根据实际情况修改路径&ndash;&gt;&ndash;&gt;-->
+<!--        </dependency>-->
     </dependencies>
     <build>
         <plugins>

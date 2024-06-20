@@ -26,7 +26,7 @@
         <!--            <artifactId>commons-fileupload</artifactId>-->
         <!--        </dependency>-->
         <dependency>
-            <groupId>org.smartboot.http</groupId>
+            <groupId>io.github.smartboot.http</groupId>
             <artifactId>smart-http-server</artifactId>
         </dependency>
 

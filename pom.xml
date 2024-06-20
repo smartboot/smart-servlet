@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <smarthttp.version>1.4.3</smarthttp.version>
+        <smarthttp.version>1.5.1</smarthttp.version>
         <smartservlet.version>1.5</smartservlet.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,7 +20,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.smartboot.http</groupId>
+                <groupId>io.github.smartboot.http</groupId>
                 <artifactId>smart-http-server</artifactId>
                 <version>${smarthttp.version}</version>
                 <exclusions>
