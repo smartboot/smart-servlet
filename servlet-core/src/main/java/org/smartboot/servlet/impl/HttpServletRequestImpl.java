@@ -69,6 +69,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpServletRequestImpl.class);
+    private static final String URL_JSESSION_ID = ";" + SessionProvider.DEFAULT_SESSION_PARAMETER_NAME + "=";
     private static final Cookie[] NONE_COOKIE = new Cookie[0];
     private final HttpRequest request;
     private ServletContextImpl servletContext;
@@ -91,6 +92,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
      * 请求中携带的sessionId
      */
     private String requestedSessionId;
+
 
     private String actualSessionId;
 
@@ -115,7 +117,13 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         this.servletContext = runtime.getServletContext();
         this.runtime = runtime;
         this.completableFuture = completableFuture;
-        this.requestUri = request.getRequestURI();
+        int index = request.getRequestURI().indexOf(URL_JSESSION_ID);
+        if (index == -1) {
+            this.requestUri = request.getRequestURI();
+        } else {
+            this.requestUri = request.getRequestURI().substring(0, index);
+            this.requestedSessionId = request.getRequestURI().substring(index + URL_JSESSION_ID.length());
+        }
     }
 
     public void setHttpServletResponse(HttpServletResponse httpServletResponse) {
@@ -269,10 +277,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                     break;
                 }
             }
-        }
-        if (StringUtils.isBlank(requestedSessionId)) {
-            requestedSessionId = request.getParameter(SessionProvider.DEFAULT_SESSION_PARAMETER_NAME);
-            sessionIdFromCookie = false;
         }
         if (StringUtils.isBlank(requestedSessionId)) {
             requestedSessionId = StringUtils.EMPTY;
