@@ -200,16 +200,16 @@ class DefaultServlet extends HttpServlet {
         }
 
         response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
-        String location = deploymentInfo.getErrorPageLocation(HttpStatus.NOT_FOUND.value());
-        if (StringUtils.isNotBlank(location)) {
-            request.getRequestDispatcher(location).forward(request, response);
-            return;
-        }
-        response.setHeader(HeaderNameEnum.CONTENT_TYPE.getName(), "text/html; charset=utf-8");
-
-        if (!HttpMethodEnum.HEAD.getMethod().equals(method)) {
-            response.getOutputStream().write(URL_404.getBytes());
-        }
+//        String location = deploymentInfo.getErrorPageLocation(HttpStatus.NOT_FOUND.value());
+//        if (StringUtils.isNotBlank(location)) {
+//            request.getRequestDispatcher(location).forward(request, response);
+//            return;
+//        }
+//        response.setHeader(HeaderNameEnum.CONTENT_TYPE.getName(), "text/html; charset=utf-8");
+//
+//        if (!HttpMethodEnum.HEAD.getMethod().equals(method)) {
+//            response.getOutputStream().write(URL_404.getBytes());
+//        }
     }
 
     private String matchForwardWelcome(HttpServletRequest request) throws MalformedURLException, URISyntaxException {

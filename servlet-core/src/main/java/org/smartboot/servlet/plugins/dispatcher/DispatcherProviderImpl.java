@@ -16,7 +16,12 @@ import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.provider.DispatcherProvider;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author 三刀
@@ -25,7 +30,7 @@ import javax.servlet.RequestDispatcher;
 class DispatcherProviderImpl implements DispatcherProvider {
 
     @Override
-    public RequestDispatcher getRequestDispatcher(ServletContextImpl servletContext, String path) {
+    public RequestDispatcherImpl getRequestDispatcher(ServletContextImpl servletContext, String path) {
         if (path == null) {
             return null;
         }
@@ -56,6 +61,16 @@ class DispatcherProviderImpl implements DispatcherProvider {
             return getRequestDispatcher(request.getServletContext(), request.getRequestURI().substring(request.getContextPath().length(), lastIndex + 1) + path);
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public void error(ServletContextImpl servletContext, String path, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        RequestDispatcherImpl requestDispatcher = getRequestDispatcher(servletContext, path);
+        try {
+            requestDispatcher.forward(req, resp, false, DispatcherType.ERROR);
+        } catch (ServletException e) {
+            throw new IOException(e);
         }
     }
 }

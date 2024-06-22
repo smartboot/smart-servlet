@@ -10,6 +10,14 @@
 
 package org.smartboot.servlet.plugins.dispatcher;
 
+import org.smartboot.http.common.utils.HttpUtils;
+import org.smartboot.http.common.utils.StringUtils;
+import org.smartboot.servlet.conf.ServletInfo;
+import org.smartboot.servlet.handler.HandlerContext;
+import org.smartboot.servlet.impl.HttpServletRequestImpl;
+import org.smartboot.servlet.impl.HttpServletResponseImpl;
+import org.smartboot.servlet.impl.ServletContextImpl;
+
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,14 +25,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.ServletResponse;
 import javax.servlet.ServletResponseWrapper;
-import org.smartboot.http.common.utils.HttpUtils;
-import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.servlet.handler.HandlerContext;
-import org.smartboot.servlet.conf.ServletInfo;
-import org.smartboot.servlet.impl.HttpServletRequestImpl;
-import org.smartboot.servlet.impl.HttpServletResponseImpl;
-import org.smartboot.servlet.impl.ServletContextImpl;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,11 +56,15 @@ class RequestDispatcherImpl implements RequestDispatcher {
 
     @Override
     public void forward(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+        forward(request, response, named, DispatcherType.FORWARD);
+    }
+
+    public void forward(ServletRequest request, ServletResponse response, boolean named, DispatcherType dispatcherType) throws ServletException, IOException {
         if (response.isCommitted()) {
             throw new IllegalStateException();
         }
         response.resetBuffer();
-        ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, false);
+        ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, dispatcherType);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, false);
         HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
         Object requestUri = requestImpl.getRequestURI();
@@ -113,7 +117,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
 
     @Override
     public void include(ServletRequest request, ServletResponse response) throws ServletException, IOException {
-        ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, true);
+        ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, DispatcherType.INCLUDE);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, true);
         HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
 
@@ -155,7 +159,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
         servletContext.getPipeline().handleRequest(handlerContext);
     }
 
-    private ServletRequestDispatcherWrapper wrapperRequest(final ServletRequest request, boolean included) {
+    private ServletRequestDispatcherWrapper wrapperRequest(final ServletRequest request, DispatcherType dispatcherType) {
         ServletRequest current = request;
         while (current instanceof ServletRequestWrapper) {
             current = ((ServletRequestWrapper) current).getRequest();
@@ -163,7 +167,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
         if (!(current instanceof HttpServletRequestImpl)) {
             throw new IllegalArgumentException("invalid request object: " + current);
         }
-        return new ServletRequestDispatcherWrapper((HttpServletRequestImpl) current, included ? DispatcherType.INCLUDE : DispatcherType.FORWARD, named);
+        return new ServletRequestDispatcherWrapper((HttpServletRequestImpl) current, dispatcherType, named);
     }
 
     private ServletResponseDispatcherWrapper wrapperResponse(final ServletResponse response, boolean included) {

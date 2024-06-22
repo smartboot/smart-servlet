@@ -14,6 +14,9 @@ import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author 三刀
@@ -25,4 +28,6 @@ public interface DispatcherProvider {
     RequestDispatcher getNamedDispatcher(ServletContextImpl servletContext, String name);
 
     RequestDispatcher getRequestDispatcher(HttpServletRequestImpl request, String path);
+
+    void error(ServletContextImpl servletContext, String path, HttpServletRequest req, HttpServletResponse resp) throws IOException;
 }

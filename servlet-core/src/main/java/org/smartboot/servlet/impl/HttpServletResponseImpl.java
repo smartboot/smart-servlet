@@ -113,6 +113,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             servletOutputStream.resetBuffer();
         }
         response.setHttpStatus(sc, msg);
+
+        String location = request.getServletContext().getRuntime().getDeploymentInfo().getErrorPageLocation(HttpStatus.NOT_FOUND.value());
+        if (StringUtils.isNotBlank(location)) {
+            request.getServletContext().getRuntime().getDispatcherProvider().error(request.getServletContext(), location, request, this);
+        }
     }
 
     @Override
