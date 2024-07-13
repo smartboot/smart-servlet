@@ -52,7 +52,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.smartboot.servlet</groupId>
+            <groupId>io.github.smartboot.jakarta</groupId>
             <artifactId>smart-servlet-spring-boot-starter</artifactId>
             <version>1.5</version><!--最新版本 -->
         </dependency>
