@@ -10,19 +10,19 @@
 
 package org.smartboot.servlet.plugins.websocket;
 
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.PongMessage;
+import jakarta.websocket.server.ServerContainer;
 import org.smartboot.http.common.utils.WebSocketUtil;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
-import org.smartboot.servlet.WebSocketServerContainer;
 import org.smartboot.servlet.plugins.websocket.impl.HandlerWrapper;
 import org.smartboot.servlet.plugins.websocket.impl.WebSocketServerContainerImpl;
 import org.smartboot.servlet.plugins.websocket.impl.WebsocketSession;
 import org.smartboot.servlet.provider.WebsocketProvider;
 import org.smartboot.socket.util.Attachment;
 
-import javax.websocket.CloseReason;
-import javax.websocket.PongMessage;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -34,7 +34,7 @@ public class WebsocketProviderImpl implements WebsocketProvider {
     private final WebSocketServerContainerImpl serverContainer = new WebSocketServerContainerImpl();
 
     @Override
-    public WebSocketServerContainer getWebSocketServerContainer() {
+    public ServerContainer getWebSocketServerContainer() {
         return serverContainer;
     }
 

@@ -10,7 +10,7 @@
 
 package org.smartboot.servlet.impl;
 
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextListener;
 
 public class ServletContextWrapperListener {
     private final ServletContextListener listener;

@@ -13,9 +13,9 @@ package org.smartboot.servlet.plugins.async;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.provider.AsyncContextProvider;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
 public class AsyncContextProviderImpl implements AsyncContextProvider {
     @Override

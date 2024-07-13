@@ -10,12 +10,13 @@
 
 package org.smartboot.servlet.provider;
 
+import jakarta.websocket.server.ServerContainer;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.servlet.WebSocketServerContainer;
 import org.smartboot.socket.util.AttachKey;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
@@ -24,7 +25,7 @@ import javax.websocket.Session;
 public interface WebsocketProvider {
     AttachKey<? super Session> WEBSOCKET_SESSION_ATTACH_KEY = AttachKey.valueOf("websocketSession");
 
-    WebSocketServerContainer getWebSocketServerContainer();
+    ServerContainer getWebSocketServerContainer();
 
     void doHandle(WebSocketRequest request, WebSocketResponse response);
 }

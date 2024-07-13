@@ -16,9 +16,10 @@ import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 
-import javax.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerContainer;
 import java.io.File;
 
 /**

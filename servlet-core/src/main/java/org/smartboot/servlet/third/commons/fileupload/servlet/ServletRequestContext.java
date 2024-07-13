@@ -19,7 +19,7 @@ package org.smartboot.servlet.third.commons.fileupload.servlet;
 import org.smartboot.servlet.third.commons.fileupload.FileUploadBase;
 import org.smartboot.servlet.third.commons.fileupload.UploadContext;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 

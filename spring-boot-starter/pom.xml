@@ -18,7 +18,7 @@
         <version>1.5</version>
     </parent>
     <properties>
-        <springboot.version>2.7.18</springboot.version>
+        <springboot.version>3.3.1</springboot.version>
     </properties>
     <modelVersion>4.0.0</modelVersion>
 

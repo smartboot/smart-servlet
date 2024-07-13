@@ -1,21 +1,20 @@
 package org.smartboot.servlet.plugins.websocket;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.server.ServerContainer;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.servlet.plugins.websocket.impl.AnnotatedEndpoint;
 import org.smartboot.servlet.plugins.websocket.impl.PathNode;
 import org.smartboot.servlet.plugins.websocket.impl.SmartServerEndpointConfig;
 import org.smartboot.servlet.plugins.websocket.impl.WebSocketServerContainerImpl;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.websocket.server.ServerContainer;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -57,8 +56,7 @@ public class WebSocketFilter implements Filter {
             }
             //匹配成功
             if (matched) {
-                AnnotatedEndpoint endpoint = new AnnotatedEndpoint(serverEndpointConfig, matchData);
-                container.doUpgrade(req, resp, serverEndpointConfig.getServerEndpointConfig(), endpoint, matchData);
+                container.upgradeHttpToWebSocket(req, resp, serverEndpointConfig.getServerEndpointConfig(), matchData);
                 return;
             }
         }

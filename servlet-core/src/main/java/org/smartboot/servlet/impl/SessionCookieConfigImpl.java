@@ -10,9 +10,11 @@
 
 package org.smartboot.servlet.impl;
 
-import javax.servlet.SessionCookieConfig;
+import jakarta.servlet.SessionCookieConfig;
 import org.smartboot.servlet.ServletContextRuntime;
 import org.smartboot.servlet.provider.SessionProvider;
+
+import java.util.Map;
 
 /**
  * @author 三刀
@@ -107,6 +109,21 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
     @Override
     public int getMaxAge() {
         return maxAge;
+    }
+
+    @Override
+    public void setAttribute(String name, String value) {
+
+    }
+
+    @Override
+    public String getAttribute(String name) {
+        return "";
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return Map.of();
     }
 
     @Override

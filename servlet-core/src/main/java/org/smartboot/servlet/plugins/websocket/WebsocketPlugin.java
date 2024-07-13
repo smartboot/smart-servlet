@@ -17,8 +17,8 @@ import org.smartboot.servlet.enums.FilterMappingType;
 import org.smartboot.servlet.plugins.Plugin;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import javax.servlet.DispatcherType;
-import javax.websocket.server.ServerContainer;
+import jakarta.servlet.DispatcherType;
+import jakarta.websocket.server.ServerContainer;
 import java.util.Collections;
 
 /**

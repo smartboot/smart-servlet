@@ -10,21 +10,18 @@
 
 package org.smartboot.servlet.sandbox;
 
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.Extension;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpointConfig;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.servlet.WebSocketServerContainer;
 import org.smartboot.servlet.plugins.PluginException;
 import org.smartboot.servlet.provider.WebsocketProvider;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.DeploymentException;
-import javax.websocket.Endpoint;
-import javax.websocket.Extension;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -40,10 +37,6 @@ public class MockWebsocketProvider implements WebsocketProvider {
     @Override
     public WebSocketServerContainer getWebSocketServerContainer() {
         return new WebSocketServerContainer() {
-            @Override
-            public void doUpgrade(HttpServletRequest request, HttpServletResponse response, ServerEndpointConfig sec, Endpoint endpoint, Map<String, String> pathParams) throws ServletException, IOException {
-                throw new PluginException(SandBox.UPGRADE_MESSAGE_ZH);
-            }
 
             @Override
             public void addEndpoint(Class<?> endpointClass) throws DeploymentException {
@@ -53,6 +46,11 @@ public class MockWebsocketProvider implements WebsocketProvider {
             @Override
             public void addEndpoint(ServerEndpointConfig serverConfig) throws DeploymentException {
 
+            }
+
+            @Override
+            public void upgradeHttpToWebSocket(Object o, Object o1, ServerEndpointConfig serverEndpointConfig, Map<String, String> map) throws IOException, DeploymentException {
+                throw new PluginException(SandBox.UPGRADE_MESSAGE_ZH);
             }
 
             @Override

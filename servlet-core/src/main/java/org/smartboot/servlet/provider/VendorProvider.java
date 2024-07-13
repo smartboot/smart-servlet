@@ -10,7 +10,7 @@
 
 package org.smartboot.servlet.provider;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface VendorProvider {
     void signature(HttpServletResponse response);

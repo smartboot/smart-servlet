@@ -14,8 +14,8 @@ import org.smartboot.servlet.SmartHttpServletRequest;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.ServletContextImpl;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
 /**
  * 请求处理上下文对象

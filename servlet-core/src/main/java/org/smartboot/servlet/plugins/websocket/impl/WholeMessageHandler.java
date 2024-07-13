@@ -1,8 +1,8 @@
 package org.smartboot.servlet.plugins.websocket.impl;
 
-import javax.websocket.MessageHandler;
-import javax.websocket.Session;
-import javax.websocket.server.PathParam;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.PathParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

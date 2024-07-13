@@ -10,20 +10,17 @@
 
 package org.smartboot.servlet.plugins.session;
 
+import jakarta.servlet.SessionCookieConfig;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.provider.SessionProvider;
 import org.smartboot.socket.timer.HashedWheelTimer;
 
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -32,7 +29,7 @@ import java.util.function.Function;
  * @author 三刀
  * @version V1.0 , 2019/12/21
  */
-class SessionProviderImpl implements SessionProvider, HttpSessionContext {
+class SessionProviderImpl implements SessionProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderImpl.class);
     private Function<HttpServletRequestImpl, String> sessionIdFactory = request -> "smart-servlet:" + new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis());
@@ -50,16 +47,6 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
     private int maxInactiveInterval = DEFAULT_MAX_INACTIVE_INTERVAL;
 
     private final HashedWheelTimer timer = new HashedWheelTimer(r -> new Thread(r, "smartboot-session-timer"), 10, 64);
-
-    @Override
-    public HttpSession getSession(String sessionId) {
-        return sessionMap.get(sessionId);
-    }
-
-    @Override
-    public Enumeration<String> getIds() {
-        return Collections.enumeration(sessionMap.keySet());
-    }
 
 
     @Override
@@ -88,7 +75,6 @@ class SessionProviderImpl implements SessionProvider, HttpSessionContext {
             SessionCookieConfig sessionCookieConfig = request.getServletContext().getSessionCookieConfig();
             Cookie cookie = new Cookie(sessionCookieConfig.getName(), httpSession.getId());
             cookie.setPath(request.getRequestURI());
-            cookie.setComment(sessionCookieConfig.getComment());
             if (sessionCookieConfig.getDomain() != null) {
                 cookie.setDomain(sessionCookieConfig.getDomain());
             }

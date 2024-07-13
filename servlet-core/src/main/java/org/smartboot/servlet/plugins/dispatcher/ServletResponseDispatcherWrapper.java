@@ -10,10 +10,10 @@
 
 package org.smartboot.servlet.plugins.dispatcher;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.smartboot.servlet.impl.HttpServletResponseImpl;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -118,13 +118,6 @@ class ServletResponseDispatcherWrapper extends HttpServletResponseWrapper {
         super.setStatus(sc);
     }
 
-    @Override
-    public void setStatus(int sc, String sm) {
-        if (included) {
-            return;
-        }
-        super.setStatus(sc, sm);
-    }
 
     @Override
     public void setCharacterEncoding(String charset) {

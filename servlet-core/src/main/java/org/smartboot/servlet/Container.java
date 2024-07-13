@@ -32,10 +32,10 @@ import org.smartboot.servlet.impl.HttpServletResponseImpl;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.plugins.Plugin;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

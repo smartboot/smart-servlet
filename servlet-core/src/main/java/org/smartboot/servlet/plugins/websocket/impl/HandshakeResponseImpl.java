@@ -1,7 +1,7 @@
 package org.smartboot.servlet.plugins.websocket.impl;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.websocket.HandshakeResponse;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.HandshakeResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

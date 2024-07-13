@@ -15,8 +15,8 @@ import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.socket.util.Attachment;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;

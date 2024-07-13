@@ -12,8 +12,8 @@ package org.smartboot.servlet.impl;
 
 import org.smartboot.servlet.conf.ServletInfo;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import java.util.Collections;
 import java.util.Enumeration;
 /**

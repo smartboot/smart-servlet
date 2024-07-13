@@ -13,7 +13,7 @@ package org.smartboot.servlet.sandbox;
 import org.smartboot.servlet.Container;
 import org.smartboot.servlet.provider.VendorProvider;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class MockVendorProvider implements VendorProvider {
     @Override

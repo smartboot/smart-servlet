@@ -12,7 +12,7 @@ package org.smartboot.servlet.conf;
 
 import org.smartboot.servlet.enums.FilterMappingType;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 import java.util.Set;
 
 /**

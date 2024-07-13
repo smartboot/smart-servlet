@@ -13,7 +13,7 @@ package org.smartboot.servlet;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.socket.util.Attachment;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author 三刀

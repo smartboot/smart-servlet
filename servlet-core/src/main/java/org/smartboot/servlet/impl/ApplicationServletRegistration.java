@@ -16,9 +16,9 @@ import org.smartboot.servlet.conf.DeploymentInfo;
 import org.smartboot.servlet.conf.ServletInfo;
 import org.smartboot.servlet.conf.ServletMappingInfo;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletSecurityElement;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.ServletSecurityElement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

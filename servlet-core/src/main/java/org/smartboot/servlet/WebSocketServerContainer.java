@@ -10,15 +10,15 @@
 
 package org.smartboot.servlet;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.websocket.Endpoint;
-import javax.websocket.server.ServerContainer;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
 import java.util.Map;
 
 public interface WebSocketServerContainer extends ServerContainer {
-    void doUpgrade(HttpServletRequest request, HttpServletResponse response, final ServerEndpointConfig sec, Endpoint endpoint, Map<String, String> pathParams) throws ServletException, IOException;
+//    void doUpgrade(HttpServletRequest request, HttpServletResponse response, final ServerEndpointConfig sec, Endpoint endpoint, Map<String, String> pathParams) throws ServletException, IOException;
 }

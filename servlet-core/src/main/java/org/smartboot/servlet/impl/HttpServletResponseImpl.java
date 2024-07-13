@@ -10,6 +10,8 @@
 
 package org.smartboot.servlet.impl;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
@@ -19,8 +21,6 @@ import org.smartboot.http.server.HttpResponse;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -58,17 +58,14 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             sessionCookie.setDomain(cookie.getDomain());
             sessionCookie.setMaxAge(cookie.getMaxAge());
             sessionCookie.setSecure(cookie.getSecure());
-            sessionCookie.setVersion(cookie.getVersion());
             return;
         }
         org.smartboot.http.common.Cookie httpCookie = new org.smartboot.http.common.Cookie(cookie.getName(), cookie.getValue());
-        httpCookie.setComment(cookie.getComment());
         httpCookie.setDomain(cookie.getDomain());
         httpCookie.setHttpOnly(cookie.isHttpOnly());
         httpCookie.setPath(cookie.getPath());
         httpCookie.setMaxAge(cookie.getMaxAge());
         httpCookie.setSecure(cookie.getSecure());
-        httpCookie.setVersion(cookie.getVersion());
         response.addCookie(httpCookie);
         if (cookie.getName().equals(request.getServletContext().getSessionCookieConfig().getName())) {
             sessionCookie = httpCookie;
@@ -91,16 +88,6 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         return encodeURL(url);
     }
 
-
-    @Override
-    public String encodeUrl(String url) {
-        return encodeURL(url);
-    }
-
-    @Override
-    public String encodeRedirectUrl(String url) {
-        return encodeURL(url);
-    }
 
     @Override
     public void sendError(int sc, String msg) throws IOException {
@@ -182,10 +169,6 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         response.addHeader(name, String.valueOf(value));
     }
 
-    @Override
-    public void setStatus(int sc, String sm) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public int getStatus() {

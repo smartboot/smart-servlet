@@ -10,7 +10,7 @@
 
 package org.smartboot.servlet.plugins.websocket.impl;
 
-import javax.websocket.MessageHandler;
+import jakarta.websocket.MessageHandler;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）

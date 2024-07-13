@@ -17,8 +17,8 @@ import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

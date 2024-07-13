@@ -12,9 +12,9 @@ package org.smartboot.servlet.provider;
 
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
 public interface AsyncContextProvider {
     AsyncContext startAsync(HttpServletRequestImpl request, ServletRequest servletRequest, ServletResponse servletResponse, AsyncContext asyncContext) throws IllegalStateException;

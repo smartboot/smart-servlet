@@ -16,8 +16,8 @@ import org.smartboot.servlet.conf.FilterMappingInfo;
 import org.smartboot.servlet.enums.FilterMappingType;
 import org.smartboot.servlet.util.PathMatcherUtil;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterRegistration;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterRegistration;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;

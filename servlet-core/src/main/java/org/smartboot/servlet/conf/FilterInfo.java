@@ -10,7 +10,7 @@
 
 package org.smartboot.servlet.conf;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

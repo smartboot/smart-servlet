@@ -16,16 +16,15 @@ import org.smartboot.servlet.impl.ServletContextImpl;
 import org.smartboot.servlet.util.CollectionUtils;
 import org.smartboot.socket.timer.TimerTask;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
-import javax.servlet.http.HttpSessionContext;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionIdListener;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSessionBindingEvent;
+import jakarta.servlet.http.HttpSessionBindingListener;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionIdListener;
+import jakarta.servlet.http.HttpSessionListener;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -112,10 +111,6 @@ class HttpSessionImpl implements HttpSession {
         }, maxInactiveInterval, TimeUnit.SECONDS);
     }
 
-    @Override
-    public HttpSessionContext getSessionContext() {
-        return sessionProvider;
-    }
 
     @Override
     public Object getAttribute(String name) {
@@ -123,11 +118,7 @@ class HttpSessionImpl implements HttpSession {
         return attributes.get(name);
     }
 
-    @Override
-    public Object getValue(String name) {
-        checkState();
-        return getAttribute(name);
-    }
+
 
     @Override
     public Enumeration<String> getAttributeNames() {
@@ -135,11 +126,7 @@ class HttpSessionImpl implements HttpSession {
         return Collections.enumeration(attributes.keySet());
     }
 
-    @Override
-    public String[] getValueNames() {
-        checkState();
-        return attributes.keySet().toArray(new String[0]);
-    }
+
 
     @Override
     public void setAttribute(String name, Object value) {
@@ -166,11 +153,6 @@ class HttpSessionImpl implements HttpSession {
         }
     }
 
-    @Override
-    public void putValue(String name, Object value) {
-        checkState();
-        setAttribute(name, value);
-    }
 
     @Override
     public void removeAttribute(String name) {
@@ -184,12 +166,7 @@ class HttpSessionImpl implements HttpSession {
             ((HttpSessionBindingListener) o).valueUnbound(new HttpSessionBindingEvent(this, name, o));
         }
     }
-
-    @Override
-    public void removeValue(String name) {
-        checkState();
-        removeAttribute(name);
-    }
+    
 
     @Override
     public void invalidate() {

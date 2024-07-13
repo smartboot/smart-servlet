@@ -10,26 +10,26 @@
 
 package org.smartboot.servlet.plugins.websocket.impl;
 
-import org.smartboot.servlet.WebSocketServerContainer;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.Extension;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpoint;
+import jakarta.websocket.server.ServerEndpointConfig;
 import org.smartboot.servlet.impl.HttpServletRequestImpl;
 import org.smartboot.servlet.provider.WebsocketProvider;
 import org.smartboot.socket.util.Attachment;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.DeploymentException;
-import javax.websocket.Endpoint;
-import javax.websocket.Extension;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +39,10 @@ import java.util.Set;
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2021/3/28
  */
-public class WebSocketServerContainerImpl implements WebSocketServerContainer {
+public class WebSocketServerContainerImpl implements ServerContainer {
     private final Set<Class<?>> endpointClassSet = new HashSet<>();
-    private final List<SmartServerEndpointConfig> endpointConfigs = new ArrayList<>();
+    private final Map<ServerEndpointConfig, SmartServerEndpointConfig> endpointConfigs =
+            new HashMap<>();
     private boolean deployed = false;
     private final List<Extension> installedExtensions = Collections.emptyList();
 
@@ -70,7 +71,30 @@ public class WebSocketServerContainerImpl implements WebSocketServerContainer {
         if (deployed) {
             throw new DeploymentException("");
         }
-        endpointConfigs.add(new SmartServerEndpointConfig(serverConfig));
+        endpointConfigs.put(serverConfig, new SmartServerEndpointConfig(serverConfig));
+    }
+
+    @Override
+    public void upgradeHttpToWebSocket(Object httpServletRequest, Object httpServletResponse, ServerEndpointConfig sec, Map<String, String> pathParameters) {
+        HttpServletRequest request = (HttpServletRequest) httpServletRequest;
+        HttpServletResponse response = (HttpServletResponse) httpServletResponse;
+
+        HandshakeRequestImpl handshakeRequest = new HandshakeRequestImpl(request);
+        HandshakeResponseImpl handshakeResponse = new HandshakeResponseImpl(response);
+        ServerEndpointConfig.Configurator c = sec.getConfigurator();
+        c.modifyHandshake(sec, handshakeRequest, handshakeResponse);
+
+        HttpServletRequestImpl req = (HttpServletRequestImpl) request;
+        Attachment attachment = req.getAttachment();
+        if (attachment == null) {
+            attachment = new Attachment();
+            req.setAttachment(attachment);
+        }
+        SmartServerEndpointConfig endpointConfig = endpointConfigs.get(sec);
+        AnnotatedEndpoint endpoint = new AnnotatedEndpoint(endpointConfig, pathParameters);
+        WebsocketSession websocketSession = new WebsocketSession(this, endpoint, URI.create(request.getRequestURI()));
+        attachment.put(WebsocketProvider.WEBSOCKET_SESSION_ATTACH_KEY, websocketSession);
+        endpoint.onOpen(websocketSession, sec);
     }
 
     @Override
@@ -142,26 +166,8 @@ public class WebSocketServerContainerImpl implements WebSocketServerContainer {
         deployed = true;
     }
 
-    public List<SmartServerEndpointConfig> getEndpointConfigs() {
-        return endpointConfigs;
+    public Collection<SmartServerEndpointConfig> getEndpointConfigs() {
+        return endpointConfigs.values();
     }
 
-    @Override
-    public void doUpgrade(HttpServletRequest request, HttpServletResponse response, final ServerEndpointConfig sec, Endpoint endpoint, Map<String, String> pathParams) throws ServletException, IOException {
-        HandshakeRequestImpl handshakeRequest = new HandshakeRequestImpl(request);
-        HandshakeResponseImpl handshakeResponse = new HandshakeResponseImpl(response);
-        ServerEndpointConfig.Configurator c = sec.getConfigurator();
-        c.modifyHandshake(sec, handshakeRequest, handshakeResponse);
-
-        HttpServletRequestImpl req = (HttpServletRequestImpl) request;
-        Attachment attachment = req.getAttachment();
-        if (attachment == null) {
-            attachment = new Attachment();
-            req.setAttachment(attachment);
-        }
-
-        WebsocketSession websocketSession = new WebsocketSession(this, endpoint, URI.create(request.getRequestURI()));
-        attachment.put(WebsocketProvider.WEBSOCKET_SESSION_ATTACH_KEY, websocketSession);
-        endpoint.onOpen(websocketSession, sec);
-    }
 }

@@ -10,6 +10,22 @@
 
 package org.smartboot.servlet.impl;
 
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletRequestAttributeEvent;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -29,21 +45,6 @@ import org.smartboot.servlet.util.CollectionUtils;
 import org.smartboot.servlet.util.DateUtil;
 import org.smartboot.socket.util.Attachment;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestAttributeEvent;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -234,7 +235,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getPathTranslated() {
-        return getRealPath(getPathInfo());
+        return servletContext.getRealPath(getPathInfo());
     }
 
     @Override
@@ -361,10 +362,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         return getRequestedSessionId() != null && !sessionIdFromCookie;
     }
 
-    @Override
-    public boolean isRequestedSessionIdFromUrl() {
-        return isRequestedSessionIdFromURL();
-    }
 
     @Override
     public boolean authenticate(HttpServletResponse response) {
@@ -682,10 +679,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         return runtime.getDispatcherProvider().getRequestDispatcher(this, path);
     }
 
-    @Override
-    public String getRealPath(String path) {
-        return servletContext.getRealPath(path);
-    }
 
     @Override
     public int getRemotePort() {
@@ -770,6 +763,21 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public DispatcherType getDispatcherType() {
         return dispatcherType;
+    }
+
+    @Override
+    public String getRequestId() {
+        return "";
+    }
+
+    @Override
+    public String getProtocolRequestId() {
+        return "";
+    }
+
+    @Override
+    public ServletConnection getServletConnection() {
+        return null;
     }
 
     public CompletableFuture<Object> getCompletableFuture() {

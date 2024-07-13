@@ -22,24 +22,24 @@ import org.smartboot.servlet.enums.ServletContextPathType;
 import org.smartboot.servlet.exception.WrappedRuntimeException;
 import org.smartboot.servlet.handler.HandlerPipeline;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeEvent;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRequestAttributeListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.descriptor.JspConfigDescriptor;
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionIdListener;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextAttributeEvent;
+import jakarta.servlet.ServletContextAttributeListener;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.ServletRequestAttributeListener;
+import jakarta.servlet.ServletRequestListener;
+import jakarta.servlet.SessionCookieConfig;
+import jakarta.servlet.SessionTrackingMode;
+import jakarta.servlet.descriptor.JspConfigDescriptor;
+import jakarta.servlet.http.HttpSessionAttributeListener;
+import jakarta.servlet.http.HttpSessionIdListener;
+import jakarta.servlet.http.HttpSessionListener;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -250,31 +250,14 @@ public class ServletContextImpl implements ServletContext {
         return runtime.getDispatcherProvider().getNamedDispatcher(this, name);
     }
 
-    @Override
-    public Servlet getServlet(String name) throws ServletException {
-        ServletInfo servletInfo = deploymentInfo.getServlets().get(name);
-        return servletInfo == null ? null : servletInfo.getServlet();
-    }
 
-    @Override
-    public Enumeration<Servlet> getServlets() {
-        return Collections.enumeration(deploymentInfo.getServlets().values().stream().map(ServletInfo::getServlet).collect(Collectors.toList()));
-    }
-
-    @Override
-    public Enumeration<String> getServletNames() {
-        return Collections.enumeration(deploymentInfo.getServlets().keySet());
-    }
 
     @Override
     public void log(String msg) {
         LOGGER.info(msg);
     }
 
-    @Override
-    public void log(Exception exception, String msg) {
-        LOGGER.info(msg, exception);
-    }
+
 
     @Override
     public void log(String message, Throwable throwable) {
