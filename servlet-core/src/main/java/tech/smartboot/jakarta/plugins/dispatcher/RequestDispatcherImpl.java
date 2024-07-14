@@ -150,6 +150,12 @@ class RequestDispatcherImpl implements RequestDispatcher {
             }
             String[] array = StringUtils.split(dispatcherURL, "?");
             requestWrapper.setRequestUri(array[0]);
+            if (array.length > 1) {
+                Map<String, String[]> parameters = new HashMap<>();
+                HttpUtils.decodeParamString(array[1], parameters);
+                requestWrapper.setParameters(parameters);
+                requestWrapper.setQueryString(array[1]);
+            }
         }
 
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);

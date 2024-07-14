@@ -10,13 +10,14 @@
 
 package tech.smartboot.jakarta.handler;
 
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
-
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequestEvent;
 import jakarta.servlet.ServletRequestListener;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -29,6 +30,10 @@ public class ServletRequestListenerHandler extends Handler {
 
     @Override
     public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
+        if (handlerContext.getRequest().getDispatcherType() != DispatcherType.REQUEST) {
+            doNext(handlerContext);
+            return;
+        }
         ServletContext servletContext = handlerContext.getServletContext();
         List<ServletRequestListener> servletRequestListeners = handlerContext.getServletContext().getDeploymentInfo().getServletRequestListeners();
         ServletRequestEvent servletRequestEvent = servletRequestListeners.isEmpty() ? null : new ServletRequestEvent(servletContext, handlerContext.getRequest());
