@@ -369,8 +369,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     }
 
     @Override
-    public void login(String username, String password) {
-        throw new UnsupportedOperationException();
+    public void login(String username, String password) throws ServletException{
+        throw new ServletException("Not Implemented");
     }
 
     @Override
