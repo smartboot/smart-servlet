@@ -13,6 +13,7 @@ package tech.smartboot.jakarta.handler;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import tech.smartboot.jakarta.conf.ServletInfo;
 
 import java.io.IOException;
 
@@ -29,6 +30,11 @@ public class ServletServiceHandler extends Handler {
         ServletRequest request = handlerContext.getRequest();
         ServletResponse response = handlerContext.getResponse();
         //成功匹配到Servlet,直接执行
-        handlerContext.getServletInfo().getServlet().service(request, response);
+        if (handlerContext.getServletInfo() != null) {
+            handlerContext.getServletInfo().getServlet().service(request, response);
+        } else {
+            handlerContext.getServletContext().getDeploymentInfo().getServlets().get(ServletInfo.DEFAULT_SERVLET_NAME).getServlet().service(request, response);
+        }
+
     }
 }
