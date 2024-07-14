@@ -10,6 +10,13 @@
 
 package tech.smartboot.jakarta.plugins.dispatcher;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletRequestWrapper;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.ServletResponseWrapper;
 import org.smartboot.http.common.utils.HttpUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.jakarta.conf.ServletInfo;
@@ -18,13 +25,6 @@ import tech.smartboot.jakarta.impl.HttpServletRequestImpl;
 import tech.smartboot.jakarta.impl.HttpServletResponseImpl;
 import tech.smartboot.jakarta.impl.ServletContextImpl;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletRequestWrapper;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.ServletResponseWrapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -156,6 +156,8 @@ class RequestDispatcherImpl implements RequestDispatcher {
                 requestWrapper.setParameters(parameters);
                 requestWrapper.setQueryString(array[1]);
             }
+        } else {
+            requestWrapper.setParameters(request.getParameterMap());
         }
 
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);

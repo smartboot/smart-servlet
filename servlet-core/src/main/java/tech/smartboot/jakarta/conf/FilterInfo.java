@@ -11,8 +11,11 @@
 package tech.smartboot.jakarta.conf;
 
 import jakarta.servlet.Filter;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +25,10 @@ import java.util.Map;
 public class FilterInfo {
 
     private final Map<String, String> initParams = new HashMap<>();
+    /**
+     * web.xml中的Filter映射信息配置
+     */
+    private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
     private String filterClass;
     private String filterName;
     private Filter filter;
@@ -75,6 +82,15 @@ public class FilterInfo {
 
     public void setAsyncSupported(boolean asyncSupported) {
         this.asyncSupported = asyncSupported;
+    }
+
+    public List<FilterMappingInfo> getMappings() {
+        return Collections.unmodifiableList(filterMappings);
+    }
+
+    public FilterInfo addMapping(final FilterMappingInfo mapping) {
+        filterMappings.add(mapping);
+        return this;
     }
 
     @Override

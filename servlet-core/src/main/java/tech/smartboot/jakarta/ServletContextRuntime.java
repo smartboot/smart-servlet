@@ -10,6 +10,13 @@
 
 package tech.smartboot.jakarta;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebListener;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -29,13 +36,6 @@ import tech.smartboot.jakarta.provider.VendorProvider;
 import tech.smartboot.jakarta.provider.WebsocketProvider;
 import tech.smartboot.jakarta.sandbox.SandBox;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.Servlet;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -218,6 +218,9 @@ public class ServletContextRuntime {
                 } else {
                     deploymentInfo.addServlet(servletInfo);
                 }
+            });
+            deploymentInfo.getHandlesTypesLoader().getFilters().values().forEach(filterInfo -> {
+                deploymentInfo.addFilter(filterInfo);
             });
             deploymentInfo.getHandlesTypesLoader().clear();
             deploymentInfo.setHandlesTypesLoader(null);

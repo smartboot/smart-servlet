@@ -10,6 +10,10 @@
 
 package tech.smartboot.jakarta;
 
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -19,6 +23,7 @@ import org.smartboot.http.server.HttpServerConfiguration;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import tech.smartboot.jakarta.conf.DeploymentInfo;
+import tech.smartboot.jakarta.conf.FilterInfo;
 import tech.smartboot.jakarta.conf.WebAppInfo;
 import tech.smartboot.jakarta.exception.WrappedRuntimeException;
 import tech.smartboot.jakarta.handler.FilterMatchHandler;
@@ -32,10 +37,6 @@ import tech.smartboot.jakarta.impl.HttpServletResponseImpl;
 import tech.smartboot.jakarta.impl.ServletContextImpl;
 import tech.smartboot.jakarta.plugins.Plugin;
 
-import jakarta.servlet.AsyncContext;
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.ServletContainerInitializer;
-import jakarta.servlet.ServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -317,16 +318,15 @@ public class Container {
         webAppInfo.getErrorPages().forEach(deploymentInfo::addErrorPage);
 
         //register Filter
-        webAppInfo.getFilters().values().forEach(deploymentInfo::addFilter);
+        for (FilterInfo filterInfo : webAppInfo.getFilters().values()) {
+            deploymentInfo.addFilter(filterInfo);
+        }
         //register servletContext into deploymentInfo
         webAppInfo.getContextParams().forEach(deploymentInfo::addInitParameter);
 
         //register ServletContextListener into deploymentInfo
         webAppInfo.getListeners().forEach(listener -> servletRuntime.getServletContext().addListener(listener));
         deploymentInfo.setDynamicListenerState(true);
-
-        //register filterMapping into deploymentInfo
-        webAppInfo.getFilterMappings().forEach(deploymentInfo::addFilterMapping);
 
         webAppInfo.getLocaleEncodingMappings().forEach(deploymentInfo::addLocaleEncodingMapping);
 

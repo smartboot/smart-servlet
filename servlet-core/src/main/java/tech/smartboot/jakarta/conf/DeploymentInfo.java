@@ -10,9 +10,6 @@
 
 package tech.smartboot.jakarta.conf;
 
-import tech.smartboot.jakarta.AnnotationsLoader;
-import tech.smartboot.jakarta.impl.ServletContextWrapperListener;
-
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletContextAttributeListener;
 import jakarta.servlet.ServletContextListener;
@@ -22,6 +19,9 @@ import jakarta.servlet.annotation.HandlesTypes;
 import jakarta.servlet.http.HttpSessionAttributeListener;
 import jakarta.servlet.http.HttpSessionIdListener;
 import jakarta.servlet.http.HttpSessionListener;
+import tech.smartboot.jakarta.AnnotationsLoader;
+import tech.smartboot.jakarta.impl.ServletContextWrapperListener;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +45,6 @@ public class DeploymentInfo {
     private final Map<Integer, ErrorPageInfo> errorStatusPages = new HashMap<>();
     private final Map<String, ErrorPageInfo> errorPages = new HashMap<>();
     private final Map<String, FilterInfo> filters = new HashMap<>();
-    private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
     private final Map<String, String> initParameters = new HashMap<>();
     private List<ServletContainerInitializerInfo> servletContainerInitializers = new ArrayList<>();
     private List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
@@ -229,14 +228,6 @@ public class DeploymentInfo {
 
     public Map<String, FilterInfo> getFilters() {
         return filters;
-    }
-
-    public void addFilterMapping(FilterMappingInfo filterMappingInfo) {
-        filterMappings.add(filterMappingInfo);
-    }
-
-    public List<FilterMappingInfo> getFilterMappings() {
-        return filterMappings;
     }
 
     public Map<String, String> getInitParameters() {

@@ -10,19 +10,25 @@
 
 package tech.smartboot.jakarta;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.annotation.HandlesTypes;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
+import jakarta.servlet.annotation.WebListener;
+import jakarta.servlet.annotation.WebServlet;
 import org.smartboot.http.common.utils.StringUtils;
+import tech.smartboot.jakarta.conf.FilterInfo;
+import tech.smartboot.jakarta.conf.FilterMappingInfo;
 import tech.smartboot.jakarta.conf.ServletInfo;
+import tech.smartboot.jakarta.enums.FilterMappingType;
 import tech.smartboot.jakarta.third.bcel.Const;
 import tech.smartboot.jakarta.third.bcel.classfile.AnnotationEntry;
 import tech.smartboot.jakarta.third.bcel.classfile.ClassParser;
 import tech.smartboot.jakarta.third.bcel.classfile.JavaClass;
 import tech.smartboot.jakarta.util.CollectionUtils;
+import tech.smartboot.jakarta.util.PathMatcherUtil;
 
-import jakarta.servlet.ServletContainerInitializer;
-import jakarta.servlet.annotation.HandlesTypes;
-import jakarta.servlet.annotation.WebInitParam;
-import jakarta.servlet.annotation.WebListener;
-import jakarta.servlet.annotation.WebServlet;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,6 +37,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -70,9 +77,10 @@ public class AnnotationsLoader {
      */
     private boolean handlesTypesNonAnnotations = false;
 
-    private Map<Class, List<String>> annotations = new HashMap<>();
+    private final Map<Class, List<String>> annotations = new HashMap<>();
 
     private final Map<String, ServletInfo> servlets = new HashMap<>();
+    private final Map<String, FilterInfo> filters = new HashMap<>();
 
     public AnnotationsLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -136,6 +144,10 @@ public class AnnotationsLoader {
 
     public Map<String, ServletInfo> getServlets() {
         return servlets;
+    }
+
+    public Map<String, FilterInfo> getFilters() {
+        return filters;
     }
 
     public List<String> getAnnotations(Class clazz) {
@@ -211,6 +223,36 @@ public class AnnotationsLoader {
                 String annotationName = getClassName(entry.getAnnotationType());
                 if (WebListener.class.getName().equals(annotationName)) {
                     annotations.computeIfAbsent(WebListener.class, aClass -> new ArrayList<>()).add(className);
+                } else if (WebFilter.class.getName().equals(annotationName)) {
+                    Class<?> clazz = classLoader.loadClass(className);
+                    WebFilter webFilter = clazz.getAnnotation(WebFilter.class);
+                    String name = webFilter.filterName();
+                    if (StringUtils.isBlank(name)) {
+                        name = className;
+                    }
+                    FilterInfo filterInfo = new FilterInfo();
+                    filterInfo.setFilterName(name);
+                    filterInfo.setFilterClass(className);
+                    filterInfo.setAsyncSupported(webFilter.asyncSupported());
+                    for (WebInitParam param : webFilter.initParams()) {
+                        filterInfo.addInitParam(param.name(), param.value());
+                    }
+                    Set<DispatcherType> set = new HashSet<>(Arrays.asList(webFilter.dispatcherTypes()));
+                    for (String urlPattern : webFilter.urlPatterns()) {
+                        FilterMappingInfo filterMappingInfo =
+                                new FilterMappingInfo(name,
+                                        FilterMappingType.URL, null, PathMatcherUtil.addMapping(urlPattern),
+                                        set);
+                        filterInfo.addMapping(filterMappingInfo);
+                    }
+                    for (String servletName : webFilter.servletNames()) {
+                        FilterMappingInfo filterMappingInfo =
+                                new FilterMappingInfo(name,
+                                        FilterMappingType.SERVLET, servletName, null,
+                                        set);
+                        filterInfo.addMapping(filterMappingInfo);
+                    }
+                    filters.put(name, filterInfo);
                 } else if (WebServlet.class.getName().equals(annotationName)) {
                     Class<?> clazz = classLoader.loadClass(className);
                     WebServlet webServlet = clazz.getAnnotation(WebServlet.class);

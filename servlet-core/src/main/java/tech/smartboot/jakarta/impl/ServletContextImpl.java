@@ -57,7 +57,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 
 /**
  * @author 三刀
@@ -444,7 +443,7 @@ public class ServletContextImpl implements ServletContext {
         filterInfo.setFilterClass(filter.getClass().getName());
         filterInfo.setDynamic(true);
         deploymentInfo.addFilter(filterInfo);
-        return new ApplicationFilterRegistration(filterInfo, deploymentInfo);
+        return new ApplicationFilterRegistration(filterInfo);
     }
 
     private void checkServletContextState() {
@@ -471,14 +470,14 @@ public class ServletContextImpl implements ServletContext {
     public FilterRegistration getFilterRegistration(String filterName) {
         checkContextInitializeState();
         FilterInfo filterInfo = deploymentInfo.getFilters().get(filterName);
-        return new ApplicationFilterRegistration(filterInfo, deploymentInfo);
+        return new ApplicationFilterRegistration(filterInfo);
     }
 
     @Override
     public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
         checkContextInitializeState();
         Map<String, ApplicationFilterRegistration> filterMap = new HashMap<>();
-        deploymentInfo.getFilters().forEach((filterName, filterInfo) -> filterMap.put(filterName, new ApplicationFilterRegistration(filterInfo, deploymentInfo)));
+        deploymentInfo.getFilters().forEach((filterName, filterInfo) -> filterMap.put(filterName, new ApplicationFilterRegistration(filterInfo)));
         return filterMap;
     }
 

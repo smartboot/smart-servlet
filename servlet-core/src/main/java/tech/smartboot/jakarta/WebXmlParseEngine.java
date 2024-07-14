@@ -10,8 +10,15 @@
 
 package tech.smartboot.jakarta;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.MultipartConfigElement;
 import org.smartboot.http.common.utils.NumberUtils;
 import org.smartboot.http.common.utils.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import tech.smartboot.jakarta.conf.ErrorPageInfo;
 import tech.smartboot.jakarta.conf.FilterInfo;
 import tech.smartboot.jakarta.conf.FilterMappingInfo;
@@ -20,14 +27,7 @@ import tech.smartboot.jakarta.conf.WebAppInfo;
 import tech.smartboot.jakarta.enums.FilterMappingType;
 import tech.smartboot.jakarta.util.CollectionUtils;
 import tech.smartboot.jakarta.util.PathMatcherUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.MultipartConfigElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -160,7 +160,7 @@ class WebXmlParseEngine {
                 dispatcher.forEach(dispatcherElement -> dispatcherTypes.add(DispatcherType.valueOf(StringUtils.trim(dispatcherElement.getFirstChild().getNodeValue()))));
             }
             FilterMappingInfo filterInfo = new FilterMappingInfo(filterName, StringUtils.isBlank(urlPattern) ? FilterMappingType.SERVLET : FilterMappingType.URL, servletName, StringUtils.isBlank(urlPattern) ? null : PathMatcherUtil.addMapping(urlPattern), dispatcherTypes);
-            webAppInfo.addFilterMapping(filterInfo);
+            webAppInfo.getFilters().get(filterName).addMapping(filterInfo);
         }
     }
 

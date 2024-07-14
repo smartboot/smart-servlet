@@ -10,12 +10,6 @@
 
 package tech.smartboot.jakarta.handler;
 
-import org.smartboot.http.common.utils.StringUtils;
-import tech.smartboot.jakarta.conf.FilterInfo;
-import tech.smartboot.jakarta.conf.FilterMappingInfo;
-import tech.smartboot.jakarta.enums.FilterMappingType;
-import tech.smartboot.jakarta.util.PathMatcherUtil;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.Servlet;
@@ -24,6 +18,11 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import org.smartboot.http.common.utils.StringUtils;
+import tech.smartboot.jakarta.conf.FilterInfo;
+import tech.smartboot.jakarta.enums.FilterMappingType;
+import tech.smartboot.jakarta.util.PathMatcherUtil;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,23 +79,23 @@ public class FilterMatchHandler extends Handler {
         String contextPath = handlerContext.getServletContext().getContextPath();
         HttpServletRequest request = (HttpServletRequest) handlerContext.getRequest();
         List<Filter> filters = new ArrayList<>();
-        List<FilterMappingInfo> filterMappings = handlerContext.getServletContext().getDeploymentInfo().getFilterMappings();
         Map<String, FilterInfo> allFilters = handlerContext.getServletContext().getDeploymentInfo().getFilters();
-        filterMappings.stream()
-                .filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType()))
-                .forEach(filterInfo -> {
-                    if (filterInfo.getMappingType() == FilterMappingType.URL) {
-                        if (PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), filterInfo.getServletUrlMapping()) > -1) {
-                            filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
+        allFilters.values().forEach(filter -> {
+            filter.getMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType()))
+                    .forEach(mappingInfo -> {
+                        if (mappingInfo.getMappingType() == FilterMappingType.URL) {
+                            if (PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), mappingInfo.getServletUrlMapping()) > -1) {
+                                filters.add(filter.getFilter());
+                            }
+                        } else if (mappingInfo.getMappingType() == FilterMappingType.SERVLET) {
+                            if (handlerContext.getServletInfo() != null && StringUtils.equals(mappingInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName())) {
+                                filters.add(filter.getFilter());
+                            }
+                        } else {
+                            throw new IllegalStateException();
                         }
-                    } else if (filterInfo.getMappingType() == FilterMappingType.SERVLET) {
-                        if (handlerContext.getServletInfo() != null && StringUtils.equals(filterInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName())) {
-                            filters.add(allFilters.get(filterInfo.getFilterName()).getFilter());
-                        }
-                    } else {
-                        throw new IllegalStateException();
-                    }
-                });
+                    });
+        });
         return filters;
     }
 

@@ -10,14 +10,13 @@
 
 package tech.smartboot.jakarta.impl;
 
-import tech.smartboot.jakarta.conf.DeploymentInfo;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterRegistration;
 import tech.smartboot.jakarta.conf.FilterInfo;
 import tech.smartboot.jakarta.conf.FilterMappingInfo;
 import tech.smartboot.jakarta.enums.FilterMappingType;
 import tech.smartboot.jakarta.util.PathMatcherUtil;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.FilterRegistration;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -30,50 +29,39 @@ import java.util.stream.Collectors;
  * @author 三刀
  * @version V1.0 , 2020/11/14
  */
-public class ApplicationFilterRegistration
-        implements FilterRegistration.Dynamic {
+public class ApplicationFilterRegistration implements FilterRegistration.Dynamic {
 
 
     private final FilterInfo filterDef;
-    private final DeploymentInfo context;
 
-    public ApplicationFilterRegistration(FilterInfo filterDef, DeploymentInfo context) {
+    public ApplicationFilterRegistration(FilterInfo filterDef) {
         this.filterDef = filterDef;
-        this.context = context;
     }
 
     @Override
-    public void addMappingForServletNames(
-            EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter,
-            String... servletNames) {
+    public void addMappingForServletNames(EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter, String... servletNames) {
         for (String servletName : servletNames) {
             FilterMappingInfo mappingInfo = new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.SERVLET, servletName, null, dispatcherTypes);
-            context.addFilterMapping(mappingInfo);
+            filterDef.addMapping(mappingInfo);
         }
     }
 
     @Override
-    public void addMappingForUrlPatterns(
-            EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter,
-            String... urlPatterns) {
+    public void addMappingForUrlPatterns(EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter, String... urlPatterns) {
         for (String urlPattern : urlPatterns) {
             FilterMappingInfo mappingInfo = new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.URL, null, PathMatcherUtil.addMapping(urlPattern), dispatcherTypes);
-            context.addFilterMapping(mappingInfo);
+            filterDef.addMapping(mappingInfo);
         }
     }
 
     @Override
     public Collection<String> getServletNameMappings() {
-        return context.getFilterMappings().stream()
-                .filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.SERVLET)
-                .map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
+        return filterDef.getMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.SERVLET).map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
     }
 
     @Override
     public Collection<String> getUrlPatternMappings() {
-        return context.getFilterMappings().stream()
-                .filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.SERVLET)
-                .map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
+        return filterDef.getMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.URL).map(filterMappingInfo -> filterMappingInfo.getServletUrlMapping().getMapping()).collect(Collectors.toList());
     }
 
     @Override

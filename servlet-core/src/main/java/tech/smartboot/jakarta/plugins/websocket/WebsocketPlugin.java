@@ -10,6 +10,8 @@
 
 package tech.smartboot.jakarta.plugins.websocket;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.websocket.server.ServerContainer;
 import tech.smartboot.jakarta.ServletContextRuntime;
 import tech.smartboot.jakarta.conf.FilterInfo;
 import tech.smartboot.jakarta.conf.FilterMappingInfo;
@@ -17,8 +19,6 @@ import tech.smartboot.jakarta.enums.FilterMappingType;
 import tech.smartboot.jakarta.plugins.Plugin;
 import tech.smartboot.jakarta.util.PathMatcherUtil;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.websocket.server.ServerContainer;
 import java.util.Collections;
 
 /**
@@ -38,7 +38,8 @@ public class WebsocketPlugin extends Plugin {
         filterInfo.setFilterName("wsFilter");
         filterInfo.setFilterClass(WebSocketFilter.class.getName());
         containerRuntime.getDeploymentInfo().addFilter(filterInfo);
-        containerRuntime.getDeploymentInfo().addFilterMapping(new FilterMappingInfo(filterInfo.getFilterName(), FilterMappingType.URL, null, PathMatcherUtil.addMapping("/*"), Collections.singleton(DispatcherType.REQUEST)));
+        filterInfo.addMapping(new FilterMappingInfo(filterInfo.getFilterName(),
+                FilterMappingType.URL, null, PathMatcherUtil.addMapping("/*"), Collections.singleton(DispatcherType.REQUEST)));
     }
 
     @Override

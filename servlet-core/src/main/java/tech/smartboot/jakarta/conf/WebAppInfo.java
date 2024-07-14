@@ -35,10 +35,6 @@ public class WebAppInfo {
      */
     private final Map<String, FilterInfo> filters = new HashMap<>();
 
-    /**
-     * web.xml中的Filter映射信息配置
-     */
-    private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
 
     private final List<String> listeners = new ArrayList<>();
 
@@ -61,9 +57,6 @@ public class WebAppInfo {
         filters.put(filterInfo.getFilterName(), filterInfo);
     }
 
-    public void addFilterMapping(FilterMappingInfo filterMappingInfo) {
-        filterMappings.add(filterMappingInfo);
-    }
 
     public void addListener(String listener) {
         listeners.add(listener);
@@ -95,10 +88,6 @@ public class WebAppInfo {
 
     public Map<String, FilterInfo> getFilters() {
         return filters;
-    }
-
-    public List<FilterMappingInfo> getFilterMappings() {
-        return filterMappings;
     }
 
     public List<String> getListeners() {
