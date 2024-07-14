@@ -62,6 +62,7 @@ public class ServletMatchHandler extends Handler {
             return;
         }
         //匹配Servlet
+        ServletMappingInfo preMatchMapping = null;
         for (Map.Entry<String, ServletInfo> entry : servletInfoMap.entrySet()) {
             final ServletInfo servletInfo = entry.getValue();
             if (!servletInfo.initialized()) {
@@ -70,7 +71,6 @@ public class ServletMatchHandler extends Handler {
             if (ServletInfo.DEFAULT_SERVLET_NAME.equals(servletInfo.getServletName())) {
                 continue;
             }
-            ServletMappingInfo preMatchMapping = null;
             for (ServletMappingInfo path : servletInfo.getMappings()) {
                 int servletPathEnd = PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), path);
                 //匹配失败
@@ -104,7 +104,7 @@ public class ServletMatchHandler extends Handler {
 
                 cacheServletMap.put(request.getRequestURI(), new CacheServlet(servletInfo, servletPathStart, servletPathEnd, pathInfoStart, pathInfoEnd));
                 //精准匹配，直接完成
-                if (path.getMappingType() == ServletMappingTypeEnum.EXACT_MATCH) {
+                if (path.getMappingType() == ServletMappingTypeEnum.EXACT_MATCH && !path.getMapping().equals("/")) {
                     handlerContext.setServletInfo(servletInfo);
                     doNext(handlerContext);
                     return;

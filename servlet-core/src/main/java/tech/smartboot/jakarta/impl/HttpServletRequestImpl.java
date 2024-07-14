@@ -22,6 +22,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletRequestAttributeEvent;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
@@ -32,6 +33,7 @@ import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.NumberUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
+import org.smartboot.socket.util.Attachment;
 import tech.smartboot.jakarta.ServletContextRuntime;
 import tech.smartboot.jakarta.SmartHttpServletRequest;
 import tech.smartboot.jakarta.conf.ServletInfo;
@@ -43,7 +45,6 @@ import tech.smartboot.jakarta.third.commons.fileupload.FileUploadException;
 import tech.smartboot.jakarta.third.commons.fileupload.disk.DiskFileItemFactory;
 import tech.smartboot.jakarta.util.CollectionUtils;
 import tech.smartboot.jakarta.util.DateUtil;
-import org.smartboot.socket.util.Attachment;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -369,8 +370,13 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     }
 
     @Override
-    public void login(String username, String password) throws ServletException{
+    public void login(String username, String password) throws ServletException {
         throw new ServletException("Not Implemented");
+    }
+
+    @Override
+    public HttpServletMapping getHttpServletMapping() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
