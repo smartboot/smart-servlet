@@ -10,12 +10,6 @@
 
 package tech.smartboot.jakarta.plugins.session;
 
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
-import tech.smartboot.jakarta.impl.ServletContextImpl;
-import tech.smartboot.jakarta.util.CollectionUtils;
-import org.smartboot.socket.timer.TimerTask;
-
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +19,12 @@ import jakarta.servlet.http.HttpSessionBindingListener;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionIdListener;
 import jakarta.servlet.http.HttpSessionListener;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.socket.timer.TimerTask;
+import tech.smartboot.jakarta.impl.ServletContextImpl;
+import tech.smartboot.jakarta.util.CollectionUtils;
+
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -119,13 +119,11 @@ class HttpSessionImpl implements HttpSession {
     }
 
 
-
     @Override
     public Enumeration<String> getAttributeNames() {
         checkState();
         return Collections.enumeration(attributes.keySet());
     }
-
 
 
     @Override
@@ -166,7 +164,7 @@ class HttpSessionImpl implements HttpSession {
             ((HttpSessionBindingListener) o).valueUnbound(new HttpSessionBindingEvent(this, name, o));
         }
     }
-    
+
 
     @Override
     public void invalidate() {
@@ -177,7 +175,9 @@ class HttpSessionImpl implements HttpSession {
     public void invalid() {
         List<HttpSessionListener> sessionListeners = servletContext.getDeploymentInfo().getHttpSessionListeners();
         HttpSessionEvent httpSessionEvent = sessionListeners.isEmpty() ? null : new HttpSessionEvent(this);
-        sessionListeners.forEach(httpSessionListener -> httpSessionListener.sessionDestroyed(httpSessionEvent));
+        for (int i = sessionListeners.size() - 1; i >= 0; i--) {
+            sessionListeners.get(i).sessionDestroyed(httpSessionEvent);
+        }
         invalid = true;
         Cookie cookie = new Cookie(servletContext.getSessionCookieConfig().getName(), sessionId);
         cookie.setMaxAge(0);
