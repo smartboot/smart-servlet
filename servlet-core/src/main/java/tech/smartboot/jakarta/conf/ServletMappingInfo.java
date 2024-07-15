@@ -10,17 +10,18 @@
 
 package tech.smartboot.jakarta.conf;
 
-import tech.smartboot.jakarta.enums.ServletMappingTypeEnum;
+import jakarta.servlet.http.MappingMatch;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/10/11
  */
 public class ServletMappingInfo {
+    private ServletInfo servletInfo;
     private final String mapping;
-    private final ServletMappingTypeEnum mappingType;
+    private final MappingMatch mappingType;
 
-    public ServletMappingInfo(String mapping, ServletMappingTypeEnum mappingType) {
+    public ServletMappingInfo(String mapping, MappingMatch mappingType) {
         this.mapping = mapping;
         this.mappingType = mappingType;
     }
@@ -29,7 +30,15 @@ public class ServletMappingInfo {
         return mapping;
     }
 
-    public ServletMappingTypeEnum getMappingType() {
+    public MappingMatch getMappingType() {
         return mappingType;
+    }
+
+    public ServletInfo getServletInfo() {
+        return servletInfo;
+    }
+
+    public void setServletInfo(ServletInfo servletInfo) {
+        this.servletInfo = servletInfo;
     }
 }

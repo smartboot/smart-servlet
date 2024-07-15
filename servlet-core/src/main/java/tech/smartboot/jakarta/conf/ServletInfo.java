@@ -10,13 +10,6 @@
 
 package tech.smartboot.jakarta.conf;
 
-import org.smartboot.http.common.enums.HttpStatus;
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
-import tech.smartboot.jakarta.impl.ServletConfigImpl;
-import tech.smartboot.jakarta.impl.ServletContextImpl;
-import tech.smartboot.jakarta.util.PathMatcherUtil;
-
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.Servlet;
@@ -26,6 +19,13 @@ import jakarta.servlet.UnavailableException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.smartboot.http.common.enums.HttpStatus;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import tech.smartboot.jakarta.impl.ServletConfigImpl;
+import tech.smartboot.jakarta.impl.ServletContextImpl;
+import tech.smartboot.jakarta.util.PathMatcherUtil;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,7 +87,7 @@ public class ServletInfo {
                     req.setAttribute(RequestDispatcher.ERROR_MESSAGE, e.getMessage());
                     req.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.INTERNAL_SERVER_ERROR.value());
                     if (finalLocation != null) {
-                        servletContext.getRuntime().getDispatcherProvider().error(servletContext,finalLocation,req,resp);
+                        servletContext.getRuntime().getDispatcherProvider().error(servletContext, finalLocation, req, resp);
 //                        req.getRequestDispatcher(finalLocation).forward(req, resp);
                     } else {
                         LOGGER.error("error location is null");
@@ -139,6 +139,7 @@ public class ServletInfo {
      */
     public ServletInfo addMapping(final String mapping) {
         ServletMappingInfo servletMappingInfo = PathMatcherUtil.addMapping(mapping);
+        servletMappingInfo.setServletInfo(this);
         mappings.add(servletMappingInfo);
         return this;
     }

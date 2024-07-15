@@ -11,10 +11,10 @@
 package tech.smartboot.jakarta.handler;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.MappingMatch;
 import tech.smartboot.jakarta.SmartHttpServletRequest;
 import tech.smartboot.jakarta.conf.ServletInfo;
 import tech.smartboot.jakarta.conf.ServletMappingInfo;
-import tech.smartboot.jakarta.enums.ServletMappingTypeEnum;
 import tech.smartboot.jakarta.exception.WrappedRuntimeException;
 import tech.smartboot.jakarta.impl.ServletContextImpl;
 import tech.smartboot.jakarta.util.PathMatcherUtil;
@@ -101,10 +101,11 @@ public class ServletMatchHandler extends Handler {
                 request.setServletPath(servletPathStart, servletPathEnd);
                 request.setPathInfo(pathInfoStart, pathInfoEnd);
 
+                request.setServletMappingInfo(path);
 
                 cacheServletMap.put(request.getRequestURI(), new CacheServlet(servletInfo, servletPathStart, servletPathEnd, pathInfoStart, pathInfoEnd));
                 //精准匹配，直接完成
-                if (path.getMappingType() == ServletMappingTypeEnum.EXACT_MATCH && !path.getMapping().equals("/")) {
+                if (path.getMappingType() == MappingMatch.EXACT && !path.getMapping().equals("/")) {
                     handlerContext.setServletInfo(servletInfo);
                     doNext(handlerContext);
                     return;

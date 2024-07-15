@@ -37,6 +37,7 @@ import org.smartboot.socket.util.Attachment;
 import tech.smartboot.jakarta.ServletContextRuntime;
 import tech.smartboot.jakarta.SmartHttpServletRequest;
 import tech.smartboot.jakarta.conf.ServletInfo;
+import tech.smartboot.jakarta.conf.ServletMappingInfo;
 import tech.smartboot.jakarta.impl.fileupload.SmartHttpRequestContext;
 import tech.smartboot.jakarta.provider.SessionProvider;
 import tech.smartboot.jakarta.third.commons.fileupload.FileItem;
@@ -112,6 +113,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     private volatile AsyncContext asyncContext = null;
     private final CompletableFuture<Object> completableFuture;
+
+    private ServletMappingInfo servletMappingInfo;
 
     public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, DispatcherType dispatcherType, CompletableFuture<Object> completableFuture) {
         this.request = request;
@@ -376,7 +379,41 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public HttpServletMapping getHttpServletMapping() {
-        throw new UnsupportedOperationException();
+        if (servletMappingInfo == null) {
+            return null;
+        }
+        String matchValue;
+        switch (servletMappingInfo.getMappingType()) {
+            case EXACT:
+                matchValue = servletMappingInfo.getMapping();
+                if (matchValue.startsWith("/")) {
+                    matchValue = matchValue.substring(1);
+                }
+                break;
+            case DEFAULT:
+            case CONTEXT_ROOT:
+                matchValue = "";
+                break;
+            case PATH:
+                matchValue =
+                        getServletPath().substring(servletMappingInfo.getMapping().length() - 1);
+                if (matchValue.startsWith("/")) {
+                    matchValue = matchValue.substring(1);
+                }
+                break;
+            case EXTENSION:
+                matchValue =
+                        getServletPath().substring(getServletPath().charAt(0) == '/' ? 1 : 0,
+                                getServletPath().length() - servletMappingInfo.getMapping().length() + 1);
+                break;
+            default:
+                throw new IllegalStateException();
+        }
+        return new HttpServletMappingImpl(servletMappingInfo.getMappingType(), matchValue, servletMappingInfo.getServletInfo().getServletName(), servletMappingInfo.getMapping());
+    }
+
+    public void setServletMappingInfo(ServletMappingInfo servletMappingInfo) {
+        this.servletMappingInfo = servletMappingInfo;
     }
 
     @Override

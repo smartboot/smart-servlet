@@ -10,13 +10,15 @@
 
 package tech.smartboot.jakarta.plugins.dispatcher;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletMapping;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import org.smartboot.socket.util.Attachment;
 import tech.smartboot.jakarta.SmartHttpServletRequest;
 import tech.smartboot.jakarta.conf.ServletInfo;
+import tech.smartboot.jakarta.conf.ServletMappingInfo;
 import tech.smartboot.jakarta.impl.HttpServletRequestImpl;
-import org.smartboot.socket.util.Attachment;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -139,6 +141,16 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     @Override
     public void setAttachment(Attachment attachment) {
         request.setAttachment(attachment);
+    }
+
+    @Override
+    public void setServletMappingInfo(ServletMappingInfo httpServletMapping) {
+        this.request.setServletMappingInfo(httpServletMapping);
+    }
+
+    @Override
+    public HttpServletMapping getHttpServletMapping() {
+        return this.request.getHttpServletMapping();
     }
 
     @Override

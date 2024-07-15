@@ -10,10 +10,11 @@
 
 package tech.smartboot.jakarta;
 
-import tech.smartboot.jakarta.conf.ServletInfo;
-import org.smartboot.socket.util.Attachment;
-
+import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletRequest;
+import org.smartboot.socket.util.Attachment;
+import tech.smartboot.jakarta.conf.ServletInfo;
+import tech.smartboot.jakarta.conf.ServletMappingInfo;
 
 /**
  * @author 三刀
@@ -53,4 +54,6 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
      * @param attachment 附件对象
      */
     void setAttachment(Attachment attachment);
+
+    void setServletMappingInfo(ServletMappingInfo servletMappingInfo);
 }
