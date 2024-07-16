@@ -45,4 +45,4 @@ jobs:
         if: always() # 确保即使有失败的测试也会上传报告
         with:
           name: test-report
-          path: tck/target/surefire-reports
+          path: tck/target/site
