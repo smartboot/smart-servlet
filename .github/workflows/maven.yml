@@ -32,7 +32,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: mvn -B install --file jakartaee/servlet/tck/pom.xml
+        run: mvn -B install --file jakartaee/servlet/tck/pom.xml -Dmaven.compile.source=1.8 -Dmaven.compile.target=1.8
       - name: Build with Maven
         run: mvn -B install --file pom.xml
       - name: Build with Maven
