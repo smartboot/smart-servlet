@@ -15,7 +15,7 @@
         <maven.compiler.sources>11</maven.compiler.sources>
         <maven.compiler.release>11</maven.compiler.release>
         <junit.version>5.10.3</junit.version>
-        <slf4j.version>2.0.13</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
         <jakarta.tck.version>6.1.0</jakarta.tck.version>
         <servlet.api.version>6.1.0</servlet.api.version>
         <fork.argLine>-Xmx8g -Xms4g</fork.argLine>
