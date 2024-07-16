@@ -21,6 +21,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           repository: jakartaee/servlet
           ref: c533204b8fb04a4b04169e697b3f140b8ea2deb9
