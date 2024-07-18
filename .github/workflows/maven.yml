@@ -62,11 +62,11 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: tar
-          path: smart-servlet-enterprise/deploy/dist/*.tar.gz
+          path: smart-servlet-enterprise/deploy/target/*.tar.gz
       - name: Build distribution with Maven
         run: mvn clean package -Pspringboot -f smart-servlet-enterprise/deploy/pom.xml
       - name: Upload tar report
         uses: actions/upload-artifact@v2
         with:
           name: springboot
-          path: smart-servlet-enterprise/deploy/dist/*.tar.gz
+          path: smart-servlet-enterprise/deploy/target/*.tar.gz
