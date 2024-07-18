@@ -61,14 +61,16 @@ jobs:
       - name: Upload tar report
         uses: actions/upload-artifact@v2
         with:
-          name: smart-jakarta-bin.tar.gz
+          name: smart-jakarta-bin
           path: smart-servlet-enterprise/deploy/target/*.tar.gz
-          compression-level: 0
       - name: Build distribution with Maven
         run: mvn clean package -Pspringboot -f smart-servlet-enterprise/deploy/pom.xml
-      - name: Upload tar report
-        uses: actions/upload-artifact@v2
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: smart-jakarta-springboot.tar.gz
-          path: smart-servlet-enterprise/deploy/target/*.tar.gz
-          compression-level: 0
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: smart-servlet-enterprise/deploy/target/*.tar.gz
+          asset_name: smart-jakarta-springboot.tar.gz
