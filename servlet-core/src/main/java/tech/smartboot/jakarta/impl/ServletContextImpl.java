@@ -284,6 +284,9 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public String getInitParameter(String name) {
+        if (name == null) {
+            throw new NullPointerException();
+        }
         return deploymentInfo.getInitParameters().get(name);
     }
 
@@ -294,6 +297,9 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public boolean setInitParameter(String name, String value) {
+        if (name == null) {
+            throw new NullPointerException();
+        }
         checkContextInitializeState();
         if (deploymentInfo.getInitParameters().containsKey(name)) {
             return false;
@@ -632,6 +638,8 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void setSessionTimeout(int sessionTimeout) {
+        checkServletContextState();
+        checkContextInitializeState();
         deploymentInfo.setSessionTimeout(sessionTimeout);
     }
 
