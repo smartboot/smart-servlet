@@ -63,6 +63,7 @@ jobs:
         with:
           name: smart-jakarta-bin.tar.gz
           path: smart-servlet-enterprise/deploy/target/*.tar.gz
+          compression-level: 0
       - name: Build distribution with Maven
         run: mvn clean package -Pspringboot -f smart-servlet-enterprise/deploy/pom.xml
       - name: Upload tar report
@@ -70,3 +71,4 @@ jobs:
         with:
           name: smart-jakarta-springboot.tar.gz
           path: smart-servlet-enterprise/deploy/target/*.tar.gz
+          compression-level: 0
