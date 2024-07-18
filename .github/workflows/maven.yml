@@ -32,8 +32,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Build servlet TCK with Maven
-        run: mvn -B install --file jakartaee/servlet/tck/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
+#      - name: Build servlet TCK with Maven
+#        run: mvn -B install --file jakartaee/servlet/tck/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
       - name: Build smart-servlet with Maven
         run: mvn -B install --file pom.xml
 #      - name: Build with Maven
@@ -51,6 +51,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: smartboot/smart-servlet-enterprise
+          token: ${{ secrets.GH_PAT }}
           path: smart-servlet-enterprise
       - name: Build distribution with Maven
         run: make -f smart-servlet-enterprise/deploy/Makefile
