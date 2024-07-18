@@ -48,16 +48,25 @@ jobs:
 #          name: test-report
 #          path: tck/target/site
 
+      # 企业版打包
       - uses: actions/checkout@v4
         with:
           repository: smartboot/smart-servlet-enterprise
           token: ${{ secrets.GH_PAT }}
           path: smart-servlet-enterprise
       - name: Build distribution with Maven
-        run: make -f smart-servlet-enterprise/deploy/Makefile
-
+        run: mvn clean install -f smart-servlet-enterprise/pom.xml
+      - name: Build distribution with Maven
+        run: mvn clean package -Pbin -f smart-servlet-enterprise/deploy/pom.xml
       - name: Upload tar report
         uses: actions/upload-artifact@v2
         with:
           name: tar
-          path: smart-servlet-enterprise/deploy/dist
+          path: smart-servlet-enterprise/deploy/dist/*.tar.gz
+      - name: Build distribution with Maven
+        run: mvn clean package -Pspringboot -f smart-servlet-enterprise/deploy/pom.xml
+      - name: Upload tar report
+        uses: actions/upload-artifact@v2
+        with:
+          name: springboot
+          path: smart-servlet-enterprise/deploy/dist/*.tar.gz
