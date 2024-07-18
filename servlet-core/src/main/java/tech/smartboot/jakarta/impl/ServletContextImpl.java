@@ -10,18 +10,6 @@
 
 package tech.smartboot.jakarta.impl;
 
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.utils.Mimetypes;
-import org.smartboot.http.common.utils.StringUtils;
-import tech.smartboot.jakarta.ServletContextRuntime;
-import tech.smartboot.jakarta.conf.DeploymentInfo;
-import tech.smartboot.jakarta.conf.FilterInfo;
-import tech.smartboot.jakarta.conf.ServletInfo;
-import tech.smartboot.jakarta.enums.ServletContextPathType;
-import tech.smartboot.jakarta.exception.WrappedRuntimeException;
-import tech.smartboot.jakarta.handler.HandlerPipeline;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.RequestDispatcher;
@@ -40,6 +28,18 @@ import jakarta.servlet.descriptor.JspConfigDescriptor;
 import jakarta.servlet.http.HttpSessionAttributeListener;
 import jakarta.servlet.http.HttpSessionIdListener;
 import jakarta.servlet.http.HttpSessionListener;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.Mimetypes;
+import org.smartboot.http.common.utils.StringUtils;
+import tech.smartboot.jakarta.ServletContextRuntime;
+import tech.smartboot.jakarta.conf.DeploymentInfo;
+import tech.smartboot.jakarta.conf.FilterInfo;
+import tech.smartboot.jakarta.conf.ServletInfo;
+import tech.smartboot.jakarta.enums.ServletContextPathType;
+import tech.smartboot.jakarta.exception.WrappedRuntimeException;
+import tech.smartboot.jakarta.handler.HandlerPipeline;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -250,12 +250,10 @@ public class ServletContextImpl implements ServletContext {
     }
 
 
-
     @Override
     public void log(String msg) {
         LOGGER.info(msg);
     }
-
 
 
     @Override
@@ -365,6 +363,9 @@ public class ServletContextImpl implements ServletContext {
     public ServletRegistration.Dynamic addServlet(String servletName, Servlet servlet) {
         checkServletContextState();
         checkContextInitializeState();
+        if (StringUtils.isBlank(servletName)) {
+            throw new IllegalArgumentException("servletName is null");
+        }
 
         if (deploymentInfo.getServlets().containsKey(servletName)) {
             return null;
@@ -389,7 +390,9 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public ServletRegistration.Dynamic addJspFile(String servletName, String jspFile) {
-        return null;
+        ServletRegistration.Dynamic registration = addServlet(servletName, "org.apache.jasper.servlet.JspServlet");
+        registration.setInitParameter("jspFile", jspFile);
+        return registration;
     }
 
     @Override
