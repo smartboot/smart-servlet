@@ -32,21 +32,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-#      - name: Build servlet TCK with Maven
-#        run: mvn -B install --file jakartaee/servlet/tck/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
+      - name: Build servlet TCK with Maven
+        run: mvn -B install --file jakartaee/servlet/tck/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
       - name: Build smart-servlet with Maven
         run: mvn -B install --file pom.xml
-#      - name: Build with Maven
-#        run: mvn -B verify --file tck/pom.xml -Dbasedir=tck_tmp -Dmaven.test.failure.ignore=true
-#      - name: Build with Maven
-#        run: mvn -B surefire-report:report --file tck/pom.xml
-#
-#      - name: Upload test report
-#        uses: actions/upload-artifact@v2
-#        if: always() # 确保即使有失败的测试也会上传报告
-#        with:
-#          name: test-report
-#          path: tck/target/site
+      - name: Build with Maven
+        run: mvn -B verify --file tck/pom.xml -Dbasedir=tck_tmp -Dmaven.test.failure.ignore=true
+      - name: Build with Maven
+        run: mvn -B surefire-report:report --file tck/pom.xml
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v2
+        if: always() # 确保即使有失败的测试也会上传报告
+        with:
+          name: test-report
+          path: tck/target/site
 
       # 企业版打包
       - uses: actions/checkout@v4
