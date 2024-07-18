@@ -48,3 +48,16 @@ jobs:
         with:
           name: test-report
           path: tck/target/site
+
+      - uses: actions/checkout@v4
+        with:
+          repository: smartboot/smart-servlet-enterprise
+          path: smart-servlet-enterprise
+      - name: Build distribution with Maven
+        run: make -f smart-servlet-enterprise/deploy/Makefile
+
+      - name: Upload tar report
+        uses: actions/upload-artifact@v2
+        with:
+          name: tar
+          path: smart-servlet-enterprise/deploy/dist
