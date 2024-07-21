@@ -26,6 +26,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * @author 三刀
@@ -365,5 +367,15 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             setCharacterEncoding(encoding);
         }
         setHeader(HeaderNameEnum.CONTENT_LANGUAGE.getName(), loc.getLanguage() + "-" + loc.getCountry());
+    }
+
+    @Override
+    public void setTrailerFields(Supplier<Map<String, String>> supplier) {
+        response.setTrailerFields(supplier);
+    }
+
+    @Override
+    public Supplier<Map<String, String>> getTrailerFields() {
+        return response.getTrailerFields();
     }
 }
