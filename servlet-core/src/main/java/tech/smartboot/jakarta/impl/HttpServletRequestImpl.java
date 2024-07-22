@@ -681,10 +681,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
         Object replace = attributes.put(name, o);
         if (CollectionUtils.isNotEmpty(runtime.getDeploymentInfo().getRequestAttributeListeners())) {
-            ServletRequestAttributeEvent event = new ServletRequestAttributeEvent(servletContext, this, name, o);
             if (replace == null) {
+                ServletRequestAttributeEvent event = new ServletRequestAttributeEvent(servletContext, this, name, o);
                 runtime.getDeploymentInfo().getRequestAttributeListeners().forEach(request -> request.attributeAdded(event));
             } else {
+                ServletRequestAttributeEvent event = new ServletRequestAttributeEvent(servletContext, this, name, replace);
                 runtime.getDeploymentInfo().getRequestAttributeListeners().forEach(request -> request.attributeReplaced(event));
             }
         }
