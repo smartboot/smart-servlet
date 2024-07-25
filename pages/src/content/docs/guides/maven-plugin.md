@@ -1,8 +1,7 @@
 ---
 title: Maven 插件
-date: 2022-12-04 16:44:58
-permalink: /smart-servlet/maven-plugin.html
-article: false
+sidebar:
+  order: 2
 ---
 
 这是一种类似：`tomcat-maven-plugin`的使用方式，通常应用于 Java Web 工程的本地开发环境。
