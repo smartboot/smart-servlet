@@ -1,0 +1,167 @@
+---
+title: Servlet 4.0 版本
+description: A reference page in my new Starlight docs site.
+---
+
+## [smart-servlet v1.4发布（2024-06-01）](https://gitee.com/smartboot/smart-servlet/releases/tag/v1.4)
+
+1. 新增 `HttpSessionIdListener` 规范实现。
+2. 新增 `HttpServletRequest#changeSessionId` 规范实现。
+3. 优化 `ServletContext#getResourcePaths` 规范实现。
+4. 移除 Principal 相关实现。
+5. 调整 `Servlet` 初始化策略，适配 spring 环境。
+
+发版详情：[https://mp.weixin.qq.com/s/9fYcFl0NtjaT7QmWgYkrpA](https://mp.weixin.qq.com/s/9fYcFl0NtjaT7QmWgYkrpA)
+
+## [smart-servlet v1.3发布（2024-05-18）](https://gitee.com/smartboot/smart-servlet/releases/tag/v1.3)
+1. 优化 ServletContext#getMimeType 规范实现。
+2. 优化 ServletContext#addListener 规范实现。
+3. 优化 ServletContext#addServlet 规范实现。
+4. 优化 RequestDispatcher 规范实现。
+5. 优化监听器的启动流程
+6. web.xml 增加 mime-mapping、security-role-ref的解析
+7. favicon 图标更新
+8. smart-http 升级至v1.4.2
+
+## [smart-servlet v1.2发布（2024-05-08）](https://gitee.com/smartboot/smart-servlet/releases/tag/v1.2)
+1. 实现 FilterRegistration#setAsyncSupported 规范。
+2. 实现 ServletRegistration#setAsyncSupported 规范。
+3. 实现 ServletRequest#startAsync 规范。
+4. 实现 ServletContext#getContext 规范。
+5. 优化 HttpServletResponse#sendError 规范实现。
+6. 优化 HttpServletResponse#sendRedirect 规范实现。
+7. 优化 HttpServletResponse#getCharacterEncoding 规范实现。
+8. 优化 HttpServletResponse#setLocale 规范实现。
+9. 优化 ServletOutputStream 实现规范。
+10. SandBox 移除 MemoryPoolProvider。
+11. SandBox 新增 VendorProvider。
+12. SandBox 新增 AsyncContextProvider。
+
+## [smart-servlet v1.1发布（2024-04-14）](https://gitee.com/smartboot/smart-servlet/releases/tag/v1.1)
+1. HttpServletRequestImpl 新增附件接口。
+2. 调整 WebsocketProvider 接口设计，移除onHandShark，新增getWebSocketServerContainer。
+3. 优化 Provider 升级提示文案。
+4. 优化 javax.websocket 规范实现。
+
+## [smart-servlet v0.9发布（2024-02-25）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.9)
+1. 优化 javax.servlet.ServletRequest#getCharacterEncoding 规范实现。
+2. 优化 javax.servlet.ServletResponse#getCharacterEncoding 规范实现。
+3. 实现 javax.servlet.ServletContext#declareRoles 规范。
+4. 实现 javax.servlet.ServletContext#getSessionTimeout 规范。
+5. 实现 javax.servlet.ServletContext#setSessionTimeout 规范。
+6. springboot starter 支持集成 smart-servlet 企业版功能。
+7. 沙箱环境新增 Servlet 关于安全规范的适配。
+
+## [smart-servlet v0.8发布（2024-02-17）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.8)
+1. 修复墨菲安全扫描提示的问题
+2. 支持pem文件的 SSL/TLS 服务。
+
+## [smart-servlet v0.7发布（2024-01-19）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.7)
+1. 优化 ServletResponse#setContentType 规范实现。
+2. 优化 ServletContext#getResourcePaths 规范的实现
+3. 优化输出流的字符集编码处理。
+4. 优化 RequestDispatcher 规范实现。
+5. 升级 smart-http 至 1.3.8
+
+## [smart-servlet v0.6发布（2024-01-11）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.6)
+1. 提供不完整的 AsyncContext 规范实现。
+2. 提供 locale-encoding-mapping-list 规范的实现
+3. 优化 ServletResponse#flushBuffer 规范实现。
+4. 优化 ServletResponse#setLocale 规范实现。
+5. 提供请求异步处理能力。
+6. 新增控制台技术支持信息露出。
+7. 优化日志输出。
+8. 清理大量无用代码。
+
+
+## [smart-servlet v0.5发布（2023-09-28）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.5)
+1. 实现 FilterRegistration#getServletNameMappings 规范。
+2. 实现 ServletContext#getResourcePaths 规范。
+3. 实现 ServletContext#getJspConfigDescriptor 规范。
+4. 实现 ServletContext#requestCharacterEncoding 规范。
+5. 实现 ServletContext#responseCharacterEncoding 规范。
+6. 优化 ServletResponse#setCharacterEncoding 规范实现。
+7. 优化 ServletResponse#getContentType 规范实现。
+8. 优化 ServletResponse#setContentType 规范实现。
+9. 优化 ServletResponse#getOutputStream 规范实现。
+10. 移除 javax.servlet-api，替换为：jakarta.servlet-api:5.0.0。
+11. 移除 javax.annotation-api，替换为：jakarta.annotation-api:2.0.0。
+12. 移除 javax.websocket-api，替换为：jakarta.websocket-api:2.0.0。
+13. 升级 smart-http 至 1.3.1。
+14. 升级 maven-plugin-plugin 至 3.9.0。
+15. 升级 springboot 至 3.0.6。
+
+## [smart-servlet v0.4发布（2023-07-13）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.4)
+1. smart-http升级至1.2.7
+2. 优化ErrorPage规范实现。
+3. 实现AsyncContext规范。
+4. 实现ServletRequest#startAsync规范
+5. 优化HttpServletResponse#addCookie、getCharacterEncoding、setContentType规范实现。
+6. 优化ServletOutputStream#write规范。
+7. 修复ServletRequestDispatcherWrapper#setParameters方法名单词拼写错误问题。
+8. 修复ServletContext#setAttribute中replace情况下的value提取错误问题。
+9. 修复当某个类实现多个Listener接口时，仅其中一个Listener生效的问题。
+
+## [smart-servlet v0.3发布（2023-05-14）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.3)
+1. 实现HttpSessionAttributeListener规范
+2. 实现ServletRequestAttributeListener规范
+3. 实现SessionCookieConfig规范
+4. 实现HttpServletResponse#setLocale、getLocale规范。
+5. 实现 WebListener、WebServlet规范
+6. 支持 Servlet asyncSupported 解析
+7. 支持web-fragment.xml加载
+8. 优化HttpServletResponse规范：Cookie、CharacterEncoding、ContentType。
+9. 优化 Session Cookie.
+10. 优化ServletPrintWriter
+11. 优化Servlet URL匹配算法。
+12. 优化web.xml中url-pattern的解析
+13. 升级smart-http至1.2.1
+14. 升级servlet-api至4.0.1
+15. 升级spring-boot至2.7.11
+16. 引入servlet tck测试套件
+
+## [smart-servlet v0.2.1发布（2023-05-07）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.2.1)
+1. 修复ServletRequest#getServerPort规范实现中的端口解析错误问题。
+2. 升级smart-http至1.2.0。
+3. 实现ServletRequest#isSecure规范。
+4. 优化Websocket的适配策略。
+5. 更新readme中的过时配置。
+
+## [smart-servlet v0.1.9发布（2022-11-23）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.1.9)
+1. 【新特性】实现 servlet 3.1 的文件上传规范。
+2. 【新特性】实现 HttpServletRequest#getRemoteUser 接口规范。
+3. 【新特性】新增War包解压工具。
+4. 【优化】开辟三方依赖存放package，现已集成：bcel、commons-fileupload、commons-io
+5. 【优化】Http响应报文头Server显示：smart-servlet
+6. 【优化】临时文件存放于系统参数 java.io.tmpdir 指定的路径。
+7. 【优化】springboot starter模块禁用 debug 模式。
+
+## [smart-servlet v0.1.8发布（2022-10-30）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.1.8)
+1. 【更新】`smart-servlet-maven-plugin` 和 `smart-servlet-spring-boot-starter` 发布至中央仓库，改善使用体验。
+2. 【更新】原 plugins 模块下的功能合并至 servlet-core，改善使用体验。
+3. 【更新】升级适配的 spring-boot 版本至 `2.7.5`。
+4. 【bugfix】修复发行包初次解压 war 包时加载该容器服务不生效的问题。
+5. 【bugfix】修复`smart-servlet-spring-boot-starter` 启动报错问题。
+
+
+## [smart-servlet v0.1.7发布（2022-10-22）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.1.7)
+1. 调整 dispatcher 插件的启用时机。
+2. 完善 RequestDispatcher#forward 方法的规范实现。
+3. 解析并提取 web.xml 中的 display-name、description 配置信息
+4. 优化 WrappedRuntimeException 的异常传播性。
+5. 降低 default servlet的执行优先级。
+6. 禁用 name=Path 的Cookie。
+7. 实现 ServletRequest#getServerName，ServletRequest#getServerPort 等规范
+8. 改进服务的启动策略。
+9. 优化 smart-servlet-maven-plugin 插件。
+10. springboot starter 支持自定义端口号。
+
+## [smart-servlet v0.1.6发布（2022-10-07）](https://gitee.com/smartboot/smart-servlet/releases/tag/v0.1.6)
+1. 扩展插件功能，添加Servlet容器的注册监听。
+2. 隔离各Servlet容器应用间的缓存资源。
+3. 优化Servlet容器的退出策略。
+4. 运用多线程提升 HandlesTypes 的扫描性能。
+5. smart-servlet maven运行插件添加启动耗时的输出。
+6. Maven 插件 maven-plugin-plugin 升级至 3.6.4
+7. Maven 插件 maven-compiler-plugin 升级至 3.10.1
+8. smart-http 升级至 1.1.16

@@ -27,14 +27,15 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
-					label: 'Guides',
-					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
-					],
+					label: '指南',
+					autogenerate: {directory: 'guides'},
 				},
 				{
-					label: 'Reference',
+					label: '下载',
+					autogenerate: { directory: 'download' },
+				},
+				{
+					label: '参考',
 					autogenerate: { directory: 'reference' },
 				},
 			],
