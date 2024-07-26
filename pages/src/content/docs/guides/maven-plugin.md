@@ -10,7 +10,7 @@ sidebar:
 <build>
     <plugins>
         <plugin>
-            <groupId>org.smartboot.servlet</groupId>
+            <groupId>tech.smartboot.jakarta</groupId>
             <artifactId>smart-servlet-maven-plugin</artifactId>
             <version>${最新版本号}</version><!--最新版本 -->
             <configuration>
