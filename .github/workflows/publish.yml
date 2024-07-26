@@ -54,7 +54,7 @@ jobs:
       - name: 上传 smart-jakarta-bin 制品
         uses: actions/upload-artifact@v4
         with:
-          name: smart-jakarta-bin-${{ github.ref_name }}
+          name: smart-jakarta-bin-${{ github.ref_name }}.tar.gz
           compression-level: 0
           path: smart-servlet-enterprise/deploy/target/*.tar.gz
 
@@ -63,7 +63,7 @@ jobs:
       - name: 上传 smart-jakarta-springboot 制品
         uses: actions/upload-artifact@v4
         with:
-          name: smart-jakarta-springboot-${{ github.ref_name }}
+          name: smart-jakarta-springboot-${{ github.ref_name }}.tar.gz
           compression-level: 0
           path: smart-servlet-enterprise/deploy/target/*.tar.gz
 
