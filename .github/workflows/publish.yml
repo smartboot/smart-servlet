@@ -21,12 +21,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        name: 下载servlet TCK
-        with:
-          repository: jakartaee/servlet
-          ref: c533204b8fb04a4b04169e697b3f140b8ea2deb9
-          path: jakartaee/servlet
+
       - uses: actions/checkout@v4
         name: 下载 smart-http
         with:
@@ -40,18 +35,30 @@ jobs:
           cache: maven
       - name: Build smart-http
         run: mvn -B install --file smart-http/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
-      - name: Build servlet TCK with Maven
-        run: mvn -B install --file jakartaee/servlet/tck/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
       - name: Build smart-servlet with Maven
         run: mvn -B install --file pom.xml
-      - name: Build with Maven
-        run: mvn -B verify --file tck/pom.xml -Dbasedir=tck_tmp -Dmaven.test.failure.ignore=true
-      - name: Build with Maven
-        run: mvn -B surefire-report:report --file tck/pom.xml
 
-      - name: Upload test report
-        uses: actions/upload-artifact@v2
-        if: always() # 确保即使有失败的测试也会上传报告
+      # 企业版打包
+      - uses: actions/checkout@v4
         with:
-          name: test-report
-          path: tck/target/site
+          repository: smartboot/smart-servlet-enterprise
+          token: ${{ secrets.GH_PAT }}
+          path: smart-servlet-enterprise
+
+      - name: 构建 smart-jakarta-bin 制品
+        run: mvn clean install -f smart-servlet-enterprise/pom.xml
+      - name: Build distribution with Maven
+        run: mvn clean package -Pbin -f smart-servlet-enterprise/deploy/pom.xml
+      - name: 上传 smart-jakarta-bin 制品
+        uses: actions/upload-artifact@v4
+        with:
+          name: smart-jakarta-bin
+          path: smart-servlet-enterprise/deploy/target/*.tar.gz
+
+      - name: 构建 smart-jakarta-springboot 制品
+        run: mvn clean package -Pspringboot -f smart-servlet-enterprise/deploy/pom.xml
+      - name: 上传 smart-jakarta-springboot 制品
+        uses: actions/upload-artifact@v4
+        with:
+          name: smart-jakarta-springboot
+          path: smart-servlet-enterprise/deploy/target/*.tar.gz
