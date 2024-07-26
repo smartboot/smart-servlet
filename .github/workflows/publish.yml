@@ -54,16 +54,24 @@ jobs:
       - name: 上传 smart-jakarta-bin 制品
         uses: actions/upload-artifact@v4
         with:
-          name: smart-jakarta-bin-${{ github.ref_name }}.tar.gz
+          name: smart-jakarta-bin-${{ github.ref_name }}
           compression-level: 0
           path: smart-servlet-enterprise/deploy/target/*.tar.gz
+      - name: Release
+        uses: softprops/action-gh-release@v1
+#        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            smart-servlet-enterprise/deploy/target/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 构建 smart-jakarta-springboot 制品
         run: mvn clean package -Pspringboot -f smart-servlet-enterprise/deploy/pom.xml
       - name: 上传 smart-jakarta-springboot 制品
         uses: actions/upload-artifact@v4
         with:
-          name: smart-jakarta-springboot-${{ github.ref_name }}.tar.gz
+          name: smart-jakarta-springboot-${{ github.ref_name }}
           compression-level: 0
           path: smart-servlet-enterprise/deploy/target/*.tar.gz
 
