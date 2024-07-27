@@ -1,0 +1,69 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Distribution
+
+on:
+  push:
+    branches: [ "jakarta" ]
+    paths-ignore:
+      - 'pages/**'
+  pull_request:
+    branches: [ "jakarta" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        name: 下载 smart-http
+        with:
+          repository: smartboot/smart-http
+          path: smart-http
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build smart-http
+        run: mvn -B install --file smart-http/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
+      - name: Build smart-servlet with Maven
+        run: mvn -B install --file pom.xml
+
+      # 企业版打包
+      - uses: actions/checkout@v4
+        with:
+          repository: smartboot/smart-servlet-enterprise
+          token: ${{ secrets.GH_PAT }}
+          path: smart-servlet-enterprise
+
+      - name: 构建 smart-jakarta-bin 制品
+        run: mvn clean install -f smart-servlet-enterprise/pom.xml
+      - name: Build distribution with Maven
+        run: mvn clean package -Pbin -f smart-servlet-enterprise/deploy/pom.xml
+      - name: 上传 smart-jakarta-bin 制品
+        uses: actions/upload-artifact@v4
+        with:
+          name: smart-jakarta-bin-${{ github.ref_name }}
+          compression-level: 0
+          path: smart-servlet-enterprise/deploy/target/*.tar.gz
+
+      - name: 构建 smart-jakarta-springboot 制品
+        run: mvn clean package -Pspringboot -f smart-servlet-enterprise/deploy/pom.xml
+      - name: 上传 smart-jakarta-springboot 制品
+        uses: actions/upload-artifact@v4
+        with:
+          name: smart-jakarta-springboot-${{ github.ref_name }}
+          compression-level: 0
+          path: smart-servlet-enterprise/deploy/target/*.tar.gz
+

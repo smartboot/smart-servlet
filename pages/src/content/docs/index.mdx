@@ -1,0 +1,37 @@
+---
+title: smart-servlet
+description: 真自研、真轻量、真极速的 Servlet 容器.
+template: splash
+hero:
+  tagline: 自研、轻量、极速，重新定义 Servlet 容器!
+  image:
+    file: ../../assets/houston.webp
+  actions:
+    - text: 产品手册
+      link: ./guides/about/
+      icon: right-arrow
+      variant: primary
+    - text: 下载最新版
+      link: /smart-servlet/download/jakarta_6/
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+
+## 特性
+
+<CardGrid stagger>
+	<Card title="全生态适配" icon="seti:favicon">
+        分别适配 `javax-servlet 4.0` 及 `jakarta-servlet 6.1`，涵盖 Java 8~21 应用场景。
+	</Card>
+	<Card title="技术至上" icon="rocket">
+		做性能最强的、体积最小的 Servlet 容器。轻松实现十万级QPS，重新定义 Web 速度。
+	</Card>
+	<Card title="灵活扩展" icon="puzzle">
+		嵌入式集成、动静混合部署、自定义 SPI、轻松实现业务扩展。
+	</Card>
+	<Card title="安全可靠" icon="seti:lock">
+		时代需要的不再仅仅是一个 web 服务器。并发稳定性、数据安全性、服务可靠性，由我来守护。
+	</Card>
+</CardGrid>

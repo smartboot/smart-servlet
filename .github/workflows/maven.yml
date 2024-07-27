@@ -1,0 +1,59 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Run Servlet TCK
+
+on:
+  push:
+    branches: [ "jakarta" ]
+    paths-ignore:
+      - 'pages/**'
+  pull_request:
+    branches: [ "jakarta" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        name: 下载servlet TCK
+        with:
+          repository: jakartaee/servlet
+          ref: c533204b8fb04a4b04169e697b3f140b8ea2deb9
+          path: jakartaee/servlet
+      - uses: actions/checkout@v4
+        name: 下载 smart-http
+        with:
+          repository: smartboot/smart-http
+          path: smart-http
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build smart-http
+        run: mvn -B install --file smart-http/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
+      - name: Build servlet TCK with Maven
+        run: mvn -B install --file jakartaee/servlet/tck/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
+      - name: Build smart-servlet with Maven
+        run: mvn -B install --file pom.xml
+      - name: Build with Maven
+        run: mvn -B verify --file tck/pom.xml -Dbasedir=tck_tmp -Dmaven.test.failure.ignore=true
+      - name: Build with Maven
+        run: mvn -B surefire-report:report --file tck/pom.xml
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v2
+        if: always() # 确保即使有失败的测试也会上传报告
+        with:
+          name: test-report
+          path: tck/target/site

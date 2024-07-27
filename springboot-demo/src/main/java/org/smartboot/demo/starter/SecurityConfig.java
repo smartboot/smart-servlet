@@ -15,18 +15,18 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http
-			.authorizeHttpRequests((authorize) ->  authorize
-					.mvcMatchers("/index").hasRole("USER")
-					.mvcMatchers("/hello/world").hasRole("ADMIN")
-					.mvcMatchers("/").authenticated()
-			)
-			.httpBasic();
-
-		return http.build();
-	}
+//	@Bean
+//	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//		http
+//			.authorizeHttpRequests((authorize) ->  authorize
+//					.mvcMatchers("/index").hasRole("USER")
+//					.mvcMatchers("/hello/world").hasRole("ADMIN")
+//					.mvcMatchers("/").authenticated()
+//			)
+//			.httpBasic();
+//
+//		return http.build();
+//	}
 
 	@Bean
 	public UserDetailsService userDetailsService() {
