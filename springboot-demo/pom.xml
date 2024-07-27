@@ -63,19 +63,12 @@
             <version>1.5</version><!--最新版本 -->
         </dependency>
 
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-undertow</artifactId>
-                    <version>3.3.1</version>
-                </dependency>
+<!--                <dependency>-->
+<!--                    <groupId>org.springframework.boot</groupId>-->
+<!--                    <artifactId>spring-boot-starter-undertow</artifactId>-->
+<!--                    <version>3.3.1</version>-->
+<!--                </dependency>-->
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.smartboot.servlet.enterprise</groupId>-->
-        <!--            <artifactId>base</artifactId>-->
-        <!--            <version>1.5</version>&lt;!&ndash;无需修改此配置&ndash;&gt;-->
-        <!--&lt;!&ndash;            <scope>system</scope>&ndash;&gt;-->
-        <!--&lt;!&ndash;            <systemPath>${pom.basedir}/lib/base-1.5.jar</systemPath>&lt;!&ndash;根据实际情况修改路径&ndash;&gt;&ndash;&gt;-->
-        <!--        </dependency>-->
     </dependencies>
     <build>
         <plugins>
