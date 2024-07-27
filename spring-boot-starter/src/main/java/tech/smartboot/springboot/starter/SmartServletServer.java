@@ -20,9 +20,9 @@ import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
-import tech.smartboot.jakarta.Container;
-import tech.smartboot.jakarta.ServletContextRuntime;
-import tech.smartboot.jakarta.provider.WebsocketProvider;
+import tech.smartboot.servlet.Container;
+import tech.smartboot.servlet.ServletContextRuntime;
+import tech.smartboot.servlet.provider.WebsocketProvider;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 

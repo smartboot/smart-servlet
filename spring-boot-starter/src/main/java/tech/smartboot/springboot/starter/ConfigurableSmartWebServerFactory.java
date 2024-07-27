@@ -10,8 +10,8 @@
 
 package tech.smartboot.springboot.starter;
 
-import tech.smartboot.jakarta.ServletContextRuntime;
-import tech.smartboot.jakarta.conf.DeploymentInfo;
+import tech.smartboot.servlet.ServletContextRuntime;
+import tech.smartboot.servlet.conf.DeploymentInfo;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
