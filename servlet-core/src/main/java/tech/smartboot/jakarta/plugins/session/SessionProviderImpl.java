@@ -16,14 +16,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.socket.timer.HashedWheelTimer;
+import tech.smartboot.jakarta.Container;
 import tech.smartboot.jakarta.impl.HttpServletRequestImpl;
 import tech.smartboot.jakarta.provider.SessionProvider;
-import org.smartboot.socket.timer.HashedWheelTimer;
 
-import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 /**
  * @author 三刀
@@ -32,7 +33,10 @@ import java.util.function.Function;
 class SessionProviderImpl implements SessionProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderImpl.class);
-    private Function<HttpServletRequestImpl, String> sessionIdFactory = request -> "smart-servlet:" + new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis());
+    private final static byte[] DEFAULT_BYTES = ("smart-servlet:" + Container.VERSION).getBytes();
+    private final static int maskLength = 4;
+    private static final String MAGIC_NUMBER = "ss";
+
     /**
      * 默认超时时间：30分钟
      */
@@ -61,7 +65,7 @@ class SessionProviderImpl implements SessionProvider {
                 throw new IllegalStateException("response has already committed!");
             }
             //该sessionId生成策略缺乏安全性，后续重新设计
-            httpSession = new HttpSessionImpl(this, sessionIdFactory.apply(request), request.getServletContext()) {
+            httpSession = new HttpSessionImpl(this, createSessionId(), request.getServletContext()) {
                 @Override
                 public void invalid() {
                     try {
@@ -118,11 +122,6 @@ class SessionProviderImpl implements SessionProvider {
         return session.getId().equals(request.getRequestedSessionId());
     }
 
-    @Override
-    public void sessionIdFactory(Function<HttpServletRequestImpl, String> factory) {
-        this.sessionIdFactory = factory;
-    }
-
     private HttpSessionImpl getSession(HttpServletRequestImpl request) {
         String sessionId = request.getActualSessionId();
         if (sessionId == null) {
@@ -144,5 +143,47 @@ class SessionProviderImpl implements SessionProvider {
 
     public HashedWheelTimer getTimer() {
         return timer;
+    }
+
+    private static String createSessionId() {
+        Random random = new Random();
+        //掩码+固定前缀+时间戳
+        byte[] bytes = new byte[maskLength + DEFAULT_BYTES.length + Integer.BYTES];
+
+        for (int i = 0; i < maskLength; ) {
+            for (int rnd = random.nextInt(), n = Math.min(maskLength - i, Integer.SIZE / Byte.SIZE); n-- > 0; rnd >>= Byte.SIZE)
+                bytes[i++] = (byte) rnd;
+        }
+        System.arraycopy(DEFAULT_BYTES, 0, bytes, maskLength, DEFAULT_BYTES.length);
+        //将System.nanoTime()填充至bytes后四字节
+        int time = (int) System.nanoTime();
+        bytes[maskLength + DEFAULT_BYTES.length] = (byte) (time >>> 24);
+        bytes[maskLength + DEFAULT_BYTES.length + 1] = (byte) (time >>> 16);
+        bytes[maskLength + DEFAULT_BYTES.length + 2] = (byte) (time >>> 8);
+        bytes[maskLength + DEFAULT_BYTES.length + 3] = (byte) (time);
+
+        for (int i = maskLength; i < bytes.length; i++) {
+            bytes[i] = (byte) (bytes[i] ^ bytes[i % maskLength]);
+        }
+
+        return MAGIC_NUMBER + Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    private static boolean validateSessionId(String sessionId) {
+        if (!sessionId.startsWith(MAGIC_NUMBER)) {
+            //检测到非法会话
+            return true;
+        }
+        byte[] bytes = Base64.getUrlDecoder().decode(sessionId.substring(2));
+        int maskLimit = maskLength + DEFAULT_BYTES.length;
+        for (int i = maskLength; i < bytes.length; i++) {
+            bytes[i] = (byte) (bytes[i] ^ bytes[i % maskLength]);
+            if (i < maskLimit && bytes[i] != DEFAULT_BYTES[i - maskLength]) {
+                return true;
+            }
+        }
+//        System.out.println(new String(bytes, maskLength, bytes.length - maskLength - 4));
+//        int time = (bytes[bytes.length - 4] & 0xFF) << 24 | (bytes[bytes.length - 3] & 0xFF) << 16 | (bytes[bytes.length - 2] & 0xFF) << 8 | (bytes[bytes.length - 1] & 0xFF);
+        return false;
     }
 }

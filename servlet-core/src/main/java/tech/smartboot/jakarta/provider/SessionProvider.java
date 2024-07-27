@@ -32,5 +32,4 @@ public interface SessionProvider {
 
     boolean isRequestedSessionIdValid(HttpServletRequestImpl request);
 
-    void sessionIdFactory(Function<HttpServletRequestImpl, String> factory);
 }

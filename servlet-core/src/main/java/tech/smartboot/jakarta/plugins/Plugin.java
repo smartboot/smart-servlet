@@ -15,6 +15,11 @@ import org.smartboot.http.common.logging.LoggerFactory;
 import tech.smartboot.jakarta.Container;
 import tech.smartboot.jakarta.ServletContextRuntime;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+
 /**
  * @author 三刀
  * @version V1.0 , 2020/11/27
@@ -114,6 +119,28 @@ public abstract class Plugin {
      */
     public final void uninstall() {
         destroyPlugin();
+    }
+
+    protected InputStream getResource(String fileName) throws IOException {
+        if (isSpringBoot()) {
+            return getClass().getClassLoader().getResourceAsStream("smart-servlet/" + fileName);
+        } else {
+            return Files.newInputStream(new File(getServletHome(), "conf/" + fileName).toPath());
+        }
+    }
+
+    protected boolean isSpringBoot() {
+        return System.getProperty("smart-servlet-spring-boot-starter") != null;
+    }
+
+    protected File getServletHome() {
+        String servletHome = System.getProperty("SERVLET_HOME");
+        File servletFile = new File(new File(servletHome == null ? "" : servletHome).getAbsolutePath());
+        if (!servletFile.isDirectory()) {
+            System.out.println("SERVLET_HOME: " + servletFile.getAbsolutePath() + " is not exists!");
+            System.exit(-1);
+        }
+        return servletFile;
     }
 
     /**
