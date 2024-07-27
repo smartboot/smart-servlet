@@ -1,6 +1,6 @@
-![](smart-servlet.svg)
+![](pages/public/smart-servlet.svg)
 # smart-servlet
-smart-servlet 是一款实现了 Servlet 4.0 规范，支持多应用隔离部署的的 Web 容器。 与此同时，smart-servlet 还是一款插件化容器，基于内置的沙箱环境确保 smart-servlet 拥有最精简的运行能力，用户还可以通过自定义插件扩展容器的服务能力。
+smart-servlet 是一个基于 Jakarta Servlet 6.1 的轻量级 Servlet 容器，适用于 Java 21+ 环境。 
 
 **产品特色**
 * 国产血统：核心技术 100% 全栈自研。
