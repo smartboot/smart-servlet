@@ -57,13 +57,3 @@ jobs:
           name: smart-jakarta-bin-${{ github.ref_name }}
           compression-level: 0
           path: smart-servlet-enterprise/deploy/target/*.tar.gz
-
-      - name: 构建 smart-jakarta-springboot 制品
-        run: mvn clean package -Pspringboot -f smart-servlet-enterprise/deploy/pom.xml
-      - name: 上传 smart-jakarta-springboot 制品
-        uses: actions/upload-artifact@v4
-        with:
-          name: smart-jakarta-springboot-${{ github.ref_name }}
-          compression-level: 0
-          path: smart-servlet-enterprise/deploy/target/*.tar.gz
-
