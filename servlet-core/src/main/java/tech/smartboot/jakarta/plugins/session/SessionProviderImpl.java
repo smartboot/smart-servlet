@@ -14,8 +14,11 @@ import jakarta.servlet.SessionCookieConfig;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.StringUtils;
+import org.smartboot.http.server.waf.WafException;
 import org.smartboot.socket.timer.HashedWheelTimer;
 import tech.smartboot.jakarta.Container;
 import tech.smartboot.jakarta.impl.HttpServletRequestImpl;
@@ -131,6 +134,9 @@ class SessionProviderImpl implements SessionProvider {
             return null;
         }
         HttpSessionImpl session = sessionMap.get(sessionId);
+        if (session == null && StringUtils.isNotBlank(request.getRequestedSessionId()) && validateSessionId(request.getRequestedSessionId())) {
+            throw new WafException(HttpStatus.FORBIDDEN);
+        }
         if (session == null || session.isInvalid()) {
             return null;
         }
