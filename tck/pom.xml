@@ -34,7 +34,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>tech.smartboot.jakarta</groupId>
+                <groupId>tech.smartboot.servlet</groupId>
                 <artifactId>servlet-core</artifactId>
                 <version>1.5</version>
             </dependency>
@@ -131,7 +131,7 @@
 
         <!-- just make Intellij/jpms happy when having all the projects together -->
         <dependency>
-            <groupId>tech.smartboot.jakarta</groupId>
+            <groupId>tech.smartboot.servlet</groupId>
             <artifactId>servlet-core</artifactId>
         </dependency>
     </dependencies>

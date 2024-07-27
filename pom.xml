@@ -3,7 +3,7 @@
     <name>smart-servlet-parent</name>
     <description>a lightweight servlet container</description>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>tech.smartboot.jakarta</groupId>
+    <groupId>tech.smartboot.servlet</groupId>
     <artifactId>smart-servlet-parent</artifactId>
     <version>1.5</version>
     <packaging>pom</packaging>
@@ -31,7 +31,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>tech.smartboot.jakarta</groupId>
+                <groupId>tech.smartboot.servlet</groupId>
                 <artifactId>servlet-core</artifactId>
                 <version>${smartservlet.version}</version>
             </dependency>
