@@ -10,11 +10,11 @@ name: Run Servlet TCK
 
 on:
   push:
-    branches: [ "jakarta" ]
+    branches: [ "master" ]
     paths-ignore:
       - 'pages/**'
   pull_request:
-    branches: [ "jakarta" ]
+    branches: [ "master" ]
 
 jobs:
   build:
