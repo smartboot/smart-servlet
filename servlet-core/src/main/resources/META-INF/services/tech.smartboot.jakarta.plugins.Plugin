@@ -10,6 +10,7 @@
 
 tech.smartboot.jakarta.plugins.session.SessionPlugin
 tech.smartboot.jakarta.plugins.tls.TlsPlugin
+tech.smartboot.jakarta.plugins.license.LicensePlugin
 tech.smartboot.jakarta.plugins.dispatcher.DispatcherPlugin
 tech.smartboot.jakarta.plugins.contact.ContactPlugin
 tech.smartboot.jakarta.plugins.websocket.WebsocketPlugin
