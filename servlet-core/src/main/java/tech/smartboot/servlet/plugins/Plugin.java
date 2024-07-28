@@ -125,7 +125,12 @@ public abstract class Plugin {
         if (isSpringBoot()) {
             return getClass().getClassLoader().getResourceAsStream("smart-servlet/" + fileName);
         } else {
-            return Files.newInputStream(new File(getServletHome(), "conf/" + fileName).toPath());
+            File file = new File(getServletHome(), "conf/" + fileName);
+            if (file.isFile()) {
+                return Files.newInputStream(file.toPath());
+            } else {
+                return null;
+            }
         }
     }
 
