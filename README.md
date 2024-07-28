@@ -1,6 +1,6 @@
 ![](pages/public/smart-servlet.svg)
 # smart-servlet
-smart-servlet 是一个基于 Jakarta Servlet 6.0 的轻量级 Servlet 容器，适用于 Java 21+ 环境。 
+smart-servlet 是一个基于 Jakarta Servlet 6.0 的轻量级 Servlet 容器，适用于 Java 17+ 环境。 
 
 **产品特色**
 * 国产血统：核心技术 100% 全栈自研。
