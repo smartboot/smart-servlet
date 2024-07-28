@@ -11,6 +11,8 @@ name: Distribution
 on:
   push:
     branches: [ "master" ]
+    tags:
+      - 'v*'
     paths-ignore:
       - 'pages/**'
   pull_request:
