@@ -28,7 +28,7 @@
         <junit.jupiter.execution.parallel.config.strategy>fixed</junit.jupiter.execution.parallel.config.strategy>
         <junit.jupiter.execution.parallel.config.fixed.parallelism>2</junit.jupiter.execution.parallel.config.fixed.parallelism>
         <junit.jupiter.extensions.autodetection.enabled>false</junit.jupiter.extensions.autodetection.enabled>
-        <smart.servlet.version>1.5</smart.servlet.version>
+        <smart.servlet.version>2.0</smart.servlet.version>
     </properties>
 
     <dependencyManagement>
@@ -36,12 +36,12 @@
             <dependency>
                 <groupId>tech.smartboot.servlet</groupId>
                 <artifactId>servlet-core</artifactId>
-                <version>1.5</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>tech.smartboot.jakarta.enterprise</groupId>
                 <artifactId>base</artifactId>
-                <version>1.5</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.junit</groupId>
