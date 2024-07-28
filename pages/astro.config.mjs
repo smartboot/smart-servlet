@@ -31,10 +31,6 @@ export default defineConfig({
 					autogenerate: {directory: 'guides'},
 				},
 				{
-					label: '下载',
-					autogenerate: { directory: 'download' },
-				},
-				{
 					label: '参考',
 					autogenerate: { directory: 'reference' },
 				},
