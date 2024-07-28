@@ -1,0 +1,97 @@
+---
+title: about
+sidebar:
+    order: 1
+---
+
+import {CardGrid, LinkCard, TabItem, Tabs,FileTree} from '@astrojs/starlight/components';
+
+smart-servlet is a lightweight Servlet container based on Jakarta Servlet 6.0, suitable for Java 21+ environments.
+
+![](/smart-servlet/smart-servlet.svg)
+
+**Open-source Repositories：**
+
+- Github：[https://github.com/smartboot/smart-servlet](https://github.com/smartboot/smart-servlet)
+- Gitee：[https://gitee.com/smartboot/smart-servlet](https://gitee.com/smartboot/smart-servlet)
+
+
+## Feature Guidance
+
+<Tabs>
+    <TabItem label="tar Package" icon="seti:folder">
+        This is a solution provided for the WAR package deployment method.
+        <FileTree>
+            - smart-servlet-bin-$\{version\} main directory
+                - bin
+                    - start.sh  Linux environment startup script
+                    - start.bat Windows environment startup script
+                - conf
+                    - License.shield enterprise authorization certificate
+                    - smart-servlet.properties service configuration file
+                    - smart-servlet.pem SSL certificate
+                - lib/  smart-servlet dependency packages
+                - webapps directory for deploying WAR packages
+                    - .war
+                - README.md
+        </FileTree>
+    </TabItem>
+    <TabItem label="springboot" icon="seti:spring">
+        Those who have used Spring Boot's spring-boot-starter-tomcat or spring-boot-starter-undertow should be familiar with this.
+
+        Smart-Servlet-Spring-Boot-Starter is essentially another adaptation of Smart-Servlet for spring-boot-starter-web.
+
+        Simply adjust the pom.xml configuration in your Spring Boot project as follows to replace Spring Boot's default Servlet container with Smart-Servlet.
+
+        ```xml
+        <dependencys>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <exclusions>
+                    <!-- Exclude the Tomcat dependency -->
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-tomcat</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- Use smart-servlet instead -->
+            <dependency>
+                <groupId>org.smartboot.servlet</groupId>
+                <artifactId>smart-servlet-spring-boot-starter</artifactId>
+                <version>${latest version number}</version>
+            </dependency>
+        </dependencys>
+        ```
+    </TabItem>
+    <TabItem label="maven plugin" icon="seti:maven">
+        This is a usage similar to `tomcat-maven-plugin`, typically applied in the local development environment of Java Web projects.
+        Integrating this plugin requires adding the following code to the pom.xml to start the servlet service in the IDE.
+        ```xml
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>tech.smartboot.servlet</groupId>
+                    <artifactId>smart-servlet-maven-plugin</artifactId>
+                    <version>${latest version number}</version>
+                    <configuration>
+                        <port>8080</port>
+                        <path>/</path>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+        ```
+        The plugin version is recommended to be the latest. The main configuration items include:
+        - port: the listening port for the servlet service to start
+        - path: the context path of the Servlet container, usually indicated by `/`. Of course, it also supports customization, but it must start with `/`.
+
+        After completing the configuration, input `mvn package smart-servlet:run` in the console.
+
+    </TabItem>
+</Tabs>
+
+
+
+
