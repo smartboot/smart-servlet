@@ -39,7 +39,4 @@ class MockDispatcherProvider implements DispatcherProvider {
         throw new PluginException("Please install the [dispatcher] plugin to enable the [getRequestDispatcher] function");
     }
 
-    @Override
-    public void error(ServletContextImpl servletContext, String path,HttpServletRequest req, HttpServletResponse resp) {
-    }
 }

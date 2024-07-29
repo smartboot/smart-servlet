@@ -56,10 +56,13 @@ class RequestDispatcherImpl implements RequestDispatcher {
 
     @Override
     public void forward(ServletRequest request, ServletResponse response) throws ServletException, IOException {
-        forward(request, response, named, DispatcherType.FORWARD);
+        forward(request, response, named, DispatcherType.FORWARD, null, null);
     }
 
-    public void forward(ServletRequest request, ServletResponse response, boolean named, DispatcherType dispatcherType) throws ServletException, IOException {
+    public void forward(ServletRequest request, ServletResponse response,
+                        boolean named, DispatcherType dispatcherType,
+                        Throwable throwable, String errorServletName) throws ServletException,
+            IOException {
         if (response.isCommitted()) {
             throw new IllegalStateException();
         }
@@ -86,6 +89,16 @@ class RequestDispatcherImpl implements RequestDispatcher {
         }
         if (queryString != null) {
             requestWrapper.setAttribute(FORWARD_QUERY_STRING, queryString);
+        }
+
+        if (dispatcherType == DispatcherType.ERROR) {
+            requestWrapper.setAttribute(ERROR_EXCEPTION, throwable);
+            requestWrapper.setAttribute(ERROR_EXCEPTION_TYPE, throwable.getClass());
+            requestWrapper.setAttribute(ERROR_MESSAGE, throwable.getMessage());
+            requestWrapper.setAttribute(ERROR_STATUS_CODE, 500);
+            requestWrapper.setAttribute(ERROR_REQUEST_URI, requestImpl.getRequestURI());
+            requestWrapper.setAttribute(ERROR_SERVLET_NAME, errorServletName);
+            responseWrapper.setStatus(500);
         }
 
         //《Servlet3.1规范中文版》9.4 forward 方法

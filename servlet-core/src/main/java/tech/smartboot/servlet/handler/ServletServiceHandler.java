@@ -13,6 +13,9 @@ package tech.smartboot.servlet.handler;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.smartboot.http.common.enums.HttpStatus;
 import tech.smartboot.servlet.conf.ServletInfo;
 
 import java.io.IOException;
@@ -30,11 +33,28 @@ public class ServletServiceHandler extends Handler {
         ServletRequest request = handlerContext.getRequest();
         ServletResponse response = handlerContext.getResponse();
         //成功匹配到Servlet,直接执行
-        if (handlerContext.getServletInfo() != null) {
-            handlerContext.getServletInfo().getServlet().service(request, response);
-        } else {
-            handlerContext.getServletContext().getDeploymentInfo().getServlets().get(ServletInfo.DEFAULT_SERVLET_NAME).getServlet().service(request, response);
-        }
+        try {
+            if (handlerContext.getServletInfo() != null) {
+                handlerContext.getServletInfo().getServlet().service(request, response);
+            } else {
+                handlerContext.getServletContext().getDeploymentInfo().getServlets().get(ServletInfo.DEFAULT_SERVLET_NAME).getServlet().service(request, response);
+            }
+        } catch (Throwable e) {
+            Throwable throwable = e;
+            String location = handlerContext.getServletContext().getDeploymentInfo().getErrorPageLocation(throwable);
+            while (location == null && throwable.getCause() != null) {
+                location = handlerContext.getServletContext().getDeploymentInfo().getErrorPageLocation(throwable.getCause());
+                throwable = throwable.getCause();
+            }
 
+            if (location == null) {
+                location = handlerContext.getServletContext().getDeploymentInfo().getErrorPageLocation(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
+            if (location != null) {
+                handlerContext.getServletContext().getRuntime().getDispatcherProvider().error(handlerContext.getServletContext(), location, (HttpServletRequest) request, (HttpServletResponse) response, throwable, handlerContext.getServletInfo().getServletName());
+            } else {
+                throw e;
+            }
+        }
     }
 }

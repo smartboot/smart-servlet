@@ -10,17 +10,17 @@
 
 package tech.smartboot.servlet.plugins.dispatcher;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.provider.DispatcherProvider;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -65,10 +65,13 @@ class DispatcherProviderImpl implements DispatcherProvider {
     }
 
     @Override
-    public void error(ServletContextImpl servletContext, String path, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void error(ServletContextImpl servletContext, String path,
+                      HttpServletRequest req, HttpServletResponse resp,
+                      Throwable throwable, String errorServletName) throws IOException {
         RequestDispatcherImpl requestDispatcher = getRequestDispatcher(servletContext, path);
         try {
-            requestDispatcher.forward(req, resp, false, DispatcherType.ERROR);
+            requestDispatcher.forward(req, resp, false, DispatcherType.ERROR,
+                    throwable, errorServletName);
         } catch (ServletException e) {
             throw new IOException(e);
         }

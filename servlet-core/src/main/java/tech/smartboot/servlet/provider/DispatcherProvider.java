@@ -10,12 +10,12 @@
 
 package tech.smartboot.servlet.provider;
 
-import tech.smartboot.servlet.impl.HttpServletRequestImpl;
-import tech.smartboot.servlet.impl.ServletContextImpl;
-
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import tech.smartboot.servlet.impl.HttpServletRequestImpl;
+import tech.smartboot.servlet.impl.ServletContextImpl;
+
 import java.io.IOException;
 
 /**
@@ -29,5 +29,11 @@ public interface DispatcherProvider {
 
     RequestDispatcher getRequestDispatcher(HttpServletRequestImpl request, String path);
 
-    void error(ServletContextImpl servletContext, String path, HttpServletRequest req, HttpServletResponse resp) throws IOException;
+    default void error(ServletContextImpl servletContext, String path, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        error(servletContext, path, req, resp, null, null);
+    }
+
+    default void error(ServletContextImpl servletContext, String path,
+                       HttpServletRequest req, HttpServletResponse resp, Throwable throwable, String errorServletName) throws IOException {
+    }
 }
