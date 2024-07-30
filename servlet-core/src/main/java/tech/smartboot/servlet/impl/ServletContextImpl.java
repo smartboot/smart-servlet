@@ -497,7 +497,11 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) {
+        checkServletContextState();
         checkContextInitializeState();
+        if (sessionTrackingModes.size() > 1 && sessionTrackingModes.contains(SessionTrackingMode.SSL)) {
+            throw new IllegalArgumentException();
+        }
         this.sessionTrackingModes = sessionTrackingModes;
     }
 
