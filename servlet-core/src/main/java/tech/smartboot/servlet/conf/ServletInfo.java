@@ -87,7 +87,7 @@ public class ServletInfo {
                     req.setAttribute(RequestDispatcher.ERROR_MESSAGE, e.getMessage());
                     req.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.INTERNAL_SERVER_ERROR.value());
                     if (finalLocation != null) {
-                        servletContext.getRuntime().getDispatcherProvider().error(servletContext, finalLocation, req, resp, e, servletName);
+                        servletContext.getRuntime().getDispatcherProvider().error(servletContext, finalLocation, req, resp, e, servletName,e.getMessage());
 //                        req.getRequestDispatcher(finalLocation).forward(req, resp);
                     } else {
                         LOGGER.error("error location is null");

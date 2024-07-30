@@ -55,4 +55,6 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
     void setAttachment(Attachment attachment);
 
     void setServletMappingInfo(ServletMappingInfo servletMappingInfo);
+
+    void setAsyncSupported(boolean supported);
 }

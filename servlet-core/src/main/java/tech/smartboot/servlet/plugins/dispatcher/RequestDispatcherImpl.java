@@ -10,13 +10,7 @@
 
 package tech.smartboot.servlet.plugins.dispatcher;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletRequestWrapper;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.ServletResponseWrapper;
+import jakarta.servlet.*;
 import org.smartboot.http.common.utils.HttpUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -56,13 +50,10 @@ class RequestDispatcherImpl implements RequestDispatcher {
 
     @Override
     public void forward(ServletRequest request, ServletResponse response) throws ServletException, IOException {
-        forward(request, response, named, DispatcherType.FORWARD, null, null);
+        forward(request, response, named, DispatcherType.FORWARD, null, null, null);
     }
 
-    public void forward(ServletRequest request, ServletResponse response,
-                        boolean named, DispatcherType dispatcherType,
-                        Throwable throwable, String errorServletName) throws ServletException,
-            IOException {
+    public void forward(ServletRequest request, ServletResponse response, boolean named, DispatcherType dispatcherType, Throwable throwable, String errorServletName, String errorMessage) throws ServletException, IOException {
         if (response.isCommitted()) {
             throw new IllegalStateException();
         }
@@ -70,31 +61,17 @@ class RequestDispatcherImpl implements RequestDispatcher {
         ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, dispatcherType);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, false);
         HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
-        Object requestUri = requestImpl.getRequestURI();
-        Object contextPath = requestImpl.getContextPath();
-        Object servletPath = requestImpl.getServletPath();
-        Object pathInfo = requestImpl.getPathInfo();
-        Object queryString = requestImpl.getQueryString();
-        if (requestUri != null) {
-            requestWrapper.setAttribute(FORWARD_REQUEST_URI, requestUri);
-        }
-        if (contextPath != null) {
-            requestWrapper.setAttribute(FORWARD_CONTEXT_PATH, contextPath);
-        }
-        if (servletPath != null) {
-            requestWrapper.setAttribute(FORWARD_SERVLET_PATH, servletPath);
-        }
-        if (pathInfo != null) {
-            requestWrapper.setAttribute(FORWARD_PATH_INFO, pathInfo);
-        }
-        if (queryString != null) {
-            requestWrapper.setAttribute(FORWARD_QUERY_STRING, queryString);
-        }
+
+        requestWrapper.setAttribute(FORWARD_REQUEST_URI, requestImpl.getRequestURI());
+        requestWrapper.setAttribute(FORWARD_CONTEXT_PATH, requestImpl.getContextPath());
+        requestWrapper.setAttribute(FORWARD_SERVLET_PATH, requestImpl.getServletPath());
+        requestWrapper.setAttribute(FORWARD_PATH_INFO, requestImpl.getPathInfo());
+        requestWrapper.setAttribute(FORWARD_QUERY_STRING, requestImpl.getQueryString());
 
         if (dispatcherType == DispatcherType.ERROR) {
             requestWrapper.setAttribute(ERROR_EXCEPTION, throwable);
             requestWrapper.setAttribute(ERROR_EXCEPTION_TYPE, throwable.getClass());
-            requestWrapper.setAttribute(ERROR_MESSAGE, throwable.getMessage());
+            requestWrapper.setAttribute(ERROR_MESSAGE, errorMessage);
             requestWrapper.setAttribute(ERROR_STATUS_CODE, 500);
             requestWrapper.setAttribute(ERROR_REQUEST_URI, requestImpl.getRequestURI());
             requestWrapper.setAttribute(ERROR_SERVLET_NAME, errorServletName);

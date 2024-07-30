@@ -10,23 +10,8 @@
 
 package tech.smartboot.servlet.impl;
 
-import jakarta.servlet.AsyncContext;
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.MultipartConfigElement;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletConnection;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletRequestAttributeEvent;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletMapping;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.HttpUpgradeHandler;
-import jakarta.servlet.http.Part;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -47,23 +32,12 @@ import tech.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
 import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.DateUtil;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -110,6 +84,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private ServletInfo servletInfo;
 
     private boolean asyncStarted = false;
+
+    private boolean asyncSupported = true;
 
     private volatile AsyncContext asyncContext = null;
     private final CompletableFuture<Object> completableFuture;
@@ -225,6 +201,9 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public void setServletInfo(ServletInfo servletInfo) {
         this.servletInfo = servletInfo;
+        if (asyncSupported) {
+            asyncSupported = servletInfo.isAsyncSupported();
+        }
     }
 
     @Override
@@ -395,16 +374,13 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                 matchValue = "";
                 break;
             case PATH:
-                matchValue =
-                        getServletPath().substring(servletMappingInfo.getMapping().length() - 1);
+                matchValue = getServletPath().substring(servletMappingInfo.getMapping().length() - 1);
                 if (matchValue.startsWith("/")) {
                     matchValue = matchValue.substring(1);
                 }
                 break;
             case EXTENSION:
-                matchValue =
-                        getServletPath().substring(getServletPath().charAt(0) == '/' ? 1 : 0,
-                                getServletPath().length() - servletMappingInfo.getMapping().length() + 1);
+                matchValue = getServletPath().substring(getServletPath().charAt(0) == '/' ? 1 : 0, getServletPath().length() - servletMappingInfo.getMapping().length() + 1);
                 break;
             default:
                 throw new IllegalStateException();
@@ -415,6 +391,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     public void setServletMappingInfo(ServletMappingInfo servletMappingInfo) {
         this.servletMappingInfo = servletMappingInfo;
     }
+
 
     @Override
     public void logout() {
@@ -789,7 +766,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isAsyncSupported() {
-        return servletInfo.isAsyncSupported();
+        return asyncSupported;
+    }
+
+    @Override
+    public void setAsyncSupported(boolean supported) {
+        this.asyncSupported = asyncStarted;
     }
 
     @Override

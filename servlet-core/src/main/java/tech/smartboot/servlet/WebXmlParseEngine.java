@@ -19,11 +19,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import tech.smartboot.servlet.conf.ErrorPageInfo;
-import tech.smartboot.servlet.conf.FilterInfo;
-import tech.smartboot.servlet.conf.FilterMappingInfo;
-import tech.smartboot.servlet.conf.ServletInfo;
-import tech.smartboot.servlet.conf.WebAppInfo;
+import tech.smartboot.servlet.conf.*;
 import tech.smartboot.servlet.enums.FilterMappingType;
 import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.PathMatcherUtil;
@@ -33,15 +29,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 解析web.xml文件
@@ -127,10 +115,11 @@ class WebXmlParseEngine {
     private void parseFilter(WebAppInfo webAppInfo, Element parentElement) {
         List<Node> childNodeList = getChildNode(parentElement, "filter");
         for (Node node : childNodeList) {
-            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("filter-name", "filter-class"));
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("filter-name", "filter-class", "async-supported"));
             FilterInfo filterInfo = new FilterInfo();
             filterInfo.setFilterName(nodeData.get("filter-name"));
             filterInfo.setFilterClass(nodeData.get("filter-class"));
+            filterInfo.setAsyncSupported(Boolean.parseBoolean(nodeData.get("async-supported")));
             Map<String, String> initParamMap = parseParam(node);
             initParamMap.forEach(filterInfo::addInitParam);
             webAppInfo.addFilter(filterInfo);

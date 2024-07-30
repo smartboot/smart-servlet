@@ -51,7 +51,7 @@ public class ServletServiceHandler extends Handler {
                 location = handlerContext.getServletContext().getDeploymentInfo().getErrorPageLocation(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
             if (location != null) {
-                handlerContext.getServletContext().getRuntime().getDispatcherProvider().error(handlerContext.getServletContext(), location, (HttpServletRequest) request, (HttpServletResponse) response, throwable, handlerContext.getServletInfo().getServletName());
+                handlerContext.getServletContext().getRuntime().getDispatcherProvider().error(handlerContext.getServletContext(), location, (HttpServletRequest) request, (HttpServletResponse) response, throwable, handlerContext.getServletInfo().getServletName(),throwable.getMessage());
             } else {
                 throw e;
             }

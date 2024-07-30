@@ -30,10 +30,9 @@ public interface DispatcherProvider {
     RequestDispatcher getRequestDispatcher(HttpServletRequestImpl request, String path);
 
     default void error(ServletContextImpl servletContext, String path, HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        error(servletContext, path, req, resp, null, null);
+        error(servletContext, path, req, resp, null, null, null);
     }
 
-    default void error(ServletContextImpl servletContext, String path,
-                       HttpServletRequest req, HttpServletResponse resp, Throwable throwable, String errorServletName) throws IOException {
+    default void error(ServletContextImpl servletContext, String path, HttpServletRequest req, HttpServletResponse resp, Throwable throwable, String errorServletName, String errorMessage) throws IOException {
     }
 }

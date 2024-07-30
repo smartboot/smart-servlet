@@ -65,13 +65,10 @@ class DispatcherProviderImpl implements DispatcherProvider {
     }
 
     @Override
-    public void error(ServletContextImpl servletContext, String path,
-                      HttpServletRequest req, HttpServletResponse resp,
-                      Throwable throwable, String errorServletName) throws IOException {
+    public void error(ServletContextImpl servletContext, String path, HttpServletRequest req, HttpServletResponse resp, Throwable throwable, String errorServletName, String errorMessage) throws IOException {
         RequestDispatcherImpl requestDispatcher = getRequestDispatcher(servletContext, path);
         try {
-            requestDispatcher.forward(req, resp, false, DispatcherType.ERROR,
-                    throwable, errorServletName);
+            requestDispatcher.forward(req, resp, false, DispatcherType.ERROR, throwable, errorServletName, errorMessage);
         } catch (ServletException e) {
             throw new IOException(e);
         }

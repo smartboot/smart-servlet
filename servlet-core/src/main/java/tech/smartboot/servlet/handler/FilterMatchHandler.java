@@ -10,12 +10,7 @@
 
 package tech.smartboot.servlet.handler;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.Servlet;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.smartboot.http.common.utils.StringUtils;
@@ -24,11 +19,7 @@ import tech.smartboot.servlet.enums.FilterMappingType;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -44,9 +35,9 @@ public class FilterMatchHandler extends Handler {
     /**
      * 缓存Servlet关联的过滤器
      */
-    private final Map<Servlet, Map<String, List<Filter>>> requestDispatcherFilterChainMap = new HashMap<>();
+    private final Map<Servlet, Map<String, List<FilterInfo>>> requestDispatcherFilterChainMap = new HashMap<>();
 
-    private final Map<Servlet, Map<String, List<Filter>>> forwardDispatcherFilterChainMap = new HashMap<>();
+    private final Map<Servlet, Map<String, List<FilterInfo>>> forwardDispatcherFilterChainMap = new HashMap<>();
     /**
      * 用 ThreadLocal 缓存 FilterChainImpl,节省内存开销
      */
@@ -55,7 +46,7 @@ public class FilterMatchHandler extends Handler {
     @Override
     public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
         //查找缓存中的 Filter 集合
-        List<Filter> filters = filterCacheFilterList(handlerContext);
+        List<FilterInfo> filters = filterCacheFilterList(handlerContext);
         if (filters == null) {
             //匹配 Filter 集合
             filters = matchFilters(handlerContext);
@@ -75,32 +66,31 @@ public class FilterMatchHandler extends Handler {
     /**
      * 匹配Filter
      */
-    private List<Filter> matchFilters(HandlerContext handlerContext) {
+    private List<FilterInfo> matchFilters(HandlerContext handlerContext) {
         String contextPath = handlerContext.getServletContext().getContextPath();
         HttpServletRequest request = (HttpServletRequest) handlerContext.getRequest();
-        List<Filter> filters = new ArrayList<>();
+        List<FilterInfo> filters = new ArrayList<>();
         Map<String, FilterInfo> allFilters = handlerContext.getServletContext().getDeploymentInfo().getFilters();
         allFilters.values().forEach(filter -> {
-            filter.getMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType()))
-                    .forEach(mappingInfo -> {
-                        if (mappingInfo.getMappingType() == FilterMappingType.URL) {
-                            if (PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), mappingInfo.getServletUrlMapping()) > -1) {
-                                filters.add(filter.getFilter());
-                            }
-                        } else if (mappingInfo.getMappingType() == FilterMappingType.SERVLET) {
-                            if (handlerContext.getServletInfo() != null && StringUtils.equals(mappingInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName())) {
-                                filters.add(filter.getFilter());
-                            }
-                        } else {
-                            throw new IllegalStateException();
-                        }
-                    });
+            filter.getMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType())).forEach(mappingInfo -> {
+                if (mappingInfo.getMappingType() == FilterMappingType.URL) {
+                    if (PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), mappingInfo.getServletUrlMapping()) > -1) {
+                        filters.add(filter);
+                    }
+                } else if (mappingInfo.getMappingType() == FilterMappingType.SERVLET) {
+                    if (handlerContext.getServletInfo() != null && StringUtils.equals(mappingInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName())) {
+                        filters.add(filter);
+                    }
+                } else {
+                    throw new IllegalStateException();
+                }
+            });
         });
         return filters;
     }
 
-    private List<Filter> filterCacheFilterList(HandlerContext handlerContext) {
-        Map<Servlet, Map<String, List<Filter>>> map;
+    private List<FilterInfo> filterCacheFilterList(HandlerContext handlerContext) {
+        Map<Servlet, Map<String, List<FilterInfo>>> map;
         switch (handlerContext.getRequest().getDispatcherType()) {
             case REQUEST:
                 map = requestDispatcherFilterChainMap;
@@ -115,12 +105,12 @@ public class FilterMatchHandler extends Handler {
             return null;
         }
         Servlet servlet = handlerContext.getServletInfo() == null ? NONE : handlerContext.getServletInfo().getServlet();
-        Map<String, List<Filter>> urlMap = map.get(servlet);
+        Map<String, List<FilterInfo>> urlMap = map.get(servlet);
         return urlMap == null ? null : urlMap.get(handlerContext.getOriginalRequest().getRequestURI());
     }
 
-    private void cacheFilterList(HandlerContext handlerContext, List<Filter> filters) {
-        Map<Servlet, Map<String, List<Filter>>> map;
+    private void cacheFilterList(HandlerContext handlerContext, List<FilterInfo> filters) {
+        Map<Servlet, Map<String, List<FilterInfo>>> map;
         switch (handlerContext.getRequest().getDispatcherType()) {
             case REQUEST:
                 map = requestDispatcherFilterChainMap;
@@ -132,7 +122,7 @@ public class FilterMatchHandler extends Handler {
                 return;
         }
         Servlet servlet = handlerContext.getServletInfo() == null ? NONE : handlerContext.getServletInfo().getServlet();
-        Map<String, List<Filter>> urlMap = map.get(servlet);
+        Map<String, List<FilterInfo>> urlMap = map.get(servlet);
         if (urlMap == null) {
             urlMap = new ConcurrentHashMap<>();
             map.put(servlet, urlMap);
@@ -141,11 +131,11 @@ public class FilterMatchHandler extends Handler {
     }
 
     class FilterChainImpl implements FilterChain {
-        private List<Filter> filters;
+        private List<FilterInfo> filters;
         private int location = 0;
         private HandlerContext handlerContext;
 
-        public void init(List<Filter> filters, HandlerContext handlerContext) {
+        public void init(List<FilterInfo> filters, HandlerContext handlerContext) {
             this.filters = filters;
             this.handlerContext = handlerContext;
             location = 0;
@@ -155,7 +145,11 @@ public class FilterMatchHandler extends Handler {
         public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
             int index = location++;
             if (index < filters.size()) {
-                filters.get(index).doFilter(request, response, this);
+                FilterInfo filterInfo = filters.get(index);
+                if (!filterInfo.isAsyncSupported()) {
+                    handlerContext.getOriginalRequest().setAsyncSupported(false);
+                }
+                filterInfo.getFilter().doFilter(request, response, this);
                 return;
             }
 

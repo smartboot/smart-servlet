@@ -14,6 +14,7 @@ import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -21,6 +22,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
+import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * @author 三刀
@@ -31,12 +33,16 @@ public class ServletPrintWriter extends Writer {
     private final ServletOutputStreamImpl servletOutputStream;
     private final CharsetEncoder charsetEncoder;
 
-    public ServletPrintWriter(ServletOutputStreamImpl servletOutputStream, String charset) {
+    public ServletPrintWriter(ServletOutputStreamImpl servletOutputStream, String charset) throws UnsupportedEncodingException {
         super(servletOutputStream);
         this.servletOutputStream = servletOutputStream;
-        this.charsetEncoder = Charset.forName(charset).newEncoder();
-        charsetEncoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
-        charsetEncoder.onMalformedInput(CodingErrorAction.REPLACE);
+        try {
+            this.charsetEncoder = Charset.forName(charset).newEncoder();
+            charsetEncoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+            charsetEncoder.onMalformedInput(CodingErrorAction.REPLACE);
+        } catch (UnsupportedCharsetException e) {
+            throw new UnsupportedEncodingException(e.getMessage());
+        }
     }
 
     @Override

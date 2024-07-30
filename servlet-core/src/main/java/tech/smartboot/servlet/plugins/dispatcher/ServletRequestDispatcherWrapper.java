@@ -149,6 +149,11 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     }
 
     @Override
+    public void setAsyncSupported(boolean supported) {
+        this.request.setAsyncSupported(supported);
+    }
+
+    @Override
     public HttpServletMapping getHttpServletMapping() {
         return this.request.getHttpServletMapping();
     }

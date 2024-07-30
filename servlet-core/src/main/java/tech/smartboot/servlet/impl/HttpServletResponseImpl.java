@@ -103,9 +103,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         }
         response.setHttpStatus(sc, msg);
 
-        String location = request.getServletContext().getRuntime().getDeploymentInfo().getErrorPageLocation(HttpStatus.NOT_FOUND.value());
+        String location = request.getServletContext().getRuntime().getDeploymentInfo().getErrorPageLocation(sc);
         if (StringUtils.isNotBlank(location)) {
-            request.getServletContext().getRuntime().getDispatcherProvider().error(request.getServletContext(), location, request, this);
+            request.getServletContext().getRuntime().getDispatcherProvider().error(request.getServletContext(), location, request, this, null, null, msg);
+        } else {
+            response.write(msg.getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -274,7 +276,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             return writer;
         }
         //if the getOutputStream method has already been called for this response object
-        if (servletOutputStream != null) {
+        if (servletOutputStream != null && servletOutputStream.getCount() > 0) {
             throw new IllegalStateException("getOutputStream has already been called.");
         }
         writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));

@@ -32,6 +32,7 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
 
     public SessionCookieConfigImpl(ServletContextRuntime servletContextRuntime) {
         this.servletContextRuntime = servletContextRuntime;
+        this.path = servletContextRuntime.getContextPath();
     }
 
     @Override
