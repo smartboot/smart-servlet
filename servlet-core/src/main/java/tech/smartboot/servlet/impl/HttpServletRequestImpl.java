@@ -384,7 +384,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             default:
                 throw new IllegalStateException();
         }
-        return new HttpServletMappingImpl(servletMappingInfo.getMappingType(), matchValue, servletMappingInfo.getServletInfo().getServletName(), servletMappingInfo.getMapping());
+        return new HttpServletMappingImpl(servletMappingInfo, matchValue);
     }
 
     public void setServletMappingInfo(ServletMappingInfo servletMappingInfo) {

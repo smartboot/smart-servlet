@@ -12,18 +12,15 @@ package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.MappingMatch;
+import tech.smartboot.servlet.conf.ServletMappingInfo;
 
 public class HttpServletMappingImpl implements HttpServletMapping {
-    private final MappingMatch mappingMatch;
+    private final ServletMappingInfo servletMappingInfo;
     private final String matchValue;
-    private final String servletName;
-    private final String pattern;
 
-    public HttpServletMappingImpl(MappingMatch mappingMatch, String matchValue, String servletName, String pattern) {
-        this.mappingMatch = mappingMatch;
+    public HttpServletMappingImpl(ServletMappingInfo servletMappingInfo, String matchValue) {
+        this.servletMappingInfo = servletMappingInfo;
         this.matchValue = matchValue;
-        this.servletName = servletName;
-        this.pattern = pattern;
     }
 
     @Override
@@ -33,16 +30,16 @@ public class HttpServletMappingImpl implements HttpServletMapping {
 
     @Override
     public String getPattern() {
-        return pattern;
+        return servletMappingInfo.getMapping();
     }
 
     @Override
     public String getServletName() {
-        return servletName;
+        return servletMappingInfo.getServletInfo().getServletName();
     }
 
     @Override
     public MappingMatch getMappingMatch() {
-        return mappingMatch;
+        return servletMappingInfo.getMappingType();
     }
 }

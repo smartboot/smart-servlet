@@ -118,7 +118,7 @@ public class ServletMatchHandler extends Handler {
     }
 
     static class CacheServlet {
-        private ServletMappingInfo servletMappingInfo;
+        private final ServletMappingInfo servletMappingInfo;
         private final int servletPathStart;
         private final int servletPathEnd;
         private final int pathInfoStart;
