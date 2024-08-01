@@ -10,6 +10,7 @@
 
 package tech.smartboot.servlet;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.smartboot.socket.util.Attachment;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -57,4 +58,6 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
     void setServletMappingInfo(ServletMappingInfo servletMappingInfo);
 
     void setAsyncSupported(boolean supported);
+
+    void setDispatcherType(DispatcherType dispatcherType);
 }

@@ -50,7 +50,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private static final Cookie[] NONE_COOKIE = new Cookie[0];
     private final HttpRequest request;
     private ServletContextImpl servletContext;
-    private final DispatcherType dispatcherType;
+    private DispatcherType dispatcherType = DispatcherType.REQUEST;
     private final ServletContextRuntime runtime;
     private Charset characterEncoding;
     private Map<String, Object> attributes;
@@ -92,9 +92,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     private ServletMappingInfo servletMappingInfo;
 
-    public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, DispatcherType dispatcherType, CompletableFuture<Object> completableFuture) {
+    public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, CompletableFuture<Object> completableFuture) {
         this.request = request;
-        this.dispatcherType = dispatcherType;
         this.servletContext = runtime.getServletContext();
         this.runtime = runtime;
         this.completableFuture = completableFuture;
@@ -789,6 +788,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public DispatcherType getDispatcherType() {
         return dispatcherType;
+    }
+
+    @Override
+    public void setDispatcherType(DispatcherType dispatcherType) {
+        this.dispatcherType = dispatcherType;
     }
 
     @Override

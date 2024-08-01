@@ -53,9 +53,10 @@ public class ServletMatchHandler extends Handler {
         //通过缓存匹配Servlet
         CacheServlet cacheServlet = handlerContext.isNamedDispatcher() ? null : cacheServletMap.get(request.getRequestURI());
         if (cacheServlet != null) {
-            handlerContext.setServletInfo(cacheServlet.servletInfo);
+            handlerContext.setServletInfo(cacheServlet.servletMappingInfo.getServletInfo());
             request.setServletPath(cacheServlet.servletPathStart, cacheServlet.servletPathEnd);
             request.setPathInfo(cacheServlet.pathInfoStart, cacheServlet.pathInfoEnd);
+            request.setServletMappingInfo(cacheServlet.servletMappingInfo);
         }
         if (handlerContext.getServletInfo() != null) {
             doNext(handlerContext);
@@ -103,7 +104,7 @@ public class ServletMatchHandler extends Handler {
 
                 request.setServletMappingInfo(path);
 
-                cacheServletMap.put(request.getRequestURI(), new CacheServlet(servletInfo, servletPathStart, servletPathEnd, pathInfoStart, pathInfoEnd));
+                cacheServletMap.put(request.getRequestURI(), new CacheServlet(path, servletPathStart, servletPathEnd, pathInfoStart, pathInfoEnd));
                 //精准匹配，直接完成
                 if (path.getMappingType() == MappingMatch.EXACT && !path.getMapping().equals("/")) {
                     handlerContext.setServletInfo(servletInfo);
@@ -117,14 +118,14 @@ public class ServletMatchHandler extends Handler {
     }
 
     static class CacheServlet {
-        private final ServletInfo servletInfo;
+        private ServletMappingInfo servletMappingInfo;
         private final int servletPathStart;
         private final int servletPathEnd;
         private final int pathInfoStart;
         private final int pathInfoEnd;
 
-        public CacheServlet(ServletInfo servletInfo, int servletPathStart, int servletPathEnd, int pathInfoStart, int pathInfoEnd) {
-            this.servletInfo = servletInfo;
+        public CacheServlet(ServletMappingInfo servletMappingInfo, int servletPathStart, int servletPathEnd, int pathInfoStart, int pathInfoEnd) {
+            this.servletMappingInfo = servletMappingInfo;
             this.servletPathStart = servletPathStart;
             this.servletPathEnd = servletPathEnd;
             this.pathInfoStart = pathInfoStart;

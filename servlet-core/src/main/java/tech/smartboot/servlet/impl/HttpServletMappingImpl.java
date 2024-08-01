@@ -14,10 +14,10 @@ import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.MappingMatch;
 
 public class HttpServletMappingImpl implements HttpServletMapping {
-    private MappingMatch mappingMatch;
-    private String matchValue;
-    private String servletName;
-    private String pattern;
+    private final MappingMatch mappingMatch;
+    private final String matchValue;
+    private final String servletName;
+    private final String pattern;
 
     public HttpServletMappingImpl(MappingMatch mappingMatch, String matchValue, String servletName, String pattern) {
         this.mappingMatch = mappingMatch;

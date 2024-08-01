@@ -29,7 +29,6 @@ import java.util.Map;
  */
 public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implements SmartHttpServletRequest {
     private final HttpServletRequestImpl request;
-    private final DispatcherType dispatcherType;
     private final boolean named;
     private String servletPath;
     private int servletPathStart;
@@ -44,7 +43,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     public ServletRequestDispatcherWrapper(HttpServletRequestImpl request, DispatcherType dispatcherType, boolean named) {
         super(request);
         this.request = request;
-        this.dispatcherType = dispatcherType;
+        request.setDispatcherType(dispatcherType);
         this.named = named;
     }
 
@@ -80,7 +79,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
 
     @Override
     public DispatcherType getDispatcherType() {
-        return dispatcherType;
+        return request.getDispatcherType();
     }
 
     @Override
@@ -151,6 +150,11 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     @Override
     public void setAsyncSupported(boolean supported) {
         this.request.setAsyncSupported(supported);
+    }
+
+    @Override
+    public void setDispatcherType(DispatcherType dispatcherType) {
+        request.setDispatcherType(dispatcherType);
     }
 
     @Override
