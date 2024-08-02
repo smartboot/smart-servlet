@@ -141,6 +141,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         }
         LOGGER.info("sendRedirect:" + redirect);
         response.setHeader(HeaderNameEnum.LOCATION.getName(), redirect);
+        response.close();
     }
 
     @Override
@@ -170,6 +171,9 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void addIntHeader(String name, int value) {
+        if (isCommitted()) {
+            return;
+        }
         response.addHeader(name, String.valueOf(value));
     }
 
