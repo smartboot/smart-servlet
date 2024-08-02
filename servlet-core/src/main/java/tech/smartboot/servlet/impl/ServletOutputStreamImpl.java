@@ -66,17 +66,19 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        written += len;
         if (committed) {
             outputStream.write(b, off, len);
+            written += len;
             return;
         }
 
         if (len < buffer.length - written - 1) {
             System.arraycopy(b, off, buffer, written, len);
+            written += len;
         } else {
             flushServletBuffer();
             outputStream.write(b, off, len);
+            written += len;
         }
     }
 
