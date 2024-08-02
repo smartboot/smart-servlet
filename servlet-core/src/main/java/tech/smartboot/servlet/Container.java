@@ -11,27 +11,18 @@
 package tech.smartboot.servlet;
 
 import jakarta.servlet.AsyncContext;
-import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.http.server.HttpRequest;
-import org.smartboot.http.server.HttpResponse;
-import org.smartboot.http.server.HttpServerConfiguration;
-import org.smartboot.http.server.WebSocketRequest;
-import org.smartboot.http.server.WebSocketResponse;
+import org.smartboot.http.server.*;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
+import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
-import tech.smartboot.servlet.handler.FilterMatchHandler;
-import tech.smartboot.servlet.handler.HandlerContext;
-import tech.smartboot.servlet.handler.HandlerPipeline;
-import tech.smartboot.servlet.handler.ServletMatchHandler;
-import tech.smartboot.servlet.handler.ServletRequestListenerHandler;
-import tech.smartboot.servlet.handler.ServletServiceHandler;
+import tech.smartboot.servlet.handler.*;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.HttpServletResponseImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
@@ -45,11 +36,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -287,7 +274,19 @@ public class Container {
 
 
     private ServletContextRuntime getServletRuntime(String localPath, String contextPath, ClassLoader parentClassLoader) throws Exception {
+        URLClassLoader urlClassLoader = getClassLoader(localPath, parentClassLoader);
+        File contextFile = new File(localPath);
+        ServletContextRuntime servletRuntime = new ServletContextRuntime(localPath, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
+
         WebAppInfo webAppInfo = new WebAppInfo();
+        //默认servlet
+        ServletInfo servletInfo = new ServletInfo();
+        servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
+        servletInfo.setServlet(new DefaultServlet(servletRuntime.getDeploymentInfo()));
+        servletInfo.setDynamic(true);
+        servletInfo.setLoadOnStartup(1);
+        webAppInfo.addServlet(servletInfo);
+
         WebXmlParseEngine engine = new WebXmlParseEngine();
         //加载内置的web.xml
         try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("smart_web.xml")) {
@@ -295,7 +294,6 @@ public class Container {
         }
 
         //load web.xml file
-        File contextFile = new File(localPath);
         File webXmlFile = new File(contextFile, "WEB-INF" + File.separatorChar + "web.xml");
         if (webXmlFile.isFile()) {
 //            LOGGER.info("web.xml info:" + IOUtils.toString(webXmlFile.toURI()));
@@ -305,8 +303,6 @@ public class Container {
         }
 
 
-        URLClassLoader urlClassLoader = getClassLoader(localPath, parentClassLoader);
-
         //加载web-fragment.xml
         Enumeration<URL> fragments = urlClassLoader.getResources("META-INF/web-fragment.xml");
         while (fragments.hasMoreElements()) {
@@ -314,8 +310,8 @@ public class Container {
                 engine.load(webAppInfo, inputStream);
             }
         }
+
         //new runtime object
-        ServletContextRuntime servletRuntime = new ServletContextRuntime(localPath, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
         servletRuntime.setDisplayName(webAppInfo.getDisplayName());
         servletRuntime.setDescription(webAppInfo.getDescription());
         DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
