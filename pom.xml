@@ -39,7 +39,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <url>http://git.oschina.net/smartboot/smart-servlet</url>
+    <url>https://github.com/smartboot/smart-servlet</url>
 
     <licenses>
         <license>
@@ -63,14 +63,14 @@
                 <picUrl>https://git.oschina.net/uploads/75/351975_smartdms.jpg</picUrl>
             </properties>
             <organization>smartboot</organization>
-            <organizationUrl>https://gitee.com/smartboot</organizationUrl>
+            <organizationUrl>https://github.com/smartboot</organizationUrl>
         </developer>
     </developers>
 
     <scm>
-        <url>http://git.oschina.net/smartboot/smart-servlet</url>
-        <connection>scm:git:https://git.oschina.net/smartboot/smart-servlet.git</connection>
-        <developerConnection>scm:git:ssh://git.oschina.net:smartboot/smart-servlet.git</developerConnection>
+        <url>https://github.com/smartboot/smart-servlet</url>
+        <connection>scm:git:https://github.com/smartboot/smart-servlet.git</connection>
+        <developerConnection>scm:git:ssh://github.com:smartboot/smart-servlet.git</developerConnection>
         <tag>master</tag>
     </scm>
 

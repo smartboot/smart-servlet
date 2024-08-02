@@ -10,10 +10,10 @@
 
 package tech.smartboot.servlet.impl;
 
-import org.smartboot.http.common.BufferOutputStream;
-
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
+import org.smartboot.http.common.BufferOutputStream;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -28,7 +28,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
      * buffer仅用于提供response.resetBuffer能力,commit之后即失效
      */
     private byte[] buffer;
-    private int count;
+    private int written;
     private byte[] cacheByte;
 
     public ServletOutputStreamImpl(BufferOutputStream outputStream, byte[] buffer) {
@@ -66,29 +66,18 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
+        written += len;
         if (committed) {
             outputStream.write(b, off, len);
             return;
         }
-        //继续缓存数据
-        if (buffer == null) {
-            committed = true;
+
+        if (len < buffer.length - written - 1) {
+            System.arraycopy(b, off, buffer, written, len);
+        } else {
+            flushServletBuffer();
             outputStream.write(b, off, len);
-            return;
         }
-        if (len < buffer.length - count - 1) {
-            System.arraycopy(b, off, buffer, count, len);
-            count += len;
-            return;
-        }
-        committed = true;
-        //buffer中存在缓存数据，先输出
-        if (count > 0) {
-            outputStream.write(buffer, 0, count);
-            count = 0;
-        }
-        buffer = null;
-        outputStream.write(b, off, len);
     }
 
     @Override
@@ -104,10 +93,9 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     public void flushServletBuffer() throws IOException {
         committed = true;
-        if (count > 0) {
-            outputStream.write(buffer, 0, count);
+        if (buffer != null) {
+            outputStream.write(buffer, 0, written);
             buffer = null;
-            count = 0;
         }
     }
 
@@ -116,10 +104,10 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     }
 
     public void resetBuffer() {
-        count = 0;
+        written = 0;
     }
 
-    public int getCount() {
-        return count;
+    public int getWritten() {
+        return written;
     }
 }

@@ -174,6 +174,9 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (isCommitted()) {
             return;
         }
+        if (response.getContentLength() >= 0 && servletOutputStream.getWritten() > response.getContentLength()) {
+            return;
+        }
         response.addHeader(name, String.valueOf(value));
     }
 
@@ -280,7 +283,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             return writer;
         }
         //if the getOutputStream method has already been called for this response object
-        if (servletOutputStream != null && servletOutputStream.getCount() > 0) {
+        if (servletOutputStream != null && servletOutputStream.getWritten() > 0) {
             throw new IllegalStateException("getOutputStream has already been called.");
         }
         writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
@@ -304,7 +307,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void setBufferSize(int size) {
-        if (servletOutputStream != null && (servletOutputStream.getCount() > 0 || servletOutputStream.isCommitted())) {
+        if (servletOutputStream != null && (servletOutputStream.getWritten() > 0 || servletOutputStream.isCommitted())) {
             throw new IllegalStateException();
         }
         bufferSize = size;
