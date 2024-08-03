@@ -177,8 +177,9 @@ class SessionProviderImpl implements SessionProvider {
 
     private static boolean validateSessionId(String sessionId) {
         if (!sessionId.startsWith(MAGIC_NUMBER)) {
+            LOGGER.warn("invalid sessionId:{},ignore", sessionId);
             //检测到非法会话
-            return true;
+            return false;
         }
         byte[] bytes = Base64.getUrlDecoder().decode(sessionId.substring(2));
         int maskLimit = maskLength + DEFAULT_BYTES.length;
