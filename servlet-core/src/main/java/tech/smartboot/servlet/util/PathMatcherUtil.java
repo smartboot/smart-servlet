@@ -35,7 +35,9 @@ public class PathMatcherUtil {
     }
 
     public static ServletMappingInfo addMapping(final String mapping) {
-        if (!mapping.contains("*")) {
+        if ("/".equals(mapping)) {
+            return new ServletMappingInfo(mapping, MappingMatch.DEFAULT);
+        } else if (!mapping.contains("*")) {
             if (!mapping.startsWith("/")) {
                 throw new IllegalArgumentException("invalid mapping: " + mapping);
             }
@@ -60,6 +62,11 @@ public class PathMatcherUtil {
         MappingMatch mappingTypeEnum = mappingInfo.getMappingType();
         int servletPathEndIndex = -1;
         switch (mappingTypeEnum) {
+            case DEFAULT:
+                if ("/".equals(pattern)) {
+                    return 0;
+                }
+                break;
             //精准匹配
             case EXACT:
                 //《Servlet3.1规范中文版》12.2 映射规范

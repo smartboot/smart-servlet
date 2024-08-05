@@ -283,6 +283,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public void setRequestUri(String requestUri) {
         this.requestUri = requestUri;
+        servletPath = null;
     }
 
     @Override
@@ -389,6 +390,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     public void setServletMappingInfo(ServletMappingInfo servletMappingInfo) {
         this.servletMappingInfo = servletMappingInfo;
+        this.servletInfo = servletMappingInfo.getServletInfo();
     }
 
 
@@ -478,6 +480,16 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             }
         }
         return location;
+    }
+
+    @Override
+    public Map<String, String> getTrailerFields() {
+        return request.getTrailerFields();
+    }
+
+    @Override
+    public boolean isTrailerFieldsReady() {
+        return request.isTrailerFieldsReady();
     }
 
     @Override

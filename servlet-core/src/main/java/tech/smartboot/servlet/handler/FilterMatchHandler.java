@@ -38,10 +38,6 @@ public class FilterMatchHandler extends Handler {
     private final Map<Servlet, Map<String, List<FilterInfo>>> requestDispatcherFilterChainMap = new HashMap<>();
 
     private final Map<Servlet, Map<String, List<FilterInfo>>> forwardDispatcherFilterChainMap = new HashMap<>();
-    /**
-     * 用 ThreadLocal 缓存 FilterChainImpl,节省内存开销
-     */
-    private final ThreadLocal<FilterChainImpl> filterChainThreadLocal = ThreadLocal.withInitial(FilterChainImpl::new);
 
     @Override
     public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
@@ -54,7 +50,7 @@ public class FilterMatchHandler extends Handler {
             cacheFilterList(handlerContext, filters);
         }
 
-        FilterChainImpl filterChain = filterChainThreadLocal.get();
+        FilterChainImpl filterChain = new FilterChainImpl();
         filterChain.init(filters, handlerContext);
         try {
             filterChain.doFilter(handlerContext.getRequest(), handlerContext.getResponse());

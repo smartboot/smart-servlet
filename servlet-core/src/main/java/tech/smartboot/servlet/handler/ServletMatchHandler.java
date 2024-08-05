@@ -10,6 +10,7 @@
 
 package tech.smartboot.servlet.handler;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.MappingMatch;
 import tech.smartboot.servlet.SmartHttpServletRequest;
@@ -56,7 +57,10 @@ public class ServletMatchHandler extends Handler {
             handlerContext.setServletInfo(cacheServlet.servletMappingInfo.getServletInfo());
             request.setServletPath(cacheServlet.servletPathStart, cacheServlet.servletPathEnd);
             request.setPathInfo(cacheServlet.pathInfoStart, cacheServlet.pathInfoEnd);
-            request.setServletMappingInfo(cacheServlet.servletMappingInfo);
+            if (request.getDispatcherType() != DispatcherType.INCLUDE) {
+                request.setServletMappingInfo(cacheServlet.servletMappingInfo);
+            }
+//            request.setServletMappingInfo(cacheServlet.servletMappingInfo);
         }
         if (handlerContext.getServletInfo() != null) {
             doNext(handlerContext);
@@ -102,7 +106,10 @@ public class ServletMatchHandler extends Handler {
                 request.setServletPath(servletPathStart, servletPathEnd);
                 request.setPathInfo(pathInfoStart, pathInfoEnd);
 
-                request.setServletMappingInfo(path);
+                if (request.getDispatcherType() != DispatcherType.INCLUDE) {
+                    request.setServletMappingInfo(path);
+                }
+
 
                 cacheServletMap.put(request.getRequestURI(), new CacheServlet(path, servletPathStart, servletPathEnd, pathInfoStart, pathInfoEnd));
                 //精准匹配，直接完成

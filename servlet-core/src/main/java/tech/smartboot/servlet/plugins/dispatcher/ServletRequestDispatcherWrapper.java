@@ -17,6 +17,7 @@ import org.smartboot.socket.util.Attachment;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
+import tech.smartboot.servlet.impl.HttpServletMappingImpl;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 
 import java.util.Collections;
@@ -144,7 +145,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
 
     @Override
     public void setServletMappingInfo(ServletMappingInfo httpServletMapping) {
-        this.request.setServletMappingInfo(httpServletMapping);
+        this.servletMappingInfo = httpServletMapping;
     }
 
     @Override
@@ -157,9 +158,41 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
         request.setDispatcherType(dispatcherType);
     }
 
+    private ServletMappingInfo servletMappingInfo;
+
     @Override
     public HttpServletMapping getHttpServletMapping() {
-        return this.request.getHttpServletMapping();
+        if (named || getDispatcherType() == DispatcherType.INCLUDE) {
+            return request.getHttpServletMapping();
+        }
+        if (servletMappingInfo == null) {
+            return null;
+        }
+        String matchValue;
+        switch (servletMappingInfo.getMappingType()) {
+            case EXACT:
+                matchValue = servletMappingInfo.getMapping();
+                if (matchValue.startsWith("/")) {
+                    matchValue = matchValue.substring(1);
+                }
+                break;
+            case DEFAULT:
+            case CONTEXT_ROOT:
+                matchValue = "";
+                break;
+            case PATH:
+                matchValue = getServletPath().substring(servletMappingInfo.getMapping().length() - 1);
+                if (matchValue.startsWith("/")) {
+                    matchValue = matchValue.substring(1);
+                }
+                break;
+            case EXTENSION:
+                matchValue = getServletPath().substring(getServletPath().charAt(0) == '/' ? 1 : 0, getServletPath().length() - servletMappingInfo.getMapping().length() + 1);
+                break;
+            default:
+                throw new IllegalStateException();
+        }
+        return new HttpServletMappingImpl(servletMappingInfo, matchValue);
     }
 
     @Override
