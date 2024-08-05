@@ -109,6 +109,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         } else {
             response.write(msg.getBytes(StandardCharsets.UTF_8));
         }
+        flushServletBuffer();
         response.close();
     }
 

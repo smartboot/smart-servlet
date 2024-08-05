@@ -129,6 +129,12 @@
             <groupId>tech.smartboot.servlet</groupId>
             <artifactId>servlet-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mortbay.jasper</groupId>
+            <artifactId>apache-jsp</artifactId>
+            <version>10.1.5</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

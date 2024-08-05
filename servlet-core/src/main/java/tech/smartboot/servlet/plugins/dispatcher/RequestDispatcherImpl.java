@@ -11,6 +11,7 @@
 package tech.smartboot.servlet.plugins.dispatcher;
 
 import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.utils.HttpUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -69,13 +70,15 @@ class RequestDispatcherImpl implements RequestDispatcher {
         requestWrapper.setAttribute(FORWARD_QUERY_STRING, requestImpl.getQueryString());
 
         if (dispatcherType == DispatcherType.ERROR) {
-            requestWrapper.setAttribute(ERROR_EXCEPTION, throwable);
-            requestWrapper.setAttribute(ERROR_EXCEPTION_TYPE, throwable.getClass());
+            if (throwable != null) {
+                requestWrapper.setAttribute(ERROR_EXCEPTION, throwable);
+                requestWrapper.setAttribute(ERROR_EXCEPTION_TYPE, throwable.getClass());
+            }
             requestWrapper.setAttribute(ERROR_MESSAGE, errorMessage);
-            requestWrapper.setAttribute(ERROR_STATUS_CODE, 500);
+            requestWrapper.setAttribute(ERROR_STATUS_CODE, ((HttpServletResponse) response).getStatus());
             requestWrapper.setAttribute(ERROR_REQUEST_URI, requestImpl.getRequestURI());
             requestWrapper.setAttribute(ERROR_SERVLET_NAME, errorServletName);
-            responseWrapper.setStatus(500);
+            responseWrapper.setStatus(((HttpServletResponse) response).getStatus());
         }
 
         //《Servlet3.1规范中文版》9.4 forward 方法
