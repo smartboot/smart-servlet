@@ -47,6 +47,10 @@ public class WebAppInfo {
     private final Map<String, String> localeEncodingMappings = new HashMap<>();
     private final Map<String, String> mimeMappings = new HashMap<>();
 
+    private final Map<String, String> securityRoles = new HashMap<>();
+
+    private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
+
     private int sessionTimeout = 0;
 
     public void addServlet(ServletInfo servletInfo) {
@@ -132,5 +136,13 @@ public class WebAppInfo {
 
     public Map<String, String> getMimeMappings() {
         return mimeMappings;
+    }
+
+    public Map<String, String> getSecurityRoles() {
+        return securityRoles;
+    }
+
+    public List<SecurityConstraint> getSecurityConstraints() {
+        return securityConstraints;
     }
 }

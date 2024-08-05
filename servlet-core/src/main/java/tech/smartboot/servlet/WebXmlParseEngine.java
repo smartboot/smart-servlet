@@ -67,6 +67,10 @@ class WebXmlParseEngine {
         parseLocaleEncodingMappings(webAppInfo, parentElement);
 
         parseMimeMapping(webAppInfo, parentElement);
+
+        parseSecurityRole(webAppInfo, parentElement);
+
+        parseSecurityConstraint(webAppInfo, parentElement);
     }
 
     private void parseBasicInfo(WebAppInfo webAppInfo, Element parentElement) {
@@ -80,7 +84,7 @@ class WebXmlParseEngine {
     }
 
     private void parseSessionConfig(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNode(parentElement, "session-config");
+        List<Node> childNodeList = getChildNodes(parentElement, "session-config");
         if (CollectionUtils.isNotEmpty(childNodeList)) {
             Map<String, String> nodeData = getNodeValue(childNodeList.get(0), Collections.singletonList("session-timeout"));
             webAppInfo.setSessionTimeout(NumberUtils.toInt(nodeData.get("session-timeout"), 0));
@@ -88,7 +92,7 @@ class WebXmlParseEngine {
     }
 
     private void parseContextParam(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNode(parentElement, "context-param");
+        List<Node> childNodeList = getChildNodes(parentElement, "context-param");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("param-name", "param-value"));
             webAppInfo.addContextParam(nodeData.get("param-name"), nodeData.get("param-value"));
@@ -96,7 +100,7 @@ class WebXmlParseEngine {
     }
 
     private void parseMimeMapping(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNode(parentElement, "mime-mapping");
+        List<Node> childNodeList = getChildNodes(parentElement, "mime-mapping");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("extension", "mime-type"));
             webAppInfo.getMimeMappings().put(nodeData.get("extension"), nodeData.get("mime-type"));
@@ -104,7 +108,7 @@ class WebXmlParseEngine {
     }
 
     private void parseListener(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNode(parentElement, "listener");
+        List<Node> childNodeList = getChildNodes(parentElement, "listener");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Collections.singletonList("listener-class"));
             webAppInfo.addListener(nodeData.get("listener-class"));
@@ -113,7 +117,7 @@ class WebXmlParseEngine {
 
 
     private void parseFilter(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNode(parentElement, "filter");
+        List<Node> childNodeList = getChildNodes(parentElement, "filter");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("filter-name", "filter-class", "async-supported"));
             FilterInfo filterInfo = new FilterInfo();
@@ -127,7 +131,7 @@ class WebXmlParseEngine {
     }
 
     private void parseErrorPage(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNode(parentElement, "error-page");
+        List<Node> childNodeList = getChildNodes(parentElement, "error-page");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("error-code", "location", "exception-type"));
             webAppInfo.addErrorPage(new ErrorPageInfo(nodeData.get("location"), NumberUtils.toInt(nodeData.get("error-code"), -1), nodeData.get("exception-type")));
@@ -135,13 +139,13 @@ class WebXmlParseEngine {
     }
 
     private void parseFilterMapping(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNode(parentElement, "filter-mapping");
+        List<Node> childNodeList = getChildNodes(parentElement, "filter-mapping");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("filter-name", "url-pattern", "servlet-name"));
             String filterName = nodeData.get("filter-name");
             String urlPattern = nodeData.get("url-pattern");
             String servletName = nodeData.get("servlet-name");
-            List<Node> dispatcher = getChildNode(node, "dispatcher");
+            List<Node> dispatcher = getChildNodes(node, "dispatcher");
             Set<DispatcherType> dispatcherTypes = new HashSet<>();
             if (CollectionUtils.isEmpty(dispatcher)) {
                 dispatcherTypes.add(DispatcherType.REQUEST);
@@ -170,12 +174,12 @@ class WebXmlParseEngine {
             Map<String, String> initParamMap = parseParam(node);
             initParamMap.forEach(servletInfo::addInitParam);
             servletInfo.setMultipartConfig(parseMultipartConfig(node));
-            parseSecurityRole(node).forEach(servletInfo::addSecurityRole);
+            parseSecurityRoleRef(node).forEach(servletInfo::addSecurityRole);
             webAppInfo.addServlet(servletInfo);
         }
     }
 
-    private List<Node> getChildNode(Node node, String nodeName) {
+    private List<Node> getChildNodes(Node node, String nodeName) {
         NodeList nodeList = node.getChildNodes();
         List<Node> childNodes = new ArrayList<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -185,6 +189,14 @@ class WebXmlParseEngine {
             }
         }
         return childNodes;
+    }
+
+    private Node getChildNode(Node node, String nodeName) {
+        List<Node> childNodes = getChildNodes(node, nodeName);
+        if (childNodes.size() > 1) {
+            throw new IllegalStateException();
+        }
+        return childNodes.size() == 1 ? childNodes.get(0) : null;
     }
 
     private Map<String, String> getNodeValue(Node node, Collection<String> nodeNames) {
@@ -213,7 +225,7 @@ class WebXmlParseEngine {
      * 解析Servlet配置
      */
     private void parseServletMapping(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNode(parentElement, "servlet-mapping");
+        List<Node> childNodeList = getChildNodes(parentElement, "servlet-mapping");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Collections.singletonList("servlet-name"));
             ServletInfo servletInfo = webAppInfo.getServlet(nodeData.get("servlet-name"));
@@ -222,7 +234,7 @@ class WebXmlParseEngine {
     }
 
     private MultipartConfigElement parseMultipartConfig(Node parentElement) {
-        List<Node> paramElementList = getChildNode(parentElement, "multipart-config");
+        List<Node> paramElementList = getChildNodes(parentElement, "multipart-config");
         if (CollectionUtils.isEmpty(paramElementList)) {
             return null;
         }
@@ -234,9 +246,9 @@ class WebXmlParseEngine {
         return new MultipartConfigElement(nodeMap.get("location"), NumberUtils.toInt(nodeMap.get("max-file-size"), -1), NumberUtils.toInt(nodeMap.get("max-request-size"), -1), NumberUtils.toInt(nodeMap.get("file-size-threshold"), -1));
     }
 
-    private Map<String, String> parseSecurityRole(Node parentElement) {
+    private Map<String, String> parseSecurityRoleRef(Node parentElement) {
         Map<String, String> roles = new HashMap<>();
-        List<Node> childNodeList = getChildNode(parentElement, "security-role-ref");
+        List<Node> childNodeList = getChildNodes(parentElement, "security-role-ref");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("role-name", "role-link"));
             roles.put(nodeData.get("role-name"), nodeData.get("role-link"));
@@ -244,8 +256,39 @@ class WebXmlParseEngine {
         return roles;
     }
 
+    private void parseSecurityRole(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNodes(parentElement, "security-role");
+        for (Node node : childNodeList) {
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("role-name", "description"));
+            webAppInfo.getSecurityRoles().put(nodeData.get("role-name"), nodeData.get("description"));
+        }
+    }
+
+    private void parseSecurityConstraint(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNodes(parentElement, "security-constraint");
+        for (Node node : childNodeList) {
+            SecurityConstraint securityConstraint = new SecurityConstraint();
+            Node webResourceCollection = Objects.requireNonNull(getChildNode(node, "web-resource-collection"));
+//            Map<String, List<String>> data = getNodeValues(webResourceCollection, Arrays.asList("web-resource-name", "url-pattern", "http-method"));
+            securityConstraint.getHttpMethods().addAll(getNodeValues(webResourceCollection, "http-method"));
+            securityConstraint.getUrlPatterns().addAll(getNodeValues(webResourceCollection, "url-pattern"));
+            securityConstraint.getResourceNames().addAll(getNodeValues(webResourceCollection, "web-resource-name"));
+
+
+            Node authConstraint = getChildNode(node, "auth-constraint");
+            if (authConstraint != null) {
+                securityConstraint.getRoleNames().addAll(getNodeValues(authConstraint, "role-name"));
+            }
+
+            Node userDataConstraint = getChildNode(node, "user-data-constraint");
+            if (userDataConstraint != null) {
+                securityConstraint.getTransportGuarantees().addAll(getNodeValues(userDataConstraint, "transport-guarantee"));
+            }
+        }
+    }
+
     private Map<String, String> parseParam(Node parentElement) {
-        List<Node> paramElementList = getChildNode(parentElement, "init-param");
+        List<Node> paramElementList = getChildNodes(parentElement, "init-param");
         Map<String, String> paramMap = new HashMap<>();
         for (Node element : paramElementList) {
             Map<String, String> nodeMap = getNodeValue(element, Arrays.asList("param-name", "param-value"));
@@ -258,11 +301,11 @@ class WebXmlParseEngine {
      * 解析 <welcome-file-list/>
      */
     private void parseWelcomeFile(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNode(parentElement, "welcome-file-list");
+        List<Node> childNodeList = getChildNodes(parentElement, "welcome-file-list");
         if (CollectionUtils.isEmpty(childNodeList)) {
             return;
         }
-        List<Node> welcomeFileElement = getChildNode(childNodeList.get(0), "welcome-file");
+        List<Node> welcomeFileElement = getChildNodes(childNodeList.get(0), "welcome-file");
         for (Node node : welcomeFileElement) {
             webAppInfo.addWelcomeFile(StringUtils.trim(node.getFirstChild().getNodeValue()));
         }
@@ -273,11 +316,11 @@ class WebXmlParseEngine {
      * 解析 <locale-encoding-mapping-list/>
      */
     private void parseLocaleEncodingMappings(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNode(parentElement, "locale-encoding-mapping-list");
+        List<Node> childNodeList = getChildNodes(parentElement, "locale-encoding-mapping-list");
         if (CollectionUtils.isEmpty(childNodeList)) {
             return;
         }
-        List<Node> mappings = getChildNode(childNodeList.get(0), "locale-encoding-mapping");
+        List<Node> mappings = getChildNodes(childNodeList.get(0), "locale-encoding-mapping");
         for (Node node : mappings) {
             Map<String, String> mapping = getNodeValue(node, Arrays.asList("locale", "encoding"));
             webAppInfo.getLocaleEncodingMappings().put(mapping.get("locale"), mapping.get("encoding"));
