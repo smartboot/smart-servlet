@@ -67,11 +67,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             return;
         }
         org.smartboot.http.common.Cookie httpCookie = new org.smartboot.http.common.Cookie(cookie.getName(), cookie.getValue());
-        httpCookie.setDomain(cookie.getDomain());
-        httpCookie.setHttpOnly(cookie.isHttpOnly());
-        httpCookie.setPath(cookie.getPath());
-        httpCookie.setMaxAge(cookie.getMaxAge());
-        httpCookie.setSecure(cookie.getSecure());
+        cookie.getAttributes().forEach(httpCookie::setAttribute);
         response.addCookie(httpCookie);
         if (cookie.getName().equals(request.getServletContext().getSessionCookieConfig().getName())) {
             sessionCookie = httpCookie;
