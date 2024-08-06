@@ -70,7 +70,7 @@ public class ServletContextImpl implements ServletContext {
     private final SessionCookieConfig sessionCookieConfig;
     private ServletContextPathType pathType = ServletContextPathType.PATH;
 
-    private JspConfigDescriptor jspConfigDescriptor = new JspConfigDescriptorImpl();
+    private JspConfigDescriptor jspConfigDescriptor;
     private final Set<SessionTrackingMode> defaultSessionTrackingModes = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(SessionTrackingMode.COOKIE, SessionTrackingMode.URL)));
     private Set<SessionTrackingMode> sessionTrackingModes = defaultSessionTrackingModes;
     private Map<String, String> mimetypes = new HashMap<>();
@@ -509,7 +509,6 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
-        checkContextInitializeState();
         return defaultSessionTrackingModes;
     }
 
@@ -611,6 +610,10 @@ public class ServletContextImpl implements ServletContext {
     public JspConfigDescriptor getJspConfigDescriptor() {
         //todo 暂时 返回 null 使org.apache.jasper.servlet.JasperInitializer#onStartup 可以执行
         return jspConfigDescriptor;
+    }
+
+    public void setJspConfigDescriptor(JspConfigDescriptor jspConfigDescriptor) {
+        this.jspConfigDescriptor = jspConfigDescriptor;
     }
 
     @Override
