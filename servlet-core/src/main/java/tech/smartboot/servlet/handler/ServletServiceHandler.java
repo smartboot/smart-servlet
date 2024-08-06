@@ -40,6 +40,7 @@ public class ServletServiceHandler extends Handler {
                 handlerContext.getServletContext().getDeploymentInfo().getServlets().get(ServletInfo.DEFAULT_SERVLET_NAME).getServlet().service(request, response);
             }
         } catch (Throwable e) {
+            ((HttpServletResponse)response).setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             Throwable throwable = e;
             String location = handlerContext.getServletContext().getDeploymentInfo().getErrorPageLocation(throwable);
             while (location == null && throwable.getCause() != null) {
