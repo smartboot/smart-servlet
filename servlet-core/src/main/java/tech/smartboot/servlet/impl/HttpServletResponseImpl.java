@@ -42,6 +42,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     private PrintWriter writer;
     private ServletOutputStreamImpl servletOutputStream;
     private int bufferSize = -1;
+    private static final int RESPONSE_TYPE_NONE = 0;
+    private static final int RESPONSE_TYPE_STREAM = 1;
+    private static final int RESPONSE_TYPE_WRITER = 2;
+    private int responseType = RESPONSE_TYPE_NONE;
 
     private Locale locale;
 
@@ -263,10 +267,15 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public ServletOutputStreamImpl getOutputStream() {
-        if (writer != null) {
-            reset();
+        if (responseType == RESPONSE_TYPE_WRITER) {
             throw new IllegalStateException("getWriter has already been called.");
         }
+        responseType = RESPONSE_TYPE_STREAM;
+        createOutputStream();
+        return servletOutputStream;
+    }
+
+    private void createOutputStream() {
         if (servletOutputStream == null) {
             byte[] buffer = null;
             if (bufferSize == -1) {
@@ -276,19 +285,19 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             }
             servletOutputStream = new ServletOutputStreamImpl(response.getOutputStream(), buffer);
         }
-        return servletOutputStream;
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
+        if (responseType == RESPONSE_TYPE_STREAM) {
+            throw new IllegalStateException("getOutputStream has already been called.");
+        }
+        responseType = RESPONSE_TYPE_WRITER;
         if (writer != null) {
             return writer;
         }
-        //if the getOutputStream method has already been called for this response object
-        if (servletOutputStream != null && servletOutputStream.getWritten() > 0) {
-            throw new IllegalStateException("getOutputStream has already been called.");
-        }
-        writer = new PrintWriter(new ServletPrintWriter(getOutputStream(), getCharacterEncoding()));
+        createOutputStream();
+        writer = new PrintWriter(new ServletPrintWriter(servletOutputStream, getCharacterEncoding()));
         return writer;
     }
 
@@ -357,6 +366,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         setCharacterEncoding(null);
         response.setHttpStatus(HttpStatus.OK);
         writer = null;
+        responseType = RESPONSE_TYPE_NONE;
         if (servletOutputStream != null) {
             servletOutputStream.resetBuffer();
         }

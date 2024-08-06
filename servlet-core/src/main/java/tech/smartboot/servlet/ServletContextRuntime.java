@@ -23,6 +23,7 @@ import tech.smartboot.servlet.impl.FilterConfigImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.impl.ServletContextWrapperListener;
 import tech.smartboot.servlet.plugins.Plugin;
+import tech.smartboot.servlet.plugins.security.SecurityProviderImpl;
 import tech.smartboot.servlet.provider.*;
 import tech.smartboot.servlet.sandbox.SandBox;
 
@@ -71,6 +72,7 @@ public class ServletContextRuntime {
     private VendorProvider vendorProvider = SandBox.INSTANCE.getVendorProvider();
     private AsyncContextProvider asyncContextProvider = SandBox.INSTANCE.getAsyncContextProvider();
     private FaviconProvider faviconProvider = SandBox.INSTANCE.getFaviconProvider();
+    private SecurityProvider securityProvider = new SecurityProviderImpl();
     /**
      * 关联至本运行环境的插件集合
      */
@@ -326,6 +328,14 @@ public class ServletContextRuntime {
 
     public void setFaviconProvider(FaviconProvider faviconProvider) {
         this.faviconProvider = faviconProvider;
+    }
+
+    public SecurityProvider getSecurityProvider() {
+        return securityProvider;
+    }
+
+    public void setSecurityProvider(SecurityProvider securityProvider) {
+        this.securityProvider = securityProvider;
     }
 
     public String getContextPath() {

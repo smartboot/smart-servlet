@@ -13,6 +13,7 @@ package tech.smartboot.servlet;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.annotation.HandlesTypes;
+import jakarta.servlet.annotation.ServletSecurity;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.annotation.WebListener;
@@ -274,6 +275,10 @@ public class AnnotationsLoader {
                     for (String url : webServlet.value()) {
                         servletInfo.addMapping(url);
                     }
+                    ServletSecurity servletSecurity = clazz.getAnnotation(ServletSecurity.class);
+//                    if (servletSecurity != null) {
+//                        servletSecurity.value()
+//                    }
                     servlets.put(name, servletInfo);
                 }
             }

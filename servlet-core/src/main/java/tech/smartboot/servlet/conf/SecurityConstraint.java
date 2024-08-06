@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SecurityConstraint {
-    private final List<String> resourceNames = new ArrayList<>();
+    //    private final List<String> resourceNames = new ArrayList<>();
     private final List<String> urlPatterns = new ArrayList<>();
     private final List<String> httpMethods = new ArrayList<>();
 
@@ -27,10 +27,6 @@ public class SecurityConstraint {
 
     public List<String> getHttpMethods() {
         return httpMethods;
-    }
-
-    public List<String> getResourceNames() {
-        return resourceNames;
     }
 
     public List<String> getRoleNames() {

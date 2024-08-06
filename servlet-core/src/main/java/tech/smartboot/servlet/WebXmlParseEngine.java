@@ -272,7 +272,7 @@ class WebXmlParseEngine {
 //            Map<String, List<String>> data = getNodeValues(webResourceCollection, Arrays.asList("web-resource-name", "url-pattern", "http-method"));
             securityConstraint.getHttpMethods().addAll(getNodeValues(webResourceCollection, "http-method"));
             securityConstraint.getUrlPatterns().addAll(getNodeValues(webResourceCollection, "url-pattern"));
-            securityConstraint.getResourceNames().addAll(getNodeValues(webResourceCollection, "web-resource-name"));
+//            securityConstraint.getResourceNames().addAll(getNodeValues(webResourceCollection, "web-resource-name"));
 
 
             Node authConstraint = getChildNode(node, "auth-constraint");

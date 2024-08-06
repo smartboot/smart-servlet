@@ -150,7 +150,7 @@ public class Container {
             throw new IllegalArgumentException("contextPath: " + runtime.getContextPath() + " is already exists!");
         }
         HandlerPipeline pipeline = new HandlerPipeline();
-        pipeline.next(new ServletRequestListenerHandler()).next(new ServletMatchHandler()).next(new FilterMatchHandler()).next(new ServletServiceHandler());
+        pipeline.next(new ServletRequestListenerHandler()).next(new ServletMatchHandler()).next(new FilterMatchHandler()).next(new SecurityHandler()).next(new ServletServiceHandler());
         runtime.getServletContext().setPipeline(pipeline);
         runtime.setPlugins(plugins);
         runtime.setContainerRuntime(this);
@@ -373,6 +373,8 @@ public class Container {
             });
             deploymentInfo.setWelcomeFiles(welcomeFiles);
         }
+
+        servletRuntime.getSecurityProvider().init(webAppInfo.getSecurityConstraints());
         return servletRuntime;
     }
 

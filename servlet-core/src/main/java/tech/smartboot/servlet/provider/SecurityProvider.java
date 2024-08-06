@@ -10,13 +10,17 @@
 
 package tech.smartboot.servlet.provider;
 
-import tech.smartboot.servlet.impl.HttpServletRequestImpl;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletResponse;
+import tech.smartboot.servlet.conf.SecurityConstraint;
+import tech.smartboot.servlet.impl.HttpServletRequestImpl;
+
 import java.io.IOException;
+import java.util.List;
 
 public interface SecurityProvider {
+    void init(List<SecurityConstraint> constraints);
+
     public void login(String username, String password, HttpServletRequestImpl httpServletRequest) throws ServletException;
 
     public boolean authenticate(HttpServletRequestImpl httpServletRequest, HttpServletResponse response) throws IOException, ServletException;
