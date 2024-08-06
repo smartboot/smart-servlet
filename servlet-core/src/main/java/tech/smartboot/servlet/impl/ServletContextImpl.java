@@ -109,12 +109,12 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public int getMajorVersion() {
-        return 5;
+        return 6;
     }
 
     @Override
     public int getMinorVersion() {
-        return 0;
+        return 1;
     }
 
     @Override
