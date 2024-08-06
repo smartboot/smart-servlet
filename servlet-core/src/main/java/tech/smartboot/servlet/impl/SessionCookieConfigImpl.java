@@ -14,7 +14,9 @@ import jakarta.servlet.SessionCookieConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.provider.SessionProvider;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author 三刀
@@ -29,6 +31,7 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
     private boolean httpOnly;
     private String comment;
     private final ServletContextRuntime servletContextRuntime;
+    private final Map<String, String> attributes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public SessionCookieConfigImpl(ServletContextRuntime servletContextRuntime) {
         this.servletContextRuntime = servletContextRuntime;
@@ -114,17 +117,18 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
 
     @Override
     public void setAttribute(String name, String value) {
-
+        check();
+        attributes.put(name, value);
     }
 
     @Override
     public String getAttribute(String name) {
-        return "";
+        return attributes.get(name);
     }
 
     @Override
     public Map<String, String> getAttributes() {
-        return Map.of();
+        return Collections.unmodifiableMap(attributes);
     }
 
     @Override
