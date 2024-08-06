@@ -186,12 +186,14 @@ public class ServletContextImpl implements ServletContext {
         if (!path.startsWith("/")) {
             throw new MalformedURLException();
         }
-
-        URL pathUrl = new URL(deploymentInfo.getContextUrl(), path.substring(1));
+        URL pathUrl = null;
+        if (deploymentInfo.getContextUrl() != null) {
+            pathUrl = new URL(deploymentInfo.getContextUrl(), path.substring(1));
+        }
         //todo 判断文件是否存在
         URL url = null;
         try {
-            if (new File(pathUrl.toURI()).exists()) {
+            if (pathUrl != null && new File(pathUrl.toURI()).exists()) {
                 url = pathUrl;
             } else {
                 url = getClassLoader().getResource(path);

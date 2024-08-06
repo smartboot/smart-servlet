@@ -16,13 +16,23 @@ import jakarta.servlet.ServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.http.server.*;
+import org.smartboot.http.server.HttpRequest;
+import org.smartboot.http.server.HttpResponse;
+import org.smartboot.http.server.HttpServerConfiguration;
+import org.smartboot.http.server.WebSocketRequest;
+import org.smartboot.http.server.WebSocketResponse;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
-import tech.smartboot.servlet.handler.*;
+import tech.smartboot.servlet.handler.FilterMatchHandler;
+import tech.smartboot.servlet.handler.HandlerContext;
+import tech.smartboot.servlet.handler.HandlerPipeline;
+import tech.smartboot.servlet.handler.SecurityHandler;
+import tech.smartboot.servlet.handler.ServletMatchHandler;
+import tech.smartboot.servlet.handler.ServletRequestListenerHandler;
+import tech.smartboot.servlet.handler.ServletServiceHandler;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.HttpServletResponseImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
@@ -36,7 +46,11 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -89,23 +103,28 @@ public class Container {
         this.configuration = configuration;
         configuration.serverName("smart-servlet");
         System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
-        HandlerPipeline pipeline = new HandlerPipeline();
-        pipeline.next(new ServletServiceHandler() {
-            final byte[] line = "欢迎使用 smart-servlet！".getBytes(StandardCharsets.UTF_8);
 
-            @Override
-            public void handleRequest(HandlerContext handlerContext) {
-                try {
-                    ServletResponse response = handlerContext.getResponse();
-                    response.setContentLength(line.length);
-                    response.getOutputStream().write(line);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+        //设置默认
+        if (runtimes.stream().noneMatch(runtime -> "/".equals(runtime.getContextPath()))) {
+            ServletContextRuntime defaultRuntime = new ServletContextRuntime(null, Thread.currentThread().getContextClassLoader(), "/");
+            HandlerPipeline pipeline = new HandlerPipeline();
+            pipeline.next(new ServletServiceHandler() {
+                final byte[] line = "欢迎使用 smart-servlet！".getBytes(StandardCharsets.UTF_8);
+
+                @Override
+                public void handleRequest(HandlerContext handlerContext) {
+                    try {
+                        ServletResponse response = handlerContext.getResponse();
+                        response.setContentLength(line.length);
+                        response.getOutputStream().write(line);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-            }
-        });
-        defaultRuntime.getServletContext().setPipeline(pipeline);
-        defaultRuntime.start();
+            });
+            defaultRuntime.getServletContext().setPipeline(pipeline);
+            addRuntime(defaultRuntime);
+        }
         //扫描插件
         loadAndInstallPlugins();
 
@@ -260,7 +279,6 @@ public class Container {
         return configuration;
     }
 
-    private final ServletContextRuntime defaultRuntime = new ServletContextRuntime(null, Thread.currentThread().getContextClassLoader(), "/");
 
     public ServletContextRuntime matchRuntime(String requestUri) {
         for (ServletContextRuntime matchRuntime : runtimes) {
@@ -269,7 +287,7 @@ public class Container {
                 return matchRuntime;
             }
         }
-        return defaultRuntime;
+        throw new IllegalArgumentException();
     }
 
 
