@@ -47,6 +47,8 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     private static final int RESPONSE_TYPE_WRITER = 2;
     private int responseType = RESPONSE_TYPE_NONE;
 
+    private boolean charsetFlag = false;
+
     private Locale locale;
 
     public HttpServletResponseImpl(HttpServletRequestImpl request, HttpResponse response) {
@@ -213,11 +215,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (charset != null) {
             return charset;
         }
-        String charset = request.getServletContext().getResponseCharacterEncoding();
+        charset = request.getServletContext().getResponseCharacterEncoding();
         if (charset == null) {
             charset = StandardCharsets.ISO_8859_1.name();
         }
-        setCharacterEncoding(charset);
+        if (contentType != null) {
+            response.setContentType(getContentType());
+        }
         return charset;
     }
 
@@ -227,6 +231,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             return;
         }
         this.charset = charset;
+        this.charsetFlag = charset != null;
         if (contentType != null) {
             response.setContentType(getContentType());
         }
@@ -324,8 +329,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     public void flushBuffer() throws IOException {
         if (writer != null) {
             writer.flush();
+        } else if (servletOutputStream != null) {
+            servletOutputStream.flush();
         } else {
-            getOutputStream().flush();
+            createOutputStream();
+            servletOutputStream.flush();
         }
     }
 
@@ -379,9 +387,15 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             return;
         }
         this.locale = loc;
-        String encoding = request.getServletContext().getDeploymentInfo().getLocaleEncodingMappings().get(loc.getLanguage());
-        if (StringUtils.isNotBlank(encoding)) {
-            setCharacterEncoding(encoding);
+        String encoding = request.getServletContext().getDeploymentInfo().getLocaleEncodingMappings().get(loc.toString());
+        if (encoding == null) {
+            encoding = request.getServletContext().getDeploymentInfo().getLocaleEncodingMappings().get(loc.getLanguage());
+        }
+        if (!charsetFlag && StringUtils.isNotBlank(encoding)) {
+            charset = encoding;
+            if (contentType != null) {
+                response.setContentType(getContentType());
+            }
         }
         setHeader(HeaderNameEnum.CONTENT_LANGUAGE.getName(), loc.getLanguage() + "-" + loc.getCountry());
     }
