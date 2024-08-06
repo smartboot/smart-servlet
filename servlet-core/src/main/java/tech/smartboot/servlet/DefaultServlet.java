@@ -11,6 +11,13 @@
 package tech.smartboot.servlet;
 
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpMethodEnum;
 import org.smartboot.http.common.enums.HttpStatus;
@@ -21,13 +28,6 @@ import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -212,7 +212,7 @@ class DefaultServlet extends HttpServlet {
 //        }
     }
 
-    private String matchForwardWelcome(HttpServletRequest request) throws MalformedURLException, URISyntaxException {
+    private String matchForwardWelcome(HttpServletRequest request) throws MalformedURLException {
         String requestUri = request.getRequestURI();
         ServletContext servletContext = request.getServletContext();
         if (requestUri.endsWith("/")) {
@@ -220,16 +220,13 @@ class DefaultServlet extends HttpServlet {
                 String uri = requestUri.substring(request.getContextPath().length());
                 URL welcomeUrl = servletContext.getResource(uri + file);
                 if (welcomeUrl != null) {
-                    return file;
+                    return uri + file;
                 }
             }
             return null;
         }
         // 例如: /abc/d.html ,由于d.html不存在而走到该分支
-        return requestUri.indexOf(".") > 0 ? null : requestUri + "/";
+        return requestUri.indexOf(".") > 0 ? null : requestUri.substring(request.getContextPath().length()) + "/";
     }
 
-    private boolean isFile(URL url) throws URISyntaxException {
-        return url != null && new File(url.toURI()).isFile();
-    }
 }
