@@ -33,7 +33,7 @@ public class WebAppInfo {
     /**
      * web.xml中的Filter配置
      */
-    private final Map<String, FilterInfo> filters = new HashMap<>();
+    private final List<FilterInfo> filters = new ArrayList<>();
     private final List<FilterMappingInfo> filterMappingInfos = new ArrayList<>();
 
 
@@ -51,7 +51,7 @@ public class WebAppInfo {
     private final Map<String, String> securityRoles = new HashMap<>();
 
     private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
-    private final List<String> absoluteOrdering = new ArrayList<>();
+    private List<String> absoluteOrdering;
     private boolean absoluteOrderingOther = false;
 
     private int sessionTimeout = 0;
@@ -61,7 +61,7 @@ public class WebAppInfo {
     }
 
     public void addFilter(FilterInfo filterInfo) {
-        filters.put(filterInfo.getFilterName(), filterInfo);
+        filters.add(filterInfo);
     }
 
 
@@ -93,7 +93,7 @@ public class WebAppInfo {
         return servlets;
     }
 
-    public Map<String, FilterInfo> getFilters() {
+    public List<FilterInfo> getFilters() {
         return filters;
     }
 
@@ -151,6 +151,10 @@ public class WebAppInfo {
 
     public List<String> getAbsoluteOrdering() {
         return absoluteOrdering;
+    }
+
+    public void setAbsoluteOrdering(List<String> absoluteOrdering) {
+        this.absoluteOrdering = absoluteOrdering;
     }
 
     public boolean isMetadataComplete() {

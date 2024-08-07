@@ -10,6 +10,8 @@
 
 package tech.smartboot.servlet.conf;
 
+import java.util.Optional;
+
 public class WebFragmentInfo extends WebAppInfo {
     private String name;
 
@@ -34,7 +36,21 @@ public class WebFragmentInfo extends WebAppInfo {
                 });
             }
         });
-        getFilters().values().stream().filter(filterInfo -> !webAppInfo.getFilters().containsKey(filterInfo.getFilterName())).forEach(webAppInfo::addFilter);
+        getFilters().stream().filter(filterInfo -> webAppInfo.getFilters().stream().noneMatch(mainFilter -> filterInfo.getFilterName().equals(mainFilter.getFilterName()))).forEach(webAppInfo::addFilter);
+        getFilters().forEach(filterInfo -> {
+            Optional<FilterInfo> optional = webAppInfo.getFilters().stream().filter(mainFilter -> filterInfo.getFilterName().equals(mainFilter.getFilterName())).findFirst();
+            if (optional.isPresent()) {
+                filterInfo.getInitParams().forEach((key, val) -> {
+                    if (!optional.get().getInitParams().containsKey(key)) {
+                        optional.get().getInitParams().put(key, val);
+                    }
+                });
+            } else {
+                webAppInfo.addFilter(filterInfo);
+            }
+        });
+        webAppInfo.getFilterMappingInfos().addAll(getFilterMappingInfos());
         webAppInfo.getListeners().addAll(getListeners());
+        webAppInfo.getWelcomeFileList().addAll(getWelcomeFileList());
     }
 }

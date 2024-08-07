@@ -57,7 +57,8 @@ class WebXmlParseEngine {
 
     public void loadFragment(WebAppInfo webAppInfo, InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
         WebFragmentInfo fragment = new WebFragmentInfo();
-        commonParse(fragment, contextFile);
+        Element element = commonParse(fragment, contextFile);
+        fragment.setName(parseFragmentName(element));
         fragment.mergeTo(webAppInfo);
     }
 
@@ -347,8 +348,7 @@ class WebXmlParseEngine {
             return;
         }
         List<String> names = getNodeValues(node, "name");
-        webAppInfo.getAbsoluteOrdering().addAll(names);
-
+        webAppInfo.setAbsoluteOrdering(names);
         var othersNode = getChildNode(node, "others");
         if (othersNode != null) {
             webAppInfo.setAbsoluteOrderingOther(true);

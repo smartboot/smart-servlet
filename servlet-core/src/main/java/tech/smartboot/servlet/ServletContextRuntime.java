@@ -10,7 +10,12 @@
 
 package tech.smartboot.servlet;
 
-import jakarta.servlet.*;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebListener;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -24,7 +29,13 @@ import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.impl.ServletContextWrapperListener;
 import tech.smartboot.servlet.plugins.Plugin;
 import tech.smartboot.servlet.plugins.security.SecurityProviderImpl;
-import tech.smartboot.servlet.provider.*;
+import tech.smartboot.servlet.provider.AsyncContextProvider;
+import tech.smartboot.servlet.provider.DispatcherProvider;
+import tech.smartboot.servlet.provider.FaviconProvider;
+import tech.smartboot.servlet.provider.SecurityProvider;
+import tech.smartboot.servlet.provider.SessionProvider;
+import tech.smartboot.servlet.provider.VendorProvider;
+import tech.smartboot.servlet.provider.WebsocketProvider;
 import tech.smartboot.servlet.sandbox.SandBox;
 
 import java.io.File;
@@ -259,7 +270,7 @@ public class ServletContextRuntime {
      * @param deploymentInfo 部署信息
      */
     private void initFilter(DeploymentInfo deploymentInfo) throws Exception {
-        for (FilterInfo filterInfo : deploymentInfo.getFilters().values()) {
+        for (FilterInfo filterInfo : deploymentInfo.getFilters()) {
             FilterConfig filterConfig = new FilterConfigImpl(filterInfo, servletContext);
             Filter filter;
             if (filterInfo.isDynamic()) {

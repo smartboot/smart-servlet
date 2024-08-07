@@ -10,7 +10,11 @@
 
 package tech.smartboot.servlet.handler;
 
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.smartboot.http.common.utils.StringUtils;
@@ -19,7 +23,11 @@ import tech.smartboot.servlet.enums.FilterMappingType;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -66,8 +74,8 @@ public class FilterMatchHandler extends Handler {
         String contextPath = handlerContext.getServletContext().getContextPath();
         HttpServletRequest request = (HttpServletRequest) handlerContext.getRequest();
         List<FilterInfo> filters = new ArrayList<>();
-        Map<String, FilterInfo> allFilters = handlerContext.getServletContext().getDeploymentInfo().getFilters();
-        allFilters.values().forEach(filter -> {
+        List<FilterInfo> allFilters = handlerContext.getServletContext().getDeploymentInfo().getFilters();
+        allFilters.forEach(filter -> {
             filter.getMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType())).forEach(mappingInfo -> {
                 if (mappingInfo.getMappingType() == FilterMappingType.URL) {
                     if (PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), mappingInfo.getServletUrlMapping()) > -1) {

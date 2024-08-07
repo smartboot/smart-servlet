@@ -44,7 +44,7 @@ public class DeploymentInfo {
 
     private final Map<Integer, ErrorPageInfo> errorStatusPages = new HashMap<>();
     private final Map<String, ErrorPageInfo> errorPages = new HashMap<>();
-    private final Map<String, FilterInfo> filters = new HashMap<>();
+    private final List<FilterInfo> filters = new ArrayList<>();
     private final Map<String, String> initParameters = new HashMap<>();
     private List<ServletContainerInitializerInfo> servletContainerInitializers = new ArrayList<>();
     private List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
@@ -145,7 +145,7 @@ public class DeploymentInfo {
     }
 
     public void addFilter(final FilterInfo filter) {
-        filters.put(filter.getFilterName(), filter);
+        filters.add(filter);
     }
 
     public void amazing() {
@@ -231,7 +231,7 @@ public class DeploymentInfo {
         return requestAttributeListeners;
     }
 
-    public Map<String, FilterInfo> getFilters() {
+    public List<FilterInfo> getFilters() {
         return filters;
     }
 

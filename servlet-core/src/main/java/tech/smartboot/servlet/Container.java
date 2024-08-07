@@ -15,7 +15,6 @@ import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.utils.CollectionUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
@@ -55,6 +54,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -327,7 +327,7 @@ public class Container {
 
 
         //加载web-fragment.xml
-        if (CollectionUtils.isNotEmpty(webAppInfo.getAbsoluteOrdering())) {
+        if (webAppInfo.getAbsoluteOrdering() != null) {
             Map<String, URL> fragmentMap = new HashMap<>();
             Enumeration<URL> fragments = urlClassLoader.getResources("META-INF/web-fragment.xml");
             while (fragments.hasMoreElements()) {
@@ -339,6 +339,9 @@ public class Container {
             }
             for (var fragment : webAppInfo.getAbsoluteOrdering()) {
                 URL url = fragmentMap.get(fragment);
+                if (url == null) {
+                    continue;
+                }
                 try (InputStream inputStream = url.openStream()) {
                     engine.loadFragment(webAppInfo, inputStream);
                 }
@@ -357,16 +360,16 @@ public class Container {
             }
             list.sort((o1, o2) -> {
                 if (o1.getBefore() != null && o1.getBefore().contains(o2.getName())) {
-                    return 1;
+                    return -1;
                 }
                 if (o1.isBeforeOthers()) {
-                    return 1;
+                    return -1;
                 }
                 if (o1.isAfterOthers()) {
-                    return -1;
+                    return 1;
                 }
                 if (o1.getAfter() != null && o1.getAfter().contains(o2.getName())) {
-                    return -1;
+                    return 1;
                 }
                 return 0;
             });
@@ -378,9 +381,9 @@ public class Container {
         }
 
         webAppInfo.getFilterMappingInfos().forEach(filterMappingInfo -> {
-            FilterInfo filterInfo = webAppInfo.getFilters().get(filterMappingInfo.getFilterName());
-            if (filterInfo != null) {
-                filterInfo.addMapping(filterMappingInfo);
+            Optional<FilterInfo> optional = webAppInfo.getFilters().stream().filter(filter -> filterMappingInfo.getFilterName().equals(filter.getFilterName())).findFirst();
+            if (optional.isPresent()) {
+                optional.get().addMapping(filterMappingInfo);
             } else {
                 LOGGER.error("invalid filterMapping:{}", filterMappingInfo);
             }
@@ -398,7 +401,7 @@ public class Container {
         webAppInfo.getErrorPages().forEach(deploymentInfo::addErrorPage);
 
         //register Filter
-        for (FilterInfo filterInfo : webAppInfo.getFilters().values()) {
+        for (FilterInfo filterInfo : webAppInfo.getFilters()) {
             deploymentInfo.addFilter(filterInfo);
         }
         //register servletContext into deploymentInfo
@@ -416,7 +419,7 @@ public class Container {
 
         //如果 web.xml 描述符中的 metadata-complete 元素设置为 true，
         // 将不会处理在 class 文件和绑定在 jar 包中的 web-fragments 中的注解
-        if (!webAppInfo.isMetadataComplete()) {
+        if (!webAppInfo.isMetadataComplete() && webAppInfo.getAbsoluteOrdering() == null) {
             deploymentInfo.setHandlesTypesLoader(new AnnotationsLoader(deploymentInfo.getClassLoader()));
         }
 

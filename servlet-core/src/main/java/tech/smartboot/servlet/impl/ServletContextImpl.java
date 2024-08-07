@@ -54,6 +54,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -444,7 +445,7 @@ public class ServletContextImpl implements ServletContext {
         if (StringUtils.isBlank(filterName)) {
             throw new IllegalArgumentException("filterName is null or an empty String");
         }
-        if (deploymentInfo.getFilters().containsKey(filterName)) {
+        if (deploymentInfo.getFilters().stream().anyMatch(filterInfo -> filterName.equals(filterInfo.getFilterName()))) {
             return null;
         }
         FilterInfo filterInfo = new FilterInfo();
@@ -479,15 +480,15 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public FilterRegistration getFilterRegistration(String filterName) {
         checkContextInitializeState();
-        FilterInfo filterInfo = deploymentInfo.getFilters().get(filterName);
-        return new ApplicationFilterRegistration(filterInfo);
+        Optional<FilterInfo> optional = deploymentInfo.getFilters().stream().filter(filter -> filterName.equals(filter.getFilterName())).findFirst();
+        return optional.map(ApplicationFilterRegistration::new).orElse(null);
     }
 
     @Override
     public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
         checkContextInitializeState();
         Map<String, ApplicationFilterRegistration> filterMap = new HashMap<>();
-        deploymentInfo.getFilters().forEach((filterName, filterInfo) -> filterMap.put(filterName, new ApplicationFilterRegistration(filterInfo)));
+        deploymentInfo.getFilters().forEach(filterInfo -> filterMap.put(filterInfo.getFilterName(), new ApplicationFilterRegistration(filterInfo)));
         return filterMap;
     }
 
