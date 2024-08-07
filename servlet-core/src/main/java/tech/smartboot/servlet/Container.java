@@ -25,6 +25,7 @@ import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
+import tech.smartboot.servlet.conf.WebFragmentInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.handler.FilterMatchHandler;
 import tech.smartboot.servlet.handler.HandlerContext;
@@ -49,7 +50,9 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -323,11 +326,27 @@ public class Container {
 
         //加载web-fragment.xml
         Enumeration<URL> fragments = urlClassLoader.getResources("META-INF/web-fragment.xml");
+        Map<String, WebFragmentInfo> fragmentInfos = new HashMap<>();
         while (fragments.hasMoreElements()) {
             try (InputStream inputStream = fragments.nextElement().openStream()) {
-                engine.load(webAppInfo, inputStream);
+                WebFragmentInfo webFragmentInfo = new WebFragmentInfo();
+                engine.loadFragment(webFragmentInfo, inputStream);
+                fragmentInfos.put(webFragmentInfo.getName(), webFragmentInfo);
             }
         }
+        if (webAppInfo.getAbsoluteOrdering().isEmpty()) {
+            fragmentInfos.values().forEach(webFragmentInfo -> webFragmentInfo.mergeTo(webAppInfo));
+        } else {
+            webAppInfo.getAbsoluteOrdering().forEach(name -> {
+                WebFragmentInfo webFragmentInfo = fragmentInfos.get(name);
+                if (webFragmentInfo == null) {
+                    LOGGER.error("none web fragment:{}", name);
+                } else {
+                    webFragmentInfo.mergeTo(webAppInfo);
+                }
+            });
+        }
+
 
         //new runtime object
         servletRuntime.setDisplayName(webAppInfo.getDisplayName());
@@ -357,7 +376,12 @@ public class Container {
 
         deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 
-        deploymentInfo.setHandlesTypesLoader(new AnnotationsLoader(deploymentInfo.getClassLoader()));
+        //如果 web.xml 描述符中的 metadata-complete 元素设置为 true，
+        // 将不会处理在 class 文件和绑定在 jar 包中的 web-fragments 中的注解
+        if (!webAppInfo.isMetadataComplete()) {
+            deploymentInfo.setHandlesTypesLoader(new AnnotationsLoader(deploymentInfo.getClassLoader()));
+        }
+
         for (ServletContainerInitializer containerInitializer : ServiceLoader.load(ServletContainerInitializer.class, deploymentInfo.getClassLoader())) {
             LOGGER.info("load ServletContainerInitializer:" + containerInitializer.getClass().getName());
             deploymentInfo.addServletContainerInitializer(containerInitializer);

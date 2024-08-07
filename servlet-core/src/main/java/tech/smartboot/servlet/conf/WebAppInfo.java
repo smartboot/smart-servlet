@@ -24,7 +24,7 @@ import java.util.Map;
 public class WebAppInfo {
     private String displayName;
     private String description;
-
+    private boolean metadataComplete;
     /**
      * web.xml中的Servlet配置
      */
@@ -50,6 +50,7 @@ public class WebAppInfo {
     private final Map<String, String> securityRoles = new HashMap<>();
 
     private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
+    private final List<String> absoluteOrdering = new ArrayList<>();
 
     private int sessionTimeout = 0;
 
@@ -144,5 +145,17 @@ public class WebAppInfo {
 
     public List<SecurityConstraint> getSecurityConstraints() {
         return securityConstraints;
+    }
+
+    public List<String> getAbsoluteOrdering() {
+        return absoluteOrdering;
+    }
+
+    public boolean isMetadataComplete() {
+        return metadataComplete;
+    }
+
+    public void setMetadataComplete(boolean metadataComplete) {
+        this.metadataComplete = metadataComplete;
     }
 }

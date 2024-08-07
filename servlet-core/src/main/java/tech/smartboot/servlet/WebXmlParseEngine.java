@@ -19,7 +19,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import tech.smartboot.servlet.conf.*;
+import tech.smartboot.servlet.conf.ErrorPageInfo;
+import tech.smartboot.servlet.conf.FilterInfo;
+import tech.smartboot.servlet.conf.FilterMappingInfo;
+import tech.smartboot.servlet.conf.SecurityConstraint;
+import tech.smartboot.servlet.conf.ServletInfo;
+import tech.smartboot.servlet.conf.WebAppInfo;
+import tech.smartboot.servlet.conf.WebFragmentInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
 import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.PathMatcherUtil;
@@ -29,7 +35,16 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * 解析web.xml文件
@@ -39,13 +54,22 @@ import java.util.*;
  */
 class WebXmlParseEngine {
 
-    public void load(WebAppInfo webAppInfo, InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
+    public void loadFragment(WebFragmentInfo webFragmentInfo, InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
+        Element parentElement = commonParse(webFragmentInfo, contextFile);
+        parseFragmentName(webFragmentInfo, parentElement);
+    }
 
+    public void load(WebAppInfo webAppInfo, InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
+        commonParse(webAppInfo, contextFile);
+    }
+
+    private Element commonParse(WebAppInfo webAppInfo, InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(contextFile);
         Element parentElement = document.getDocumentElement();
 
+        webAppInfo.setMetadataComplete("true".equals(parentElement.getAttribute("metadata-complete")));
         parseBasicInfo(webAppInfo, parentElement);
 
         parseServlet(webAppInfo, parentElement);
@@ -71,6 +95,9 @@ class WebXmlParseEngine {
         parseSecurityRole(webAppInfo, parentElement);
 
         parseSecurityConstraint(webAppInfo, parentElement);
+
+        parseAbsoluteOrdering(webAppInfo, parentElement);
+        return parentElement;
     }
 
     private void parseBasicInfo(WebAppInfo webAppInfo, Element parentElement) {
@@ -80,6 +107,15 @@ class WebXmlParseEngine {
         }
         if (map.containsKey("description")) {
             webAppInfo.setDescription(map.get("description"));
+        }
+    }
+
+    private void parseFragmentName(WebFragmentInfo webAppInfo, Element parentElement) {
+        Map<String, String> map = getNodeValue(parentElement, List.of("name"));
+        if (map.containsKey("name")) {
+            webAppInfo.setName(map.get("name"));
+        } else {
+            throw new IllegalStateException();
         }
     }
 
@@ -262,6 +298,15 @@ class WebXmlParseEngine {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("role-name", "description"));
             webAppInfo.getSecurityRoles().put(nodeData.get("role-name"), nodeData.get("description"));
         }
+    }
+
+    private void parseAbsoluteOrdering(WebAppInfo webAppInfo, Element parentElement) {
+        Node node = getChildNode(parentElement, "absolute-ordering");
+        if (node == null) {
+            return;
+        }
+        List<String> names = getNodeValues(node, "name");
+        webAppInfo.getAbsoluteOrdering().addAll(names);
     }
 
     private void parseSecurityConstraint(WebAppInfo webAppInfo, Element parentElement) {
