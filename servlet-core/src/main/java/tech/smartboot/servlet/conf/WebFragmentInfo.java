@@ -52,5 +52,6 @@ public class WebFragmentInfo extends WebAppInfo {
         webAppInfo.getFilterMappingInfos().addAll(getFilterMappingInfos());
         webAppInfo.getListeners().addAll(getListeners());
         webAppInfo.getWelcomeFileList().addAll(getWelcomeFileList());
+        webAppInfo.getErrorPages().addAll(getErrorPages());
     }
 }
