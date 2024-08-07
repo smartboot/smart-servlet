@@ -53,5 +53,15 @@ public class WebFragmentInfo extends WebAppInfo {
         webAppInfo.getListeners().addAll(getListeners());
         webAppInfo.getWelcomeFileList().addAll(getWelcomeFileList());
         webAppInfo.getErrorPages().addAll(getErrorPages());
+        getMimeMappings().forEach((key, val) -> {
+            if (!webAppInfo.getMimeMappings().containsKey(val)) {
+                webAppInfo.getMimeMappings().put(key, val);
+            }
+        });
+        getContextParams().forEach((key, val) -> {
+            if (!webAppInfo.getContextParams().containsKey(val)) {
+                webAppInfo.getContextParams().put(key, val);
+            }
+        });
     }
 }
