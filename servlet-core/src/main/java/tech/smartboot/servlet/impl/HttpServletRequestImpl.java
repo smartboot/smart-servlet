@@ -10,8 +10,23 @@
 
 package tech.smartboot.servlet.impl;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletRequestAttributeEvent;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletMapping;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -32,12 +47,23 @@ import tech.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
 import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.DateUtil;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -374,7 +400,13 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                 matchValue = "";
                 break;
             case PATH:
-                matchValue = getServletPath().substring(servletMappingInfo.getMapping().length() - 1);
+                String servletPath = getServletPath();
+                if (servletMappingInfo.getMapping().length() >= servletPath.length() + 2) {
+                    matchValue = "";
+                } else {
+                    matchValue = getServletPath().substring(servletMappingInfo.getMapping().length() - 1);
+                }
+
                 if (matchValue.startsWith("/")) {
                     matchValue = matchValue.substring(1);
                 }
