@@ -28,8 +28,10 @@ import tech.smartboot.servlet.util.CollectionUtils;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -178,6 +180,8 @@ class HttpSessionImpl implements HttpSession {
         for (int i = sessionListeners.size() - 1; i >= 0; i--) {
             sessionListeners.get(i).sessionDestroyed(httpSessionEvent);
         }
+        Set<String> attr = new HashSet<>(attributes.keySet());
+        attr.forEach(this::removeAttribute);
         invalid = true;
         Cookie cookie = new Cookie(servletContext.getSessionCookieConfig().getName(), sessionId);
         cookie.setMaxAge(0);
