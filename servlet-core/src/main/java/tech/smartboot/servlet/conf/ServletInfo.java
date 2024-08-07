@@ -11,7 +11,6 @@
 package tech.smartboot.servlet.conf;
 
 import jakarta.servlet.MultipartConfigElement;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
@@ -83,11 +82,11 @@ public class ServletInfo {
                 @Override
                 protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
                     resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    req.setAttribute(RequestDispatcher.ERROR_EXCEPTION, e);
-                    req.setAttribute(RequestDispatcher.ERROR_MESSAGE, e.getMessage());
-                    req.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.INTERNAL_SERVER_ERROR.value());
+//                    req.setAttribute(RequestDispatcher.ERROR_EXCEPTION, e);
+//                    req.setAttribute(RequestDispatcher.ERROR_MESSAGE, e.getMessage());
+//                    req.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.INTERNAL_SERVER_ERROR.value());
                     if (finalLocation != null) {
-                        servletContext.getRuntime().getDispatcherProvider().error(servletContext, finalLocation, req, resp, e, servletName,e.getMessage());
+                        servletContext.getRuntime().getDispatcherProvider().error(servletContext, finalLocation, req, resp, e, servletName, e.getMessage());
 //                        req.getRequestDispatcher(finalLocation).forward(req, resp);
                     } else {
                         LOGGER.error("error location is null");

@@ -22,8 +22,19 @@ public class WebFragmentInfo extends WebAppInfo {
     }
 
     public void mergeTo(WebAppInfo webAppInfo) {
-        webAppInfo.getServlets().putAll(getServlets());
-        webAppInfo.getFilters().putAll(getFilters());
+        getServlets().values().forEach(servletInfo -> {
+            ServletInfo mainServletInfo = webAppInfo.getServlets().get(servletInfo.getServletName());
+            if (mainServletInfo == null) {
+                webAppInfo.addServlet(servletInfo);
+            } else {
+                servletInfo.getInitParams().forEach((key, val) -> {
+                    if (!mainServletInfo.getInitParams().containsKey(key)) {
+                        mainServletInfo.getInitParams().put(key, val);
+                    }
+                });
+            }
+        });
+        getFilters().values().stream().filter(filterInfo -> !webAppInfo.getFilters().containsKey(filterInfo.getFilterName())).forEach(webAppInfo::addFilter);
         webAppInfo.getListeners().addAll(getListeners());
     }
 }

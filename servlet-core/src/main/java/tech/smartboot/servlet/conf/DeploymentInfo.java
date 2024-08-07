@@ -135,7 +135,12 @@ public class DeploymentInfo {
     }
 
     public String getErrorPageLocation(Throwable exception) {
-        ErrorPageInfo errorPage = errorPages.get(exception.getClass().getName());
+        Class clazz = exception.getClass();
+        ErrorPageInfo errorPage = errorPages.get(clazz.getName());
+        while (errorPage == null && clazz.getSuperclass() != Object.class) {
+            clazz = clazz.getSuperclass();
+            errorPage = errorPages.get(clazz.getName());
+        }
         return errorPage == null ? null : errorPage.getLocation();
     }
 

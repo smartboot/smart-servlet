@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 import tech.smartboot.servlet.conf.ErrorPageInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
+import tech.smartboot.servlet.conf.OrderMeta;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
@@ -54,9 +55,30 @@ import java.util.Set;
  */
 class WebXmlParseEngine {
 
-    public void loadFragment(WebFragmentInfo webFragmentInfo, InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
-        Element parentElement = commonParse(webFragmentInfo, contextFile);
-        parseFragmentName(webFragmentInfo, parentElement);
+    public void loadFragment(WebAppInfo webAppInfo, InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
+        WebFragmentInfo fragment = new WebFragmentInfo();
+        commonParse(fragment, contextFile);
+        fragment.mergeTo(webAppInfo);
+    }
+
+    public String parseFragmentName(InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(contextFile);
+        Element parentElement = document.getDocumentElement();
+        return parseFragmentName(parentElement);
+    }
+
+    public OrderMeta parseFragmentRelativeOrdering(InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(contextFile);
+        Element parentElement = document.getDocumentElement();
+        OrderMeta orderMeta = new OrderMeta();
+        String name = parseFragmentName(parentElement);
+        orderMeta.setName(name);
+        parseOrdering(orderMeta, parentElement);
+        return orderMeta;
     }
 
     public void load(WebAppInfo webAppInfo, InputStream contextFile) throws ParserConfigurationException, IOException, SAXException {
@@ -110,12 +132,31 @@ class WebXmlParseEngine {
         }
     }
 
-    private void parseFragmentName(WebFragmentInfo webAppInfo, Element parentElement) {
+    private String parseFragmentName(Element parentElement) {
         Map<String, String> map = getNodeValue(parentElement, List.of("name"));
-        if (map.containsKey("name")) {
-            webAppInfo.setName(map.get("name"));
-        } else {
-            throw new IllegalStateException();
+        return map.containsKey("name") ? map.get("name") : "default_" + parentElement.hashCode();
+    }
+
+    private void parseOrdering(OrderMeta orderMeta, Element parentElement) {
+        Node ordering = getChildNode(parentElement, "ordering");
+        if (ordering == null) {
+            return;
+        }
+        Node before = getChildNode(ordering, "before");
+        if (before != null) {
+            orderMeta.setBefore(getNodeValues(before, "name"));
+            var othersNode = getChildNode(before, "others");
+            if (othersNode != null) {
+                orderMeta.setBeforeOthers(true);
+            }
+        }
+        Node after = getChildNode(ordering, "after");
+        if (after != null) {
+            orderMeta.setAfter(getNodeValues(after, "name"));
+            var othersNode = getChildNode(after, "others");
+            if (othersNode != null) {
+                orderMeta.setAfterOthers(true);
+            }
         }
     }
 
@@ -189,7 +230,7 @@ class WebXmlParseEngine {
                 dispatcher.forEach(dispatcherElement -> dispatcherTypes.add(DispatcherType.valueOf(StringUtils.trim(dispatcherElement.getFirstChild().getNodeValue()))));
             }
             FilterMappingInfo filterInfo = new FilterMappingInfo(filterName, StringUtils.isBlank(urlPattern) ? FilterMappingType.SERVLET : FilterMappingType.URL, servletName, StringUtils.isBlank(urlPattern) ? null : PathMatcherUtil.addMapping(urlPattern), dispatcherTypes);
-            webAppInfo.getFilters().get(filterName).addMapping(filterInfo);
+            webAppInfo.getFilterMappingInfos().add(filterInfo);
         }
     }
 
@@ -307,6 +348,11 @@ class WebXmlParseEngine {
         }
         List<String> names = getNodeValues(node, "name");
         webAppInfo.getAbsoluteOrdering().addAll(names);
+
+        var othersNode = getChildNode(node, "others");
+        if (othersNode != null) {
+            webAppInfo.setAbsoluteOrderingOther(true);
+        }
     }
 
     private void parseSecurityConstraint(WebAppInfo webAppInfo, Element parentElement) {
@@ -337,7 +383,9 @@ class WebXmlParseEngine {
         Map<String, String> paramMap = new HashMap<>();
         for (Node element : paramElementList) {
             Map<String, String> nodeMap = getNodeValue(element, Arrays.asList("param-name", "param-value"));
-            paramMap.put(nodeMap.get("param-name"), nodeMap.get("param-value"));
+            if (!paramMap.containsKey(nodeMap.get("param-name"))) {
+                paramMap.put(nodeMap.get("param-name"), nodeMap.get("param-value"));
+            }
         }
         return paramMap;
     }

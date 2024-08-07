@@ -15,6 +15,7 @@ import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.CollectionUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
@@ -23,6 +24,7 @@ import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
+import tech.smartboot.servlet.conf.OrderMeta;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
 import tech.smartboot.servlet.conf.WebFragmentInfo;
@@ -325,28 +327,64 @@ public class Container {
 
 
         //加载web-fragment.xml
-        Enumeration<URL> fragments = urlClassLoader.getResources("META-INF/web-fragment.xml");
-        Map<String, WebFragmentInfo> fragmentInfos = new HashMap<>();
-        while (fragments.hasMoreElements()) {
-            try (InputStream inputStream = fragments.nextElement().openStream()) {
-                WebFragmentInfo webFragmentInfo = new WebFragmentInfo();
-                engine.loadFragment(webFragmentInfo, inputStream);
-                fragmentInfos.put(webFragmentInfo.getName(), webFragmentInfo);
+        if (CollectionUtils.isNotEmpty(webAppInfo.getAbsoluteOrdering())) {
+            Map<String, URL> fragmentMap = new HashMap<>();
+            Enumeration<URL> fragments = urlClassLoader.getResources("META-INF/web-fragment.xml");
+            while (fragments.hasMoreElements()) {
+                URL url = fragments.nextElement();
+                try (InputStream inputStream = url.openStream()) {
+                    String name = engine.parseFragmentName(inputStream);
+                    fragmentMap.put(name, url);
+                }
+            }
+            for (var fragment : webAppInfo.getAbsoluteOrdering()) {
+                URL url = fragmentMap.get(fragment);
+                try (InputStream inputStream = url.openStream()) {
+                    engine.loadFragment(webAppInfo, inputStream);
+                }
+            }
+        } else {
+            Enumeration<URL> fragments = urlClassLoader.getResources("META-INF/web-fragment.xml");
+            Map<String, WebFragmentInfo> fragmentInfos = new HashMap<>();
+            List<OrderMeta> list = new ArrayList<>();
+            while (fragments.hasMoreElements()) {
+                URL url = fragments.nextElement();
+                try (InputStream inputStream = url.openStream()) {
+                    OrderMeta orderMeta = engine.parseFragmentRelativeOrdering(inputStream);
+                    orderMeta.setUrl(url);
+                    list.add(orderMeta);
+                }
+            }
+            list.sort((o1, o2) -> {
+                if (o1.getBefore() != null && o1.getBefore().contains(o2.getName())) {
+                    return 1;
+                }
+                if (o1.isBeforeOthers()) {
+                    return 1;
+                }
+                if (o1.isAfterOthers()) {
+                    return -1;
+                }
+                if (o1.getAfter() != null && o1.getAfter().contains(o2.getName())) {
+                    return -1;
+                }
+                return 0;
+            });
+            for (var order : list) {
+                try (InputStream inputStream = order.getUrl().openStream()) {
+                    engine.loadFragment(webAppInfo, inputStream);
+                }
             }
         }
-        if (webAppInfo.getAbsoluteOrdering().isEmpty()) {
-            fragmentInfos.values().forEach(webFragmentInfo -> webFragmentInfo.mergeTo(webAppInfo));
-        } else {
-            webAppInfo.getAbsoluteOrdering().forEach(name -> {
-                WebFragmentInfo webFragmentInfo = fragmentInfos.get(name);
-                if (webFragmentInfo == null) {
-                    LOGGER.error("none web fragment:{}", name);
-                } else {
-                    webFragmentInfo.mergeTo(webAppInfo);
-                }
-            });
-        }
 
+        webAppInfo.getFilterMappingInfos().forEach(filterMappingInfo -> {
+            FilterInfo filterInfo = webAppInfo.getFilters().get(filterMappingInfo.getFilterName());
+            if (filterInfo != null) {
+                filterInfo.addMapping(filterMappingInfo);
+            } else {
+                LOGGER.error("invalid filterMapping:{}", filterMappingInfo);
+            }
+        });
 
         //new runtime object
         servletRuntime.setDisplayName(webAppInfo.getDisplayName());

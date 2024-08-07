@@ -40,7 +40,7 @@ public class ServletServiceHandler extends Handler {
                 handlerContext.getServletContext().getDeploymentInfo().getServlets().get(ServletInfo.DEFAULT_SERVLET_NAME).getServlet().service(request, response);
             }
         } catch (Throwable e) {
-            ((HttpServletResponse)response).setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            ((HttpServletResponse) response).setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             Throwable throwable = e;
             String location = handlerContext.getServletContext().getDeploymentInfo().getErrorPageLocation(throwable);
             while (location == null && throwable.getCause() != null) {
@@ -52,7 +52,7 @@ public class ServletServiceHandler extends Handler {
                 location = handlerContext.getServletContext().getDeploymentInfo().getErrorPageLocation(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
             if (location != null) {
-                handlerContext.getServletContext().getRuntime().getDispatcherProvider().error(handlerContext.getServletContext(), location, (HttpServletRequest) request, (HttpServletResponse) response, throwable, handlerContext.getServletInfo().getServletName(),throwable.getMessage());
+                handlerContext.getServletContext().getRuntime().getDispatcherProvider().error(handlerContext.getServletContext(), location, (HttpServletRequest) request, (HttpServletResponse) response, throwable, handlerContext.getServletInfo().getServletName(), throwable.getMessage());
             } else {
                 throw e;
             }

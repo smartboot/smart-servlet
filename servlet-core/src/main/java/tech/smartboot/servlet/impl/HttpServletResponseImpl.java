@@ -107,7 +107,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
         String location = request.getServletContext().getRuntime().getDeploymentInfo().getErrorPageLocation(sc);
         if (StringUtils.isNotBlank(location)) {
-            request.getServletContext().getRuntime().getDispatcherProvider().error(request.getServletContext(), location, request, this, null, null, msg);
+            request.getServletContext().getRuntime().getDispatcherProvider().error(request.getServletContext(), location, request, this, null, request.getHttpServletMapping().getServletName(), msg);
         } else {
             response.write(msg.getBytes(StandardCharsets.UTF_8));
         }

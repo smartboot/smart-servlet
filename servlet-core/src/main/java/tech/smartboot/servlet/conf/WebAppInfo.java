@@ -34,6 +34,7 @@ public class WebAppInfo {
      * web.xml中的Filter配置
      */
     private final Map<String, FilterInfo> filters = new HashMap<>();
+    private final List<FilterMappingInfo> filterMappingInfos = new ArrayList<>();
 
 
     private final List<String> listeners = new ArrayList<>();
@@ -51,6 +52,7 @@ public class WebAppInfo {
 
     private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
     private final List<String> absoluteOrdering = new ArrayList<>();
+    private boolean absoluteOrderingOther = false;
 
     private int sessionTimeout = 0;
 
@@ -157,5 +159,17 @@ public class WebAppInfo {
 
     public void setMetadataComplete(boolean metadataComplete) {
         this.metadataComplete = metadataComplete;
+    }
+
+    public boolean isAbsoluteOrderingOther() {
+        return absoluteOrderingOther;
+    }
+
+    public void setAbsoluteOrderingOther(boolean absoluteOrderingOther) {
+        this.absoluteOrderingOther = absoluteOrderingOther;
+    }
+
+    public List<FilterMappingInfo> getFilterMappingInfos() {
+        return filterMappingInfos;
     }
 }
