@@ -11,6 +11,7 @@
 package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpStatus;
@@ -107,7 +108,12 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
         String location = request.getServletContext().getRuntime().getDeploymentInfo().getErrorPageLocation(sc);
         if (StringUtils.isNotBlank(location)) {
-            request.getServletContext().getRuntime().getDispatcherProvider().error(request.getServletContext(), location, request, this, null, request.getHttpServletMapping().getServletName(), msg);
+            HttpServletMapping mapping = request.getHttpServletMapping();
+            String servletName = null;
+            if (mapping != null) {
+                servletName = mapping.getServletName();
+            }
+            request.getServletContext().getRuntime().getDispatcherProvider().error(request.getServletContext(), location, request, this, null, servletName, msg);
         } else {
             response.write(msg.getBytes(StandardCharsets.UTF_8));
         }
