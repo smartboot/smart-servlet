@@ -33,11 +33,15 @@ import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
+import org.smartboot.socket.extension.plugins.SslPlugin;
+import org.smartboot.socket.extension.ssl.ClientAuth;
+import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.provider.WebsocketProvider;
 
+import java.io.FileInputStream;
 import java.util.concurrent.CompletableFuture;
 
 public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbeddedConfiguration> {
@@ -118,11 +122,20 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         } catch (Throwable e) {
             throw new LifecycleException(e.getMessage(), e);
         }
+        if (containerConfig.isSsl()) {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(containerConfig.getTrustStorePath());
+                bootstrap.configuration().addPlugin(new SslPlugin<>(new ServerSSLContextFactory(fileInputStream, containerConfig.getTrustStorePassword(), containerConfig.getTrustStorePassword()), ClientAuth.NONE));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+        }
         bootstrap.setPort(containerConfig.getBindHttpPort()).start();
         listeningHost = "127.0.0.1";
 //        listeningHost = containerConfig.getBindAddress();
         listeningPort = containerConfig.getBindHttpPort();
-        System.out.println("host: " + listeningHost + " port:" + listeningPort);
+        System.out.println("host: " + listeningHost + " port:" + listeningPort + " ssl:" + containerConfig.isSsl());
     }
 
 

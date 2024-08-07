@@ -94,7 +94,7 @@ public class ArquillianAppProvider {
         final File exported;
         try {
             if (this.config.isUseArchiveNameAsContext()) {
-                Path tmpDirectory = Files.createTempDirectory("arquillian-jetty");
+                Path tmpDirectory = Files.createTempDirectory("arquillian-smart");
                 Path archivePath = tmpDirectory.resolveSibling(archive.getName());
                 Files.deleteIfExists(archivePath);
                 exported = Files.createFile(archivePath).toFile();
