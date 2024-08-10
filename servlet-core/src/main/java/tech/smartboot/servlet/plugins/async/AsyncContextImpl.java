@@ -10,19 +10,6 @@
 
 package tech.smartboot.servlet.plugins.async;
 
-import org.smartboot.http.common.enums.HttpStatus;
-import org.smartboot.http.common.utils.HttpUtils;
-import org.smartboot.http.common.utils.StringUtils;
-import tech.smartboot.servlet.ServletContextRuntime;
-import tech.smartboot.servlet.exception.WrappedRuntimeException;
-import tech.smartboot.servlet.handler.HandlerContext;
-import tech.smartboot.servlet.impl.HttpServletRequestImpl;
-import tech.smartboot.servlet.impl.HttpServletResponseImpl;
-import tech.smartboot.servlet.impl.ServletContextImpl;
-import tech.smartboot.servlet.plugins.dispatcher.ServletRequestDispatcherWrapper;
-import org.smartboot.socket.timer.HashedWheelTimer;
-import org.smartboot.socket.timer.TimerTask;
-
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.AsyncEvent;
 import jakarta.servlet.AsyncListener;
@@ -34,6 +21,20 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.ServletResponseWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.smartboot.http.common.enums.HttpStatus;
+import org.smartboot.http.common.utils.HttpUtils;
+import org.smartboot.http.common.utils.StringUtils;
+import org.smartboot.socket.timer.HashedWheelTimer;
+import org.smartboot.socket.timer.TimerTask;
+import tech.smartboot.servlet.ServletContextRuntime;
+import tech.smartboot.servlet.conf.ServletMappingInfo;
+import tech.smartboot.servlet.exception.WrappedRuntimeException;
+import tech.smartboot.servlet.handler.HandlerContext;
+import tech.smartboot.servlet.impl.HttpServletRequestImpl;
+import tech.smartboot.servlet.impl.HttpServletResponseImpl;
+import tech.smartboot.servlet.impl.ServletContextImpl;
+import tech.smartboot.servlet.plugins.dispatcher.ServletRequestDispatcherWrapper;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -206,6 +207,9 @@ public class AsyncContextImpl implements AsyncContext {
             try {
                 originalRequest.resetAsyncStarted();
                 HandlerContext handlerContext = new HandlerContext(wrapper, response, servletContext, false);
+                ServletMappingInfo servletMappingInfo = servletContextRuntime.getMappingProvider().match(wrapper.getRequestURI());
+                handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
+                wrapper.setServletMappingInfo(servletMappingInfo);
                 servletContext.getPipeline().handleRequest(handlerContext);
             } catch (Throwable e) {
                 e.printStackTrace();
