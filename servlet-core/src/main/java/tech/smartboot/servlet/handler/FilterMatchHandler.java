@@ -10,7 +10,9 @@
 
 package tech.smartboot.servlet.handler;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -78,7 +80,11 @@ public class FilterMatchHandler extends Handler {
         allFilters.forEach(filter -> {
             filter.getMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType())).forEach(mappingInfo -> {
                 if (mappingInfo.getMappingType() == FilterMappingType.URL) {
-                    if (PathMatcherUtil.matches(request.getRequestURI(), contextPath.length(), mappingInfo.getServletUrlMapping()) > -1) {
+                    String requestURI = request.getRequestURI();
+                    if (request.getDispatcherType() == DispatcherType.INCLUDE) {
+                        requestURI = (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI);
+                    }
+                    if (PathMatcherUtil.matches(requestURI, contextPath.length(), mappingInfo.getServletUrlMapping()) > -1) {
                         filters.add(filter);
                     }
                 } else if (mappingInfo.getMappingType() == FilterMappingType.SERVLET) {

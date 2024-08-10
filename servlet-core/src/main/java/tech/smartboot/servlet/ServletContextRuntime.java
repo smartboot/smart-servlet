@@ -182,9 +182,8 @@ public class ServletContextRuntime {
             }
             if (servletInfo.getJspFile() != null) {
                 LOGGER.error("unSupport jsp");
-                servletInfo.setServlet(new DefaultServlet(deploymentInfo));
+                servletInfo.setServletClass("org.apache.jasper.servlet.JspServlet");
                 servletInfo.addInitParam("jspFile", servletInfo.getJspFile());
-                continue;
             }
             Servlet servlet = (Servlet) deploymentInfo.getClassLoader().loadClass(servletInfo.getServletClass()).newInstance();
             servletInfo.setServlet(servlet);
