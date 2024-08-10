@@ -105,6 +105,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
             String[] array = StringUtils.split(dispatcherURL, "?");
             requestWrapper.setRequestUri(array[0]);
             ServletMappingInfo servletMappingInfo = servletContext.getRuntime().getMappingProvider().match(array[0]);
+            requestWrapper.setServletMappingInfo(servletMappingInfo);
             handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
             Map<String, String[]> parameters = new HashMap<>();
             if (array.length > 1) {
