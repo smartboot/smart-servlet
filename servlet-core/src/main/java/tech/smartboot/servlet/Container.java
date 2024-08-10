@@ -323,6 +323,7 @@ public class Container {
         servletInfo.setServlet(new DefaultServlet(servletRuntime.getDeploymentInfo()));
         servletInfo.setDynamic(true);
         servletInfo.setLoadOnStartup(1);
+        servletInfo.addMapping("/");
         webAppInfo.addServlet(servletInfo);
 
         WebXmlParseEngine engine = new WebXmlParseEngine();
