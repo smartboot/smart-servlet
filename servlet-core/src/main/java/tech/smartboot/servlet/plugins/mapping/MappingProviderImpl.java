@@ -38,11 +38,12 @@ public class MappingProviderImpl implements MappingProvider {
             return servletMappingInfo;
         }
         //路径匹配
+        int remaining = requestUri.length() - offset;
         for (ServletMappingInfo mappingInfo : pathMappings) {
             int matchLength = mappingInfo.getMapping().length() - 2;
-            if (requestUri.length() - offset < matchLength) {
+            if (remaining < matchLength) {
                 //后续一定更短
-                break;
+                continue;
             }
 
             boolean match = true;
