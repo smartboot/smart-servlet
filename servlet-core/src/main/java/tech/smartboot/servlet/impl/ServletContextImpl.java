@@ -202,7 +202,9 @@ public class ServletContextImpl implements ServletContext {
         } catch (URISyntaxException e) {
             LOGGER.info("path:" + pathUrl + " ，URISyntaxException:" + e.getMessage());
         }
-        LOGGER.info("path" + ((url == null) ? "(404):" : ":") + pathUrl + " ，url:" + deploymentInfo.getContextUrl());
+        if (url == null) {
+            LOGGER.warn(path + " resource not exists");
+        }
         return url;
     }
 
