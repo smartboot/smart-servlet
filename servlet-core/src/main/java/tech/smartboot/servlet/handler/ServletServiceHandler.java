@@ -31,14 +31,9 @@ public class ServletServiceHandler extends Handler {
     public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
         ServletRequest request = handlerContext.getRequest();
         ServletResponse response = handlerContext.getResponse();
-        if (handlerContext.getServletInfo() == null) {
-            throw new ServletException("servlet is null");
-        }
+
         //成功匹配到Servlet,直接执行
         try {
-            if (!handlerContext.getServletInfo().initialized()) {
-                handlerContext.getServletInfo().init(handlerContext.getServletContext());
-            }
             handlerContext.getServletInfo().getServlet().service(request, response);
         } catch (Throwable e) {
             ((HttpServletResponse) response).setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

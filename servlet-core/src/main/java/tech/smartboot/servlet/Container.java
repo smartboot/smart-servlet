@@ -12,6 +12,7 @@ package tech.smartboot.servlet;
 
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -174,7 +175,18 @@ public class Container {
             throw new IllegalArgumentException("contextPath: " + runtime.getContextPath() + " is already exists!");
         }
         HandlerPipeline pipeline = new HandlerPipeline();
-        pipeline.next(new ServletRequestListenerHandler()).next(new FilterMatchHandler()).next(new SecurityHandler()).next(new ServletServiceHandler());
+        pipeline.next(new SecurityHandler() {
+            @Override
+            public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
+                if (handlerContext.getServletInfo() == null) {
+                    throw new ServletException("servlet is null");
+                }
+                if (!handlerContext.getServletInfo().initialized()) {
+                    handlerContext.getServletInfo().init(handlerContext.getServletContext());
+                }
+                doNext(handlerContext);
+            }
+        }).next(new ServletRequestListenerHandler()).next(new FilterMatchHandler()).next(new SecurityHandler()).next(new ServletServiceHandler());
         runtime.getServletContext().setPipeline(pipeline);
         runtime.setPlugins(plugins);
         runtime.setContainerRuntime(this);
