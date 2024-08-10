@@ -34,7 +34,10 @@ public class PathMatcherUtil {
         return false;
     }
 
-    public static ServletMappingInfo addMapping(final String mapping) {
+    public static ServletMappingInfo addMapping(String mapping) {
+        if (!mapping.startsWith("/") && !mapping.startsWith("*") && !mapping.isEmpty()) {
+            mapping = "/" + mapping;
+        }
         if ("/".equals(mapping)) {
             return new ServletMappingInfo(mapping, MappingMatch.DEFAULT);
         } else if (!mapping.contains("*")) {
