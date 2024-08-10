@@ -13,6 +13,7 @@ package tech.smartboot.servlet.handler;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.UnavailableException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HttpStatus;
@@ -35,6 +36,11 @@ public class ServletServiceHandler extends Handler {
         //成功匹配到Servlet,直接执行
         try {
             handlerContext.getServletInfo().getServlet().service(request, response);
+        } catch (UnavailableException e) {
+            //UnavailableException 表示 servlet 暂时或永久不能处理请求。
+            //如果 UnavailableException 表示的是一个永久性的不可用，Servlet 容器必须从服务中移除这个 Servlet，调用
+            //它的 destroy 方法，并释放 Servlet 实例。所有由于这种原因被容器拒绝的请求，都会返回一个 SC_NOT_FOUND (404) 响应。
+            ((HttpServletResponse) response).setStatus(HttpStatus.NOT_FOUND.value());
         } catch (Throwable e) {
             ((HttpServletResponse) response).setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             Throwable throwable = e;
