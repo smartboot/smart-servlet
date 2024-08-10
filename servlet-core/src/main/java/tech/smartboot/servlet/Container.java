@@ -317,15 +317,6 @@ public class Container {
         ServletContextRuntime servletRuntime = new ServletContextRuntime(localPath, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
 
         WebAppInfo webAppInfo = new WebAppInfo();
-        //默认servlet
-        ServletInfo servletInfo = new ServletInfo();
-        servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
-        servletInfo.setServlet(new DefaultServlet(servletRuntime.getDeploymentInfo()));
-        servletInfo.setDynamic(true);
-        servletInfo.setLoadOnStartup(1);
-        servletInfo.addMapping("/");
-        webAppInfo.addServlet(servletInfo);
-
         WebXmlParseEngine engine = new WebXmlParseEngine();
         //加载内置的web.xml
         try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("smart_web.xml")) {

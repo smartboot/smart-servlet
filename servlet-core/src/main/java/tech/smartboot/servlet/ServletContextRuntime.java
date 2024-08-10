@@ -172,7 +172,11 @@ public class ServletContextRuntime {
     }
 
     private void newServletsInstance(DeploymentInfo deploymentInfo) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        boolean noneDefault = true;
         for (ServletInfo servletInfo : deploymentInfo.getServlets().values()) {
+            if (servletInfo.getMappings().stream().anyMatch(servletMappingInfo -> "/".equals(servletMappingInfo.getMapping()))) {
+                noneDefault = false;
+            }
             if (servletInfo.isDynamic()) {
                 continue;
             }
@@ -186,13 +190,16 @@ public class ServletContextRuntime {
             servletInfo.setServlet(servlet);
         }
         //绑定 default Servlet
-        if (!deploymentInfo.getServlets().containsKey(ServletInfo.DEFAULT_SERVLET_NAME)) {
+        if (noneDefault) {
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
             servletInfo.setServlet(new DefaultServlet(deploymentInfo));
+            servletInfo.setDynamic(true);
             servletInfo.setLoadOnStartup(1);
+            servletInfo.addMapping("/");
             deploymentInfo.addServlet(servletInfo);
         }
+
 
     }
 
