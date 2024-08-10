@@ -10,7 +10,13 @@
 
 package tech.smartboot.servlet.plugins.dispatcher;
 
-import jakarta.servlet.*;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletRequestWrapper;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.ServletResponseWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.utils.HttpUtils;
 import org.smartboot.http.common.utils.StringUtils;
@@ -21,7 +27,10 @@ import tech.smartboot.servlet.impl.HttpServletResponseImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -112,52 +121,68 @@ class RequestDispatcherImpl implements RequestDispatcher {
     public void include(ServletRequest request, ServletResponse response) throws ServletException, IOException {
         ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, DispatcherType.INCLUDE);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, true);
+        HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
         HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
+
 
         //《Servlet3.1规范中文版》9.3.1 包含(include)的请求参数
         //这些属性可以通过包含的 servlet 的 request 对象的 getAttribute 方法访问，
         // 它们的值必须分别与被包含 servlet 的请求 RUI、上下文路径、servlet 路径、路径信息、查询字符串相等。
         // 如果包含后续请求，那么这些属性 会被后面包含请求的相应属性值替换。
         //如果通过 getNamedDispatcher 方法获得包含的 servlet，那么不能设置这些属性。
+        Object requestUri = null;
+        Object contextPath = null;
+        Object servletPath = null;
+        Object pathInfo = null;
+        Object queryString = null;
 
-        String requestUri = requestImpl.getRequestURI();
-        Object contextPath = requestImpl.getContextPath();
-        Object servletPath = requestImpl.getServletPath();
-        Object pathInfo = requestImpl.getPathInfo();
-        Object queryString = requestImpl.getQueryString();
+//        String requestUri = requestImpl.getRequestURI();
+//        Object contextPath = requestImpl.getContextPath();
+//        Object servletPath = requestImpl.getServletPath();
+//        Object pathInfo = requestImpl.getPathInfo();
+//        Object queryString = requestImpl.getQueryString();
         if (!named) {
-            if (requestUri != null) {
-                requestWrapper.setAttribute(INCLUDE_REQUEST_URI, requestUri);
-            }
-            if (contextPath != null) {
-                requestWrapper.setAttribute(INCLUDE_CONTEXT_PATH, contextPath);
-            }
-            if (servletPath != null) {
-                requestWrapper.setAttribute(INCLUDE_PATH_INFO, servletPath);
-            }
-            if (pathInfo != null) {
-                requestWrapper.setAttribute(INCLUDE_PATH_INFO, pathInfo);
-            }
-            if (queryString != null) {
-                requestWrapper.setAttribute(INCLUDE_QUERY_STRING, queryString);
-            }
+            requestUri = request.getAttribute(INCLUDE_REQUEST_URI);
+            contextPath = request.getAttribute(INCLUDE_CONTEXT_PATH);
+            servletPath = request.getAttribute(INCLUDE_SERVLET_PATH);
+            pathInfo = request.getAttribute(INCLUDE_PATH_INFO);
+            queryString = request.getAttribute(INCLUDE_QUERY_STRING);
+
+//            requestWrapper.setAttribute(INCLUDE_REQUEST_URI, requestImpl.getRequestURI());
+            requestWrapper.setAttribute(INCLUDE_CONTEXT_PATH, requestImpl.getContextPath());
+            requestWrapper.setAttribute(INCLUDE_PATH_INFO, requestImpl.getServletPath());
+            requestWrapper.setAttribute(INCLUDE_PATH_INFO, requestImpl.getPathInfo());
+            requestWrapper.setAttribute(INCLUDE_MAPPING, requestImpl.getHttpServletMapping());
+
             String[] array = StringUtils.split(dispatcherURL, "?");
             requestWrapper.setRequestUri(array[0]);
             if (array.length > 1) {
                 Map<String, String[]> parameters = new HashMap<>();
                 HttpUtils.decodeParamString(array[1], parameters);
+                mergeParameter(requestImpl.getParameterMap(), parameters);
                 requestWrapper.setParameters(parameters);
-                requestWrapper.setQueryString(array[1]);
+
+                requestWrapper.setAttribute(INCLUDE_QUERY_STRING, array[1]);
             }
         } else {
             requestWrapper.setParameters(request.getParameterMap());
         }
 
-        HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
+
         if (dispatcherServlet != null) {
             handlerContext.setServletInfo(dispatcherServlet);
         }
-        servletContext.getPipeline().handleRequest(handlerContext);
+        try {
+            servletContext.getPipeline().handleRequest(handlerContext);
+        } finally {
+            if (!named) {
+                requestImpl.setAttribute(INCLUDE_REQUEST_URI, requestUri);
+                requestImpl.setAttribute(INCLUDE_CONTEXT_PATH, contextPath);
+                requestImpl.setAttribute(INCLUDE_SERVLET_PATH, servletPath);
+                requestImpl.setAttribute(INCLUDE_PATH_INFO, pathInfo);
+                requestImpl.setAttribute(INCLUDE_QUERY_STRING, queryString);
+            }
+        }
     }
 
     private ServletRequestDispatcherWrapper wrapperRequest(final ServletRequest request, DispatcherType dispatcherType) {
@@ -180,5 +205,23 @@ class RequestDispatcherImpl implements RequestDispatcher {
             throw new IllegalArgumentException("invalid response object: " + current);
         }
         return new ServletResponseDispatcherWrapper((HttpServletResponseImpl) current, included);
+    }
+
+    private void mergeParameter(Map<String, String[]> oldParams, Map<String, String[]> newParams) {
+        for (Map.Entry<String, String[]> entry : oldParams.entrySet()) {
+            String[] values = newParams.get(entry.getKey());
+            if (values == null) {
+                newParams.put(entry.getKey(), entry.getValue());
+            } else {
+                List<String> list = new ArrayList<>(Arrays.asList(values));
+                // merge values new params first
+                for (String v : entry.getValue()) {
+                    if (!list.contains(v)) {
+                        list.add(v);
+                    }
+                }
+                newParams.put(entry.getKey(), list.toArray(entry.getValue()));
+            }
+        }
     }
 }

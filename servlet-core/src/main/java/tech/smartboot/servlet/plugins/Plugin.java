@@ -71,10 +71,10 @@ public abstract class Plugin {
     /**
      * servlet容器被启动成功之后被调用
      *
-     * @param containerRuntime 当前启动成功的子容器
+     * @param servletContextRuntime 当前启动成功的子容器
      */
-    public void onContainerStartSuccess(ServletContextRuntime containerRuntime) {
-//        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start success!");
+    public void onContainerStartSuccess(ServletContextRuntime servletContextRuntime) {
+//        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + servletContextRuntime.getContextPath() + " when start success!");
     }
 
 

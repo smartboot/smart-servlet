@@ -35,9 +35,7 @@ public class PathMatcherUtil {
     }
 
     public static ServletMappingInfo addMapping(final String mapping) {
-        if ("/".equals(mapping)) {
-            return new ServletMappingInfo(mapping, MappingMatch.DEFAULT);
-        } else if (!mapping.contains("*")) {
+        if (!mapping.contains("*")) {
             if (!mapping.startsWith("/")) {
                 throw new IllegalArgumentException("invalid mapping: " + mapping);
             }

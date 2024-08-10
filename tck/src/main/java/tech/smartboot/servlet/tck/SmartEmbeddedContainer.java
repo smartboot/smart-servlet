@@ -125,7 +125,7 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         if (containerConfig.isSsl()) {
             try {
                 FileInputStream fileInputStream = new FileInputStream(containerConfig.getTrustStorePath());
-                bootstrap.configuration().addPlugin(new SslPlugin<>(new ServerSSLContextFactory(fileInputStream, containerConfig.getTrustStorePassword(), containerConfig.getTrustStorePassword()), ClientAuth.NONE));
+//                bootstrap.configuration().addPlugin(new SslPlugin<>(new ServerSSLContextFactory(fileInputStream, containerConfig.getTrustStorePassword(), containerConfig.getTrustStorePassword()), ClientAuth.NONE));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

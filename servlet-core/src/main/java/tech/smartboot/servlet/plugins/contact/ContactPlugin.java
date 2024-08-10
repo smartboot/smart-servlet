@@ -19,7 +19,7 @@ import tech.smartboot.servlet.plugins.Plugin;
 public class ContactPlugin extends Plugin {
 
     @Override
-    public void onContainerStartSuccess(ServletContextRuntime containerRuntime) {
+    public void onContainerStartSuccess(ServletContextRuntime servletContextRuntime) {
         System.out.println();
         System.out.println("\033[1mTechnical Support:\033[0m");
         System.out.println(" · Document: https://smartboot.tech]");

@@ -16,9 +16,11 @@ import tech.smartboot.servlet.conf.ServletMappingInfo;
 
 public class HttpServletMappingImpl implements HttpServletMapping {
     private final ServletMappingInfo servletMappingInfo;
+    private final MappingMatch mappingMatch;
     private final String matchValue;
 
-    public HttpServletMappingImpl(ServletMappingInfo servletMappingInfo, String matchValue) {
+    public HttpServletMappingImpl(MappingMatch mappingMatch, ServletMappingInfo servletMappingInfo, String matchValue) {
+        this.mappingMatch = mappingMatch;
         this.servletMappingInfo = servletMappingInfo;
         this.matchValue = matchValue;
     }
@@ -40,6 +42,6 @@ public class HttpServletMappingImpl implements HttpServletMapping {
 
     @Override
     public MappingMatch getMappingMatch() {
-        return servletMappingInfo.getMappingType();
+        return mappingMatch;
     }
 }

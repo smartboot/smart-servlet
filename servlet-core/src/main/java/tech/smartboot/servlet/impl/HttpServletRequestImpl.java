@@ -26,6 +26,7 @@ import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.MappingMatch;
 import jakarta.servlet.http.Part;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.logging.Logger;
@@ -91,6 +92,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private HttpServletResponse httpServletResponse;
     private ServletInputStream servletInputStream;
     private BufferedReader reader;
+    private boolean pathInit = false;
     /**
      * 请求中携带的sessionId
      */
@@ -207,13 +209,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getPathInfo() {
-        if (pathInfoStart < 0) {
-            return null;
-        }
-        if (pathInfo != null) {
-            return pathInfo;
-        }
-        pathInfo = getRequestURI().substring(pathInfoStart, pathInfoEnd);
+        initPath();
         return pathInfo;
     }
 
@@ -319,14 +315,28 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getServletPath() {
-        if (servletPathStart < 0) {
-            return null;
-        }
-        if (servletPath != null) {
-            return servletPath;
-        }
-        servletPath = getRequestURI().substring(servletPathStart, servletPathEnd);
+        initPath();
         return servletPath;
+    }
+
+    private void initPath() {
+        if (pathInit) {
+            return;
+        }
+        pathInit = true;
+        switch (servletMappingInfo.getMappingType()) {
+            case EXTENSION -> {
+                servletPath = getRequestURI().substring(getContextPath().length());
+                pathInfo = null;
+            }
+            case PATH -> {
+                servletPath = servletMappingInfo.getMapping().substring(0, servletMappingInfo.getMapping().length() - 2);
+                if (getContextPath().length() + servletPath.length() < getRequestURI().length()) {
+                    pathInfo = getRequestURI().substring(getContextPath().length() + servletPath.length());
+                }
+
+            }
+        }
     }
 
     @Override
@@ -388,16 +398,16 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             return null;
         }
         String matchValue;
+        MappingMatch mappingMatch = servletMappingInfo.getMappingType();
         switch (servletMappingInfo.getMappingType()) {
             case EXACT:
                 matchValue = servletMappingInfo.getMapping();
                 if (matchValue.startsWith("/")) {
                     matchValue = matchValue.substring(1);
                 }
-                break;
-            case DEFAULT:
-            case CONTEXT_ROOT:
-                matchValue = "";
+                if (matchValue.isEmpty()) {
+                    mappingMatch = StringUtils.isBlank(servletContext.getContextPath()) ? MappingMatch.CONTEXT_ROOT : MappingMatch.DEFAULT;
+                }
                 break;
             case PATH:
                 String servletPath = getServletPath();
@@ -417,7 +427,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             default:
                 throw new IllegalStateException();
         }
-        return new HttpServletMappingImpl(servletMappingInfo, matchValue);
+        return new HttpServletMappingImpl(mappingMatch, servletMappingInfo, matchValue);
     }
 
     public void setServletMappingInfo(ServletMappingInfo servletMappingInfo) {

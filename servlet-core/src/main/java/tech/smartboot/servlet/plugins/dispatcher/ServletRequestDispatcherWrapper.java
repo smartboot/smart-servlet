@@ -13,6 +13,8 @@ package tech.smartboot.servlet.plugins.dispatcher;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.MappingMatch;
+import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.socket.util.Attachment;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -169,19 +171,25 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
             return null;
         }
         String matchValue;
+        MappingMatch mappingMatch = servletMappingInfo.getMappingType();
         switch (servletMappingInfo.getMappingType()) {
             case EXACT:
                 matchValue = servletMappingInfo.getMapping();
                 if (matchValue.startsWith("/")) {
                     matchValue = matchValue.substring(1);
                 }
-                break;
-            case DEFAULT:
-            case CONTEXT_ROOT:
-                matchValue = "";
+                if (matchValue.isEmpty()) {
+                    mappingMatch = StringUtils.isBlank(getServletContext().getContextPath()) ? MappingMatch.CONTEXT_ROOT : MappingMatch.DEFAULT;
+                }
                 break;
             case PATH:
-                matchValue = getServletPath().substring(servletMappingInfo.getMapping().length() - 1);
+                String servletPath = getServletPath();
+                if (servletMappingInfo.getMapping().length() >= servletPath.length() + 2) {
+                    matchValue = "";
+                } else {
+                    matchValue = getServletPath().substring(servletMappingInfo.getMapping().length() - 1);
+                }
+
                 if (matchValue.startsWith("/")) {
                     matchValue = matchValue.substring(1);
                 }
@@ -192,7 +200,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
             default:
                 throw new IllegalStateException();
         }
-        return new HttpServletMappingImpl(servletMappingInfo, matchValue);
+        return new HttpServletMappingImpl(mappingMatch, servletMappingInfo, matchValue);
     }
 
     @Override

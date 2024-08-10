@@ -16,7 +16,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HttpStatus;
-import tech.smartboot.servlet.conf.ServletInfo;
+import tech.smartboot.servlet.exception.WrappedRuntimeException;
 
 import java.io.IOException;
 
@@ -32,13 +32,15 @@ public class ServletServiceHandler extends Handler {
     public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
         ServletRequest request = handlerContext.getRequest();
         ServletResponse response = handlerContext.getResponse();
+        if (handlerContext.getServletInfo() == null) {
+            throw new WrappedRuntimeException(new ServletException("servlet is null"));
+        }
         //成功匹配到Servlet,直接执行
         try {
-            if (handlerContext.getServletInfo() != null) {
-                handlerContext.getServletInfo().getServlet().service(request, response);
-            } else {
-                handlerContext.getServletContext().getDeploymentInfo().getServlets().get(ServletInfo.DEFAULT_SERVLET_NAME).getServlet().service(request, response);
+            if (!handlerContext.getServletInfo().initialized()) {
+                handlerContext.getServletInfo().init(handlerContext.getServletContext());
             }
+            handlerContext.getServletInfo().getServlet().service(request, response);
         } catch (Throwable e) {
             ((HttpServletResponse) response).setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             Throwable throwable = e;

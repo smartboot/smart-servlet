@@ -70,7 +70,7 @@ public class DeploymentInfo {
      */
     private int sessionTimeout;
 
-    private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public URL getContextUrl() {
         return contextUrl;

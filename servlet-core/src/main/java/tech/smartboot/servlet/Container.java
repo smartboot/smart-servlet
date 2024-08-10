@@ -25,6 +25,7 @@ import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.OrderMeta;
 import tech.smartboot.servlet.conf.ServletInfo;
+import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
 import tech.smartboot.servlet.conf.WebFragmentInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
@@ -32,7 +33,6 @@ import tech.smartboot.servlet.handler.FilterMatchHandler;
 import tech.smartboot.servlet.handler.HandlerContext;
 import tech.smartboot.servlet.handler.HandlerPipeline;
 import tech.smartboot.servlet.handler.SecurityHandler;
-import tech.smartboot.servlet.handler.ServletMatchHandler;
 import tech.smartboot.servlet.handler.ServletRequestListenerHandler;
 import tech.smartboot.servlet.handler.ServletServiceHandler;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
@@ -174,7 +174,7 @@ public class Container {
             throw new IllegalArgumentException("contextPath: " + runtime.getContextPath() + " is already exists!");
         }
         HandlerPipeline pipeline = new HandlerPipeline();
-        pipeline.next(new ServletRequestListenerHandler()).next(new ServletMatchHandler()).next(new FilterMatchHandler()).next(new SecurityHandler()).next(new ServletServiceHandler());
+        pipeline.next(new ServletRequestListenerHandler()).next(new FilterMatchHandler()).next(new SecurityHandler()).next(new ServletServiceHandler());
         runtime.getServletContext().setPipeline(pipeline);
         runtime.setPlugins(plugins);
         runtime.setContainerRuntime(this);
@@ -248,6 +248,9 @@ public class Container {
             HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
             servletRequest.setHttpServletResponse(servletResponse);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
+            ServletMappingInfo servletMappingInfo = runtime.getMappingProvider().match(servletRequest.getRequestURI());
+            handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
+            servletRequest.setServletMappingInfo(servletMappingInfo);
             runtime.getVendorProvider().signature(servletResponse);
             // just do it
             servletContext.getPipeline().handleRequest(handlerContext);
