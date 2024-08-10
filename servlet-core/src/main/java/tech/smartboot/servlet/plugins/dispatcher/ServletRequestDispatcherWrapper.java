@@ -14,6 +14,7 @@ import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.MappingMatch;
+import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.socket.util.Attachment;
 import tech.smartboot.servlet.SmartHttpServletRequest;
@@ -33,20 +34,19 @@ import java.util.Map;
 public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implements SmartHttpServletRequest {
     private final HttpServletRequestImpl request;
     private final boolean named;
-    private String servletPath;
-    private int servletPathStart;
-    private int servletPathEnd;
-    private String pathInfo;
-    private int pathInfoStart;
-    private int pathInfoEnd;
     private String requestUri;
     private String queryString;
+    private ServletMappingInfo servletMappingInfo;
+    private String servletPath;
+    private String pathInfo;
     private Map<String, String[]> parameters;
+    private final DispatcherType dispatcherType;
+    private boolean pathInit = false;
 
     public ServletRequestDispatcherWrapper(HttpServletRequestImpl request, DispatcherType dispatcherType, boolean named) {
         super(request);
         this.request = request;
-        request.setDispatcherType(dispatcherType);
+        this.dispatcherType = dispatcherType;
         this.named = named;
     }
 
@@ -82,7 +82,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
 
     @Override
     public DispatcherType getDispatcherType() {
-        return request.getDispatcherType();
+        return dispatcherType;
     }
 
     @Override
@@ -92,7 +92,10 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
 
     @Override
     public String getRequestURI() {
-        return named ? super.getRequestURI() : this.requestUri;
+        if (named || getDispatcherType() == DispatcherType.INCLUDE) {
+            return super.getRequestURI();
+        }
+        return this.requestUri;
     }
 
     @Override
@@ -102,7 +105,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
 
     @Override
     public String getQueryString() {
-        return named ? super.getQueryString() : queryString;
+        return named || dispatcherType == DispatcherType.INCLUDE ? super.getQueryString() : queryString;
     }
 
     public void setQueryString(String queryString) {
@@ -111,23 +114,32 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
 
     @Override
     public String getPathInfo() {
-        if (named) {
-            return super.getPathInfo();
-        }
-        if (pathInfoStart < 0) {
-            return null;
-        }
-        if (pathInfo != null) {
-            return pathInfo;
-        }
-        pathInfo = getRequestURI().substring(pathInfoStart, pathInfoEnd);
+        initPath();
         return pathInfo;
     }
 
-    @Override
-    public void setPathInfo(int start, int end) {
-        this.pathInfoStart = start;
-        this.pathInfoEnd = end;
+    private void initPath() {
+        if (pathInit) {
+            return;
+        }
+        pathInit = true;
+        switch (servletMappingInfo.getMappingType()) {
+            case EXACT -> {
+                servletPath = servletMappingInfo.getMapping();
+                pathInfo = null;
+            }
+            case EXTENSION -> {
+                servletPath = getRequestURI().substring(getContextPath().length());
+                pathInfo = null;
+            }
+            case PATH -> {
+                servletPath = servletMappingInfo.getMapping().substring(0, servletMappingInfo.getMapping().length() - 2);
+                if (getContextPath().length() + servletPath.length() < getRequestURI().length()) {
+                    pathInfo = getRequestURI().substring(getContextPath().length() + servletPath.length());
+                }
+
+            }
+        }
     }
 
     @Override
@@ -155,12 +167,6 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
         this.request.setAsyncSupported(supported);
     }
 
-    @Override
-    public void setDispatcherType(DispatcherType dispatcherType) {
-        request.setDispatcherType(dispatcherType);
-    }
-
-    private ServletMappingInfo servletMappingInfo;
 
     @Override
     public HttpServletMapping getHttpServletMapping() {
@@ -204,25 +210,19 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     }
 
     @Override
-    public String getServletPath() {
-        if (named) {
-            return super.getServletPath();
+    public StringBuffer getRequestURL() {
+        if (getDispatcherType() == DispatcherType.FORWARD) {
+            return new StringBuffer(getScheme() + "://" + getHeader(HeaderNameEnum.HOST.getName()) + getRequestURI());
         }
-        if (servletPathStart < 0) {
-            return null;
-        }
-        if (servletPath != null) {
-            return servletPath;
-        }
-        servletPath = getRequestURI().substring(servletPathStart, servletPathEnd);
-        return servletPath;
+        return super.getRequestURL();
     }
 
     @Override
-    public void setServletPath(int start, int end) {
-        this.servletPathStart = start;
-        this.servletPathEnd = end;
+    public String getServletPath() {
+        initPath();
+        return servletPath;
     }
+
 
     public void setParameters(Map<String, String[]> parameters) {
         this.parameters = parameters;

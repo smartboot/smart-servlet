@@ -10,7 +10,6 @@
 
 package tech.smartboot.servlet;
 
-import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.smartboot.socket.util.Attachment;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -22,22 +21,6 @@ import tech.smartboot.servlet.conf.ServletMappingInfo;
  */
 public interface SmartHttpServletRequest extends HttpServletRequest {
     void setRequestUri(String requestUri);
-
-    /**
-     * 设置servletPath索引位置,若为null者传入负数
-     *
-     * @param start 起始点位
-     * @param end   结束点位
-     */
-    void setServletPath(int start, int end);
-
-    /**
-     * 设置pathInfo索引位置,若为null者传入负数
-     *
-     * @param start 起始点位
-     * @param end   结束点位
-     */
-    void setPathInfo(int start, int end);
 
     void setServletInfo(ServletInfo servletInfo);
 
@@ -59,5 +42,4 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
 
     void setAsyncSupported(boolean supported);
 
-    void setDispatcherType(DispatcherType dispatcherType);
 }

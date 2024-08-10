@@ -77,17 +77,13 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private static final Cookie[] NONE_COOKIE = new Cookie[0];
     private final HttpRequest request;
     private ServletContextImpl servletContext;
-    private DispatcherType dispatcherType = DispatcherType.REQUEST;
+    private final DispatcherType dispatcherType = DispatcherType.REQUEST;
     private final ServletContextRuntime runtime;
     private Charset characterEncoding;
     private Map<String, Object> attributes;
     private Cookie[] cookies;
     private String servletPath;
-    private int servletPathStart;
-    private int servletPathEnd;
     private String pathInfo;
-    private int pathInfoStart;
-    private int pathInfoEnd;
     private String requestUri;
     private HttpServletResponse httpServletResponse;
     private ServletInputStream servletInputStream;
@@ -214,12 +210,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     }
 
     @Override
-    public void setPathInfo(int start, int end) {
-        this.pathInfoStart = start;
-        this.pathInfoEnd = end;
-    }
-
-    @Override
     public void setServletInfo(ServletInfo servletInfo) {
         this.servletInfo = servletInfo;
         if (asyncSupported) {
@@ -325,6 +315,10 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         }
         pathInit = true;
         switch (servletMappingInfo.getMappingType()) {
+            case EXACT -> {
+                servletPath = servletMappingInfo.getMapping();
+                pathInfo = null;
+            }
             case EXTENSION -> {
                 servletPath = getRequestURI().substring(getContextPath().length());
                 pathInfo = null;
@@ -337,12 +331,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
             }
         }
-    }
-
-    @Override
-    public void setServletPath(int start, int end) {
-        this.servletPathStart = start;
-        this.servletPathEnd = end;
     }
 
     @Override
@@ -842,11 +830,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public DispatcherType getDispatcherType() {
         return dispatcherType;
-    }
-
-    @Override
-    public void setDispatcherType(DispatcherType dispatcherType) {
-        this.dispatcherType = dispatcherType;
     }
 
     @Override

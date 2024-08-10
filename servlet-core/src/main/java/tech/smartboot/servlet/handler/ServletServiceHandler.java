@@ -16,7 +16,6 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HttpStatus;
-import tech.smartboot.servlet.exception.WrappedRuntimeException;
 
 import java.io.IOException;
 
@@ -33,7 +32,7 @@ public class ServletServiceHandler extends Handler {
         ServletRequest request = handlerContext.getRequest();
         ServletResponse response = handlerContext.getResponse();
         if (handlerContext.getServletInfo() == null) {
-            throw new WrappedRuntimeException(new ServletException("servlet is null"));
+            throw new ServletException("servlet is null");
         }
         //成功匹配到Servlet,直接执行
         try {

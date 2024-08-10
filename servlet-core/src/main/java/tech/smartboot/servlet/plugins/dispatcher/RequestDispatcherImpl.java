@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.utils.HttpUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.ServletInfo;
+import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.handler.HandlerContext;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.HttpServletResponseImpl;
@@ -71,12 +72,8 @@ class RequestDispatcherImpl implements RequestDispatcher {
         ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, dispatcherType);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, false);
         HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
+        HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
 
-        requestWrapper.setAttribute(FORWARD_REQUEST_URI, requestImpl.getRequestURI());
-        requestWrapper.setAttribute(FORWARD_CONTEXT_PATH, requestImpl.getContextPath());
-        requestWrapper.setAttribute(FORWARD_SERVLET_PATH, requestImpl.getServletPath());
-        requestWrapper.setAttribute(FORWARD_PATH_INFO, requestImpl.getPathInfo());
-        requestWrapper.setAttribute(FORWARD_QUERY_STRING, requestImpl.getQueryString());
 
         if (dispatcherType == DispatcherType.ERROR) {
             if (throwable != null) {
@@ -98,21 +95,23 @@ class RequestDispatcherImpl implements RequestDispatcher {
             Map<String, String[]> parameters = new HashMap<>();
             HttpUtils.decodeParamString(requestWrapper.getQueryString(), parameters);
             requestWrapper.setParameters(parameters);
+            handlerContext.setServletInfo(dispatcherServlet);
         } else {
+            requestWrapper.setAttribute(FORWARD_REQUEST_URI, requestImpl.getRequestURI());
+            requestWrapper.setAttribute(FORWARD_CONTEXT_PATH, requestImpl.getContextPath());
+            requestWrapper.setAttribute(FORWARD_SERVLET_PATH, requestImpl.getServletPath());
+            requestWrapper.setAttribute(FORWARD_PATH_INFO, requestImpl.getPathInfo());
+            requestWrapper.setAttribute(FORWARD_QUERY_STRING, requestImpl.getQueryString());
             String[] array = StringUtils.split(dispatcherURL, "?");
             requestWrapper.setRequestUri(array[0]);
+            ServletMappingInfo servletMappingInfo = servletContext.getRuntime().getMappingProvider().match(array[0]);
+            handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
             Map<String, String[]> parameters = new HashMap<>();
             if (array.length > 1) {
                 HttpUtils.decodeParamString(array[1], parameters);
                 requestWrapper.setParameters(parameters);
                 requestWrapper.setQueryString(array[1]);
             }
-        }
-
-
-        HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
-        if (dispatcherServlet != null) {
-            handlerContext.setServletInfo(dispatcherServlet);
         }
         servletContext.getPipeline().handleRequest(handlerContext);
     }
@@ -148,29 +147,25 @@ class RequestDispatcherImpl implements RequestDispatcher {
             pathInfo = request.getAttribute(INCLUDE_PATH_INFO);
             queryString = request.getAttribute(INCLUDE_QUERY_STRING);
 
-//            requestWrapper.setAttribute(INCLUDE_REQUEST_URI, requestImpl.getRequestURI());
             requestWrapper.setAttribute(INCLUDE_CONTEXT_PATH, requestImpl.getContextPath());
-            requestWrapper.setAttribute(INCLUDE_PATH_INFO, requestImpl.getServletPath());
             requestWrapper.setAttribute(INCLUDE_PATH_INFO, requestImpl.getPathInfo());
             requestWrapper.setAttribute(INCLUDE_MAPPING, requestImpl.getHttpServletMapping());
 
             String[] array = StringUtils.split(dispatcherURL, "?");
-            requestWrapper.setRequestUri(array[0]);
+            ServletMappingInfo servletMappingInfo = servletContext.getRuntime().getMappingProvider().match(array[0]);
+            handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
+            requestWrapper.setAttribute(INCLUDE_REQUEST_URI, array[0]);
+            requestWrapper.setAttribute(INCLUDE_SERVLET_PATH, getServerPath(servletMappingInfo, array[0]));
             if (array.length > 1) {
                 Map<String, String[]> parameters = new HashMap<>();
                 HttpUtils.decodeParamString(array[1], parameters);
                 mergeParameter(requestImpl.getParameterMap(), parameters);
                 requestWrapper.setParameters(parameters);
-
                 requestWrapper.setAttribute(INCLUDE_QUERY_STRING, array[1]);
             }
         } else {
-            requestWrapper.setParameters(request.getParameterMap());
-        }
-
-
-        if (dispatcherServlet != null) {
             handlerContext.setServletInfo(dispatcherServlet);
+            requestWrapper.setParameters(request.getParameterMap());
         }
         try {
             servletContext.getPipeline().handleRequest(handlerContext);
@@ -183,6 +178,21 @@ class RequestDispatcherImpl implements RequestDispatcher {
                 requestImpl.setAttribute(INCLUDE_QUERY_STRING, queryString);
             }
         }
+    }
+
+    private String getServerPath(ServletMappingInfo servletMappingInfo, String requestUri) {
+        switch (servletMappingInfo.getMappingType()) {
+            case EXACT -> {
+                return servletMappingInfo.getMapping();
+            }
+            case EXTENSION -> {
+                return requestUri.substring(servletContext.getContextPath().length());
+            }
+            case PATH -> {
+                return servletMappingInfo.getMapping().substring(0, servletMappingInfo.getMapping().length() - 2);
+            }
+        }
+        return null;
     }
 
     private ServletRequestDispatcherWrapper wrapperRequest(final ServletRequest request, DispatcherType dispatcherType) {
