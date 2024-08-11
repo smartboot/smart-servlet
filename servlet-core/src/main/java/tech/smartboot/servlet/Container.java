@@ -82,7 +82,7 @@ public class Container {
                                                                                             \s
                                                                                             \s
             """;
-    public static final String VERSION = "v2.0";
+    public static final String VERSION = "v2.1";
     /**
      * 注册在当前 Servlet 容器中的运行环境
      */
