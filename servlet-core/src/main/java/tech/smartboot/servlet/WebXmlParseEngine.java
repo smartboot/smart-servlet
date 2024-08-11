@@ -25,11 +25,11 @@ import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.conf.OrderMeta;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.ServletInfo;
+import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
 import tech.smartboot.servlet.conf.WebFragmentInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
 import tech.smartboot.servlet.util.CollectionUtils;
-import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -230,7 +230,7 @@ class WebXmlParseEngine {
             } else {
                 dispatcher.forEach(dispatcherElement -> dispatcherTypes.add(DispatcherType.valueOf(StringUtils.trim(dispatcherElement.getFirstChild().getNodeValue()))));
             }
-            FilterMappingInfo filterInfo = new FilterMappingInfo(filterName, StringUtils.isBlank(urlPattern) ? FilterMappingType.SERVLET : FilterMappingType.URL, servletName, StringUtils.isBlank(urlPattern) ? null : PathMatcherUtil.addMapping(urlPattern), dispatcherTypes);
+            FilterMappingInfo filterInfo = new FilterMappingInfo(filterName, StringUtils.isBlank(urlPattern) ? FilterMappingType.SERVLET : FilterMappingType.URL, servletName, urlPattern, dispatcherTypes);
             webAppInfo.getFilterMappingInfos().add(filterInfo);
         }
     }
@@ -306,8 +306,8 @@ class WebXmlParseEngine {
         List<Node> childNodeList = getChildNodes(parentElement, "servlet-mapping");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Collections.singletonList("servlet-name"));
-            ServletInfo servletInfo = webAppInfo.getServlet(nodeData.get("servlet-name"));
-            getNodeValues(node, "url-pattern").forEach(servletInfo::addMapping);
+            String servletName = nodeData.get("servlet-name");
+            getNodeValues(node, "url-pattern").forEach(urlPattern -> webAppInfo.getServletMappings().add(new ServletMappingInfo(servletName, urlPattern)));
         }
     }
 

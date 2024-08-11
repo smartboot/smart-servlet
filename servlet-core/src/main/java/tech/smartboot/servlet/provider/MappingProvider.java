@@ -13,5 +13,5 @@ package tech.smartboot.servlet.provider;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 
 public interface MappingProvider {
-    ServletMappingInfo match(String url);
+    ServletMappingInfo matchServlet(String url);
 }

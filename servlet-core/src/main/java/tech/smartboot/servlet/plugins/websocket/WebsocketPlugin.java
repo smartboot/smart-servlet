@@ -17,7 +17,6 @@ import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
 import tech.smartboot.servlet.plugins.Plugin;
-import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.util.Collections;
 
@@ -39,8 +38,7 @@ public class WebsocketPlugin extends Plugin {
         filterInfo.setFilterClass(WebSocketFilter.class.getName());
         filterInfo.setAsyncSupported(true);
         containerRuntime.getDeploymentInfo().addFilter(filterInfo);
-        filterInfo.addMapping(new FilterMappingInfo(filterInfo.getFilterName(),
-                FilterMappingType.URL, null, PathMatcherUtil.addMapping("/*"), Collections.singleton(DispatcherType.REQUEST)));
+        containerRuntime.getDeploymentInfo().addFilterMapping(new FilterMappingInfo(filterInfo.getFilterName(), FilterMappingType.URL, null, "/*", Collections.singleton(DispatcherType.REQUEST)));
     }
 
     @Override

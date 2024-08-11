@@ -10,9 +10,11 @@
 
 package tech.smartboot.servlet.conf;
 
-import tech.smartboot.servlet.enums.FilterMappingType;
-
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.MappingMatch;
+import tech.smartboot.servlet.enums.FilterMappingType;
+import tech.smartboot.servlet.util.PathMatcherUtil;
+
 import java.util.Set;
 
 /**
@@ -24,15 +26,23 @@ public class FilterMappingInfo {
     private final String filterName;
     private final FilterMappingType mappingType;
     private final Set<DispatcherType> dispatcher;
-    private final ServletMappingInfo servletUrlMapping;
+    private final MappingMatch mappingMatch;
+    private final String urlPattern;
     private final String servletNameMapping;
 
-    public FilterMappingInfo(final String filterName, final FilterMappingType mappingType, final String servletNameMapping, ServletMappingInfo servletUrlMapping, final Set<DispatcherType> dispatcher) {
+    public FilterMappingInfo(final String filterName, final FilterMappingType mappingType, final String servletNameMapping, String urlPattern, final Set<DispatcherType> dispatcher) {
         this.filterName = filterName;
         this.mappingType = mappingType;
         this.servletNameMapping = servletNameMapping;
         this.dispatcher = dispatcher;
-        this.servletUrlMapping = servletUrlMapping;
+        if (mappingType == FilterMappingType.URL) {
+            this.urlPattern = PathMatcherUtil.getUrlPattern(urlPattern);
+            this.mappingMatch = PathMatcherUtil.getMappingType(this.urlPattern);
+        } else {
+            this.urlPattern = null;
+            this.mappingMatch = null;
+        }
+
     }
 
     public FilterMappingType getMappingType() {
@@ -51,7 +61,11 @@ public class FilterMappingInfo {
         return filterName;
     }
 
-    public ServletMappingInfo getServletUrlMapping() {
-        return servletUrlMapping;
+    public String getUrlPattern() {
+        return urlPattern;
+    }
+
+    public MappingMatch getMappingMatch() {
+        return mappingMatch;
     }
 }

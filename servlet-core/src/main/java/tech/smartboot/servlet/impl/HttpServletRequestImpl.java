@@ -423,7 +423,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     public void setServletMappingInfo(ServletMappingInfo servletMappingInfo) {
         this.servletMappingInfo = servletMappingInfo;
-        this.servletInfo = servletMappingInfo.getServletInfo();
     }
 
 

@@ -11,19 +11,21 @@
 package tech.smartboot.servlet.conf;
 
 import jakarta.servlet.http.MappingMatch;
+import tech.smartboot.servlet.util.PathMatcherUtil;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/10/11
  */
 public class ServletMappingInfo {
-    private ServletInfo servletInfo;
+    private final String servletName;
     private final String mapping;
     private final MappingMatch mappingType;
 
-    public ServletMappingInfo(String mapping, MappingMatch mappingType) {
-        this.mapping = mapping;
-        this.mappingType = mappingType;
+    public ServletMappingInfo(String servletName, String mapping) {
+        this.mapping = PathMatcherUtil.getUrlPattern(mapping);
+        this.servletName = servletName;
+        this.mappingType = PathMatcherUtil.getMappingType(this.mapping);
     }
 
     public String getMapping() {
@@ -34,11 +36,8 @@ public class ServletMappingInfo {
         return mappingType;
     }
 
-    public ServletInfo getServletInfo() {
-        return servletInfo;
-    }
 
-    public void setServletInfo(ServletInfo servletInfo) {
-        this.servletInfo = servletInfo;
+    public String getServletName() {
+        return servletName;
     }
 }

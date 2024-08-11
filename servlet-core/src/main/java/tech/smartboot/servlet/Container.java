@@ -25,7 +25,6 @@ import org.smartboot.http.server.WebSocketResponse;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.OrderMeta;
-import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
 import tech.smartboot.servlet.conf.WebFragmentInfo;
@@ -55,7 +54,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -260,8 +258,8 @@ public class Container {
             HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
             servletRequest.setHttpServletResponse(servletResponse);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
-            ServletMappingInfo servletMappingInfo = runtime.getMappingProvider().match(servletRequest.getRequestURI());
-            handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
+            ServletMappingInfo servletMappingInfo = runtime.getMappingProvider().matchServlet(servletRequest.getRequestURI());
+            handlerContext.setServletInfo(runtime.getDeploymentInfo().getServlets().get(servletMappingInfo.getServletName()));
             servletRequest.setServletMappingInfo(servletMappingInfo);
             runtime.getVendorProvider().signature(servletResponse);
             // just do it
@@ -387,14 +385,6 @@ public class Container {
             }
         }
 
-        webAppInfo.getFilterMappingInfos().forEach(filterMappingInfo -> {
-            Optional<FilterInfo> optional = webAppInfo.getFilters().stream().filter(filter -> filterMappingInfo.getFilterName().equals(filter.getFilterName())).findFirst();
-            if (optional.isPresent()) {
-                optional.get().addMapping(filterMappingInfo);
-            } else {
-                LOGGER.error("invalid filterMapping:{}", filterMappingInfo);
-            }
-        });
 
         //new runtime object
         servletRuntime.setDisplayName(webAppInfo.getDisplayName());
@@ -403,11 +393,13 @@ public class Container {
         //set session timeout
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
         //register Servlet into deploymentInfo
+        webAppInfo.getServletMappings().forEach(deploymentInfo::addServletMapping);
         webAppInfo.getServlets().values().forEach(deploymentInfo::addServlet);
 
         webAppInfo.getErrorPages().forEach(deploymentInfo::addErrorPage);
 
         //register Filter
+        webAppInfo.getFilterMappingInfos().forEach(deploymentInfo::addFilterMapping);
         for (FilterInfo filterInfo : webAppInfo.getFilters()) {
             deploymentInfo.addFilter(filterInfo);
         }

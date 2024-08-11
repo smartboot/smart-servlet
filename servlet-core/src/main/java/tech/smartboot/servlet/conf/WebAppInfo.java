@@ -29,6 +29,7 @@ public class WebAppInfo {
      * web.xml中的Servlet配置
      */
     private final Map<String, ServletInfo> servlets = new HashMap<>();
+    private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
 
     /**
      * web.xml中的Filter配置
@@ -175,5 +176,9 @@ public class WebAppInfo {
 
     public List<FilterMappingInfo> getFilterMappingInfos() {
         return filterMappingInfos;
+    }
+
+    public List<ServletMappingInfo> getServletMappings() {
+        return servletMappings;
     }
 }

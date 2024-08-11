@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.FilterInfo;
+import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
@@ -76,25 +77,23 @@ public class FilterMatchHandler extends Handler {
         String contextPath = handlerContext.getServletContext().getContextPath();
         HttpServletRequest request = (HttpServletRequest) handlerContext.getRequest();
         List<FilterInfo> filters = new ArrayList<>();
-        List<FilterInfo> allFilters = handlerContext.getServletContext().getDeploymentInfo().getFilters();
-        allFilters.forEach(filter -> {
-            filter.getMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType())).forEach(mappingInfo -> {
-                if (mappingInfo.getMappingType() == FilterMappingType.URL) {
-                    String requestURI = request.getRequestURI();
-                    if (request.getDispatcherType() == DispatcherType.INCLUDE) {
-                        requestURI = (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI);
-                    }
-                    if (PathMatcherUtil.matches(requestURI, contextPath.length(), mappingInfo.getServletUrlMapping()) > -1) {
-                        filters.add(filter);
-                    }
-                } else if (mappingInfo.getMappingType() == FilterMappingType.SERVLET) {
-                    if (handlerContext.getServletInfo() != null && StringUtils.equals(mappingInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName())) {
-                        filters.add(filter);
-                    }
-                } else {
-                    throw new IllegalStateException();
+        List<FilterMappingInfo> mappings = handlerContext.getServletContext().getDeploymentInfo().getFilterMappings();
+        mappings.stream().filter(filterMappingInfo -> filterMappingInfo.getDispatcher().contains(request.getDispatcherType())).forEach(mappingInfo -> {
+            if (mappingInfo.getMappingType() == FilterMappingType.URL) {
+                String requestURI = request.getRequestURI();
+                if (request.getDispatcherType() == DispatcherType.INCLUDE) {
+                    requestURI = (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI);
                 }
-            });
+                if (PathMatcherUtil.matches(requestURI, contextPath.length(), mappingInfo) > -1) {
+                    filters.add(handlerContext.getServletContext().getDeploymentInfo().getFilters().get(mappingInfo.getFilterName()));
+                }
+            } else if (mappingInfo.getMappingType() == FilterMappingType.SERVLET) {
+                if (handlerContext.getServletInfo() != null && StringUtils.equals(mappingInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName())) {
+                    filters.add(handlerContext.getServletContext().getDeploymentInfo().getFilters().get(mappingInfo.getFilterName()));
+                }
+            } else {
+                throw new IllegalStateException();
+            }
         });
         return filters;
     }

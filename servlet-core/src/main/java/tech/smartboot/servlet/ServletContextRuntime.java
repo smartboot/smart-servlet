@@ -24,6 +24,7 @@ import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.ServletContainerInitializerInfo;
 import tech.smartboot.servlet.conf.ServletInfo;
+import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.impl.FilterConfigImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.impl.ServletContextWrapperListener;
@@ -172,11 +173,7 @@ public class ServletContextRuntime {
     }
 
     private void newServletsInstance(DeploymentInfo deploymentInfo) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        boolean noneDefault = true;
         for (ServletInfo servletInfo : deploymentInfo.getServlets().values()) {
-            if (servletInfo.getMappings().stream().anyMatch(servletMappingInfo -> "/".equals(servletMappingInfo.getMapping()))) {
-                noneDefault = false;
-            }
             if (servletInfo.isDynamic()) {
                 continue;
             }
@@ -189,14 +186,14 @@ public class ServletContextRuntime {
             servletInfo.setServlet(servlet);
         }
         //绑定 default Servlet
-        if (noneDefault) {
+        if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getMapping().equals("/"))) {
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
             servletInfo.setServlet(new DefaultServlet(deploymentInfo));
             servletInfo.setDynamic(true);
             servletInfo.setLoadOnStartup(1);
-            servletInfo.addMapping("/");
             deploymentInfo.addServlet(servletInfo);
+            deploymentInfo.addServletMapping(new ServletMappingInfo(ServletInfo.DEFAULT_SERVLET_NAME, "/"));
         }
 
 
@@ -231,7 +228,7 @@ public class ServletContextRuntime {
                     deploymentInfo.addServlet(servletInfo);
                 }
             });
-            deploymentInfo.getHandlesTypesLoader().getFilters().values().forEach(filterInfo -> {
+            deploymentInfo.getHandlesTypesLoader().getFilters().forEach(filterInfo -> {
                 deploymentInfo.addFilter(filterInfo);
             });
             deploymentInfo.getHandlesTypesLoader().clear();
@@ -278,7 +275,7 @@ public class ServletContextRuntime {
      * @param deploymentInfo 部署信息
      */
     private void initFilter(DeploymentInfo deploymentInfo) throws Exception {
-        for (FilterInfo filterInfo : deploymentInfo.getFilters()) {
+        for (FilterInfo filterInfo : deploymentInfo.getFilters().values()) {
             FilterConfig filterConfig = new FilterConfigImpl(filterInfo, servletContext);
             Filter filter;
             if (filterInfo.isDynamic()) {

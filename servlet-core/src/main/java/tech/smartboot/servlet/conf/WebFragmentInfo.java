@@ -50,6 +50,7 @@ public class WebFragmentInfo extends WebAppInfo {
             }
         });
         webAppInfo.getFilterMappingInfos().addAll(getFilterMappingInfos());
+        webAppInfo.getServletMappings().addAll(getServletMappings());
         webAppInfo.getListeners().addAll(getListeners());
         webAppInfo.getWelcomeFileList().addAll(getWelcomeFileList());
         webAppInfo.getErrorPages().addAll(getErrorPages());

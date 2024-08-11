@@ -22,13 +22,13 @@ import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.conf.ServletInfo;
+import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
 import tech.smartboot.servlet.third.bcel.Const;
 import tech.smartboot.servlet.third.bcel.classfile.AnnotationEntry;
 import tech.smartboot.servlet.third.bcel.classfile.ClassParser;
 import tech.smartboot.servlet.third.bcel.classfile.JavaClass;
 import tech.smartboot.servlet.util.CollectionUtils;
-import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,14 +58,12 @@ import java.util.jar.JarFile;
  * @version V1.0 , 2021/6/27
  */
 public class AnnotationsLoader {
-    private final Map<ServletContainerInitializer, Set<Class<?>>> initializerClassMap =
-            new LinkedHashMap<>();
+    private final Map<ServletContainerInitializer, Set<Class<?>>> initializerClassMap = new LinkedHashMap<>();
     /**
      * Map of Types to ServletContainerInitializer that are interested in those
      * types.
      */
-    private final Map<Class<?>, Set<ServletContainerInitializer>> typeInitializerMap =
-            new HashMap<>();
+    private final Map<Class<?>, Set<ServletContainerInitializer>> typeInitializerMap = new HashMap<>();
     private final ClassLoader classLoader;
     /**
      * Flag that indicates if at least one {@link HandlesTypes} entry is present
@@ -81,7 +79,9 @@ public class AnnotationsLoader {
     private final Map<Class, List<String>> annotations = new HashMap<>();
 
     private final Map<String, ServletInfo> servlets = new HashMap<>();
-    private final Map<String, FilterInfo> filters = new HashMap<>();
+    private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
+    private final List<FilterInfo> filters = new ArrayList<>();
+    private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
 
     public AnnotationsLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -118,8 +118,7 @@ public class AnnotationsLoader {
                         processAnnotationsJar(url, javaClassCache);
                     } else if ("file".equals(url.getProtocol())) {
                         try {
-                            processAnnotationsFile(
-                                    new File(url.toURI()), javaClassCache);
+                            processAnnotationsFile(new File(url.toURI()), javaClassCache);
                         } catch (URISyntaxException e) {
                             e.printStackTrace();
                         }
@@ -147,7 +146,7 @@ public class AnnotationsLoader {
         return servlets;
     }
 
-    public Map<String, FilterInfo> getFilters() {
+    public List<FilterInfo> getFilters() {
         return filters;
     }
 
@@ -209,8 +208,7 @@ public class AnnotationsLoader {
     /**
      * 检查是否包含待加载的注解
      */
-    private void checkAnnotation(JavaClass javaClass,
-                                 Map<String, JavaClassCacheEntry> javaClassCache) throws ClassNotFoundException {
+    private void checkAnnotation(JavaClass javaClass, Map<String, JavaClassCacheEntry> javaClassCache) throws ClassNotFoundException {
         if ((javaClass.getAccessFlags() & Const.ACC_ANNOTATION) != 0) {
             // Skip annotations.
             return;
@@ -240,20 +238,12 @@ public class AnnotationsLoader {
                     }
                     Set<DispatcherType> set = new HashSet<>(Arrays.asList(webFilter.dispatcherTypes()));
                     for (String urlPattern : webFilter.urlPatterns()) {
-                        FilterMappingInfo filterMappingInfo =
-                                new FilterMappingInfo(name,
-                                        FilterMappingType.URL, null, PathMatcherUtil.addMapping(urlPattern),
-                                        set);
-                        filterInfo.addMapping(filterMappingInfo);
+                        filterMappings.add(new FilterMappingInfo(name, FilterMappingType.URL, null, urlPattern, set));
                     }
                     for (String servletName : webFilter.servletNames()) {
-                        FilterMappingInfo filterMappingInfo =
-                                new FilterMappingInfo(name,
-                                        FilterMappingType.SERVLET, servletName, null,
-                                        set);
-                        filterInfo.addMapping(filterMappingInfo);
+                        filterMappings.add(new FilterMappingInfo(name, FilterMappingType.SERVLET, servletName, null, set));
                     }
-                    filters.put(name, filterInfo);
+                    filters.add(filterInfo);
                 } else if (WebServlet.class.getName().equals(annotationName)) {
                     Class<?> clazz = classLoader.loadClass(className);
                     WebServlet webServlet = clazz.getAnnotation(WebServlet.class);
@@ -270,10 +260,10 @@ public class AnnotationsLoader {
                         servletInfo.addInitParam(param.name(), param.value());
                     }
                     for (String urlPattern : webServlet.urlPatterns()) {
-                        servletInfo.addMapping(urlPattern);
+                        servletMappings.add(new ServletMappingInfo(name, urlPattern));
                     }
                     for (String url : webServlet.value()) {
-                        servletInfo.addMapping(url);
+                        servletMappings.add(new ServletMappingInfo(name, url));
                     }
                     ServletSecurity servletSecurity = clazz.getAnnotation(ServletSecurity.class);
 //                    if (servletSecurity != null) {
@@ -313,16 +303,14 @@ public class AnnotationsLoader {
 
         AnnotationEntry[] annotationEntries = javaClass.getAnnotationEntries();
         if (handlesTypesAnnotations && annotationEntries != null) {
-            for (Map.Entry<Class<?>, Set<ServletContainerInitializer>> entry :
-                    typeInitializerMap.entrySet()) {
+            for (Map.Entry<Class<?>, Set<ServletContainerInitializer>> entry : typeInitializerMap.entrySet()) {
                 //当前类非注解
                 if (!entry.getKey().isAnnotation()) {
                     continue;
                 }
                 String entryClassName = entry.getKey().getName();
                 for (AnnotationEntry annotationEntry : annotationEntries) {
-                    if (!entryClassName.equals(
-                            getClassName(annotationEntry.getAnnotationType()))) {
+                    if (!entryClassName.equals(getClassName(annotationEntry.getAnnotationType()))) {
                         continue;
                     }
                     if (clazz == null) {
@@ -343,8 +331,7 @@ public class AnnotationsLoader {
         }
     }
 
-    private void populateSCIsForCacheEntry(JavaClassCacheEntry cacheEntry,
-                                           Map<String, JavaClassCacheEntry> javaClassCache) {
+    private void populateSCIsForCacheEntry(JavaClassCacheEntry cacheEntry, Map<String, JavaClassCacheEntry> javaClassCache) {
         Set<ServletContainerInitializer> result = new HashSet<>();
 
         // Super class
@@ -385,8 +372,7 @@ public class AnnotationsLoader {
     }
 
     private Set<ServletContainerInitializer> getSCIsForClass(String className) {
-        for (Map.Entry<Class<?>, Set<ServletContainerInitializer>> entry :
-                typeInitializerMap.entrySet()) {
+        for (Map.Entry<Class<?>, Set<ServletContainerInitializer>> entry : typeInitializerMap.entrySet()) {
             Class<?> clazz = entry.getKey();
             if (!clazz.isAnnotation()) {
                 if (clazz.getName().equals(className)) {
@@ -398,8 +384,7 @@ public class AnnotationsLoader {
     }
 
 
-    private void populateJavaClassCache(String className, JavaClass javaClass,
-                                        Map<String, JavaClassCacheEntry> javaClassCache) {
+    private void populateJavaClassCache(String className, JavaClass javaClass, Map<String, JavaClassCacheEntry> javaClassCache) {
         if (javaClassCache.containsKey(className) || className.startsWith("java") || className.startsWith("sun.")) {
             return;
         }
@@ -422,8 +407,7 @@ public class AnnotationsLoader {
      * @param className
      * @param javaClassCache
      */
-    private void populateJavaClassCache(String className,
-                                        Map<String, JavaClassCacheEntry> javaClassCache) {
+    private void populateJavaClassCache(String className, Map<String, JavaClassCacheEntry> javaClassCache) {
         if (javaClassCache.containsKey(className)) {
             return;
         }
@@ -446,8 +430,7 @@ public class AnnotationsLoader {
         }
 
         // Assume starts with L, ends with ; and uses / rather than .
-        return internalForm.substring(1,
-                internalForm.length() - 1).replace('/', '.');
+        return internalForm.substring(1, internalForm.length() - 1).replace('/', '.');
     }
 
     static class JavaClassCacheEntry {

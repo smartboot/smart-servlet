@@ -15,7 +15,7 @@ import tech.smartboot.servlet.provider.MappingProvider;
 
 public class MockMappingProvider implements MappingProvider {
     @Override
-    public ServletMappingInfo match(String url) {
+    public ServletMappingInfo matchServlet(String url) {
         return null;
     }
 }

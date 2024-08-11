@@ -30,7 +30,7 @@ public class MappingProviderImpl implements MappingProvider {
     }
 
     @Override
-    public ServletMappingInfo match(String requestUri) {
+    public ServletMappingInfo matchServlet(String requestUri) {
         String mappingUrl = requestUri.substring(offset);
         //精准匹配
         ServletMappingInfo servletMappingInfo = exactMapping.get(mappingUrl);

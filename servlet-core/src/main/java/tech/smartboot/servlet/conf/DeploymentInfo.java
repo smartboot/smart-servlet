@@ -41,10 +41,14 @@ import java.util.concurrent.Executors;
  */
 public class DeploymentInfo {
     private final Map<String, ServletInfo> servlets = new HashMap<>();
-
+    private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
     private final Map<Integer, ErrorPageInfo> errorStatusPages = new HashMap<>();
     private final Map<String, ErrorPageInfo> errorPages = new HashMap<>();
-    private final List<FilterInfo> filters = new ArrayList<>();
+    private final Map<String, FilterInfo> filters = new HashMap<>();
+    /**
+     * web.xml中的Filter映射信息配置
+     */
+    private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
     private final Map<String, String> initParameters = new HashMap<>();
     private List<ServletContainerInitializerInfo> servletContainerInitializers = new ArrayList<>();
     private List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
@@ -144,8 +148,24 @@ public class DeploymentInfo {
         return errorPage == null ? null : errorPage.getLocation();
     }
 
+    public void addServletMapping(final ServletMappingInfo servletMapping) {
+        servletMappings.add(servletMapping);
+    }
+
+    public List<ServletMappingInfo> getServletMappings() {
+        return servletMappings;
+    }
+
+    public void addFilterMapping(final FilterMappingInfo filterMapping) {
+        filterMappings.add(filterMapping);
+    }
+
+    public List<FilterMappingInfo> getFilterMappings() {
+        return filterMappings;
+    }
+
     public void addFilter(final FilterInfo filter) {
-        filters.add(filter);
+        filters.put(filter.getFilterName(), filter);
     }
 
     public void amazing() {
@@ -231,9 +251,10 @@ public class DeploymentInfo {
         return requestAttributeListeners;
     }
 
-    public List<FilterInfo> getFilters() {
+    public Map<String, FilterInfo> getFilters() {
         return filters;
     }
+
 
     public Map<String, String> getInitParameters() {
         return initParameters;

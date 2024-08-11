@@ -26,7 +26,6 @@ import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.Mimetypes;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.DeploymentInfo;
-import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
 
 import java.io.File;
@@ -224,7 +223,7 @@ class DefaultServlet extends HttpServlet {
                     return uri + file;
                 }
                 //是否匹配 Servlet url-pattern
-                if (deploymentInfo.getServlets().values().stream().map(ServletInfo::getMappings).anyMatch(list -> list.stream().anyMatch(mapping -> mapping.getMapping().equals("/" + file)))) {
+                if (deploymentInfo.getServletMappings().stream().anyMatch(mapping -> mapping.getMapping().equals("/" + file))) {
                     return file;
                 }
             }

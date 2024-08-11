@@ -11,6 +11,7 @@
 package tech.smartboot.servlet.util;
 
 import jakarta.servlet.http.MappingMatch;
+import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 
 import java.net.URI;
@@ -34,23 +35,27 @@ public class PathMatcherUtil {
         return false;
     }
 
-    public static ServletMappingInfo addMapping(String mapping) {
-        if (!mapping.startsWith("/") && !mapping.startsWith("*") && !mapping.isEmpty()) {
-            mapping = "/" + mapping;
+    public static String getUrlPattern(String urlPattern) {
+        if (!urlPattern.startsWith("/") && !urlPattern.startsWith("*") && !urlPattern.isEmpty()) {
+            urlPattern = "/" + urlPattern;
         }
-        if ("/".equals(mapping)) {
-            return new ServletMappingInfo(mapping, MappingMatch.DEFAULT);
-        } else if (!mapping.contains("*")) {
-            if (!mapping.startsWith("/")) {
-                throw new IllegalArgumentException("invalid mapping: " + mapping);
+        return urlPattern;
+    }
+
+    public static MappingMatch getMappingType(String urlPattern) {
+        if ("/".equals(urlPattern)) {
+            return MappingMatch.DEFAULT;
+        } else if (!urlPattern.contains("*")) {
+            if (!urlPattern.startsWith("/")) {
+                throw new IllegalArgumentException("invalid mapping: " + urlPattern);
             }
-            return new ServletMappingInfo(mapping, MappingMatch.EXACT);
-        } else if (mapping.startsWith("*.")) {
-            return new ServletMappingInfo(mapping, MappingMatch.EXTENSION);
-        } else if (mapping.startsWith("/") && mapping.endsWith("/*")) {
-            return new ServletMappingInfo(mapping, MappingMatch.PATH);
+            return MappingMatch.EXACT;
+        } else if (urlPattern.startsWith("*.")) {
+            return MappingMatch.EXTENSION;
+        } else if (urlPattern.startsWith("/") && urlPattern.endsWith("/*")) {
+            return MappingMatch.PATH;
         } else {
-            throw new IllegalArgumentException("illegal mapping : " + mapping);
+            throw new IllegalArgumentException("illegal mapping : " + urlPattern);
         }
     }
 
@@ -60,9 +65,9 @@ public class PathMatcherUtil {
      * @param mappingInfo
      * @return 0:根目录匹配
      */
-    public static int matches(String uri, int startIndex, ServletMappingInfo mappingInfo) {
-        String pattern = mappingInfo.getMapping();
-        MappingMatch mappingTypeEnum = mappingInfo.getMappingType();
+    public static int matches(String uri, int startIndex, FilterMappingInfo mappingInfo) {
+        String pattern = mappingInfo.getUrlPattern();
+        MappingMatch mappingTypeEnum = mappingInfo.getMappingMatch();
         int servletPathEndIndex = -1;
         switch (mappingTypeEnum) {
             case DEFAULT:

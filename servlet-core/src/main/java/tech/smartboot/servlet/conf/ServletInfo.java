@@ -23,13 +23,9 @@ import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import tech.smartboot.servlet.impl.ServletConfigImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
-import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +35,6 @@ import java.util.Map;
 public class ServletInfo {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletInfo.class);
     public static final String DEFAULT_SERVLET_NAME = "default";
-    private final List<ServletMappingInfo> mappings = new ArrayList<>();
     private final Map<String, String> initParams = new HashMap<>();
     private final Map<String, String> securityRoles = new HashMap<>();
     private String servletClass;
@@ -115,31 +110,8 @@ public class ServletInfo {
         this.servlet = servlet;
     }
 
-    public List<ServletMappingInfo> getMappings() {
-        return Collections.unmodifiableList(mappings);
-    }
-
     public ServletInfo addInitParam(final String name, final String value) {
         initParams.put(name, value);
-        return this;
-    }
-
-    /**
-     * 《Servlet 3.1规范中文版》 12.2 映射规范
-     * 在 web 应用部署􏰁述符中，以下语法用于定义映射:
-     * - 以‘/’字符开始、以‘/*’后缀结尾的字符串用于路径匹配。
-     * - 以前缀‘*.’开始的字符串用于扩展名映射。
-     * - 空字符串“”是一个特殊的 URL 模式，其精确映射到应用的上下文根，即，http://host:port/<context-root>/ 请求形式。在这种情况下，路径信息是‘/’且 servlet 路径和上下文路径是空字符串(“”)。
-     * - 只包含“/”字符的字符串表示应用的“默认的”servlet。在这种情况下，servlet 路径是请求 URL 减去 上下文路径且路径信息是 null。
-     * - 所以其他字符串仅用于精确匹配。
-     *
-     * @param mapping
-     * @return
-     */
-    public ServletInfo addMapping(final String mapping) {
-        ServletMappingInfo servletMappingInfo = PathMatcherUtil.addMapping(mapping);
-        servletMappingInfo.setServletInfo(this);
-        mappings.add(servletMappingInfo);
         return this;
     }
 
@@ -206,6 +178,7 @@ public class ServletInfo {
 
     /**
      * 是否已经完成初始化
+     *
      * @return
      */
     public boolean initialized() {
