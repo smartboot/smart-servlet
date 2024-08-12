@@ -290,7 +290,7 @@ public class ServletContextRuntime {
 
     public void stop() {
         plugins.forEach(plugin -> plugin.willStopContainer(this));
-        deploymentInfo.getServlets().values().forEach(servletInfo -> servletInfo.getServlet().destroy());
+        deploymentInfo.getServlets().values().stream().filter(ServletInfo::initialized).forEach(servletInfo -> servletInfo.getServlet().destroy());
         ServletContextEvent event = deploymentInfo.getServletContextListeners().isEmpty() ? null : new ServletContextEvent(servletContext);
         deploymentInfo.getServletContextListeners().forEach(servletContextListener -> servletContextListener.getListener().contextDestroyed(event));
 
