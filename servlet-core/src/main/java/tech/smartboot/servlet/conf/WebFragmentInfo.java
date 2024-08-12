@@ -50,7 +50,13 @@ public class WebFragmentInfo extends WebAppInfo {
             }
         });
         webAppInfo.getFilterMappingInfos().addAll(getFilterMappingInfos());
-        webAppInfo.getServletMappings().addAll(getServletMappings());
+        //具有相同<servlet-name>的<servlet-mapping>元素可以添加到多个 web-fragment。在 web.xml 中
+        //指定的<servlet-mapping>覆盖在 web-fragment 中指定的同名的<servlet-name>的<servlet-mapping>
+        getServletMappings().forEach(fragmentMapping -> {
+            if (webAppInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getServletName().equals(fragmentMapping.getServletName()))) {
+                webAppInfo.getServletMappings().add(fragmentMapping);
+            }
+        });
         webAppInfo.getListeners().addAll(getListeners());
         webAppInfo.getWelcomeFileList().addAll(getWelcomeFileList());
         webAppInfo.getErrorPages().addAll(getErrorPages());

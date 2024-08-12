@@ -220,7 +220,7 @@ public class ServletContextRuntime {
                 System.out.println(listener);
                 servletContext.addListener(listener);
             });
-            deploymentInfo.getHandlesTypesLoader().getServlets().values().forEach(servletInfo -> {
+            deploymentInfo.getHandlesTypesLoader().getServlets().forEach(servletInfo -> {
                 ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
                 if (webXmlInfo != null) {
                     servletInfo.getInitParams().forEach(webXmlInfo::addInitParam);
@@ -228,9 +228,9 @@ public class ServletContextRuntime {
                     deploymentInfo.addServlet(servletInfo);
                 }
             });
-            deploymentInfo.getHandlesTypesLoader().getFilters().forEach(filterInfo -> {
-                deploymentInfo.addFilter(filterInfo);
-            });
+            deploymentInfo.getHandlesTypesLoader().getServletMappings().forEach(deploymentInfo::addServletMapping);
+            deploymentInfo.getHandlesTypesLoader().getFilters().forEach(deploymentInfo::addFilter);
+            deploymentInfo.getHandlesTypesLoader().getFilterMappings().forEach(deploymentInfo::addFilterMapping);
             deploymentInfo.getHandlesTypesLoader().clear();
             deploymentInfo.setHandlesTypesLoader(null);
 //            System.out.println("scanHandleTypes use :" + (System.currentTimeMillis() - start));

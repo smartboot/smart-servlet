@@ -78,7 +78,7 @@ public class AnnotationsLoader {
 
     private final Map<Class, List<String>> annotations = new HashMap<>();
 
-    private final Map<String, ServletInfo> servlets = new HashMap<>();
+    private final List<ServletInfo> servlets = new ArrayList<>();
     private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
     private final List<FilterInfo> filters = new ArrayList<>();
     private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
@@ -142,12 +142,20 @@ public class AnnotationsLoader {
         return initializerClassMap;
     }
 
-    public Map<String, ServletInfo> getServlets() {
+    public List<ServletInfo> getServlets() {
         return servlets;
     }
 
     public List<FilterInfo> getFilters() {
         return filters;
+    }
+
+    public List<FilterMappingInfo> getFilterMappings() {
+        return filterMappings;
+    }
+
+    public List<ServletMappingInfo> getServletMappings() {
+        return servletMappings;
     }
 
     public List<String> getAnnotations(Class clazz) {
@@ -269,7 +277,7 @@ public class AnnotationsLoader {
 //                    if (servletSecurity != null) {
 //                        servletSecurity.value()
 //                    }
-                    servlets.put(name, servletInfo);
+                    servlets.add(servletInfo);
                 }
             }
         }
