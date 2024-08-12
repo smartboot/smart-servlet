@@ -456,7 +456,7 @@ public class ServletContextImpl implements ServletContext {
         filterInfo.setFilterClass(filter.getClass().getName());
         filterInfo.setDynamic(true);
         deploymentInfo.addFilter(filterInfo);
-        return new ApplicationFilterRegistration(filterInfo);
+        return new ApplicationFilterRegistration(deploymentInfo, filterInfo);
     }
 
     private void checkServletContextState() {
@@ -483,14 +483,14 @@ public class ServletContextImpl implements ServletContext {
     public FilterRegistration getFilterRegistration(String filterName) {
         checkContextInitializeState();
         Optional<FilterInfo> optional = deploymentInfo.getFilters().values().stream().filter(filter -> filterName.equals(filter.getFilterName())).findFirst();
-        return optional.map(ApplicationFilterRegistration::new).orElse(null);
+        return optional.map(filterInfo -> new ApplicationFilterRegistration(deploymentInfo, filterInfo)).orElse(null);
     }
 
     @Override
     public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
         checkContextInitializeState();
         Map<String, ApplicationFilterRegistration> filterMap = new HashMap<>();
-        deploymentInfo.getFilters().values().forEach(filterInfo -> filterMap.put(filterInfo.getFilterName(), new ApplicationFilterRegistration(filterInfo)));
+        deploymentInfo.getFilters().values().forEach(filterInfo -> filterMap.put(filterInfo.getFilterName(), new ApplicationFilterRegistration(deploymentInfo, filterInfo)));
         return filterMap;
     }
 

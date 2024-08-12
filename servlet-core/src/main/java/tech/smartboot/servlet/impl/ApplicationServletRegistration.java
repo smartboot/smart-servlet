@@ -19,13 +19,11 @@ import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -38,7 +36,6 @@ import java.util.stream.Collectors;
 public class ApplicationServletRegistration implements ServletRegistration.Dynamic {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationServletRegistration.class);
     private final ServletInfo servletInfo;
-    private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
     private final DeploymentInfo deploymentInfo;
 
     public ApplicationServletRegistration(DeploymentInfo deploymentInfo, ServletInfo servletInfo) {
@@ -77,14 +74,14 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
             return existingMapping;
         }
         for (String urlPattern : urlPatterns) {
-            servletMappings.add(new ServletMappingInfo(servletInfo.getServletName(), urlPattern));
+            deploymentInfo.addServletMapping(new ServletMappingInfo(servletInfo.getServletName(), urlPattern));
         }
         return Collections.emptySet();
     }
 
     @Override
     public Collection<String> getMappings() {
-        return servletMappings.stream().map(ServletMappingInfo::getMapping).collect(Collectors.toList());
+        return deploymentInfo.getServletMappings().stream().filter(mapping -> mapping.getServletName().equals(servletInfo.getServletName())).map(ServletMappingInfo::getMapping).collect(Collectors.toList());
     }
 
     @Override

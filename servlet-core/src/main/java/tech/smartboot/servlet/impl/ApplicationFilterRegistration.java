@@ -12,16 +12,15 @@ package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterRegistration;
+import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,34 +33,35 @@ public class ApplicationFilterRegistration implements FilterRegistration.Dynamic
 
 
     private final FilterInfo filterDef;
-    private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
+    private DeploymentInfo deploymentInfo;
 
-    public ApplicationFilterRegistration(FilterInfo filterDef) {
+    public ApplicationFilterRegistration(DeploymentInfo deploymentInfo, FilterInfo filterDef) {
+        this.deploymentInfo = deploymentInfo;
         this.filterDef = filterDef;
     }
 
     @Override
     public void addMappingForServletNames(EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter, String... servletNames) {
         for (String servletName : servletNames) {
-            filterMappings.add(new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.SERVLET, servletName, null, dispatcherTypes));
+            deploymentInfo.addFilterMapping(new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.SERVLET, servletName, null, dispatcherTypes));
         }
     }
 
     @Override
     public void addMappingForUrlPatterns(EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter, String... urlPatterns) {
         for (String urlPattern : urlPatterns) {
-            filterMappings.add(new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.URL, null, urlPattern, dispatcherTypes));
+            deploymentInfo.addFilterMapping(new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.URL, null, urlPattern, dispatcherTypes));
         }
     }
 
     @Override
     public Collection<String> getServletNameMappings() {
-        return filterMappings.stream().filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.SERVLET).map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
+        return deploymentInfo.getFilterMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterDef.getFilterName()) && filterMappingInfo.getMappingType() == FilterMappingType.SERVLET).map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
     }
 
     @Override
     public Collection<String> getUrlPatternMappings() {
-        return filterMappings.stream().filter(filterMappingInfo -> filterMappingInfo.getMappingType() == FilterMappingType.URL).map(FilterMappingInfo::getUrlPattern).collect(Collectors.toList());
+        return deploymentInfo.getFilterMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterDef.getFilterName()) && filterMappingInfo.getMappingType() == FilterMappingType.URL).map(FilterMappingInfo::getUrlPattern).collect(Collectors.toList());
     }
 
     @Override
