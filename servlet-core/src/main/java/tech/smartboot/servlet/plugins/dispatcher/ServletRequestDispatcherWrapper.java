@@ -179,13 +179,16 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
         String matchValue;
         MappingMatch mappingMatch = servletMappingInfo.getMappingType();
         switch (servletMappingInfo.getMappingType()) {
+            case DEFAULT:
+                matchValue = "";
+                if (StringUtils.isBlank(getServletContext().getContextPath())) {
+                    mappingMatch = MappingMatch.CONTEXT_ROOT;
+                }
+                break;
             case EXACT:
                 matchValue = servletMappingInfo.getMapping();
                 if (matchValue.startsWith("/")) {
                     matchValue = matchValue.substring(1);
-                }
-                if (matchValue.isEmpty()) {
-                    mappingMatch = StringUtils.isBlank(getServletContext().getContextPath()) ? MappingMatch.CONTEXT_ROOT : MappingMatch.DEFAULT;
                 }
                 break;
             case PATH:
