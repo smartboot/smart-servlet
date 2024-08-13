@@ -12,6 +12,7 @@ package tech.smartboot.servlet;
 
 
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -113,7 +114,7 @@ class DefaultServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String fileName = request.getRequestURI();
+        String fileName = request.getDispatcherType() == DispatcherType.INCLUDE ? (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) : request.getRequestURI();
         String method = request.getMethod();
         URL url = request.getServletContext().getResource(fileName.substring(request.getContextPath().length()));
         File file = null;
@@ -195,7 +196,6 @@ class DefaultServlet extends HttpServlet {
         // 而且请求的资源不存在，那么默认的 servlet 必须抛出 FileNotFoundException 异常。
         // 如果这个异常没有被捕获和处理，以及响应还未􏰀交，则响应状态 码必须被设置为 500。
         if (request.getDispatcherType() == DispatcherType.INCLUDE) {
-            response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
             throw new FileNotFoundException();
         }
 
@@ -213,7 +213,7 @@ class DefaultServlet extends HttpServlet {
     }
 
     private String matchForwardWelcome(HttpServletRequest request) throws MalformedURLException {
-        String requestUri = request.getRequestURI();
+        String requestUri = request.getDispatcherType() == DispatcherType.INCLUDE ? (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) : request.getRequestURI();
         ServletContext servletContext = request.getServletContext();
         if (requestUri.endsWith("/")) {
             for (String file : deploymentInfo.getWelcomeFiles()) {

@@ -219,19 +219,23 @@ class WebXmlParseEngine {
     private void parseFilterMapping(WebAppInfo webAppInfo, Element parentElement) {
         List<Node> childNodeList = getChildNodes(parentElement, "filter-mapping");
         for (Node node : childNodeList) {
-            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("filter-name", "url-pattern", "servlet-name"));
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("filter-name"));
             String filterName = nodeData.get("filter-name");
-            String urlPattern = nodeData.get("url-pattern");
-            String servletName = nodeData.get("servlet-name");
-            List<Node> dispatcher = getChildNodes(node, "dispatcher");
+            List<String> dispatchers = getNodeValues(node, "dispatcher");
             Set<DispatcherType> dispatcherTypes = new HashSet<>();
-            if (CollectionUtils.isEmpty(dispatcher)) {
+            if (CollectionUtils.isEmpty(dispatchers)) {
                 dispatcherTypes.add(DispatcherType.REQUEST);
             } else {
-                dispatcher.forEach(dispatcherElement -> dispatcherTypes.add(DispatcherType.valueOf(StringUtils.trim(dispatcherElement.getFirstChild().getNodeValue()))));
+                dispatchers.forEach(dispatcher -> dispatcherTypes.add(DispatcherType.valueOf(dispatcher)));
             }
-            FilterMappingInfo filterInfo = new FilterMappingInfo(filterName, StringUtils.isBlank(urlPattern) ? FilterMappingType.SERVLET : FilterMappingType.URL, servletName, urlPattern, dispatcherTypes);
-            webAppInfo.getFilterMappingInfos().add(filterInfo);
+            getNodeValues(node, "url-pattern").forEach(urlPattern -> {
+                FilterMappingInfo filterInfo = new FilterMappingInfo(filterName, FilterMappingType.URL, null, urlPattern, dispatcherTypes);
+                webAppInfo.getFilterMappingInfos().add(filterInfo);
+            });
+            getNodeValues(node, "servlet-name").forEach(servletName -> {
+                FilterMappingInfo filterInfo = new FilterMappingInfo(filterName, FilterMappingType.SERVLET, servletName, null, dispatcherTypes);
+                webAppInfo.getFilterMappingInfos().add(filterInfo);
+            });
         }
     }
 

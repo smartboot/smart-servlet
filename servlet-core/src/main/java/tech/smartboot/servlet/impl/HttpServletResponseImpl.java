@@ -24,6 +24,7 @@ import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Locale;
@@ -96,10 +97,6 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void sendError(int sc, String msg) throws IOException {
-        //If the response has already been committed, this method throws an IllegalStateException.
-        if (isCommitted()) {
-            throw new IllegalStateException();
-        }
         //After using this method, the response should be considered to be committed and should not be written to.
         if (servletOutputStream != null) {
             servletOutputStream.resetBuffer();
@@ -351,13 +348,16 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void resetBuffer() {
-        if (servletOutputStream == null) {
-            return;
+        if (servletOutputStream != null) {
+            servletOutputStream.resetBuffer();
         }
-        if (servletOutputStream.isCommitted()) {
-            throw new IllegalStateException();
+        if (writer != null) {
+            try {
+                writer = new PrintWriter(new ServletPrintWriter(servletOutputStream, getCharacterEncoding()));
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
         }
-        servletOutputStream.resetBuffer();
     }
 
     @Override
@@ -367,8 +367,8 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public void reset() {
-        if (isCommitted()) {
-            throw new IllegalStateException();
+        if (servletOutputStream != null) {
+            servletOutputStream.resetBuffer();
         }
         response.getHeaderNames().forEach(headerName -> response.setHeader(headerName, null));
         setContentLength(-1);
@@ -377,9 +377,6 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         response.setHttpStatus(HttpStatus.OK);
         writer = null;
         responseType = RESPONSE_TYPE_NONE;
-        if (servletOutputStream != null) {
-            servletOutputStream.resetBuffer();
-        }
     }
 
     @Override

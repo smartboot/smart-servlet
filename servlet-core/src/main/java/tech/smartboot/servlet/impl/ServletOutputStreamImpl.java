@@ -106,6 +106,9 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     }
 
     public void resetBuffer() {
+        if (committed) {
+            throw new IllegalStateException();
+        }
         written = 0;
     }
 
