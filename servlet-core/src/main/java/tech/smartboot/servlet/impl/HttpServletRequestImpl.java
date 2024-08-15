@@ -29,6 +29,7 @@ import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.MappingMatch;
 import jakarta.servlet.http.Part;
 import org.smartboot.http.common.enums.HeaderNameEnum;
+import org.smartboot.http.common.enums.HeaderValueEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.NumberUtils;
@@ -447,9 +448,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private Collection<Part> parts = null;
     private Exception partsParseException = null;
 
-    private void parseParts() {
+    private void parseParts() throws ServletException {
         if (parts != null || partsParseException != null) {
             return;
+        }
+        if (!request.getContentType().startsWith(HeaderValueEnum.MULTIPART_FORM_DATA.getName())) {
+            throw new ServletException("Not a multipart request");
         }
         try {
             MultipartConfigElement multipartConfigElement = servletInfo.getMultipartConfig();
@@ -480,7 +484,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                     String name = part.getName();
                     String value = null;
                     try {
-                        value = item.getString(getCharacterEncoding());
+                        if (StringUtils.isBlank(getCharacterEncoding())) {
+                            value = item.getString();
+                        } else {
+                            value = item.getString(getCharacterEncoding());
+                        }
+
                     } catch (UnsupportedEncodingException uee) {
                         // Not possible
                     }
