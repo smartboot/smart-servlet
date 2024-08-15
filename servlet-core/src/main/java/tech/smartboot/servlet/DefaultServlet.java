@@ -28,12 +28,14 @@ import org.smartboot.http.common.utils.Mimetypes;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
+import tech.smartboot.servlet.impl.WriterOutputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -158,9 +160,17 @@ class DefaultServlet extends HttpServlet {
         if (HttpMethodEnum.HEAD.getMethod().equals(method)) {
             return;
         }
+
+        OutputStream outputStream = null;
+        try {
+            outputStream = response.getOutputStream();
+        } catch (IllegalStateException e) {
+            outputStream = new WriterOutputStream(response.getWriter());
+        }
+
         if (defaultFavicon) {
             response.setContentLength(faviconBytes.length);
-            response.getOutputStream().write(faviconBytes);
+            outputStream.write(faviconBytes);
             return;
         }
         LOGGER.info("load file:" + fileName);
@@ -173,7 +183,7 @@ class DefaultServlet extends HttpServlet {
             readPos += mappedByteBuffer.remaining();
             byte[] data = new byte[mappedByteBuffer.remaining()];
             mappedByteBuffer.get(data);
-            response.getOutputStream().write(data);
+            outputStream.write(data);
         }
         fis.close();
     }
