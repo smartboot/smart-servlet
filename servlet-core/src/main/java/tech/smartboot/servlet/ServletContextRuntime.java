@@ -186,7 +186,7 @@ public class ServletContextRuntime {
             servletInfo.setServlet(servlet);
         }
         //绑定 default Servlet
-        if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getMapping().equals("/"))) {
+        if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getUrlPattern().equals("/"))) {
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
             servletInfo.setServlet(new DefaultServlet(deploymentInfo));

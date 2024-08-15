@@ -26,6 +26,7 @@ import tech.smartboot.servlet.conf.OrderMeta;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
+import tech.smartboot.servlet.conf.UrlPattern;
 import tech.smartboot.servlet.conf.WebAppInfo;
 import tech.smartboot.servlet.conf.WebFragmentInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
@@ -366,7 +367,7 @@ class WebXmlParseEngine {
             Node webResourceCollection = Objects.requireNonNull(getChildNode(node, "web-resource-collection"));
 //            Map<String, List<String>> data = getNodeValues(webResourceCollection, Arrays.asList("web-resource-name", "url-pattern", "http-method"));
             securityConstraint.getHttpMethods().addAll(getNodeValues(webResourceCollection, "http-method"));
-            securityConstraint.getUrlPatterns().addAll(getNodeValues(webResourceCollection, "url-pattern"));
+            getNodeValues(webResourceCollection, "url-pattern").forEach(urlPattern -> securityConstraint.getUrlPatterns().add(new UrlPattern(urlPattern)));
 //            securityConstraint.getResourceNames().addAll(getNodeValues(webResourceCollection, "web-resource-name"));
 
 
@@ -379,6 +380,7 @@ class WebXmlParseEngine {
             if (userDataConstraint != null) {
                 securityConstraint.getTransportGuarantees().addAll(getNodeValues(userDataConstraint, "transport-guarantee"));
             }
+            webAppInfo.getSecurityConstraints().add(securityConstraint);
         }
     }
 

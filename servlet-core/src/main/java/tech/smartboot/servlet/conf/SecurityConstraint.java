@@ -15,13 +15,13 @@ import java.util.List;
 
 public class SecurityConstraint {
     //    private final List<String> resourceNames = new ArrayList<>();
-    private final List<String> urlPatterns = new ArrayList<>();
+    private final List<UrlPattern> urlPatterns = new ArrayList<>();
     private final List<String> httpMethods = new ArrayList<>();
 
     private final List<String> roleNames = new ArrayList<>();
     private final List<String> transportGuarantees = new ArrayList<>();
 
-    public List<String> getUrlPatterns() {
+    public List<UrlPattern> getUrlPatterns() {
         return urlPatterns;
     }
 

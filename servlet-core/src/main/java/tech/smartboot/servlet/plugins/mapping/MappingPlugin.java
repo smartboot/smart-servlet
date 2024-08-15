@@ -19,19 +19,19 @@ public class MappingPlugin extends Plugin {
         MappingProviderImpl provider = new MappingProviderImpl(servletContextRuntime.getServletContext().getContextPath().length());
         servletContextRuntime.setMappingProvider(provider);
         servletContextRuntime.getDeploymentInfo().getServletMappings().forEach(mapping -> {
-            switch (mapping.getMappingType()) {
+            switch (mapping.getMappingMatch()) {
                 case DEFAULT:
                     provider.setDefaultMapping(mapping);
                     break;
                 case EXACT:
-                    provider.getExactMapping().put(mapping.getMapping(), mapping);
+                    provider.getExactMapping().put(mapping.getUrlPattern(), mapping);
                     break;
                 case EXTENSION:
                     provider.getExtensionMappings().add(mapping);
                     break;
                 case PATH:
                     provider.getPathMappings().add(mapping);
-                    provider.getPathMappings().sort((o1, o2) -> o2.getMapping().length() - o1.getMapping().length());
+                    provider.getPathMappings().sort((o1, o2) -> o2.getUrlPattern().length() - o1.getUrlPattern().length());
                     break;
             }
         });

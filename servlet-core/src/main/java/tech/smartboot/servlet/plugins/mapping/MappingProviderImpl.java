@@ -40,7 +40,7 @@ public class MappingProviderImpl implements MappingProvider {
         //路径匹配
         int remaining = requestUri.length() - offset;
         for (ServletMappingInfo mappingInfo : pathMappings) {
-            int matchLength = mappingInfo.getMapping().length() - 2;
+            int matchLength = mappingInfo.getUrlPattern().length() - 2;
             if (remaining < matchLength) {
                 //后续一定更短
                 continue;
@@ -48,7 +48,7 @@ public class MappingProviderImpl implements MappingProvider {
 
             boolean match = true;
             for (int i = 0; i < matchLength; i++) {
-                if (requestUri.charAt(i + offset) != mappingInfo.getMapping().charAt(i)) {
+                if (requestUri.charAt(i + offset) != mappingInfo.getUrlPattern().charAt(i)) {
                     match = false;
                     break;
                 }
@@ -61,9 +61,9 @@ public class MappingProviderImpl implements MappingProvider {
         //后缀匹配
         for (ServletMappingInfo mappingInfo : extensionMappings) {
             boolean match = true;
-            for (int i = 1; i < mappingInfo.getMapping().length() - 1; i++) {
-                if (requestUri.charAt(requestUri.length() - i) != mappingInfo.getMapping().charAt(mappingInfo
-                        .getMapping().length() - i)) {
+            for (int i = 1; i < mappingInfo.getUrlPattern().length() - 1; i++) {
+                if (requestUri.charAt(requestUri.length() - i) != mappingInfo.getUrlPattern().charAt(mappingInfo
+                        .getUrlPattern().length() - i)) {
                     match = false;
                     break;
                 }

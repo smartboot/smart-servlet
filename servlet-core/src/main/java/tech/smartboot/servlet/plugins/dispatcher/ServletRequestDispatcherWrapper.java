@@ -123,9 +123,9 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
             return;
         }
         pathInit = true;
-        switch (servletMappingInfo.getMappingType()) {
+        switch (servletMappingInfo.getMappingMatch()) {
             case EXACT -> {
-                servletPath = servletMappingInfo.getMapping();
+                servletPath = servletMappingInfo.getUrlPattern();
                 pathInfo = null;
             }
             case EXTENSION -> {
@@ -133,7 +133,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
                 pathInfo = null;
             }
             case PATH -> {
-                servletPath = servletMappingInfo.getMapping().substring(0, servletMappingInfo.getMapping().length() - 2);
+                servletPath = servletMappingInfo.getUrlPattern().substring(0, servletMappingInfo.getUrlPattern().length() - 2);
                 if (getContextPath().length() + servletPath.length() < getRequestURI().length()) {
                     pathInfo = getRequestURI().substring(getContextPath().length() + servletPath.length());
                 }
@@ -177,8 +177,8 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
             return null;
         }
         String matchValue;
-        MappingMatch mappingMatch = servletMappingInfo.getMappingType();
-        switch (servletMappingInfo.getMappingType()) {
+        MappingMatch mappingMatch = servletMappingInfo.getMappingMatch();
+        switch (servletMappingInfo.getMappingMatch()) {
             case DEFAULT:
                 matchValue = "";
                 if (StringUtils.isBlank(getServletContext().getContextPath())) {
@@ -186,17 +186,17 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
                 }
                 break;
             case EXACT:
-                matchValue = servletMappingInfo.getMapping();
+                matchValue = servletMappingInfo.getUrlPattern();
                 if (matchValue.startsWith("/")) {
                     matchValue = matchValue.substring(1);
                 }
                 break;
             case PATH:
                 String servletPath = getServletPath();
-                if (servletMappingInfo.getMapping().length() >= servletPath.length() + 2) {
+                if (servletMappingInfo.getUrlPattern().length() >= servletPath.length() + 2) {
                     matchValue = "";
                 } else {
-                    matchValue = getServletPath().substring(servletMappingInfo.getMapping().length() - 1);
+                    matchValue = getServletPath().substring(servletMappingInfo.getUrlPattern().length() - 1);
                 }
 
                 if (matchValue.startsWith("/")) {
@@ -204,7 +204,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
                 }
                 break;
             case EXTENSION:
-                matchValue = getServletPath().substring(getServletPath().charAt(0) == '/' ? 1 : 0, getServletPath().length() - servletMappingInfo.getMapping().length() + 1);
+                matchValue = getServletPath().substring(getServletPath().charAt(0) == '/' ? 1 : 0, getServletPath().length() - servletMappingInfo.getUrlPattern().length() + 1);
                 break;
             default:
                 throw new IllegalStateException();

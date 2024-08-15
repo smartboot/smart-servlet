@@ -414,6 +414,8 @@ public class Container {
 
         webAppInfo.getMimeMappings().forEach((key, value) -> servletRuntime.getServletContext().putMimeTypes(key, value));
 
+        webAppInfo.getSecurityConstraints().forEach(deploymentInfo::addSecurityConstraint);
+
         deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 
         //如果 web.xml 描述符中的 metadata-complete 元素设置为 true，

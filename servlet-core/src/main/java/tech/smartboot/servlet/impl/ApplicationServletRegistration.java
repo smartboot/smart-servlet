@@ -68,7 +68,7 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
     public Set<String> addMapping(String... urlPatterns) {
         //If any of the specified URL patterns are already mapped to a different Servlet, no updates will be performed.
         Set<String> mappingSet = new HashSet<>(Arrays.asList(urlPatterns));
-        Set<String> existingMapping = deploymentInfo.getServletMappings().stream().map(ServletMappingInfo::getMapping).filter(mappingSet::contains).collect(Collectors.toSet());
+        Set<String> existingMapping = deploymentInfo.getServletMappings().stream().map(ServletMappingInfo::getUrlPattern).filter(mappingSet::contains).collect(Collectors.toSet());
         if (!existingMapping.isEmpty()) {
             //the (possibly empty) Set of URL patterns that are already mapped to a different Servlet
             return existingMapping;
@@ -81,7 +81,7 @@ public class ApplicationServletRegistration implements ServletRegistration.Dynam
 
     @Override
     public Collection<String> getMappings() {
-        return deploymentInfo.getServletMappings().stream().filter(mapping -> mapping.getServletName().equals(servletInfo.getServletName())).map(ServletMappingInfo::getMapping).collect(Collectors.toList());
+        return deploymentInfo.getServletMappings().stream().filter(mapping -> mapping.getServletName().equals(servletInfo.getServletName())).map(ServletMappingInfo::getUrlPattern).collect(Collectors.toList());
     }
 
     @Override

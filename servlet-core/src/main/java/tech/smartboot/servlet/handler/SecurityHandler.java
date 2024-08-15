@@ -11,13 +11,34 @@
 package tech.smartboot.servlet.handler;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import tech.smartboot.servlet.conf.SecurityConstraint;
+import tech.smartboot.servlet.conf.UrlPattern;
+import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;
 
 public class SecurityHandler extends Handler {
     @Override
     public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
-
+        HttpServletRequest request = (HttpServletRequest) handlerContext.getRequest();
+        for (SecurityConstraint securityConstraint : handlerContext.getServletContext().getDeploymentInfo().getSecurityConstraints()) {
+            boolean match = false;
+            for (UrlPattern urlPattern : securityConstraint.getUrlPatterns()) {
+                if (PathMatcherUtil.matches((HttpServletRequest) handlerContext.getRequest(), urlPattern)) {
+                    match = true;
+                    break;
+                }
+            }
+            if (!match) {
+                continue;
+            }
+            if (!securityConstraint.getHttpMethods().isEmpty() && !securityConstraint.getHttpMethods().contains(request.getMethod())) {
+                ((HttpServletResponse) handlerContext.getResponse()).sendError(403);
+                return;
+            }
+        }
         doNext(handlerContext);
     }
 }

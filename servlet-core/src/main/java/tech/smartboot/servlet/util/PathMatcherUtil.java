@@ -10,9 +10,9 @@
 
 package tech.smartboot.servlet.util;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.MappingMatch;
-import tech.smartboot.servlet.conf.FilterMappingInfo;
-import tech.smartboot.servlet.conf.ServletMappingInfo;
+import tech.smartboot.servlet.conf.UrlPattern;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -59,20 +59,25 @@ public class PathMatcherUtil {
         }
     }
 
+    public static boolean matches(HttpServletRequest request, UrlPattern mappingInfo) {
+        String uri = request.getRequestURI();
+        return matches(uri, request.getContextPath().length(), mappingInfo);
+    }
+
     /**
      * @param uri
      * @param startIndex
      * @param mappingInfo
      * @return 0:根目录匹配
      */
-    public static int matches(String uri, int startIndex, FilterMappingInfo mappingInfo) {
+    public static boolean matches(String uri, int startIndex, UrlPattern mappingInfo) {
         String pattern = mappingInfo.getUrlPattern();
         MappingMatch mappingTypeEnum = mappingInfo.getMappingMatch();
         int servletPathEndIndex = -1;
         switch (mappingTypeEnum) {
             case DEFAULT:
                 if ("/".equals(pattern)) {
-                    return 0;
+                    return true;
                 }
                 break;
             //精准匹配
@@ -82,15 +87,15 @@ public class PathMatcherUtil {
                 // 即，http://host:port/<context-root>/ 请求形式。
                 // 在这种情况下，路径信息是‘/’且 servlet 路径和上下文路径是空字符串(“”)。
                 if (uri.length() == startIndex || "/".equals(pattern)) {
-                    return 0;
+                    return true;
                 }
                 if (uri.length() - startIndex != pattern.length()) {
-                    return -1;
+                    return false;
                 }
                 //第一位肯定是"/",从第二位开始匹配
                 for (int i = 1; i < pattern.length(); i++) {
                     if (uri.charAt(startIndex + i) != pattern.charAt(i)) {
-                        return -1;
+                        return false;
                     }
                 }
                 servletPathEndIndex = startIndex + pattern.length();
@@ -103,22 +108,22 @@ public class PathMatcherUtil {
                 // 在这种情况下，路径信息是‘/’且 servlet 路径和上下文路径是空字符串(“”)。
                 //pattern.length() == 2 等同于 "/*".equals(pattern)
                 if (uri.length() == startIndex && pattern.length() == 2) {
-                    return 0;
+                    return true;
                 }
                 //舍去"/ab/*"最后一位"/*"
                 int matchLen = pattern.length() - 2;
                 int remainingLen = uri.length() - startIndex;
                 if (remainingLen < matchLen) {
-                    return -1;
+                    return false;
                 }
                 if (remainingLen >= matchLen + 1 && uri.charAt(startIndex + matchLen) != '/') {
-                    return -1;
+                    return false;
                 }
 
                 //第一位肯定是"/",从第二位开始匹配
                 for (int i = 1; i < matchLen; i++) {
                     if (uri.charAt(startIndex + i) != pattern.charAt(i)) {
-                        return -1;
+                        return false;
                     }
                 }
 
@@ -129,11 +134,11 @@ public class PathMatcherUtil {
                 // 不比较"*.xx" 中的 *
                 int uriStartIndex = uri.length() - pattern.length();
                 if (uriStartIndex <= 0) {
-                    return -1;
+                    return false;
                 }
                 for (int i = 1; i < pattern.length(); i++) {
                     if (uri.charAt(uriStartIndex + i) != pattern.charAt(i)) {
-                        return -1;
+                        return false;
                     }
                 }
                 servletPathEndIndex = uri.length();
@@ -141,6 +146,6 @@ public class PathMatcherUtil {
             default:
                 throw new IllegalStateException("unSupport mappingType " + mappingTypeEnum);
         }
-        return servletPathEndIndex;
+        return true;
     }
 }

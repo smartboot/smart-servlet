@@ -84,7 +84,7 @@ public class FilterMatchHandler extends Handler {
                 if (request.getDispatcherType() == DispatcherType.INCLUDE) {
                     requestURI = (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI);
                 }
-                if (PathMatcherUtil.matches(requestURI, contextPath.length(), mappingInfo) > -1) {
+                if (PathMatcherUtil.matches(requestURI, contextPath.length(), mappingInfo)) {
                     filters.add(handlerContext.getServletContext().getDeploymentInfo().getFilters().get(mappingInfo.getFilterName()));
                 }
             } else if (mappingInfo.getMappingType() == FilterMappingType.SERVLET) {

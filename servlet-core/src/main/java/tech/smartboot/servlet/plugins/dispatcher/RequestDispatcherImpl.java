@@ -182,15 +182,15 @@ class RequestDispatcherImpl implements RequestDispatcher {
     }
 
     private String getServerPath(ServletMappingInfo servletMappingInfo, String requestUri) {
-        switch (servletMappingInfo.getMappingType()) {
+        switch (servletMappingInfo.getMappingMatch()) {
             case EXACT -> {
-                return servletMappingInfo.getMapping();
+                return servletMappingInfo.getUrlPattern();
             }
             case EXTENSION -> {
                 return requestUri.substring(servletContext.getContextPath().length());
             }
             case PATH -> {
-                return servletMappingInfo.getMapping().substring(0, servletMappingInfo.getMapping().length() - 2);
+                return servletMappingInfo.getUrlPattern().substring(0, servletMappingInfo.getUrlPattern().length() - 2);
             }
         }
         return null;

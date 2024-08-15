@@ -10,32 +10,17 @@
 
 package tech.smartboot.servlet.conf;
 
-import jakarta.servlet.http.MappingMatch;
-import tech.smartboot.servlet.util.PathMatcherUtil;
-
 /**
  * @author 三刀
  * @version V1.0 , 2020/10/11
  */
-public class ServletMappingInfo {
+public class ServletMappingInfo extends UrlPattern {
     private final String servletName;
-    private final String mapping;
-    private final MappingMatch mappingType;
 
     public ServletMappingInfo(String servletName, String mapping) {
-        this.mapping = PathMatcherUtil.getUrlPattern(mapping);
+        super(mapping);
         this.servletName = servletName;
-        this.mappingType = PathMatcherUtil.getMappingType(this.mapping);
     }
-
-    public String getMapping() {
-        return mapping;
-    }
-
-    public MappingMatch getMappingType() {
-        return mappingType;
-    }
-
 
     public String getServletName() {
         return servletName;

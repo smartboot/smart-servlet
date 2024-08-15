@@ -32,7 +32,7 @@ public class HttpServletMappingImpl implements HttpServletMapping {
 
     @Override
     public String getPattern() {
-        return servletMappingInfo.getMapping();
+        return servletMappingInfo.getUrlPattern();
     }
 
     @Override

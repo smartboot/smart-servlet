@@ -64,6 +64,7 @@ public class DeploymentInfo {
     private List<String> welcomeFiles = Collections.emptyList();
     private final Set<String> securityRoles = new HashSet<>();
     private final Map<String, String> localeEncodingMappings = new HashMap<>();
+    private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
     private final ClassLoader classLoader;
     private String displayName;
     private URL contextUrl;
@@ -121,6 +122,14 @@ public class DeploymentInfo {
 
     public Map<String, ServletInfo> getServlets() {
         return servlets;
+    }
+
+    public void addSecurityConstraint(SecurityConstraint securityConstraint) {
+        securityConstraints.add(securityConstraint);
+    }
+
+    public List<SecurityConstraint> getSecurityConstraints() {
+        return securityConstraints;
     }
 
     public void addErrorPage(final ErrorPageInfo servlet) {

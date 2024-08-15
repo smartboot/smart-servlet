@@ -11,9 +11,7 @@
 package tech.smartboot.servlet.conf;
 
 import jakarta.servlet.DispatcherType;
-import jakarta.servlet.http.MappingMatch;
 import tech.smartboot.servlet.enums.FilterMappingType;
-import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.util.Set;
 
@@ -21,28 +19,19 @@ import java.util.Set;
  * @author 三刀
  * @version V1.0 , 2020/11/14
  */
-public class FilterMappingInfo {
+public class FilterMappingInfo extends UrlPattern {
 
     private final String filterName;
     private final FilterMappingType mappingType;
     private final Set<DispatcherType> dispatcher;
-    private final MappingMatch mappingMatch;
-    private final String urlPattern;
     private final String servletNameMapping;
 
     public FilterMappingInfo(final String filterName, final FilterMappingType mappingType, final String servletNameMapping, String urlPattern, final Set<DispatcherType> dispatcher) {
+        super(urlPattern);
         this.filterName = filterName;
         this.mappingType = mappingType;
         this.servletNameMapping = servletNameMapping;
         this.dispatcher = dispatcher;
-        if (mappingType == FilterMappingType.URL) {
-            this.urlPattern = PathMatcherUtil.getUrlPattern(urlPattern);
-            this.mappingMatch = PathMatcherUtil.getMappingType(this.urlPattern);
-        } else {
-            this.urlPattern = null;
-            this.mappingMatch = null;
-        }
-
     }
 
     public FilterMappingType getMappingType() {
@@ -61,11 +50,4 @@ public class FilterMappingInfo {
         return filterName;
     }
 
-    public String getUrlPattern() {
-        return urlPattern;
-    }
-
-    public MappingMatch getMappingMatch() {
-        return mappingMatch;
-    }
 }
