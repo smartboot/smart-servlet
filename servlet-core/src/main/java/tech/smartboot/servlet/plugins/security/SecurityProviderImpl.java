@@ -11,20 +11,31 @@
 package tech.smartboot.servlet.plugins.security;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.provider.SecurityProvider;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SecurityProviderImpl implements SecurityProvider {
     private Map<String, SecurityTO> exactPathSecurities = new HashMap<>();
     private Map<String, SecurityTO> prefixPathSecurities = new HashMap<>();
     private Map<String, SecurityTO> extensionSecurities = new HashMap<>();
+    private Map<String, SecurityTO> methodSecurities = new HashMap<>();
+    private final Map<String, UserTO> headerSecurities = new HashMap<>();
+
+    @Override
+    public void addUser(String username, String password, Set<String> roles) {
+        headerSecurities.put(username, new UserTO(username, password, roles));
+    }
 
     @Override
     public void init(List<SecurityConstraint> constraints) {
@@ -49,5 +60,19 @@ public class SecurityProviderImpl implements SecurityProvider {
     @Override
     public void logout(HttpServletRequestImpl httpServletRequest) throws ServletException {
 
+    }
+
+    @Override
+    public UserTO getUser(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        if (StringUtils.isBlank(authorization)) {
+            return null;
+        }
+        UserTO userTO = new UserTO("j2ee", "j2ee", Set.of("Administrator", "Employee"));
+        if (authorization.startsWith("Basic ")) {
+            System.out.println(new String(Base64.getDecoder().decode(authorization.substring(6))));
+
+        }
+        return userTO;
     }
 }

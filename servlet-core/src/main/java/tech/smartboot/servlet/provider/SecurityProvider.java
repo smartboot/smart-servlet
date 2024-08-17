@@ -11,14 +11,19 @@
 package tech.smartboot.servlet.provider;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
+import tech.smartboot.servlet.plugins.security.UserTO;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 public interface SecurityProvider {
+    void addUser(String username, String password, Set<String> roles);
+
     void init(List<SecurityConstraint> constraints);
 
     public void login(String username, String password, HttpServletRequestImpl httpServletRequest) throws ServletException;
@@ -29,4 +34,6 @@ public interface SecurityProvider {
 
 
     public void logout(HttpServletRequestImpl httpServletRequest) throws ServletException;
+
+    public UserTO getUser(HttpServletRequest request);
 }

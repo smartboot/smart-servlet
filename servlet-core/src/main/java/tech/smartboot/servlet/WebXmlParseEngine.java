@@ -12,6 +12,7 @@ package tech.smartboot.servlet;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.annotation.ServletSecurity;
 import org.smartboot.http.common.utils.NumberUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.w3c.dom.Document;
@@ -373,12 +374,17 @@ class WebXmlParseEngine {
 
             Node authConstraint = getChildNode(node, "auth-constraint");
             if (authConstraint != null) {
-                securityConstraint.getRoleNames().addAll(getNodeValues(authConstraint, "role-name"));
+                securityConstraint.setRoleNames(getNodeValues(authConstraint, "role-name"));
             }
 
             Node userDataConstraint = getChildNode(node, "user-data-constraint");
             if (userDataConstraint != null) {
-                securityConstraint.getTransportGuarantees().addAll(getNodeValues(userDataConstraint, "transport-guarantee"));
+                String transportGuarantees = getNodeValue(userDataConstraint, Collections.singletonList("transport-guarantee")).get("transport-guarantee");
+                if ("CONFIDENTIAL".equals(transportGuarantees)) {
+                    securityConstraint.setTransportGuarantee(ServletSecurity.TransportGuarantee.CONFIDENTIAL);
+                } else {
+                    securityConstraint.setTransportGuarantee(ServletSecurity.TransportGuarantee.NONE);
+                }
             }
             webAppInfo.getSecurityConstraints().add(securityConstraint);
         }

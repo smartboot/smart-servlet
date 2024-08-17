@@ -10,16 +10,19 @@
 
 package tech.smartboot.servlet.conf;
 
+import jakarta.servlet.annotation.ServletSecurity;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SecurityConstraint {
+    private ServletSecurity.EmptyRoleSemantic emptyRoleSemantic = ServletSecurity.EmptyRoleSemantic.PERMIT;
+    private ServletSecurity.TransportGuarantee transportGuarantee = ServletSecurity.TransportGuarantee.NONE;
     //    private final List<String> resourceNames = new ArrayList<>();
     private final List<UrlPattern> urlPatterns = new ArrayList<>();
     private final List<String> httpMethods = new ArrayList<>();
 
-    private final List<String> roleNames = new ArrayList<>();
-    private final List<String> transportGuarantees = new ArrayList<>();
+    private List<String> roleNames;
 
     public List<UrlPattern> getUrlPatterns() {
         return urlPatterns;
@@ -33,7 +36,23 @@ public class SecurityConstraint {
         return roleNames;
     }
 
-    public List<String> getTransportGuarantees() {
-        return transportGuarantees;
+    public void setRoleNames(List<String> roleNames) {
+        this.roleNames = roleNames;
+    }
+
+    public ServletSecurity.EmptyRoleSemantic getEmptyRoleSemantic() {
+        return emptyRoleSemantic;
+    }
+
+    public void setEmptyRoleSemantic(ServletSecurity.EmptyRoleSemantic emptyRoleSemantic) {
+        this.emptyRoleSemantic = emptyRoleSemantic;
+    }
+
+    public ServletSecurity.TransportGuarantee getTransportGuarantee() {
+        return transportGuarantee;
+    }
+
+    public void setTransportGuarantee(ServletSecurity.TransportGuarantee transportGuarantee) {
+        this.transportGuarantee = transportGuarantee;
     }
 }

@@ -15,29 +15,68 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.UrlPattern;
+import tech.smartboot.servlet.plugins.security.UserTO;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;
+import java.util.List;
 
 public class SecurityHandler extends Handler {
     @Override
     public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) handlerContext.getRequest();
-        for (SecurityConstraint securityConstraint : handlerContext.getServletContext().getDeploymentInfo().getSecurityConstraints()) {
-            boolean match = false;
-            for (UrlPattern urlPattern : securityConstraint.getUrlPatterns()) {
-                if (PathMatcherUtil.matches((HttpServletRequest) handlerContext.getRequest(), urlPattern)) {
-                    match = true;
-                    break;
+//        UserTO userTO = null;
+//        if (!handlerContext.getServletInfo().getSecurityRoles().isEmpty()) {
+//            userTO = handlerContext.getServletContext().getRuntime().getSecurityProvider().getUser(request);
+//            if (userTO == null) {
+//                ((HttpServletResponse) handlerContext.getResponse()).sendError(403);
+//                return;
+//            }
+//            boolean valid = false;
+//            for (String role : handlerContext.getServletInfo().getSecurityRoles().values()) {
+//                if (userTO.getRoles().contains(role)) {
+//                    valid = true;
+//                    break;
+//                }
+//            }
+//            if (!valid) {
+//                ((HttpServletResponse) handlerContext.getResponse()).sendError(403);
+//                return;
+//            }
+//        }
+
+        List<SecurityConstraint> constraints = handlerContext.getServletInfo().getSecurityConstraints();
+        if (constraints.isEmpty()) {
+            constraints = handlerContext.getServletContext().getDeploymentInfo().getSecurityConstraints().stream().filter(securityConstraint -> {
+                for (UrlPattern urlPattern : securityConstraint.getUrlPatterns()) {
+                    if (PathMatcherUtil.matches((HttpServletRequest) handlerContext.getRequest(), urlPattern)) {
+                        return true;
+                    }
+                }
+                return false;
+            }).toList();
+        }
+        if (constraints.isEmpty()) {
+            doNext(handlerContext);
+            return;
+        }
+        constraints = constraints.stream().filter(securityConstraint -> securityConstraint.getRoleNames() == null || securityConstraint.getHttpMethods().isEmpty() || securityConstraint.getHttpMethods().contains(request.getMethod())).toList();
+        if (constraints.isEmpty()) {
+            ((HttpServletResponse) handlerContext.getResponse()).sendError(403);
+            return;
+        }
+        UserTO userTO = handlerContext.getServletContext().getRuntime().getSecurityProvider().getUser(request);
+        constraints = constraints.stream().filter(securityConstraint -> {
+            for (String role : securityConstraint.getRoleNames()) {
+                if (userTO.getRoles().contains(role)) {
+                    return true;
                 }
             }
-            if (!match) {
-                continue;
-            }
-            if (!securityConstraint.getHttpMethods().isEmpty() && !securityConstraint.getHttpMethods().contains(request.getMethod())) {
-                ((HttpServletResponse) handlerContext.getResponse()).sendError(403);
-                return;
-            }
+            return false;
+        }).toList();
+        if (constraints.isEmpty()) {
+            ((HttpServletResponse) handlerContext.getResponse()).sendError(403);
+            return;
         }
         doNext(handlerContext);
     }

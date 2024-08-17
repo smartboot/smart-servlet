@@ -13,6 +13,8 @@ package tech.smartboot.servlet;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.annotation.HandlesTypes;
+import jakarta.servlet.annotation.HttpConstraint;
+import jakarta.servlet.annotation.HttpMethodConstraint;
 import jakarta.servlet.annotation.ServletSecurity;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebInitParam;
@@ -21,6 +23,7 @@ import jakarta.servlet.annotation.WebServlet;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
+import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
@@ -274,9 +277,25 @@ public class AnnotationsLoader {
                         servletMappings.add(new ServletMappingInfo(name, url));
                     }
                     ServletSecurity servletSecurity = clazz.getAnnotation(ServletSecurity.class);
-//                    if (servletSecurity != null) {
-//                        servletSecurity.value()
-//                    }
+                    if (servletSecurity != null) {
+                        if (servletSecurity.httpMethodConstraints().length > 0) {
+                            for (HttpMethodConstraint httpMethodConstraint : servletSecurity.httpMethodConstraints()) {
+                                SecurityConstraint securityConstraint = new SecurityConstraint();
+                                securityConstraint.getHttpMethods().add(httpMethodConstraint.value());
+                                securityConstraint.setEmptyRoleSemantic(httpMethodConstraint.emptyRoleSemantic());
+                                securityConstraint.setTransportGuarantee(httpMethodConstraint.transportGuarantee());
+                                securityConstraint.setRoleNames(Arrays.asList(httpMethodConstraint.rolesAllowed()));
+                                servletInfo.getSecurityConstraints().add(securityConstraint);
+                            }
+                        } else {
+                            HttpConstraint httpConstraint = servletSecurity.value();
+                            SecurityConstraint securityConstraint = new SecurityConstraint();
+                            securityConstraint.setEmptyRoleSemantic(httpConstraint.value());
+                            securityConstraint.setTransportGuarantee(httpConstraint.transportGuarantee());
+                            securityConstraint.setRoleNames(Arrays.asList(httpConstraint.rolesAllowed()));
+                            servletInfo.getSecurityConstraints().add(securityConstraint);
+                        }
+                    }
                     servlets.add(servletInfo);
                 }
             }

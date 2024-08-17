@@ -25,7 +25,9 @@ import tech.smartboot.servlet.impl.ServletConfigImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,6 +51,7 @@ public class ServletInfo {
 
     private boolean asyncSupported;
     private boolean init = false;
+    private List<SecurityConstraint> securityConstraints = new ArrayList<>();
 
     public synchronized void init(ServletContextImpl servletContext) {
         if (init) {
@@ -174,6 +177,10 @@ public class ServletInfo {
 
     public Map<String, String> getSecurityRoles() {
         return securityRoles;
+    }
+
+    public List<SecurityConstraint> getSecurityConstraints() {
+        return securityConstraints;
     }
 
     /**
