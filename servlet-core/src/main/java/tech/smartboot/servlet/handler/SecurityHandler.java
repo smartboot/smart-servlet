@@ -41,13 +41,21 @@ public class SecurityHandler extends Handler {
             }
             return false;
         }).toList());
+        //移除不匹配的httpMethod
+        constraints = constraints.stream().filter(securityConstraint -> !securityConstraint.getHttpMethodOmissions().contains(request.getMethod())).toList();
         //不存在匹配的安全约束
         if (constraints.isEmpty()) {
             doNext(handlerContext);
             return;
         }
 
-        constraints = constraints.stream().filter(securityConstraint -> ((CollectionUtils.isNotEmpty(securityConstraint.getRoleNames()) || securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.PERMIT)) && ((securityConstraint.getHttpMethods().isEmpty() || securityConstraint.getHttpMethods().contains(request.getMethod())) && !securityConstraint.getHttpMethodOmissions().contains(request.getMethod()))).toList();
+
+        constraints = constraints.stream().filter(securityConstraint -> (
+                        //存在角色或者为PERMIT
+                        (CollectionUtils.isNotEmpty(securityConstraint.getRoleNames()) || securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.PERMIT))
+                        //为配置httpMethod，或者包含指定method
+                        && (securityConstraint.getHttpMethods().isEmpty() || securityConstraint.getHttpMethods().contains(request.getMethod())))
+                .toList();
         if (constraints.isEmpty()) {
             ((HttpServletResponse) handlerContext.getResponse()).sendError(403);
             return;
@@ -64,6 +72,7 @@ public class SecurityHandler extends Handler {
             }
             for (String role : securityConstraint.getRoleNames()) {
                 if (securityAccount.getRoles().contains(role)) {
+                    //匹配的角色
                     loginAccount.getRoles().add(role);
                     return true;
                 }
