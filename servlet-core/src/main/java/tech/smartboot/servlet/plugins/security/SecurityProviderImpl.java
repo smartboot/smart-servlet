@@ -19,6 +19,7 @@ import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.provider.SecurityProvider;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -30,11 +31,12 @@ public class SecurityProviderImpl implements SecurityProvider {
     private Map<String, SecurityTO> prefixPathSecurities = new HashMap<>();
     private Map<String, SecurityTO> extensionSecurities = new HashMap<>();
     private Map<String, SecurityTO> methodSecurities = new HashMap<>();
-    private final Map<String, UserTO> headerSecurities = new HashMap<>();
+    private final Map<String, SecurityAccount> headerSecurities = new HashMap<>();
+    private List<SecurityAccount> users = Arrays.asList(new SecurityAccount("j2ee", "j2ee", null, Set.of("Administrator", "Employee")), new SecurityAccount("javajoe", "javajoe", null, Set.of("VP", "Manager")));
 
     @Override
     public void addUser(String username, String password, Set<String> roles) {
-        headerSecurities.put(username, new UserTO(username, password, roles));
+        headerSecurities.put(username, new SecurityAccount(username, password, null, roles));
     }
 
     @Override
@@ -43,8 +45,8 @@ public class SecurityProviderImpl implements SecurityProvider {
     }
 
     @Override
-    public void login(String username, String password, HttpServletRequestImpl httpServletRequest) throws ServletException {
-
+    public SecurityAccount login(String username, String password) throws ServletException {
+        return users.stream().filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password)).findFirst().orElse(null);
     }
 
     @Override
@@ -53,7 +55,20 @@ public class SecurityProviderImpl implements SecurityProvider {
     }
 
     @Override
-    public boolean isUserInRole(String role, HttpServletRequestImpl httpServletRequest) {
+    public boolean isUserInRole(String role, LoginAccount loginAccount, HttpServletRequestImpl httpServletRequest) {
+        if (loginAccount == null) {
+            return false;
+        }
+        if (role == null || role.equals("*")) {
+            return false;
+        }
+        if (role.equals("**")) {
+            Set<String> roles = httpServletRequest.getServletContext().getDeploymentInfo().getSecurityRoles();
+            if (!roles.contains("**")) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -63,16 +78,15 @@ public class SecurityProviderImpl implements SecurityProvider {
     }
 
     @Override
-    public UserTO getUser(HttpServletRequest request) {
+    public SecurityAccount login(HttpServletRequest request) throws ServletException {
         String authorization = request.getHeader("Authorization");
         if (StringUtils.isBlank(authorization)) {
             return null;
         }
-        UserTO userTO = new UserTO("j2ee", "j2ee", Set.of("Administrator", "Employee"));
         if (authorization.startsWith("Basic ")) {
-            System.out.println(new String(Base64.getDecoder().decode(authorization.substring(6))));
-
+            String[] auth = new String(Base64.getDecoder().decode(authorization.substring(6))).split(":");
+            return users.stream().filter(user -> user.getUsername().equals(auth[0]) && user.getPassword().equals(auth[1])).findFirst().orElse(null);
         }
-        return userTO;
+        return null;
     }
 }

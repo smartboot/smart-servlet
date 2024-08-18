@@ -21,6 +21,7 @@ public class SecurityConstraint {
     //    private final List<String> resourceNames = new ArrayList<>();
     private final List<UrlPattern> urlPatterns = new ArrayList<>();
     private final List<String> httpMethods = new ArrayList<>();
+    private final List<String> httpMethodOmissions = new ArrayList();
 
     private List<String> roleNames;
 
@@ -30,6 +31,10 @@ public class SecurityConstraint {
 
     public List<String> getHttpMethods() {
         return httpMethods;
+    }
+
+    public List<String> getHttpMethodOmissions() {
+        return httpMethodOmissions;
     }
 
     public List<String> getRoleNames() {

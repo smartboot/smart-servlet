@@ -22,6 +22,7 @@ import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.impl.HttpServletMappingImpl;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
+import tech.smartboot.servlet.plugins.security.LoginAccount;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -165,6 +166,11 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     @Override
     public void setAsyncSupported(boolean supported) {
         this.request.setAsyncSupported(supported);
+    }
+
+    @Override
+    public void setLoginAccount(LoginAccount loginAccount) {
+        this.request.setLoginAccount(loginAccount);
     }
 
 

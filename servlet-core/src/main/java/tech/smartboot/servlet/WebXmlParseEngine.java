@@ -368,6 +368,7 @@ class WebXmlParseEngine {
             Node webResourceCollection = Objects.requireNonNull(getChildNode(node, "web-resource-collection"));
 //            Map<String, List<String>> data = getNodeValues(webResourceCollection, Arrays.asList("web-resource-name", "url-pattern", "http-method"));
             securityConstraint.getHttpMethods().addAll(getNodeValues(webResourceCollection, "http-method"));
+            securityConstraint.getHttpMethodOmissions().addAll(getNodeValues(webResourceCollection, "http-method-omission"));
             getNodeValues(webResourceCollection, "url-pattern").forEach(urlPattern -> securityConstraint.getUrlPatterns().add(new UrlPattern(urlPattern)));
 //            securityConstraint.getResourceNames().addAll(getNodeValues(webResourceCollection, "web-resource-name"));
 

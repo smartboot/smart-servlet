@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.smartboot.socket.util.Attachment;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
+import tech.smartboot.servlet.plugins.security.LoginAccount;
 
 /**
  * @author 三刀
@@ -41,5 +42,7 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
     void setServletMappingInfo(ServletMappingInfo servletMappingInfo);
 
     void setAsyncSupported(boolean supported);
+
+    void setLoginAccount(LoginAccount loginAccount);
 
 }

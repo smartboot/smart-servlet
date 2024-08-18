@@ -41,6 +41,8 @@ import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.impl.fileupload.SmartHttpRequestContext;
+import tech.smartboot.servlet.plugins.security.LoginAccount;
+import tech.smartboot.servlet.plugins.security.SecurityAccount;
 import tech.smartboot.servlet.provider.SessionProvider;
 import tech.smartboot.servlet.third.commons.fileupload.FileItem;
 import tech.smartboot.servlet.third.commons.fileupload.FileUpload;
@@ -116,6 +118,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private final CompletableFuture<Object> completableFuture;
 
     private ServletMappingInfo servletMappingInfo;
+    private LoginAccount principal;
 
     public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, CompletableFuture<Object> completableFuture) {
         this.request = request;
@@ -251,12 +254,19 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean isUserInRole(String role) {
-        throw new UnsupportedOperationException();
+        return runtime.getSecurityProvider().isUserInRole(role, principal, this);
     }
 
     @Override
     public Principal getUserPrincipal() {
-        return null;
+        if (principal == null) {
+//            try {
+//                principal = runtime.getSecurityProvider().getUser(this);
+//            } catch (ServletException e) {
+//                throw new RuntimeException(e);
+//            }
+        }
+        return principal;
     }
 
     @Override
@@ -378,7 +388,10 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public void login(String username, String password) throws ServletException {
-        throw new ServletException("Not Implemented");
+        SecurityAccount securityAccount = runtime.getSecurityProvider().login(username, password);
+        if (securityAccount != null) {
+            principal = new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(), securityAccount.getRoles());
+        }
     }
 
     @Override
@@ -824,6 +837,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public void setAsyncSupported(boolean supported) {
         this.asyncSupported = asyncStarted;
+    }
+
+    @Override
+    public void setLoginAccount(LoginAccount loginAccount) {
+        this.principal = loginAccount;
     }
 
     @Override
