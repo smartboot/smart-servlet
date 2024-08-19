@@ -54,6 +54,7 @@ public class WebAppInfo {
     private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
     private List<String> absoluteOrdering;
     private boolean absoluteOrderingOther = false;
+    private LoginConfig loginConfig;
 
     private int sessionTimeout = 0;
 
@@ -180,5 +181,13 @@ public class WebAppInfo {
 
     public List<ServletMappingInfo> getServletMappings() {
         return servletMappings;
+    }
+
+    public LoginConfig getLoginConfig() {
+        return loginConfig;
+    }
+
+    public void setLoginConfig(LoginConfig loginConfig) {
+        this.loginConfig = loginConfig;
     }
 }

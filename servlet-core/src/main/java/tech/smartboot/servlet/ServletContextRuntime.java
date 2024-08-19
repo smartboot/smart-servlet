@@ -29,6 +29,7 @@ import tech.smartboot.servlet.impl.FilterConfigImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.impl.ServletContextWrapperListener;
 import tech.smartboot.servlet.plugins.Plugin;
+import tech.smartboot.servlet.plugins.security.SecurityCheckServlet;
 import tech.smartboot.servlet.plugins.security.SecurityProviderImpl;
 import tech.smartboot.servlet.provider.AsyncContextProvider;
 import tech.smartboot.servlet.provider.DispatcherProvider;
@@ -194,6 +195,16 @@ public class ServletContextRuntime {
             servletInfo.setLoadOnStartup(1);
             deploymentInfo.addServlet(servletInfo);
             deploymentInfo.addServletMapping(new ServletMappingInfo(ServletInfo.DEFAULT_SERVLET_NAME, "/"));
+        }
+
+        if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getUrlPattern().equals("/j_security_check"))) {
+            ServletInfo servletInfo = new ServletInfo();
+            servletInfo.setServletName("SecurityCheckServlet");
+            servletInfo.setServlet(new SecurityCheckServlet(deploymentInfo));
+            servletInfo.setDynamic(true);
+            servletInfo.setLoadOnStartup(1);
+            deploymentInfo.addServlet(servletInfo);
+            deploymentInfo.addServletMapping(new ServletMappingInfo(servletInfo.getServletName(), "/j_security_check"));
         }
 
 

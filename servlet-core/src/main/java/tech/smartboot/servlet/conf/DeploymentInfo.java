@@ -74,7 +74,7 @@ public class DeploymentInfo {
      * 会话超时时间
      */
     private int sessionTimeout;
-
+    private LoginConfig loginConfig;
     private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public URL getContextUrl() {
@@ -175,6 +175,14 @@ public class DeploymentInfo {
 
     public void addFilter(final FilterInfo filter) {
         filters.put(filter.getFilterName(), filter);
+    }
+
+    public LoginConfig getLoginConfig() {
+        return loginConfig;
+    }
+
+    public void setLoginConfig(LoginConfig loginConfig) {
+        this.loginConfig = loginConfig;
     }
 
     public void amazing() {

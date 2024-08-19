@@ -23,6 +23,7 @@ import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.impl.HttpServletMappingImpl;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.plugins.security.LoginAccount;
+import tech.smartboot.servlet.provider.SecurityProvider;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -43,12 +44,17 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     private Map<String, String[]> parameters;
     private final DispatcherType dispatcherType;
     private boolean pathInit = false;
+    private String method;
 
     public ServletRequestDispatcherWrapper(HttpServletRequestImpl request, DispatcherType dispatcherType, boolean named) {
         super(request);
         this.request = request;
         this.dispatcherType = dispatcherType;
         this.named = named;
+        Object m = request.getAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD);
+        if (m != null) {
+            this.method = m.toString();
+        }
     }
 
     @Override
@@ -144,8 +150,21 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     }
 
     @Override
+    public String getMethod() {
+        if (method == null) {
+            return super.getMethod();
+        }
+        return method;
+    }
+
+    @Override
     public void setServletInfo(ServletInfo servletInfo) {
         this.request.setServletInfo(servletInfo);
+    }
+
+    @Override
+    public ServletInfo getServletInfo() {
+        return this.request.getServletInfo();
     }
 
     @Override

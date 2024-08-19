@@ -12,6 +12,8 @@ package tech.smartboot.servlet.util;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.MappingMatch;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import tech.smartboot.servlet.conf.UrlPattern;
 
 import java.net.URI;
@@ -22,6 +24,7 @@ import java.net.URISyntaxException;
  * @version V1.0 , 2020/11/14
  */
 public class PathMatcherUtil {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PathMatcherUtil.class);
 
     public static boolean isAbsoluteUrl(String location) {
         if (location != null && location.length() > 0 && location.contains(":")) {
@@ -55,7 +58,8 @@ public class PathMatcherUtil {
         } else if (urlPattern.startsWith("/") && urlPattern.endsWith("/*")) {
             return MappingMatch.PATH;
         } else {
-            throw new IllegalArgumentException("illegal mapping : " + urlPattern);
+            LOGGER.error("illegal mapping : " + urlPattern);
+            return null;
         }
     }
 

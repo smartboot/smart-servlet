@@ -11,17 +11,20 @@
 package tech.smartboot.servlet.plugins.security;
 
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.Set;
 
 public class LoginAccount implements Principal {
-    private final String username;
+    private final String name;
     private final String password;
+    private final Set<String> matches;
     private final Set<String> roles;
 
-    public LoginAccount(String username, String password, Set<String> roles) {
-        this.username = username;
+    public LoginAccount(String name, String password, Set<String> roles) {
+        this.name = name;
         this.password = password;
         this.roles = roles;
+        this.matches = new HashSet<>();
     }
 
 
@@ -35,6 +38,10 @@ public class LoginAccount implements Principal {
 
     @Override
     public String getName() {
-        return username;
+        return name;
+    }
+
+    public Set<String> getMatches() {
+        return matches;
     }
 }

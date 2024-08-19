@@ -392,6 +392,10 @@ public class Container {
         DeploymentInfo deploymentInfo = servletRuntime.getDeploymentInfo();
         //set session timeout
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
+        deploymentInfo.setLoginConfig(webAppInfo.getLoginConfig());
+//        if (webAppInfo.getLoginConfig() != null && webAppInfo.getLoginConfig().getLoginPage().endsWith(".jsp")) {
+//            servletRuntime.getServletContext().addJspFile("aaaaaa", webAppInfo.getLoginConfig().getLoginPage());
+//        }
         //register Servlet into deploymentInfo
         webAppInfo.getServletMappings().forEach(deploymentInfo::addServletMapping);
         webAppInfo.getServlets().values().forEach(deploymentInfo::addServlet);
@@ -458,7 +462,7 @@ public class Container {
             deploymentInfo.setWelcomeFiles(welcomeFiles);
         }
 
-        servletRuntime.getSecurityProvider().init(webAppInfo.getSecurityConstraints());
+        servletRuntime.getSecurityProvider().init(webAppInfo.getSecurityConstraints(),webAppInfo.getLoginConfig());
         return servletRuntime;
     }
 

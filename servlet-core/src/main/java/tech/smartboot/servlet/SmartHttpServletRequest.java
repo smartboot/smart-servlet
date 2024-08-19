@@ -25,6 +25,8 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
 
     void setServletInfo(ServletInfo servletInfo);
 
+    ServletInfo getServletInfo();
+
     /**
      * 获取附件对象
      *

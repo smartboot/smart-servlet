@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import tech.smartboot.servlet.conf.ErrorPageInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
+import tech.smartboot.servlet.conf.LoginConfig;
 import tech.smartboot.servlet.conf.OrderMeta;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -122,7 +123,28 @@ class WebXmlParseEngine {
         parseSecurityConstraint(webAppInfo, parentElement);
 
         parseAbsoluteOrdering(webAppInfo, parentElement);
+
+        parseLoginConfig(webAppInfo, parentElement);
         return parentElement;
+    }
+
+    private void parseLoginConfig(WebAppInfo webAppInfo, Element parentElement) {
+        Node node = getChildNode(parentElement, "login-config");
+        if (node == null) {
+            return;
+        }
+        Map<String, String> nodeValues = getNodeValue(node, List.of("realm-name"));
+        LoginConfig loginConfig = new LoginConfig();
+        loginConfig.setRealmName(nodeValues.get("realm-name"));
+        Node formLoginConfig = getChildNode(node, "form-login-config");
+        if (formLoginConfig != null) {
+            nodeValues = getNodeValue(formLoginConfig, List.of("form-login-page", "form-error-page"));
+            loginConfig.setErrorPage(nodeValues.get("form-error-page"));
+            loginConfig.setLoginPage(nodeValues.get("form-login-page"));
+        }
+        Map<String, String> authMethod = getNodeValue(node, List.of("auth-method"));
+        loginConfig.setAuthMethod(authMethod.get("auth-method"));
+        webAppInfo.setLoginConfig(loginConfig);
     }
 
     private void parseBasicInfo(WebAppInfo webAppInfo, Element parentElement) {
@@ -313,7 +335,12 @@ class WebXmlParseEngine {
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Collections.singletonList("servlet-name"));
             String servletName = nodeData.get("servlet-name");
-            getNodeValues(node, "url-pattern").forEach(urlPattern -> webAppInfo.getServletMappings().add(new ServletMappingInfo(servletName, urlPattern)));
+            getNodeValues(node, "url-pattern").forEach(urlPattern -> {
+                ServletMappingInfo servletMappingInfo = new ServletMappingInfo(servletName, urlPattern);
+                if (servletMappingInfo.getMappingMatch() != null) {
+                    webAppInfo.getServletMappings().add(servletMappingInfo);
+                }
+            });
         }
     }
 

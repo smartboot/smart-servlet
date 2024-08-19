@@ -222,6 +222,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     }
 
     @Override
+    public ServletInfo getServletInfo() {
+        return servletInfo;
+    }
+
+    @Override
     public Attachment getAttachment() {
         return request.getAttachment();
     }
@@ -383,7 +388,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public boolean authenticate(HttpServletResponse response) {
-        throw new UnsupportedOperationException();
+        return principal != null;
     }
 
     @Override
