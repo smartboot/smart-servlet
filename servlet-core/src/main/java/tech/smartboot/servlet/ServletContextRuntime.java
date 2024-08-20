@@ -25,6 +25,7 @@ import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.ServletContainerInitializerInfo;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
+import tech.smartboot.servlet.conf.UrlPattern;
 import tech.smartboot.servlet.impl.FilterConfigImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.impl.ServletContextWrapperListener;
@@ -46,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 应用级子容器的运行时环境
@@ -235,10 +238,26 @@ public class ServletContextRuntime {
                 ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
                 if (webXmlInfo != null) {
                     servletInfo.getInitParams().forEach(webXmlInfo::addInitParam);
-                    webXmlInfo.getSecurityConstraints().addAll(servletInfo.getSecurityConstraints());
                 } else {
                     deploymentInfo.addServlet(servletInfo);
                 }
+                //当 在便携式部署描述符中的一个 security-constraint 包含一个 url-pattern ，其精确匹配 一个使用
+                //@ServletSecurity 注解的模式映射到的类，该注解必须不影响 Servlet 容器在该模式上实施的强制约束。
+                Set<String> annotationPatterns = deploymentInfo.getHandlesTypesLoader().getServletMappings()
+                        .stream()
+                        .filter(mapping -> mapping.getServletName().equals(servletInfo.getServletName()))
+                        .map(ServletMappingInfo::getUrlPattern).collect(Collectors.toSet());
+                annotationPatterns.forEach(pattern -> {
+                    boolean exists = deploymentInfo.getSecurityConstraints().stream().anyMatch(securityConstraint -> securityConstraint.getUrlPatterns().stream().map(UrlPattern::getUrlPattern).toList().contains(pattern));
+                    if (!exists) {
+                        servletInfo.getSecurityConstraints().forEach(securityConstraint -> {
+                            securityConstraint.getUrlPatterns().add(new UrlPattern(pattern));
+                            deploymentInfo.getSecurityConstraints().add(securityConstraint);
+                        });
+                    }
+
+                });
+
             });
             deploymentInfo.getHandlesTypesLoader().getServletMappings().forEach(deploymentInfo::addServletMapping);
             deploymentInfo.getHandlesTypesLoader().getFilters().forEach(deploymentInfo::addFilter);

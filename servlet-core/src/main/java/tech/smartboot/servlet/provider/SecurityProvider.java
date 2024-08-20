@@ -13,6 +13,7 @@ package tech.smartboot.servlet.provider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletResponse;
 import tech.smartboot.servlet.SmartHttpServletRequest;
+import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.LoginConfig;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -30,7 +31,7 @@ public interface SecurityProvider {
 
     void addUser(String username, String password, Set<String> roles);
 
-    void init(List<SecurityConstraint> constraints, LoginConfig loginConfig);
+    void init(DeploymentInfo deploymentInfo);
 
     public SecurityAccount login(String username, String password) throws ServletException;
 

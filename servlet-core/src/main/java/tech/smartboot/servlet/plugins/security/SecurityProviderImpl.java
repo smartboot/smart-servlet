@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.SmartHttpServletRequest;
+import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.LoginConfig;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -50,9 +51,9 @@ public class SecurityProviderImpl implements SecurityProvider {
     }
 
     @Override
-    public void init(List<SecurityConstraint> constraints, LoginConfig loginConfig) {
-        this.constraints = constraints;
-        this.loginConfig = loginConfig;
+    public void init(DeploymentInfo deploymentInfo) {
+        this.constraints = deploymentInfo.getSecurityConstraints();
+        this.loginConfig = deploymentInfo.getLoginConfig();
     }
 
     @Override
@@ -177,6 +178,9 @@ public class SecurityProviderImpl implements SecurityProvider {
         LoginAccount finalAccount = account;
         long count = constraints.stream().filter(securityConstraint -> {
             if (securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.PERMIT && CollectionUtils.isEmpty(securityConstraint.getRoleNames())) {
+                return true;
+            }
+            if (securityConstraint.getRoleNames().contains("*")) {
                 return true;
             }
             for (String role : securityConstraint.getRoleNames()) {
