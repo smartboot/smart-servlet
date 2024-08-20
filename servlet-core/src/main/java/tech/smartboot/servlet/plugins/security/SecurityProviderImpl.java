@@ -79,8 +79,13 @@ public class SecurityProviderImpl implements SecurityProvider {
                 return true;
             }
         }
+        String roleLink = httpServletRequest.getServletInfo().getSecurityRoles().get(role);
+        if (roleLink == null) {
+            return loginAccount.getRoles().contains(role);
+        }
+        System.out.println(roleLink);
         System.out.println(httpServletRequest.getServletInfo().getSecurityRoles());
-        return loginAccount.getMatches().contains(role);
+        return loginAccount.getRoles().contains(roleLink) || loginAccount.getRoles().contains(role);
     }
 
     @Override
