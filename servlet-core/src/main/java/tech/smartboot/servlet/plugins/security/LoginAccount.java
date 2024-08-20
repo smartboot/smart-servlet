@@ -19,12 +19,14 @@ public class LoginAccount implements Principal {
     private final String password;
     private final Set<String> matches;
     private final Set<String> roles;
+    private String authType;
 
-    public LoginAccount(String name, String password, Set<String> roles) {
+    public LoginAccount(String name, String password, Set<String> roles, String authType) {
         this.name = name;
         this.password = password;
         this.roles = roles;
         this.matches = new HashSet<>();
+        this.authType = authType;
     }
 
 
@@ -43,5 +45,9 @@ public class LoginAccount implements Principal {
 
     public Set<String> getMatches() {
         return matches;
+    }
+
+    public String getAuthType() {
+        return authType;
     }
 }

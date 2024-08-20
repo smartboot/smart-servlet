@@ -23,6 +23,7 @@ import jakarta.servlet.ServletRequestAttributeEvent;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletMapping;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
@@ -141,7 +142,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public String getAuthType() {
         servletContext.log("unSupport getAuthType");
-        return null;
+        return principal == null ? null : principal.getAuthType();
     }
 
     @Override
@@ -394,7 +395,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     public void login(String username, String password) throws ServletException {
         SecurityAccount securityAccount = runtime.getSecurityProvider().login(username, password);
         if (securityAccount != null) {
-            setLoginAccount(new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(), securityAccount.getRoles()));
+            setLoginAccount(new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(), securityAccount.getRoles(), HttpServletRequest.FORM_AUTH));
         }
     }
 
@@ -446,7 +447,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public void logout() {
-        throw new UnsupportedOperationException();
+        getSession().removeAttribute("principal");
+        principal = null;
     }
 
     @Override

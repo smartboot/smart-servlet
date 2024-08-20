@@ -110,7 +110,7 @@ public class SecurityProviderImpl implements SecurityProvider {
         }).toList());
     }
 
-    private SecurityAccount login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    private LoginAccount login(SmartHttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (loginConfig != null) {
 //            if ("FORM".equals(loginConfig.getAuthMethod())) {
 //                return users.stream().filter(user -> user.getUsername().equals(request.getParameter("j_username")) && user.getPassword().equals(request.getParameter("j_password"))).findFirst().orElse(null);
@@ -130,7 +130,12 @@ public class SecurityProviderImpl implements SecurityProvider {
         }
         if (authorization.startsWith("Basic ")) {
             String[] auth = new String(Base64.getDecoder().decode(authorization.substring(6))).split(":");
-            return users.stream().filter(user -> user.getUsername().equals(auth[0]) && user.getPassword().equals(auth[1])).findFirst().orElse(null);
+            SecurityAccount securityAccount = users.stream().filter(user -> user.getUsername().equals(auth[0]) && user.getPassword().equals(auth[1])).findFirst().orElse(null);
+            if (securityAccount != null) {
+                LoginAccount account = new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(), securityAccount.getRoles(), HttpServletRequest.BASIC_AUTH);
+                request.setLoginAccount(account);
+                return account;
+            }
         }
         return null;
     }
@@ -167,12 +172,10 @@ public class SecurityProviderImpl implements SecurityProvider {
         //角色校验
         LoginAccount account = (LoginAccount) request.getUserPrincipal();
         if (account == null) {
-            SecurityAccount securityAccount = login(request, response);
-            if (securityAccount == null) {
+            account = login(request, response);
+            if (account == null) {
                 return false;
             }
-            account = new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(), securityAccount.getRoles());
-            request.setLoginAccount(account);
         }
 
         LoginAccount finalAccount = account;
