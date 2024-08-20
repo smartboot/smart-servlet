@@ -265,11 +265,10 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public Principal getUserPrincipal() {
         if (principal == null) {
-//            try {
-//                principal = runtime.getSecurityProvider().getUser(this);
-//            } catch (ServletException e) {
-//                throw new RuntimeException(e);
-//            }
+            Object o = getSession().getAttribute("principal");
+            if (o != null) {
+                principal = (LoginAccount) o;
+            }
         }
         return principal;
     }
@@ -395,7 +394,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     public void login(String username, String password) throws ServletException {
         SecurityAccount securityAccount = runtime.getSecurityProvider().login(username, password);
         if (securityAccount != null) {
-            principal = new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(), securityAccount.getRoles());
+            setLoginAccount(new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(), securityAccount.getRoles()));
         }
     }
 
@@ -847,6 +846,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public void setLoginAccount(LoginAccount loginAccount) {
         this.principal = loginAccount;
+        getSession().setAttribute("principal", loginAccount);
     }
 
     @Override
