@@ -135,6 +135,10 @@ public class SecurityProviderImpl implements SecurityProvider {
                 LoginAccount account = new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(), securityAccount.getRoles(), HttpServletRequest.BASIC_AUTH);
                 request.setLoginAccount(account);
                 return account;
+            } else {
+                request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_URI, request.getRequestURI().substring(request.getContextPath().length()));
+                request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD, request.getMethod());
+                request.getRequestDispatcher(loginConfig.getErrorPage()).forward(request, response);
             }
         }
         return null;

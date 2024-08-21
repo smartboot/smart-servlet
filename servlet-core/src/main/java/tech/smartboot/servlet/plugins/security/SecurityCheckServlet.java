@@ -33,9 +33,14 @@ public class SecurityCheckServlet extends HttpServlet {
         LoginConfig loginConfig = deploymentInfo.getLoginConfig();
         if (loginConfig != null && "FORM".equals(loginConfig.getAuthMethod())) {
             req.login(req.getParameter("j_username"), req.getParameter("j_password"));
-            HttpSession session = req.getSession();
-            req.setAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD, session.getAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD));
-            req.getRequestDispatcher((String) session.getAttribute(SecurityProvider.LOGIN_REDIRECT_URI)).forward(req, resp);
+            if(req.getUserPrincipal()==null){
+                req.getRequestDispatcher(loginConfig.getErrorPage()).forward(req, resp);
+            }else{
+                HttpSession session = req.getSession();
+                req.setAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD, session.getAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD));
+                req.getRequestDispatcher((String) session.getAttribute(SecurityProvider.LOGIN_REDIRECT_URI)).forward(req, resp);
+            }
+
         }
     }
 }
