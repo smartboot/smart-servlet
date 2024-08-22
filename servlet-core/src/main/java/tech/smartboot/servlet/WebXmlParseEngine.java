@@ -403,6 +403,8 @@ class WebXmlParseEngine {
             Node authConstraint = getChildNode(node, "auth-constraint");
             if (authConstraint != null) {
                 securityConstraint.setRoleNames(getNodeValues(authConstraint, "role-name"));
+            } else {
+                securityConstraint.setEmptyRoleSemantic(ServletSecurity.EmptyRoleSemantic.PERMIT);
             }
 
             Node userDataConstraint = getChildNode(node, "user-data-constraint");
