@@ -154,7 +154,8 @@ public class SecurityProviderImpl implements SecurityProvider {
         constraints = constraints.stream().filter(securityConstraint -> !securityConstraint.getHttpMethodOmissions().contains(request.getMethod())).toList();
         //不存在匹配的安全约束
         if (constraints.isEmpty()) {
-            return true;
+            response.sendError(HttpStatus.FORBIDDEN.value());
+            return false;
         }
         //提取匹配HttpMethod的安全约束
         constraints = constraints.stream().filter(securityConstraint -> CollectionUtils.isEmpty(securityConstraint.getHttpMethods()) || securityConstraint.getHttpMethods().contains(request.getMethod())).toList();

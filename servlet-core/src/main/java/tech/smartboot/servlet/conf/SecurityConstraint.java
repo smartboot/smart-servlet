@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SecurityConstraint {
-    private ServletSecurity.EmptyRoleSemantic emptyRoleSemantic = ServletSecurity.EmptyRoleSemantic.PERMIT;
+    //13.8 没有指定角色的授权约束表示在任何情况下都不允许访问受约束请求
+    private ServletSecurity.EmptyRoleSemantic emptyRoleSemantic = ServletSecurity.EmptyRoleSemantic.DENY;
     private ServletSecurity.TransportGuarantee transportGuarantee = ServletSecurity.TransportGuarantee.NONE;
     //    private final List<String> resourceNames = new ArrayList<>();
     private final List<UrlPattern> urlPatterns = new ArrayList<>();
