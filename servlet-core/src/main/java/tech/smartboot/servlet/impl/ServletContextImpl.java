@@ -523,9 +523,6 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
-        checkContextInitializeState();
-        //The returned set is not backed by the ServletContext object,
-        // so changes in the returned set are not reflected in the ServletContext object, and vice-versa.
         return Collections.unmodifiableSet(sessionTrackingModes);
     }
 
