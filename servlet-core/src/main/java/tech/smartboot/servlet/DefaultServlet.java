@@ -195,7 +195,7 @@ class DefaultServlet extends HttpServlet {
         String welcome = matchForwardWelcome(request);
         if (StringUtils.isNotBlank(welcome)) {
             //找到有效welcome file，执行服务端跳转
-            LOGGER.info("执行 welcome 服务端跳转...");
+            LOGGER.info("执行 welcome 服务端跳转:{} ", welcome);
             request.getRequestDispatcher(welcome).forward(request, response);
             return;
         }

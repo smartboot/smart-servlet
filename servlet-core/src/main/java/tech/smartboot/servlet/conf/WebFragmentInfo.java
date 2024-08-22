@@ -35,6 +35,12 @@ public class WebFragmentInfo extends WebAppInfo {
                     }
                 });
             }
+            //具有相同<servlet-name>的<servlet-mapping>元素可以添加到多个 web-fragment。在 web.xml 中
+            //指定的<servlet-mapping>覆盖在 web-fragment 中指定的同名的<servlet-name>的<servlet-mapping>
+            if (webAppInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getServletName().equals(servletInfo.getServletName()))) {
+                webAppInfo.getServletMappings().addAll(getServletMappings().stream().filter(mapping -> mapping.getServletName().equals(servletInfo.getServletName())).toList());
+            }
+
         });
         getFilters().stream().filter(filterInfo -> webAppInfo.getFilters().stream().noneMatch(mainFilter -> filterInfo.getFilterName().equals(mainFilter.getFilterName()))).forEach(webAppInfo::addFilter);
         getFilters().forEach(filterInfo -> {
@@ -50,13 +56,8 @@ public class WebFragmentInfo extends WebAppInfo {
             }
         });
         webAppInfo.getFilterMappingInfos().addAll(getFilterMappingInfos());
-        //具有相同<servlet-name>的<servlet-mapping>元素可以添加到多个 web-fragment。在 web.xml 中
-        //指定的<servlet-mapping>覆盖在 web-fragment 中指定的同名的<servlet-name>的<servlet-mapping>
-        getServletMappings().forEach(fragmentMapping -> {
-            if (webAppInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getServletName().equals(fragmentMapping.getServletName()))) {
-                webAppInfo.getServletMappings().add(fragmentMapping);
-            }
-        });
+
+
         webAppInfo.getListeners().addAll(getListeners());
         webAppInfo.getWelcomeFileList().addAll(getWelcomeFileList());
         webAppInfo.getErrorPages().addAll(getErrorPages());
