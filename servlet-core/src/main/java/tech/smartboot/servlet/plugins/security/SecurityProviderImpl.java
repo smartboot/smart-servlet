@@ -14,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.ServletSecurity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.SmartHttpServletRequest;
@@ -117,29 +118,30 @@ public class SecurityProviderImpl implements SecurityProvider {
 //            }
         }
         String authorization = request.getHeader("Authorization");
-        if (StringUtils.isBlank(authorization)) {
-            if (loginConfig == null || StringUtils.isBlank(loginConfig.getLoginPage())) {
-                response.sendError(HttpStatus.UNAUTHORIZED.value());
-            } else {
-                request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_URI, request.getRequestURI().substring(request.getContextPath().length()));
-                request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD, request.getMethod());
-                request.getRequestDispatcher(loginConfig.getLoginPage()).forward(request, response);
-//                response.sendRedirect(loginConfig.getLoginPage());
-            }
-            return null;
-        }
-        if (authorization.startsWith("Basic ")) {
+        if (authorization != null && authorization.startsWith("Basic ")) {
             String[] auth = new String(Base64.getDecoder().decode(authorization.substring(6))).split(":");
             SecurityAccount securityAccount = users.stream().filter(user -> user.getUsername().equals(auth[0]) && user.getPassword().equals(auth[1])).findFirst().orElse(null);
             if (securityAccount != null) {
                 LoginAccount account = new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(), securityAccount.getRoles(), HttpServletRequest.BASIC_AUTH);
                 request.setLoginAccount(account);
                 return account;
-            } else {
-                request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_URI, request.getRequestURI().substring(request.getContextPath().length()));
-                request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD, request.getMethod());
-                request.getRequestDispatcher(loginConfig.getErrorPage()).forward(request, response);
             }
+        }
+        if (loginConfig == null) {
+            response.sendError(HttpStatus.UNAUTHORIZED.value());
+        } else if (StringUtils.equals(loginConfig.getAuthMethod(), SecurityAccount.AUTH_TYPE_BASIC)) {
+            response.setHeader(HeaderNameEnum.WWW_AUTHENTICATE.getName(), "Basic realm=\"" + loginConfig.getRealmName() + "\"");
+            response.sendError(HttpStatus.UNAUTHORIZED.value());
+        } else if (authorization == null && StringUtils.isNotBlank(loginConfig.getLoginPage())) {
+            request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_URI, request.getRequestURI().substring(request.getContextPath().length()));
+            request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD, request.getMethod());
+            request.getRequestDispatcher(loginConfig.getLoginPage()).forward(request, response);
+        } else if (authorization != null && StringUtils.isNotBlank(loginConfig.getErrorPage())) {
+            request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_URI, request.getRequestURI().substring(request.getContextPath().length()));
+            request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD, request.getMethod());
+            request.getRequestDispatcher(loginConfig.getErrorPage()).forward(request, response);
+        } else {
+            response.sendError(HttpStatus.UNAUTHORIZED.value());
         }
         return null;
     }

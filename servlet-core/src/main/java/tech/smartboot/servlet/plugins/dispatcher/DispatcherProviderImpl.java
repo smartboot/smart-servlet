@@ -52,6 +52,9 @@ class DispatcherProviderImpl implements DispatcherProvider {
 
     @Override
     public RequestDispatcher getRequestDispatcher(HttpServletRequestImpl request, String path) {
+        if (path == null) {
+            return null;
+        }
         //If the path begins with a "/" it is interpreted as relative to the current context root
         if (path.startsWith("/")) {
             return getRequestDispatcher(request.getServletContext(), path);
