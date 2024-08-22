@@ -381,9 +381,6 @@ public class ServletContextRuntime {
         return securityProvider;
     }
 
-    public void setSecurityProvider(SecurityProvider securityProvider) {
-        this.securityProvider = securityProvider;
-    }
 
     public MappingProvider getMappingProvider() {
         return mappingProvider;

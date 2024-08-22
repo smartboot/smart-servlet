@@ -31,6 +31,7 @@ import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class SecurityProviderImpl implements SecurityProvider {
     private final Map<String, SecurityAccount> headerSecurities = new HashMap<>();
     private List<SecurityAccount> users = Arrays.asList(new SecurityAccount("j2ee", "j2ee", null, Set.of("Administrator", "Employee")), new SecurityAccount("javajoe", "javajoe", null, Set.of("VP", "Manager")));
     private LoginConfig loginConfig;
-    private List<SecurityConstraint> constraints;
+    private List<SecurityConstraint> constraints = new ArrayList<>();
 
     @Override
     public void addUser(String username, String password, Set<String> roles) {
