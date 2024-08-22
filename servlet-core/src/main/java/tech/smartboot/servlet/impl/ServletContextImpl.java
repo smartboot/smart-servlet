@@ -372,7 +372,9 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public ServletRegistration.Dynamic addServlet(String servletName, Servlet servlet) {
         checkServletContextState();
-        checkContextInitializeState();
+        if (currentInitializeContext == null) {
+            throw new UnsupportedOperationException();
+        }
         if (StringUtils.isBlank(servletName)) {
             throw new IllegalArgumentException("servletName is null");
         }
@@ -408,7 +410,9 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public <T extends Servlet> T createServlet(Class<T> clazz) throws ServletException {
         checkServletContextState();
-        checkContextInitializeState();
+        if (currentInitializeContext == null) {
+            throw new UnsupportedOperationException();
+        }
         return newInstance(clazz);
     }
 
