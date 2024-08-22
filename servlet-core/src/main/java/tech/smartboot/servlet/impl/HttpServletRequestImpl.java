@@ -29,6 +29,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.MappingMatch;
 import jakarta.servlet.http.Part;
+import jakarta.servlet.http.PushBuilder;
 import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HeaderValueEnum;
 import org.smartboot.http.common.logging.Logger;
@@ -885,5 +886,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     public CompletableFuture<Object> getCompletableFuture() {
         return completableFuture;
+    }
+
+    @Override
+    public PushBuilder newPushBuilder() {
+//        return new PushBuilderImpl(this);
+        throw new UnsupportedOperationException();
     }
 }
