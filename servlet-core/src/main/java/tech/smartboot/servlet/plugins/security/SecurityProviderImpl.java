@@ -11,6 +11,8 @@
 package tech.smartboot.servlet.plugins.security;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.ServletResponseWrapper;
 import jakarta.servlet.annotation.ServletSecurity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -96,7 +98,11 @@ public class SecurityProviderImpl implements SecurityProvider {
     }
 
     @Override
-    public boolean login(SmartHttpServletRequest request, HttpServletResponse response, ServletInfo servletInfo) throws ServletException, IOException {
+    public boolean login(SmartHttpServletRequest request, ServletResponse resp, ServletInfo servletInfo) throws ServletException, IOException {
+        while (resp instanceof ServletResponseWrapper) {
+            resp = ((ServletResponseWrapper) resp).getResponse();
+        }
+        HttpServletResponse response = (HttpServletResponse) resp;
         boolean ok = check(request, response, servletInfo.getSecurityConstraints());
         if (!ok) {
             return ok;

@@ -11,14 +11,13 @@
 package tech.smartboot.servlet.handler;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
 public class SecurityHandler extends Handler {
     @Override
     public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
-        if (handlerContext.getServletContext().getRuntime().getSecurityProvider().login(handlerContext.getOriginalRequest(), (HttpServletResponse) handlerContext.getResponse(), handlerContext.getServletInfo())) {
+        if (handlerContext.getServletContext().getRuntime().getSecurityProvider().login(handlerContext.getOriginalRequest(), handlerContext.getResponse(), handlerContext.getServletInfo())) {
             doNext(handlerContext);
         }
 //        List<SecurityConstraint> constraints = new ArrayList<>(handlerContext.getServletInfo().getSecurityConstraints());

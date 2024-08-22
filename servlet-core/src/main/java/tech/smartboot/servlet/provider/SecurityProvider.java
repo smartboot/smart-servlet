@@ -11,6 +11,7 @@
 package tech.smartboot.servlet.provider;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.DeploymentInfo;
@@ -42,5 +43,5 @@ public interface SecurityProvider {
 
     public void logout(HttpServletRequestImpl httpServletRequest) throws ServletException;
 
-    public boolean login(SmartHttpServletRequest request, HttpServletResponse response, ServletInfo servletInfo) throws ServletException, IOException;
+    public boolean login(SmartHttpServletRequest request, ServletResponse response, ServletInfo servletInfo) throws ServletException, IOException;
 }
