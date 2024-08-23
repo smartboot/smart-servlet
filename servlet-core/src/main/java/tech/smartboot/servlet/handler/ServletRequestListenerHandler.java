@@ -44,10 +44,9 @@ public class ServletRequestListenerHandler extends Handler {
         try {
             doNext(handlerContext);
         } finally {
-            servletRequestListeners.forEach(requestListener -> {
-                requestListener.requestDestroyed(servletRequestEvent);
-                LOGGER.info("requestDestroyed " + requestListener);
-            });
+            for (int i = servletRequestListeners.size() - 1; i >= 0; i--) {
+                servletRequestListeners.get(i).requestDestroyed(servletRequestEvent);
+            }
         }
     }
 }
