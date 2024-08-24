@@ -234,9 +234,12 @@ class DefaultServlet extends HttpServlet {
                 }
                 //是否匹配 Servlet url-pattern
                 if (deploymentInfo.getServletMappings().stream().anyMatch(mapping -> mapping.getUrlPattern().equals("/" + file))) {
-                    return file;
+                    return uri + file;
                 }
             }
+            return null;
+        }
+        if (deploymentInfo.getWelcomeFiles().stream().anyMatch(requestUri::endsWith)) {
             return null;
         }
         // 例如: /abc/d.html ,由于d.html不存在而走到该分支
