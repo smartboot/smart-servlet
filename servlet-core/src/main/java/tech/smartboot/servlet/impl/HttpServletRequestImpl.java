@@ -640,6 +640,14 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getParameter(String name) {
+        String value = request.getParameter(name);
+        if (value == null && request.getContentType().startsWith(HeaderValueEnum.MULTIPART_FORM_DATA.getName())) {
+            try {
+                parseParts();
+            } catch (ServletException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return request.getParameter(name);
     }
 
