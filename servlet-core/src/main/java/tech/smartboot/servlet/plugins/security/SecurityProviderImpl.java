@@ -104,6 +104,23 @@ public class SecurityProviderImpl implements SecurityProvider {
             resp = ((ServletResponseWrapper) resp).getResponse();
         }
         HttpServletResponse response = (HttpServletResponse) resp;
+        // servlet 存在权限验证
+//        if (!servletInfo.getSecurityRoles().isEmpty()) {
+//            LoginAccount loginAccount = login(request, response);
+//            if (loginAccount == null) {
+//                return false;
+//            }
+//            boolean match = false;
+//            for (String role : servletInfo.getSecurityRoles().keySet()) {
+//                if (loginAccount.getRoles().contains(role) || loginAccount.getRoles().contains(servletInfo.getSecurityRoles().get(role))) {
+//                    match = true;
+//                    break;
+//                }
+//            }
+//            if (!match) {
+//                return false;
+//            }
+//        }
         boolean ok = check(request, response, servletInfo.getSecurityConstraints());
         if (!ok) {
             return ok;
@@ -158,9 +175,10 @@ public class SecurityProviderImpl implements SecurityProvider {
             return true;
         }
 
-//        if (constraints.stream().allMatch(securityConstraint -> securityConstraint.getHttpMethodOmissions().contains(request.getMethod()))) {
-//            return true;
-//        }
+        if (constraints.stream().anyMatch(securityConstraint -> securityConstraint.getRoleNames().isEmpty() && securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.DENY)) {
+            response.sendError(HttpStatus.FORBIDDEN.value());
+            return false;
+        }
 
         constraints = constraints.stream().filter(securityConstraint -> !securityConstraint.getHttpMethodOmissions().contains(request.getMethod())).toList();
         //不存在匹配的安全约束
@@ -206,8 +224,6 @@ public class SecurityProviderImpl implements SecurityProvider {
             }
             for (String role : securityConstraint.getRoleNames()) {
                 if (finalAccount.getRoles().contains(role)) {
-                    //匹配的角色
-                    finalAccount.getMatches().add(role);
                     return true;
                 }
             }
