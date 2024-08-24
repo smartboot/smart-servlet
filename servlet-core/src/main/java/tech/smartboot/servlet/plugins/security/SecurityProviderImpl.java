@@ -175,7 +175,7 @@ public class SecurityProviderImpl implements SecurityProvider {
             return true;
         }
 
-        if (constraints.stream().anyMatch(securityConstraint -> securityConstraint.getRoleNames().isEmpty() && securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.DENY)) {
+        if (constraints.stream().anyMatch(securityConstraint -> CollectionUtils.isEmpty(securityConstraint.getRoleNames()) && securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.DENY)) {
             response.sendError(HttpStatus.FORBIDDEN.value());
             return false;
         }
