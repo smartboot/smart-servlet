@@ -10,19 +10,13 @@
 
 package tech.smartboot.servlet.impl;
 
-import tech.smartboot.servlet.third.commons.fileupload.FileItem;
-import tech.smartboot.servlet.third.commons.fileupload.ParameterParser;
-import tech.smartboot.servlet.third.commons.fileupload.disk.DiskFileItem;
-
 import jakarta.servlet.http.Part;
+import tech.smartboot.servlet.third.commons.fileupload.ParameterParser;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 
@@ -32,10 +26,10 @@ import java.util.Map;
  */
 public class PartImpl implements Part {
 
-    private final FileItem fileItem;
+    private final org.smartboot.http.common.multipart.Part fileItem;
     private final File location;
 
-    public PartImpl(FileItem fileItem, File location) {
+    public PartImpl(org.smartboot.http.common.multipart.Part fileItem, File location) {
         this.fileItem = fileItem;
         this.location = location;
     }
@@ -52,38 +46,17 @@ public class PartImpl implements Part {
 
     @Override
     public String getHeader(String name) {
-        if (fileItem instanceof DiskFileItem) {
-            return fileItem.getHeaders().getHeader(name);
-        }
-        return null;
+        return fileItem.getHeader(name);
     }
 
     @Override
     public Collection<String> getHeaderNames() {
-        if (fileItem instanceof DiskFileItem) {
-            LinkedHashSet<String> headerNames = new LinkedHashSet<>();
-            Iterator<String> iter =
-                    fileItem.getHeaders().getHeaderNames();
-            while (iter.hasNext()) {
-                headerNames.add(iter.next());
-            }
-            return headerNames;
-        }
-        return Collections.emptyList();
+        return fileItem.getHeaderNames();
     }
 
     @Override
     public Collection<String> getHeaders(String name) {
-        if (fileItem instanceof DiskFileItem) {
-            LinkedHashSet<String> headers = new LinkedHashSet<>();
-            Iterator<String> iter =
-                    fileItem.getHeaders().getHeaders(name);
-            while (iter.hasNext()) {
-                headers.add(iter.next());
-            }
-            return headers;
-        }
-        return Collections.emptyList();
+        return fileItem.getHeaders(name);
     }
 
     @Override
@@ -93,7 +66,7 @@ public class PartImpl implements Part {
 
     @Override
     public String getName() {
-        return fileItem.getFieldName();
+        return fileItem.getName();
     }
 
     @Override
@@ -103,19 +76,11 @@ public class PartImpl implements Part {
 
     @Override
     public void write(String fileName) throws IOException {
-        File file = new File(fileName);
-        if (!file.isAbsolute()) {
-            file = new File(location, fileName);
-        }
-        try {
-            fileItem.write(file);
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
+        fileItem.write(fileName);
     }
 
-    public String getString(String encoding) throws UnsupportedEncodingException, IOException {
-        return fileItem.getString(encoding);
+    public String getFormData() {
+        return fileItem.getFormData();
     }
 
     /*

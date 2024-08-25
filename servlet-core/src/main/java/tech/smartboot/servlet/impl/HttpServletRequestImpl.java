@@ -42,14 +42,9 @@ import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
-import tech.smartboot.servlet.impl.fileupload.SmartHttpRequestContext;
 import tech.smartboot.servlet.plugins.security.LoginAccount;
 import tech.smartboot.servlet.plugins.security.SecurityAccount;
 import tech.smartboot.servlet.provider.SessionProvider;
-import tech.smartboot.servlet.third.commons.fileupload.FileItem;
-import tech.smartboot.servlet.third.commons.fileupload.FileUpload;
-import tech.smartboot.servlet.third.commons.fileupload.FileUploadException;
-import tech.smartboot.servlet.third.commons.fileupload.disk.DiskFileItemFactory;
 import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.DateUtil;
 
@@ -485,38 +480,19 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             if (!location.isDirectory()) {
                 throw new IOException("there's no upload-file directory!");
             }
-
-            DiskFileItemFactory factory = new DiskFileItemFactory();
-            factory.setRepository(location.getCanonicalFile());
-            factory.setSizeThreshold(multipartConfigElement.getFileSizeThreshold());
-
-            FileUpload upload = new FileUpload();
-            upload.setFileItemFactory(factory);
-            upload.setFileSizeMax(multipartConfigElement.getMaxFileSize());
-            upload.setSizeMax(multipartConfigElement.getMaxRequestSize());
             parts = new ArrayList<>();
 
-            List<FileItem> items = upload.parseRequest(new SmartHttpRequestContext(request));
-            for (FileItem item : items) {
+            Collection<org.smartboot.http.common.multipart.Part> items = request.getParts();
+            for (org.smartboot.http.common.multipart.Part item : items) {
                 PartImpl part = new PartImpl(item, location);
                 parts.add(part);
                 if (part.getSubmittedFileName() == null) {
                     String name = part.getName();
-                    String value = null;
-                    try {
-                        if (StringUtils.isBlank(getCharacterEncoding())) {
-                            value = item.getString();
-                        } else {
-                            value = item.getString(getCharacterEncoding());
-                        }
-
-                    } catch (UnsupportedEncodingException uee) {
-                        // Not possible
-                    }
+                    String value = part.getFormData();
                     request.getParameters().put(name, new String[]{value});
                 }
             }
-        } catch (FileUploadException | IOException e) {
+        } catch (IOException e) {
             partsParseException = e;
         }
     }
@@ -614,7 +590,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public int getContentLength() {
-        return request.getContentLength();
+        return (int) request.getContentLength();
     }
 
     @Override
