@@ -11,14 +11,11 @@
 package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.http.Part;
-import tech.smartboot.servlet.third.commons.fileupload.ParameterParser;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
@@ -88,67 +85,6 @@ public class PartImpl implements Part {
      */
     @Override
     public String getSubmittedFileName() {
-        String fileName = null;
-        String cd = getHeader("Content-Disposition");
-        if (cd != null) {
-            String cdl = cd.toLowerCase(Locale.ENGLISH);
-            if (cdl.startsWith("form-data") || cdl.startsWith("attachment")) {
-                ParameterParser paramParser = new ParameterParser();
-                paramParser.setLowerCaseNames(true);
-                // Parameter parser can handle null input
-                Map<String, String> params = paramParser.parse(cd, ';');
-                if (params.containsKey("filename")) {
-                    fileName = params.get("filename");
-                    // The parser will remove surrounding '"' but will not
-                    // unquote any \x sequences.
-                    if (fileName != null) {
-                        // RFC 6266. This is either a token or a quoted-string
-                        if (fileName.indexOf('\\') > -1) {
-                            // This is a quoted-string
-                            fileName = unquote(fileName.trim());
-                        } else {
-                            // This is a token
-                            fileName = fileName.trim();
-                        }
-                    } else {
-                        // Even if there is no value, the parameter is present,
-                        // so we return an empty file name rather than no file
-                        // name.
-                        fileName = "";
-                    }
-                }
-            }
-        }
-        return fileName;
-    }
-
-    public static String unquote(String input) {
-        if (input == null || input.length() < 2) {
-            return input;
-        }
-
-        int start;
-        int end;
-
-        // Skip surrounding quotes if there are any
-        if (input.charAt(0) == '"') {
-            start = 1;
-            end = input.length() - 1;
-        } else {
-            start = 0;
-            end = input.length();
-        }
-
-        StringBuilder result = new StringBuilder();
-        for (int i = start; i < end; i++) {
-            char c = input.charAt(i);
-            if (input.charAt(i) == '\\') {
-                i++;
-                result.append(input.charAt(i));
-            } else {
-                result.append(c);
-            }
-        }
-        return result.toString();
+        return fileItem.getSubmittedFileName();
     }
 }
