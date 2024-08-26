@@ -34,15 +34,17 @@ import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
 import org.smartboot.socket.extension.plugins.SslPlugin;
-import org.smartboot.socket.extension.ssl.ClientAuth;
+import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.provider.WebsocketProvider;
 
+import javax.net.ssl.SSLEngine;
 import java.io.FileInputStream;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbeddedConfiguration> {
 
@@ -123,9 +125,17 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
             throw new LifecycleException(e.getMessage(), e);
         }
         if (containerConfig.isSsl()) {
+
             try {
-                FileInputStream fileInputStream = new FileInputStream(containerConfig.getTrustStorePath());
-//                bootstrap.configuration().addPlugin(new SslPlugin<>(new ServerSSLContextFactory(fileInputStream, containerConfig.getTrustStorePassword(), containerConfig.getTrustStorePassword()), ClientAuth.NONE));
+//                ServerSSLContextFactory sslPlugin = new ServerSSLContextFactory(new FileInputStream(containerConfig.getKeystorePath()), "changeit", "changeit");
+                PemServerSSLContextFactory sslPlugin = new PemServerSSLContextFactory(new FileInputStream("/Users/zhengjw22mac123/IdeaProjects/smart-servlet/tck/src/test/resources/smart-servlet.pem"));
+                bootstrap.configuration().addPlugin(new SslPlugin<>(sslPlugin, new Consumer<SSLEngine>() {
+                    @Override
+                    public void accept(SSLEngine sslEngine) {
+                        sslEngine.setUseClientMode(false);
+                        sslEngine.setNeedClientAuth(false);
+                    }
+                }));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

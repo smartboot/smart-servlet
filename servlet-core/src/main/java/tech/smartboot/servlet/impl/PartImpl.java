@@ -76,10 +76,6 @@ public class PartImpl implements Part {
         fileItem.write(fileName);
     }
 
-    public String getFormData() {
-        return fileItem.getFormData();
-    }
-
     /*
      * Adapted from FileUploadBase.getFileName()
      */

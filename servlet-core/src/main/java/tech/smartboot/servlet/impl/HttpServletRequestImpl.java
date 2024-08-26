@@ -49,6 +49,7 @@ import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.DateUtil;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -488,7 +489,9 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                 parts.add(part);
                 if (part.getSubmittedFileName() == null) {
                     String name = part.getName();
-                    String value = part.getFormData();
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    part.getInputStream().transferTo(byteArrayOutputStream);
+                    String value = byteArrayOutputStream.toString();
                     request.getParameters().put(name, new String[]{value});
                 }
             }
