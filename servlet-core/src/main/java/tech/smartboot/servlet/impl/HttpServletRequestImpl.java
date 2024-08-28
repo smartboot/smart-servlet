@@ -34,6 +34,7 @@ import org.smartboot.http.common.enums.HeaderNameEnum;
 import org.smartboot.http.common.enums.HeaderValueEnum;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.multipart.MultipartConfig;
 import org.smartboot.http.common.utils.NumberUtils;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
@@ -481,9 +482,10 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             if (!location.isDirectory()) {
                 throw new IOException("there's no upload-file directory!");
             }
+            MultipartConfig config = new MultipartConfig(location.getAbsolutePath(), multipartConfigElement.getMaxFileSize(), multipartConfigElement.getMaxRequestSize(), multipartConfigElement.getFileSizeThreshold());
             parts = new ArrayList<>();
 
-            Collection<org.smartboot.http.common.multipart.Part> items = request.getParts();
+            Collection<org.smartboot.http.common.multipart.Part> items = request.getParts(config);
             for (org.smartboot.http.common.multipart.Part item : items) {
                 PartImpl part = new PartImpl(item, location);
                 parts.add(part);
