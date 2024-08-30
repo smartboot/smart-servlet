@@ -26,11 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
-        name: 下载 smart-http
-        with:
-          repository: smartboot/smart-http
-          path: smart-http
+#      - uses: actions/checkout@v4
+#        name: 下载 smart-http
+#        with:
+#          repository: smartboot/smart-http
+#          path: smart-http
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
