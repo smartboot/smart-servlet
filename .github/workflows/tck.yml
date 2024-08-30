@@ -29,19 +29,19 @@ jobs:
           repository: jakartaee/servlet
           ref: c533204b8fb04a4b04169e697b3f140b8ea2deb9
           path: jakartaee/servlet
-      - uses: actions/checkout@v4
-        name: 下载 smart-http
-        with:
-          repository: smartboot/smart-http
-          path: smart-http
+#      - uses: actions/checkout@v4
+#        name: 下载 smart-http
+#        with:
+#          repository: smartboot/smart-http
+#          path: smart-http
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Build smart-http
-        run: mvn -B install --file smart-http/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
+#      - name: Build smart-http
+#        run: mvn -B install --file smart-http/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
       - name: Build servlet TCK with Maven
         run: mvn -B install --file jakartaee/servlet/tck/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
       - name: Build smart-servlet with Maven
