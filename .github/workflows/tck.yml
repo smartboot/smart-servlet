@@ -51,8 +51,11 @@ jobs:
       - name: 执行 TCK 测试
         run: mvn -B surefire-report:report --file tck/pom.xml
 
+      - name: 查看目录
+        run: ls -lh tck/target/
+
       - name: 上传TCK报告
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always() # 确保即使有失败的测试也会上传报告
         with:
           name: test-report
