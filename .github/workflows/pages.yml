@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: 文档
 
 on:
   # Trigger the workflow every time you push to the `main` branch

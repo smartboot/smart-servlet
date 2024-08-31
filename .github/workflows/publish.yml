@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Distribution
+name: 打包发布
 
 on:
   push:
