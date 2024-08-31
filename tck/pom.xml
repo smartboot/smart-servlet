@@ -261,7 +261,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.0.0-M5</version> <!-- 使用你当前的版本 -->
             </plugin>
         </plugins>
     </reporting>
