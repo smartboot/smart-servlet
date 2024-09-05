@@ -67,7 +67,6 @@ class SessionProviderImpl implements SessionProvider {
             if (response.isCommitted()) {
                 throw new IllegalStateException("response has already committed!");
             }
-            //该sessionId生成策略缺乏安全性，后续重新设计
             httpSession = new HttpSessionImpl(this, createSessionId(), request.getServletContext()) {
                 @Override
                 public void invalid() {

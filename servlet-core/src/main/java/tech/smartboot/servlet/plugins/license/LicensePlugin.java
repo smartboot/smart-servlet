@@ -26,12 +26,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +121,7 @@ public class LicensePlugin extends Plugin {
             licenseTO = loadLicense(entity);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             System.out.println(":: Licensed to " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + licenseTO.getApplicant() + ConsoleColors.ANSI_RESET + " until " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + sdf.format(new Date(licenseTO.getExpireTime())) + ConsoleColors.ANSI_RESET);
+            System.out.println(":: SN: " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + licenseTO.getSn() + ConsoleColors.RESET);
             System.out.println(":: Copyright© " + licenseTO.getVendor() + " ,E-mail: " + licenseTO.getContact());
             if (licenseTO.getTrialDuration() > 0) {
                 System.out.println(ConsoleColors.RED + ":: Trial: " + licenseTO.getTrialDuration() + " minutes" + ConsoleColors.RESET);
@@ -151,28 +150,25 @@ public class LicensePlugin extends Plugin {
 
     private List<String> getMacAddresses() {
         List<String> macs = new ArrayList<>();
-        try {
-            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-            while (networkInterfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = networkInterfaces.nextElement();
-                byte[] mac = networkInterface.getHardwareAddress();
-                if (mac != null) {
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < mac.length; i++) {
-                        sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
-                    }
-                    macs.add(sb.toString());
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+//            while (networkInterfaces.hasMoreElements()) {
+//                NetworkInterface networkInterface = networkInterfaces.nextElement();
+//                byte[] mac = networkInterface.getHardwareAddress();
+//                if (mac != null) {
+//                    StringBuilder sb = new StringBuilder();
+//                    for (int i = 0; i < mac.length; i++) {
+//                        sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+//                    }
+//                    macs.add(sb.toString());
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         return macs;
     }
 
-    public LicenseTO getLicenseTO() {
-        return licenseTO;
-    }
 
     static class ConsoleColors {
         /**
