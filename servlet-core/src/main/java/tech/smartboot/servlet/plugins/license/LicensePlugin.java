@@ -93,7 +93,7 @@ public class LicensePlugin extends Plugin {
     }
 
     @Override
-    public void willStartContainer(ServletContextRuntime containerRuntime) {
+    public void willStartServletContext(ServletContextRuntime containerRuntime) {
         containerRuntime.setFaviconProvider(runtime -> {
         });
     }
@@ -121,7 +121,7 @@ public class LicensePlugin extends Plugin {
             licenseTO = loadLicense(entity);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             System.out.println(":: Licensed to " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + licenseTO.getApplicant() + ConsoleColors.ANSI_RESET + " until " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + sdf.format(new Date(licenseTO.getExpireTime())) + ConsoleColors.ANSI_RESET);
-            System.out.println(":: SN: " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + licenseTO.getSn() + ConsoleColors.RESET);
+            System.out.println(":: License ID: " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + licenseTO.getSn() + ConsoleColors.RESET);
             System.out.println(":: Copyright© " + licenseTO.getVendor() + " ,E-mail: " + licenseTO.getContact());
             if (licenseTO.getTrialDuration() > 0) {
                 System.out.println(ConsoleColors.RED + ":: Trial: " + licenseTO.getTrialDuration() + " minutes" + ConsoleColors.RESET);

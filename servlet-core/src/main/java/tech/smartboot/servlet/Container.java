@@ -142,7 +142,7 @@ public class Container {
     private void loadAndInstallPlugins() {
         plugins.add(new Plugin() {
             @Override
-            public void onContainerStopped(ServletContextRuntime containerRuntime) {
+            public void onServletContextStopped(ServletContextRuntime containerRuntime) {
                 LOGGER.info("remove servletContextRuntime:{} from runtimes", containerRuntime.getContextPath());
                 runtimes.remove(containerRuntime);
             }

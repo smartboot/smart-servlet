@@ -26,7 +26,7 @@ public class SessionPlugin extends Plugin {
     }
 
     @Override
-    public void willStartContainer(ServletContextRuntime containerRuntime) {
+    public void willStartServletContext(ServletContextRuntime containerRuntime) {
         SessionProviderImpl sessionProvider = new SessionProviderImpl();
         sessionProvider.setMaxInactiveInterval(containerRuntime.getDeploymentInfo().getSessionTimeout());
         containerRuntime.setSessionProvider(sessionProvider);

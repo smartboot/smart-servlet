@@ -15,7 +15,7 @@ import tech.smartboot.servlet.plugins.Plugin;
 
 public class MappingPlugin extends Plugin {
     @Override
-    public void onContainerStartSuccess(ServletContextRuntime servletContextRuntime) {
+    public void onServletContextStartSuccess(ServletContextRuntime servletContextRuntime) {
         MappingProviderImpl provider = new MappingProviderImpl(servletContextRuntime.getServletContext().getContextPath().length());
         servletContextRuntime.setMappingProvider(provider);
         servletContextRuntime.getDeploymentInfo().getServletMappings().forEach(mapping -> {

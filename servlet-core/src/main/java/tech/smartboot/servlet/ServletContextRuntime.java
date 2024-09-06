@@ -141,7 +141,7 @@ public class ServletContextRuntime {
         try {
             //有些场景下ServletContainerInitializer初始化依赖当前容器的类加载器
             Thread.currentThread().setContextClassLoader(deploymentInfo.getClassLoader());
-            plugins.forEach(plugin -> plugin.willStartContainer(this));
+            plugins.forEach(plugin -> plugin.willStartServletContext(this));
 
             DeploymentInfo deploymentInfo = servletContext.getDeploymentInfo();
 
@@ -166,10 +166,10 @@ public class ServletContextRuntime {
             initFilter(deploymentInfo);
             started = true;
             deploymentInfo.amazing();
-            plugins.forEach(plugin -> plugin.onContainerStartSuccess(this));
+            plugins.forEach(plugin -> plugin.onServletContextStartSuccess(this));
         } catch (Exception e) {
             e.printStackTrace();
-            plugins.forEach(plugin -> plugin.whenContainerStartError(this, e));
+            plugins.forEach(plugin -> plugin.whenServletContextStartError(this, e));
             throw e;
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
@@ -320,12 +320,12 @@ public class ServletContextRuntime {
     }
 
     public void stop() {
-        plugins.forEach(plugin -> plugin.willStopContainer(this));
+        plugins.forEach(plugin -> plugin.willStopServletContext(this));
         deploymentInfo.getServlets().values().stream().filter(ServletInfo::initialized).forEach(servletInfo -> servletInfo.getServlet().destroy());
         ServletContextEvent event = deploymentInfo.getServletContextListeners().isEmpty() ? null : new ServletContextEvent(servletContext);
         deploymentInfo.getServletContextListeners().forEach(servletContextListener -> servletContextListener.getListener().contextDestroyed(event));
 
-        plugins.forEach(plugin -> plugin.onContainerStopped(this));
+        plugins.forEach(plugin -> plugin.onServletContextStopped(this));
     }
 
     public DispatcherProvider getDispatcherProvider() {

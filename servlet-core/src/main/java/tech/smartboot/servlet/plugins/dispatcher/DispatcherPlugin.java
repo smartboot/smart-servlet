@@ -20,7 +20,7 @@ import tech.smartboot.servlet.plugins.Plugin;
 public class DispatcherPlugin extends Plugin {
 
     @Override
-    public void willStartContainer(ServletContextRuntime containerRuntime) {
+    public void willStartServletContext(ServletContextRuntime containerRuntime) {
         containerRuntime.setDispatcherProvider(new DispatcherProviderImpl());
     }
 

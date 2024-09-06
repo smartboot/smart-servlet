@@ -71,9 +71,9 @@ public abstract class Plugin {
     /**
      * servlet容器被启动成功之后被调用
      *
-     * @param servletContextRuntime 当前启动成功的子容器
+     * @param runtime 当前启动成功的子容器
      */
-    public void onContainerStartSuccess(ServletContextRuntime servletContextRuntime) {
+    public void onServletContextStartSuccess(ServletContextRuntime runtime) {
 //        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + servletContextRuntime.getContextPath() + " when start success!");
     }
 
@@ -81,36 +81,36 @@ public abstract class Plugin {
     /**
      * servlet子容器启动前被调用
      *
-     * @param containerRuntime 当前即将被启动的子容器
+     * @param runtime 当前即将被启动的子容器
      */
-    public void willStartContainer(ServletContextRuntime containerRuntime) {
+    public void willStartServletContext(ServletContextRuntime runtime) {
 //        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " before start!");
     }
 
     /**
      * servlet子容器启动失败时被调用
      *
-     * @param containerRuntime 当前启动失败的子容器
+     * @param runtime 当前启动失败的子容器
      */
-    public void whenContainerStartError(ServletContextRuntime containerRuntime, Throwable throwable) {
+    public void whenServletContextStartError(ServletContextRuntime runtime, Throwable throwable) {
 //        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when start error!");
     }
 
     /**
      * 即将消耗子容器
      *
-     * @param containerRuntime 即将被消耗的子容器
+     * @param runtime 即将被消耗的子容器
      */
-    public void willStopContainer(ServletContextRuntime containerRuntime) {
+    public void willStopServletContext(ServletContextRuntime runtime) {
 //        LOGGER.info("plugin:[" + pluginName() + "]do nothing for container: " + containerRuntime.getContextPath() + " before stop!");
     }
 
     /**
      * 子容器已销毁
      *
-     * @param containerRuntime 当前被消耗的子容器
+     * @param runtime 当前被消耗的子容器
      */
-    public void onContainerStopped(ServletContextRuntime containerRuntime) {
+    public void onServletContextStopped(ServletContextRuntime runtime) {
 //        LOGGER.info("plugin:[" + pluginName() + "] do nothing for container: " + containerRuntime.getContextPath() + " when stop!");
     }
 

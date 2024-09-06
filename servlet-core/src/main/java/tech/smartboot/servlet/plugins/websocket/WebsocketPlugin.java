@@ -28,7 +28,7 @@ public class WebsocketPlugin extends Plugin {
 
 
     @Override
-    public void willStartContainer(ServletContextRuntime containerRuntime) {
+    public void willStartServletContext(ServletContextRuntime containerRuntime) {
         containerRuntime.setWebsocketProvider(new WebsocketProviderImpl());
         containerRuntime.getServletContext().setAttribute(ServerContainer.class.getName(), containerRuntime.getWebsocketProvider().getWebSocketServerContainer());
 
