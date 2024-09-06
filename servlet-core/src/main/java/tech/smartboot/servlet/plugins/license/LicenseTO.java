@@ -10,8 +10,6 @@
 
 package tech.smartboot.servlet.plugins.license;
 
-import java.util.List;
-
 public class LicenseTO {
     private final long startTime = System.currentTimeMillis();
     private String sn;
@@ -38,10 +36,6 @@ public class LicenseTO {
      * 产品供应商
      */
     private String vendor;
-
-    private List<String> plugins;
-
-    private String mac;
 
     public String getApplicant() {
         return applicant;
@@ -93,21 +87,5 @@ public class LicenseTO {
 
     public void setVendor(String vendor) {
         this.vendor = vendor;
-    }
-
-    public List<String> getPlugins() {
-        return plugins;
-    }
-
-    public void setPlugins(List<String> plugins) {
-        this.plugins = plugins;
-    }
-
-    public String getMac() {
-        return mac;
-    }
-
-    public void setMac(String mac) {
-        this.mac = mac;
     }
 }

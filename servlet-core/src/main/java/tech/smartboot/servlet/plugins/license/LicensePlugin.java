@@ -13,7 +13,6 @@ package tech.smartboot.servlet.plugins.license;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
 import org.smartboot.http.server.HttpServerHandler;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -142,11 +140,8 @@ public class LicensePlugin extends Plugin {
         licenseTO.setTrialDuration(entity.getTrialDuration());
         licenseTO.setContact(entity.getContact());
         licenseTO.setVendor(entity.getApplicant());
-        licenseTO.setPlugins(Arrays.asList(StringUtils.split(properties.getProperty("plugins", ""), ",")));
-        licenseTO.setMac(properties.getProperty("mac"));
         return licenseTO;
     }
-
 
 
 }
