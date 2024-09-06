@@ -136,6 +136,7 @@ public class Container {
         }
         System.out.println("====================================================================================================");
         System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~");
         plugins.forEach(plugin -> plugin.onContainerInitialized(this));
         System.out.println("====================================================================================================");
     }

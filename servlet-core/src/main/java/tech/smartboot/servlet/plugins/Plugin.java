@@ -18,6 +18,7 @@ import tech.smartboot.servlet.ServletContextRuntime;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 
 /**
@@ -130,7 +131,12 @@ public abstract class Plugin {
 
     protected InputStream getResource(String fileName) throws IOException {
         if (isSpringBoot()) {
-            return getClass().getClassLoader().getResourceAsStream("smart-servlet/" + fileName);
+            URL url = getClass().getClassLoader().getResource("smart-servlet/" + fileName);
+            if (url == null) {
+                return null;
+            } else {
+                return url.openStream();
+            }
         } else {
             File file = new File(getServletHome(), "conf/" + fileName);
             if (file.isFile()) {
@@ -166,5 +172,34 @@ public abstract class Plugin {
         if (installed) {
             throw new IllegalStateException("plugin [ " + pluginName() + " ] has installed!");
         }
+    }
+
+    protected static class ConsoleColors {
+        /**
+         * 重置颜色
+         */
+        public static final String RESET = "\033[0m";
+        /**
+         * 蓝色
+         */
+        public static final String BLUE = "\033[34m";
+
+        /**
+         * 红色
+         */
+        public static final String RED = "\033[31m";
+
+        /**
+         * 绿色
+         */
+        public static final String GREEN = "\033[32m";
+
+        //加粗
+        public static final String BOLD = "\033[1m";
+
+        public static final String ANSI_UNDERLINE_ON = "\u001B[4m"; // 开启下划线
+        public static final String ANSI_RESET = "\u001B[0m"; // 重置所有样式
+
+
     }
 }

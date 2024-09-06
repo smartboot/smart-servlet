@@ -19,6 +19,7 @@ public class TlsPlugin extends Plugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(TlsPlugin.class);
     private HttpBootstrap bootstrap;
     private SSLConfig sslConfig;
+    private String errorMessage;
 
     @Override
     public void initPlugin(Container containerRuntime) {
@@ -40,7 +41,12 @@ public class TlsPlugin extends Plugin {
             switch (sslConfig.getType()) {
                 case "pem":
                     try (InputStream pemStream = getResource("smart-servlet.pem")) {
-                        sslPlugin = new SslPlugin<>(new PemServerSSLContextFactory(pemStream));
+                        if (pemStream != null) {
+                            sslPlugin = new SslPlugin<>(new PemServerSSLContextFactory(pemStream));
+                        } else {
+                            errorMessage = "smart-servlet.pem not found, please check the file:[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/smart-servlet.pem" : "${SERVLET_HOME}/conf/smart-servlet.pem") + " ].";
+                            return;
+                        }
                     }
 
                     break;
@@ -58,16 +64,21 @@ public class TlsPlugin extends Plugin {
 
         } catch (Exception e) {
             sslConfig = null;
-            bootstrap.shutdown();
-            bootstrap = null;
+            destroyPlugin();
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public void onContainerInitialized(Container container) {
-        if (sslConfig != null) {
-            System.out.println("\033[1mTLS Plugin:\033[0m");
+        System.out.println("\033[1mTLS Plugin:\033[0m");
+        if (!sslConfig.isEnable()) {
+            System.out.println("\tTLS is disabled.");
+            return;
+        }
+        if (errorMessage != null) {
+            System.out.println("\t" + ConsoleColors.RED + errorMessage + ConsoleColors.RESET);
+        } else {
             System.out.println("\tTLS enabled, port:" + sslConfig.getPort());
         }
     }

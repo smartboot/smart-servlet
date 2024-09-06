@@ -75,11 +75,11 @@ public class LicensePlugin extends Plugin {
 
     @Override
     public void onContainerInitialized(Container container) {
+        System.out.println("\033[1mLicense Plugin:\033[0m");
         if (licenseTO == null) {
-            System.err.println("License file not found, please check the license file path.");
+            System.out.println("\t" + ConsoleColors.RED + "ERROR：License not found, please check the license file：[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield" : "${SERVLET_HOME}/conf/License.shield") + " ]." + ConsoleColors.RESET);
             return;
         }
-        System.out.println("\033[1mLicense Plugin:\033[0m");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println("\t:: Licensed to " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + licenseTO.getApplicant() + ConsoleColors.ANSI_RESET + " until " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + sdf.format(new Date(licenseTO.getExpireTime())) + ConsoleColors.ANSI_RESET);
         System.out.println("\t:: License ID: " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + licenseTO.getSn() + ConsoleColors.RESET);
@@ -116,6 +116,9 @@ public class LicensePlugin extends Plugin {
         }, 10000);
 
         try (InputStream fileInputStream = getResource("License.shield")) {
+            if (fileInputStream == null) {
+                return;
+            }
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
             int len;
@@ -145,32 +148,5 @@ public class LicensePlugin extends Plugin {
     }
 
 
-    static class ConsoleColors {
-        /**
-         * 重置颜色
-         */
-        public static final String RESET = "\033[0m";
-        /**
-         * 蓝色
-         */
-        public static final String BLUE = "\033[34m";
 
-        /**
-         * 红色
-         */
-        public static final String RED = "\033[31m";
-
-        /**
-         * 绿色
-         */
-        public static final String GREEN = "\033[32m";
-
-        //加粗
-        public static final String BOLD = "\033[1m";
-
-        public static final String ANSI_UNDERLINE_ON = "\u001B[4m"; // 开启下划线
-        public static final String ANSI_RESET = "\u001B[0m"; // 重置所有样式
-
-
-    }
 }
