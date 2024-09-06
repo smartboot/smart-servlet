@@ -546,15 +546,30 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
-        throw new UnsupportedOperationException();
 //        T t = null;
 //        try {
 //            t = handlerClass.newInstance();
-//            t.init();
+//            t.init(new WebConnection() {
+//                @Override
+//                public ServletInputStream getInputStream() throws IOException {
+//                    return HttpServletRequestImpl.this.getInputStream();
+//                }
+//
+//                @Override
+//                public ServletOutputStream getOutputStream() throws IOException {
+//                    return httpServletResponse.getOutputStream();
+//                }
+//
+//                @Override
+//                public void close() throws Exception {
+//
+//                }
+//            });
 //        } catch (Exception e) {
-//            throw new RuntimeException(e);
+//            throw new ServletException(e);
 //        }
 //        return t;
+        throw new UnsupportedOperationException();
     }
 
     @Override
