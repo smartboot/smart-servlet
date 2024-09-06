@@ -115,6 +115,13 @@ public abstract class Plugin {
     }
 
     /**
+     * 容器初始化完成
+     */
+    public void onContainerInitialized(Container container) {
+//        LOGGER.info("plugin:[" + pluginName() + "] do nothing when initPlugin!");
+    }
+
+    /**
      * 卸载插件,在容器服务停止前调用
      */
     public final void uninstall() {

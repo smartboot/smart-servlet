@@ -104,7 +104,7 @@ public class Container {
         started = true;
         this.configuration = configuration;
         configuration.serverName("smart-servlet");
-        System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
+
 
         //设置默认
         if (runtimes.stream().noneMatch(runtime -> "/".equals(runtime.getContextPath()))) {
@@ -134,6 +134,10 @@ public class Container {
         for (ServletContextRuntime runtime : runtimes) {
             runtime.start();
         }
+        System.out.println("====================================================================================================");
+        System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
+        plugins.forEach(plugin -> plugin.onContainerInitialized(this));
+        System.out.println("====================================================================================================");
     }
 
     /**

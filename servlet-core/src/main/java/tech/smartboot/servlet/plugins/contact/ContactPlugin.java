@@ -10,7 +10,7 @@
 
 package tech.smartboot.servlet.plugins.contact;
 
-import tech.smartboot.servlet.ServletContextRuntime;
+import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.plugins.Plugin;
 
 /**
@@ -19,7 +19,7 @@ import tech.smartboot.servlet.plugins.Plugin;
 public class ContactPlugin extends Plugin {
 
     @Override
-    public void onServletContextStartSuccess(ServletContextRuntime servletContextRuntime) {
+    public void onContainerInitialized(Container container) {
         System.out.println();
         System.out.println("\033[1mTechnical Support:\033[0m");
         System.out.println(" · Document: https://smartboot.tech]");

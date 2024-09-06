@@ -17,6 +17,8 @@ import java.io.InputStream;
  */
 public class TlsPlugin extends Plugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(TlsPlugin.class);
+    private HttpBootstrap bootstrap;
+    private SSLConfig sslConfig;
 
     @Override
     public void initPlugin(Container containerRuntime) {
@@ -24,7 +26,7 @@ public class TlsPlugin extends Plugin {
 
 
         try {
-            SSLConfig sslConfig = new SSLConfig();
+            sslConfig = new SSLConfig();
             try (InputStream fileInputStream = getResource("smart-servlet.properties")) {
                 if (fileInputStream != null) {
                     ParamReflect.reflect(fileInputStream, sslConfig);
@@ -49,13 +51,31 @@ public class TlsPlugin extends Plugin {
                     throw new UnsupportedOperationException("无效证书类型");
             }
 //            sslPlugin.debug(true);
-            final HttpBootstrap bootstrap = new HttpBootstrap();
+            bootstrap = new HttpBootstrap();
             bootstrap.httpHandler(containerRuntime.getConfiguration().getHttpServerHandler());
             bootstrap.setPort(sslConfig.getPort()).configuration().addPlugin(sslPlugin).group(containerRuntime.getConfiguration().group()).readBufferSize(sslConfig.getReadBufferSize()).bannerEnabled(false);
             bootstrap.start();
-            System.out.println("https/wss start success on port: " + sslConfig.getPort());
+
         } catch (Exception e) {
+            sslConfig = null;
+            bootstrap.shutdown();
+            bootstrap = null;
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onContainerInitialized(Container container) {
+        if (sslConfig != null) {
+            System.out.println("\033[1mTLS Plugin:\033[0m");
+            System.out.println("\tTLS enabled, port:" + sslConfig.getPort());
+        }
+    }
+
+    @Override
+    protected void destroyPlugin() {
+        if (bootstrap != null) {
+            bootstrap.shutdown();
         }
     }
 

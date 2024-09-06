@@ -27,12 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
@@ -62,18 +58,11 @@ public class LicensePlugin extends Plugin {
                     try {
                         response.setHttpStatus(HttpStatus.SERVICE_UNAVAILABLE);
                         OutputStream outputStream = response.getOutputStream();
-                        Map<String, String> data = new HashMap<>();
-                        List<String> macs = getMacAddresses();
-                        if (macs.isEmpty()) {
-                            outputStream.write("<center>".getBytes());
-                            outputStream.write(("<h1>" + HttpStatus.SERVICE_UNAVAILABLE.value() + " " + HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase() + "</h1>").getBytes());
-                            outputStream.write(expireMessage.getBytes());
-                            outputStream.write(("<hr/><a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a>/" + Container.VERSION + "&nbsp;|&nbsp; <a target='_blank' href='https://gitee.com/smartboot/smart-servlet'>Gitee</a>").getBytes());
-                            outputStream.write("</center>".getBytes());
-                        } else {
-                            data.put("mac", getMacAddresses().get(0));
-                            outputStream.write(license.getExpireHtml(data).getBytes());
-                        }
+                        outputStream.write("<center>".getBytes());
+                        outputStream.write(("<h1>" + HttpStatus.SERVICE_UNAVAILABLE.value() + " " + HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase() + "</h1>").getBytes());
+                        outputStream.write(expireMessage.getBytes());
+                        outputStream.write(("<hr/><a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a>/" + Container.VERSION + "&nbsp;|&nbsp; <a target='_blank' href='https://gitee.com/smartboot/smart-servlet'>Gitee</a>").getBytes());
+                        outputStream.write("</center>".getBytes());
                     } catch (IOException e) {
                         LOGGER.warn("HttpError response exception", e);
                     } finally {
@@ -82,6 +71,22 @@ public class LicensePlugin extends Plugin {
                 }
             }
         });
+    }
+
+    @Override
+    public void onContainerInitialized(Container container) {
+        if (licenseTO == null) {
+            System.err.println("License file not found, please check the license file path.");
+            return;
+        }
+        System.out.println("\033[1mLicense Plugin:\033[0m");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("\t:: Licensed to " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + licenseTO.getApplicant() + ConsoleColors.ANSI_RESET + " until " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + sdf.format(new Date(licenseTO.getExpireTime())) + ConsoleColors.ANSI_RESET);
+        System.out.println("\t:: License ID: " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + licenseTO.getSn() + ConsoleColors.RESET);
+        System.out.println("\t:: Copyright© " + licenseTO.getVendor() + " ,E-mail: " + licenseTO.getContact());
+        if (licenseTO.getTrialDuration() > 0) {
+            System.out.println(ConsoleColors.RED + "\t:: Trial: " + licenseTO.getTrialDuration() + " minutes" + ConsoleColors.RESET);
+        }
     }
 
     @Override
@@ -119,17 +124,8 @@ public class LicensePlugin extends Plugin {
             }
             LicenseEntity entity = license.loadLicense(outputStream.toByteArray());
             licenseTO = loadLicense(entity);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            System.out.println(":: Licensed to " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + licenseTO.getApplicant() + ConsoleColors.ANSI_RESET + " until " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + sdf.format(new Date(licenseTO.getExpireTime())) + ConsoleColors.ANSI_RESET);
-            System.out.println(":: License ID: " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + licenseTO.getSn() + ConsoleColors.RESET);
-            System.out.println(":: Copyright© " + licenseTO.getVendor() + " ,E-mail: " + licenseTO.getContact());
-            if (licenseTO.getTrialDuration() > 0) {
-                System.out.println(ConsoleColors.RED + ":: Trial: " + licenseTO.getTrialDuration() + " minutes" + ConsoleColors.RESET);
-            } else if (!getMacAddresses().contains(licenseTO.getMac())) {
-                licenseTO = null;
-            }
         } catch (Exception e) {
-            System.err.println("load license error");
+            LOGGER.error("License load exception", e);
         }
     }
 
@@ -146,27 +142,6 @@ public class LicensePlugin extends Plugin {
         licenseTO.setPlugins(Arrays.asList(StringUtils.split(properties.getProperty("plugins", ""), ",")));
         licenseTO.setMac(properties.getProperty("mac"));
         return licenseTO;
-    }
-
-    private List<String> getMacAddresses() {
-        List<String> macs = new ArrayList<>();
-//        try {
-//            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-//            while (networkInterfaces.hasMoreElements()) {
-//                NetworkInterface networkInterface = networkInterfaces.nextElement();
-//                byte[] mac = networkInterface.getHardwareAddress();
-//                if (mac != null) {
-//                    StringBuilder sb = new StringBuilder();
-//                    for (int i = 0; i < mac.length; i++) {
-//                        sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
-//                    }
-//                    macs.add(sb.toString());
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        return macs;
     }
 
 
