@@ -81,7 +81,6 @@ public class SmartServletServer implements WebServer {
             }
             try {
                 bootstrap.start();
-                System.out.println("启动成功");
                 this.started = true;
             } catch (Exception ex) {
                 ex.printStackTrace();

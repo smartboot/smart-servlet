@@ -26,5 +26,6 @@ public class ContactPlugin extends Plugin {
         System.out.println(" · Gitee: https://gitee.com/smartboot/smart-servlet");
         System.out.println(" · Github: https://github.com/smartboot/smart-servlet");
         System.out.println(" · E-mail: zhengjunweimail@163.com");
+        System.out.println(" · 温馨提示：开源不易，拒绝盗版，请通过正规渠道获取产品授权");
     }
 }

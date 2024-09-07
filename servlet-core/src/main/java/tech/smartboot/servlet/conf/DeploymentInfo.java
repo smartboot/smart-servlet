@@ -324,8 +324,5 @@ public class DeploymentInfo {
     public void setDynamicListenerState(boolean dynamicListenerState) {
         this.dynamicListenerState = dynamicListenerState;
     }
-
-    public boolean isDynamicListenerState() {
-        return dynamicListenerState;
-    }
+    
 }
