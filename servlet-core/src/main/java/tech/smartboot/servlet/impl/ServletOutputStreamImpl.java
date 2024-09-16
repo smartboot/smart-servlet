@@ -12,7 +12,7 @@ package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
-import org.smartboot.http.common.BufferOutputStream;
+import org.smartboot.http.server.HttpResponse;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,10 +30,12 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     private byte[] buffer;
     private int written;
     private byte[] cacheByte;
+    private long contentLength;
 
-    public ServletOutputStreamImpl(BufferOutputStream outputStream, byte[] buffer) {
+    public ServletOutputStreamImpl(HttpResponse response, byte[] buffer) {
 //        this.outputStream = new BufferedOutputStream(outputStream, 1024);
-        this.outputStream = outputStream;
+        this.outputStream = response.getOutputStream();
+        contentLength = response.getContentLength();
         this.buffer = buffer;
     }
 
@@ -66,6 +68,9 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
+        if (contentLength >= 0 && written + len > contentLength) {
+            throw new IOException("content length limit exceeded");
+        }
         if (committed) {
             outputStream.write(b, off, len);
             written += len;
