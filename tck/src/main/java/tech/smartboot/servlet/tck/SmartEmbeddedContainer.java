@@ -35,7 +35,6 @@ import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
 import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
-import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -141,7 +140,7 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
             }
 
         }
-        bootstrap.configuration().setHttpIdleTimeout(-1);
+        bootstrap.configuration().setHttpIdleTimeout(120000);
         bootstrap.setPort(containerConfig.getBindHttpPort()).start();
         listeningHost = "127.0.0.1";
 //        listeningHost = containerConfig.getBindAddress();
