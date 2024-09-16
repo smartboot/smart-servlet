@@ -68,9 +68,6 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        if (contentLength >= 0 && written + len > contentLength) {
-            throw new IOException("content length limit exceeded");
-        }
         if (committed) {
             outputStream.write(b, off, len);
             written += len;

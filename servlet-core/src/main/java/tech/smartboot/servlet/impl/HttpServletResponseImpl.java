@@ -292,10 +292,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             if (size == -1) {
                 size = 512;
             }
-            if (size > 0 && response.getContentLength() < size) {
+            if (size > 0 && response.getContentLength() >= 0 && response.getContentLength() < size) {
                 size = (int) response.getContentLength();
             }
-            byte[] buffer = size > 0 ? new byte[size] : null;
+            byte[] buffer = new byte[size];
             servletOutputStream = new ServletOutputStreamImpl(response, buffer);
         }
     }
