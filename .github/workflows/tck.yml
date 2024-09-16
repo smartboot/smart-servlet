@@ -42,10 +42,8 @@ jobs:
           cache: maven
       - name: Build smart-http
         run: mvn -B install --file smart-http/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
-      - name: Set up Maven
-        run: mvn --errors --batch-mode --show-version org.apache.maven.plugins:maven-wrapper-plugin:3.2.0:wrapper "-Dmaven=3.9.4"
       - name: Build servlet TCK with Maven
-        run: mvn -B install --file jakartaee/servlet/pom.xml
+        run: mvn --errors --batch-mode --show-version org.apache.maven.plugins:maven-wrapper-plugin:3.2.0:wrapper "-Dmaven=3.9.4" -B install --file jakartaee/servlet/pom.xml
       - name: Build smart-servlet with Maven
         run: mvn -B install --file pom.xml
 #      - name: Build with Maven
