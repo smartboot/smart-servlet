@@ -152,6 +152,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     }
 
     @Override
+    public void sendRedirect(String location, int sc, boolean clearBuffer) throws IOException {
+        throw new IllegalStateException();
+    }
+
+    @Override
     public void setDateHeader(String name, long date) {
         setHeader(name, DateUtil.formatDate(date));
     }
@@ -373,7 +378,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         response.getHeaderNames().forEach(headerName -> response.setHeader(headerName, null));
         setContentLength(-1);
         contentType = null;
-        setCharacterEncoding(null);
+        charset = null;
         response.setHttpStatus(HttpStatus.OK);
         writer = null;
         responseType = RESPONSE_TYPE_NONE;
