@@ -40,11 +40,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-          maven-version: '3.9'
       - name: Build smart-http
         run: mvn -B install --file smart-http/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
       - name: Build servlet TCK with Maven
-        run: mvn "-Dmaven=3.9.4" -B install --file jakartaee/servlet/pom.xml
+        run: mvn -B install --file jakartaee/servlet/pom.xml -Dmaven=3.9.4
       - name: Build smart-servlet with Maven
         run: mvn -B install --file pom.xml
 #      - name: Build with Maven
