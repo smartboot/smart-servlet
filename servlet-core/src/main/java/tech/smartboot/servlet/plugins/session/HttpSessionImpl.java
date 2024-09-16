@@ -80,7 +80,7 @@ class HttpSessionImpl implements HttpSession {
 
     public void setLastAccessed(long lastAccessed) {
         this.lastAccessed = lastAccessed;
-        pauseTimeoutTask();
+        updateTimeoutTask();
     }
 
     @Override
