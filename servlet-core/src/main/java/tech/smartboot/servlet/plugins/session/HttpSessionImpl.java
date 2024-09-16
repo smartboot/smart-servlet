@@ -80,7 +80,7 @@ class HttpSessionImpl implements HttpSession {
 
     public void setLastAccessed(long lastAccessed) {
         this.lastAccessed = lastAccessed;
-        updateTimeoutTask();
+        pauseTimeoutTask();
     }
 
     @Override
@@ -96,14 +96,18 @@ class HttpSessionImpl implements HttpSession {
     @Override
     public void setMaxInactiveInterval(int interval) {
         this.maxInactiveInterval = interval;
-        updateTimeoutTask();
+        pauseTimeoutTask();
     }
 
-    private synchronized void updateTimeoutTask() {
+    void pauseTimeoutTask() {
         if (timerTask != null) {
             timerTask.cancel();
             timerTask = null;
         }
+    }
+
+    private synchronized void updateTimeoutTask() {
+        pauseTimeoutTask();
         if (maxInactiveInterval <= 0) {
             return;
         }

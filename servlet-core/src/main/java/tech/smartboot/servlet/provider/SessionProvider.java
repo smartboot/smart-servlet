@@ -28,6 +28,7 @@ public interface SessionProvider {
     void changeSessionId(HttpSession httpSession);
 
     void updateAccessTime(HttpServletRequestImpl request);
+    void pauseAccessTime(HttpServletRequestImpl request);
 
     boolean isRequestedSessionIdValid(HttpServletRequestImpl request);
 

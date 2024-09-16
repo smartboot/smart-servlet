@@ -116,6 +116,14 @@ class SessionProviderImpl implements SessionProvider {
     }
 
     @Override
+    public void pauseAccessTime(HttpServletRequestImpl request) {
+        HttpSessionImpl session = getSession(request);
+        if (session != null) {
+            session.pauseTimeoutTask();
+        }
+    }
+
+    @Override
     public boolean isRequestedSessionIdValid(HttpServletRequestImpl request) {
         HttpSessionImpl session = getSession(request);
         if (session == null) {
@@ -139,6 +147,7 @@ class SessionProviderImpl implements SessionProvider {
         if (session == null || session.isInvalid()) {
             return null;
         }
+        session.pauseTimeoutTask();
         return session;
     }
 

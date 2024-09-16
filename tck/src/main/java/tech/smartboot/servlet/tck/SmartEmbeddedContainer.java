@@ -141,6 +141,7 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
             }
 
         }
+        bootstrap.configuration().setHttpIdleTimeout(-1);
         bootstrap.setPort(containerConfig.getBindHttpPort()).start();
         listeningHost = "127.0.0.1";
 //        listeningHost = containerConfig.getBindAddress();

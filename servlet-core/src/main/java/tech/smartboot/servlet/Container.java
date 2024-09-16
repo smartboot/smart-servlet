@@ -266,6 +266,7 @@ public class Container {
             servletRequest.setServletMappingInfo(servletMappingInfo);
             runtime.getVendorProvider().signature(servletResponse);
             // just do it
+            runtime.getSessionProvider().pauseAccessTime(servletRequest);
             servletContext.getPipeline().handleRequest(handlerContext);
             runtime.getSessionProvider().updateAccessTime(servletRequest);
             //输出buffer中的数据
