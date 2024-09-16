@@ -27,7 +27,7 @@ jobs:
         name: 下载servlet TCK
         with:
           repository: jakartaee/servlet
-          ref: c533204b8fb04a4b04169e697b3f140b8ea2deb9
+          ref: c4a04f1f1a9ea747efb22f5234abdf598356d2e9
           path: jakartaee/servlet
       - uses: actions/checkout@v4
         name: 下载 smart-http
