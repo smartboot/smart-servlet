@@ -65,7 +65,7 @@
         <dependency>
             <groupId>jakarta.tck</groupId>
             <artifactId>servlet-tck-runtime</artifactId>
-            <version>6.1.0</version>
+            <version>6.0.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
