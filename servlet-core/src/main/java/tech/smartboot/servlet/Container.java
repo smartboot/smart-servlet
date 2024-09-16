@@ -273,6 +273,10 @@ public class Container {
             asyncContext = servletRequest.getInternalAsyncContext();
             if (asyncContext == null) {
                 servletResponse.flushServletBuffer();
+                //为了适配tck 的测试, 需要关闭连接
+                if (response.getOutputStream().isChunkedSupport()) {
+                    response.close();
+                }
             }
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
