@@ -43,7 +43,7 @@ jobs:
       - name: Build smart-http
         run: mvn -B install --file smart-http/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
       - name: Build servlet TCK with Maven
-        run: mvn -B install --file jakartaee/servlet/tck/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
+        run: mvn -B install --file jakartaee/servlet/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
       - name: Build smart-servlet with Maven
         run: mvn -B install --file pom.xml
 #      - name: Build with Maven
