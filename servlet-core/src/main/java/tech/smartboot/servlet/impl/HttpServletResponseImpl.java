@@ -151,6 +151,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         response.close();
     }
 
+    @Override
+    public void sendRedirect(String location, int sc, boolean clearBuffer) throws IOException {
+        throw new IllegalStateException();
+    }
+
 
     @Override
     public void setDateHeader(String name, long date) {
