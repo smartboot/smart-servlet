@@ -62,6 +62,9 @@ public class SecurityProviderImpl implements SecurityProvider {
 
     @Override
     public SecurityAccount login(String username, String password) throws ServletException {
+        if (username == null || password == null) {
+            throw new ServletException();
+        }
         return users.stream().filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password)).findFirst().orElse(null);
     }
 
