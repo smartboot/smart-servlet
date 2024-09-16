@@ -22,7 +22,6 @@ import java.io.IOException;
  */
 public class ServletInputStreamImpl extends ServletInputStream {
     private final BodyInputStream inputStream;
-    private ReadListener readListener;
     private final HttpServletRequestImpl request;
 
     public ServletInputStreamImpl(HttpServletRequestImpl request, BodyInputStream inputStream) {
@@ -32,7 +31,7 @@ public class ServletInputStreamImpl extends ServletInputStream {
 
     @Override
     public boolean isFinished() {
-        throw new UnsupportedOperationException();
+        return inputStream.isFinished();
     }
 
     @Override
@@ -46,12 +45,6 @@ public class ServletInputStreamImpl extends ServletInputStream {
 
     @Override
     public void setReadListener(ReadListener readListener) {
-        if (readListener == null) {
-            throw new NullPointerException();
-        }
-        if (this.readListener != null) {
-            throw new IllegalStateException();
-        }
         if (!request.isAsyncStarted()) {
             throw new IllegalStateException();
         }
