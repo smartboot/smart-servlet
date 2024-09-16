@@ -12,17 +12,21 @@ package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
+import org.smartboot.http.common.io.BodyInputStream;
+
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2020/12/12
  */
 public class ServletInputStreamImpl extends ServletInputStream {
-    private final InputStream inputStream;
+    private final BodyInputStream inputStream;
+    private ReadListener readListener;
+    private final HttpServletRequestImpl request;
 
-    public ServletInputStreamImpl(InputStream inputStream) {
+    public ServletInputStreamImpl(HttpServletRequestImpl request, BodyInputStream inputStream) {
+        this.request = request;
         this.inputStream = inputStream;
     }
 
@@ -33,12 +37,40 @@ public class ServletInputStreamImpl extends ServletInputStream {
 
     @Override
     public boolean isReady() {
-        throw new UnsupportedOperationException();
+        if (request.isAsyncStarted()) {
+            return inputStream.isReady();
+        } else {
+            return false;
+        }
     }
 
     @Override
     public void setReadListener(ReadListener readListener) {
-        throw new UnsupportedOperationException();
+        if (readListener == null) {
+            throw new NullPointerException();
+        }
+        if (this.readListener != null) {
+            throw new IllegalStateException();
+        }
+        if (!request.isAsyncStarted()) {
+            throw new IllegalStateException();
+        }
+        inputStream.setReadListener(new org.smartboot.http.common.io.ReadListener() {
+            @Override
+            public void onDataAvailable() throws IOException {
+                readListener.onDataAvailable();
+            }
+
+            @Override
+            public void onAllDataRead() throws IOException {
+                readListener.onAllDataRead();
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                readListener.onError(t);
+            }
+        });
     }
 
     @Override
