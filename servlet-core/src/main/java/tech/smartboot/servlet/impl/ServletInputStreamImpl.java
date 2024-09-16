@@ -45,9 +45,13 @@ public class ServletInputStreamImpl extends ServletInputStream {
 
     @Override
     public void setReadListener(ReadListener readListener) {
+        if (readListener == null) {
+            throw new NullPointerException();
+        }
         if (!request.isAsyncStarted()) {
             throw new IllegalStateException();
         }
+
         inputStream.setReadListener(new org.smartboot.http.common.io.ReadListener() {
             @Override
             public void onDataAvailable() throws IOException {
