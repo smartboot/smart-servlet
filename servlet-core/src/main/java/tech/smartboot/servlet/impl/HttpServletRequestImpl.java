@@ -629,7 +629,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             throw new IllegalStateException("getReader method has already been called for this request");
         }
         if (servletInputStream == null) {
-            servletInputStream = new ServletInputStreamImpl(this,request.getInputStream());
+            servletInputStream = new ServletInputStreamImpl(this, request.getInputStream());
         }
         return servletInputStream;
     }
