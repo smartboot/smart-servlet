@@ -296,7 +296,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
                 size = (int) response.getContentLength();
             }
             byte[] buffer = new byte[size];
-            servletOutputStream = new ServletOutputStreamImpl(response, buffer);
+            servletOutputStream = new ServletOutputStreamImpl(request,response, buffer);
         }
     }
 

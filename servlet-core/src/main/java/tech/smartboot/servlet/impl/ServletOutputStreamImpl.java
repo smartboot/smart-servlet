@@ -12,17 +12,19 @@ package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
+import org.smartboot.http.common.io.BufferOutputStream;
 import org.smartboot.http.server.HttpResponse;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
  * @author 三刀
  * @version V1.0 , 2020/10/19
  */
 public class ServletOutputStreamImpl extends ServletOutputStream {
-    private final OutputStream outputStream;
+    private final BufferOutputStream outputStream;
+    protected static final AtomicIntegerFieldUpdater<ServletOutputStreamImpl> stateUpdater = AtomicIntegerFieldUpdater.newUpdater(ServletOutputStreamImpl.class, "state");
     private boolean committed = false;
     /**
      * buffer仅用于提供response.resetBuffer能力,commit之后即失效
@@ -30,12 +32,18 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     private byte[] buffer;
     private int written;
     private byte[] cacheByte;
-    private long contentLength;
+    private WriteListener writeListener;
+    private volatile int state;
+    private static final int FLAG_CLOSED = 1;
+    private static final int FLAG_WRITE_STARTED = 1 << 1;
+    private static final int FLAG_READY = 1 << 2;
+    private static final int FLAG_DELEGATE_SHUTDOWN = 1 << 3;
+    private static final int FLAG_IN_CALLBACK = 1 << 4;
+    private HttpServletRequestImpl request;
 
-    public ServletOutputStreamImpl(HttpResponse response, byte[] buffer) {
-//        this.outputStream = new BufferedOutputStream(outputStream, 1024);
+    public ServletOutputStreamImpl(HttpServletRequestImpl request, HttpResponse response, byte[] buffer) {
+        this.request = request;
         this.outputStream = response.getOutputStream();
-        contentLength = response.getContentLength();
         this.buffer = buffer;
     }
 
@@ -47,7 +55,14 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     @Override
     public void setWriteListener(WriteListener writeListener) {
-        throw new UnsupportedOperationException();
+        this.writeListener = writeListener;
+        request.getInternalAsyncContext().start(() -> {
+            try {
+                writeListener.onWritePossible();
+            } catch (IOException e) {
+                writeListener.onError(e);
+            }
+        });
     }
 
     @Override
@@ -69,7 +84,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
         if (committed) {
-            outputStream.write(b, off, len);
+            doWrite(b, off, len);
             written += len;
             return;
         }
@@ -79,9 +94,26 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
             written += len;
         } else {
             flushServletBuffer();
-            outputStream.write(b, off, len);
+            doWrite(b, off, len);
             written += len;
         }
+    }
+
+    private void doWrite(byte[] b, int off, int len) throws IOException {
+        if (writeListener == null || anyAreSet(state, FLAG_IN_CALLBACK)) {
+            outputStream.write(b, off, len);
+        } else {
+            outputStream.write(b, off, len, bufferOutputStream -> {
+                try {
+                    setFlags(FLAG_IN_CALLBACK);
+                    writeListener.onWritePossible();
+                    clearFlags(FLAG_IN_CALLBACK);
+                } catch (IOException e) {
+                    writeListener.onError(e);
+                }
+            });
+        }
+
     }
 
     @Override
@@ -98,8 +130,10 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     public void flushServletBuffer() throws IOException {
         committed = true;
         if (buffer != null) {
-            outputStream.write(buffer, 0, written);
+            doWrite(buffer, 0, written);
             buffer = null;
+        } else if (writeListener != null) {
+            writeListener.onWritePossible();
         }
     }
 
@@ -116,5 +150,27 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     public int getWritten() {
         return written;
+    }
+
+    protected static boolean anyAreClear(int var, int flags) {
+        return (var & flags) != flags;
+    }
+
+    protected void clearFlags(int flags) {
+        int old;
+        do {
+            old = state;
+        } while (!stateUpdater.compareAndSet(this, old, old & ~flags));
+    }
+
+    protected void setFlags(int flags) {
+        int old;
+        do {
+            old = state;
+        } while (!stateUpdater.compareAndSet(this, old, old | flags));
+    }
+
+    protected boolean anyAreSet(int var, int flags) {
+        return (var & flags) != 0;
     }
 }
