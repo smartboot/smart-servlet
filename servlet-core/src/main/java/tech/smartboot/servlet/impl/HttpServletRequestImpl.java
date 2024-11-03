@@ -67,6 +67,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -894,7 +895,84 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public PushBuilder newPushBuilder() {
-//        return new PushBuilderImpl(this);
-        throw new UnsupportedOperationException();
+        org.smartboot.http.server.PushBuilder pushBuilder = request.newPushBuilder();
+        return new PushBuilder() {
+            @Override
+            public PushBuilder method(String method) {
+                pushBuilder.method(method);
+                return this;
+            }
+
+            @Override
+            public PushBuilder queryString(String queryString) {
+                pushBuilder.queryString(queryString);
+                return this;
+            }
+
+            @Override
+            public PushBuilder sessionId(String sessionId) {
+                throw new IllegalStateException();
+            }
+
+            @Override
+            public PushBuilder setHeader(String name, String value) {
+                pushBuilder.setHeader(name, value);
+                return this;
+            }
+
+            @Override
+            public PushBuilder addHeader(String name, String value) {
+                pushBuilder.addHeader(name, value);
+                return this;
+            }
+
+            @Override
+            public PushBuilder removeHeader(String name) {
+                pushBuilder.removeHeader(name);
+                return this;
+            }
+
+            @Override
+            public PushBuilder path(String path) {
+                pushBuilder.path(getContextPath() + "/" + path);
+                return this;
+            }
+
+            @Override
+            public void push() {
+                pushBuilder.push();
+            }
+
+            @Override
+            public String getMethod() {
+                return pushBuilder.getMethod();
+            }
+
+            @Override
+            public String getQueryString() {
+                return pushBuilder.getQueryString();
+            }
+
+            @Override
+            public String getSessionId() {
+                return pushBuilder.getSessionId();
+            }
+
+            @Override
+            public Set<String> getHeaderNames() {
+                return pushBuilder.getHeaderNames();
+            }
+
+            @Override
+            public String getHeader(String name) {
+                return pushBuilder.getHeader(name);
+            }
+
+            @Override
+            public String getPath() {
+                return pushBuilder.getPath();
+            }
+        };
+//        throw new UnsupportedOperationException();
     }
 }

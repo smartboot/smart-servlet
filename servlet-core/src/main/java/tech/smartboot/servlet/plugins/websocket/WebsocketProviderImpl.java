@@ -40,7 +40,7 @@ public class WebsocketProviderImpl implements WebsocketProvider {
 
     @Override
     public void doHandle(WebSocketRequest request, WebSocketResponse response) {
-        Attachment attachment = ((WebSocketRequestImpl) request).getAttachment();
+        Attachment attachment = request.getAttachment();
         WebsocketSession session = (WebsocketSession) attachment.get(WebsocketProvider.WEBSOCKET_SESSION_ATTACH_KEY);
         try {
             switch (request.getFrameOpcode()) {

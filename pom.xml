@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <smarthttp.version>1.6.0</smarthttp.version>
+        <smarthttp.version>1.6.1</smarthttp.version>
         <smartservlet.version>2.2</smartservlet.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
