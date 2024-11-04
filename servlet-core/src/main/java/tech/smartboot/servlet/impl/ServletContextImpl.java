@@ -120,13 +120,13 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public int getEffectiveMajorVersion() {
-        return 6;
+        return deploymentInfo.getEffectiveMajorVersion();
     }
 
     @Override
     public int getEffectiveMinorVersion() {
         checkContextInitializeState();
-        return 0;
+        return deploymentInfo.getEffectiveMinorVersion();
     }
 
     @Override
@@ -476,6 +476,7 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public <T extends Filter> T createFilter(Class<T> clazz) throws ServletException {
+        checkContextInitializeState();
         return newInstance(clazz);
     }
 

@@ -96,6 +96,7 @@ class WebXmlParseEngine {
         Element parentElement = document.getDocumentElement();
 
         webAppInfo.setMetadataComplete("true".equals(parentElement.getAttribute("metadata-complete")));
+        webAppInfo.setVersion(parentElement.getAttribute("version"));
         parseBasicInfo(webAppInfo, parentElement);
 
         parseServlet(webAppInfo, parentElement);

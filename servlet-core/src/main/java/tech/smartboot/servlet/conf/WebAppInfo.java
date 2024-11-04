@@ -22,6 +22,7 @@ import java.util.Map;
  * @version V1.0 , 2019/12/12
  */
 public class WebAppInfo {
+    private String version;
     private String displayName;
     private String description;
     private boolean metadataComplete;
@@ -189,5 +190,13 @@ public class WebAppInfo {
 
     public void setLoginConfig(LoginConfig loginConfig) {
         this.loginConfig = loginConfig;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

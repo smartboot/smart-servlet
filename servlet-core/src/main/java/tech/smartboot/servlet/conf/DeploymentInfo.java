@@ -40,6 +40,8 @@ import java.util.concurrent.Executors;
  * @version V1.0 , 2019/12/11
  */
 public class DeploymentInfo {
+    private int effectiveMajorVersion;
+    private int effectiveMinorVersion;
     private final Map<String, ServletInfo> servlets = new HashMap<>();
     private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
     private final Map<Integer, ErrorPageInfo> errorStatusPages = new HashMap<>();
@@ -324,5 +326,20 @@ public class DeploymentInfo {
     public void setDynamicListenerState(boolean dynamicListenerState) {
         this.dynamicListenerState = dynamicListenerState;
     }
-    
+
+    public int getEffectiveMajorVersion() {
+        return effectiveMajorVersion;
+    }
+
+    public void setEffectiveMajorVersion(int effectiveMajorVersion) {
+        this.effectiveMajorVersion = effectiveMajorVersion;
+    }
+
+    public int getEffectiveMinorVersion() {
+        return effectiveMinorVersion;
+    }
+
+    public void setEffectiveMinorVersion(int effectiveMinorVersion) {
+        this.effectiveMinorVersion = effectiveMinorVersion;
+    }
 }

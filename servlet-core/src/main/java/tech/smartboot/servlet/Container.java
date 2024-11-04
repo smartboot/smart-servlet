@@ -401,6 +401,13 @@ public class Container {
         //set session timeout
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
         deploymentInfo.setLoginConfig(webAppInfo.getLoginConfig());
+        if (StringUtils.isNotBlank(webAppInfo.getVersion())) {
+            String[] array = webAppInfo.getVersion().split("\\.");
+            if (array.length == 2) {
+                deploymentInfo.setEffectiveMajorVersion(Integer.parseInt(array[0]));
+                deploymentInfo.setEffectiveMinorVersion(Integer.parseInt(array[1]));
+            }
+        }
 //        if (webAppInfo.getLoginConfig() != null && webAppInfo.getLoginConfig().getLoginPage().endsWith(".jsp")) {
 //            servletRuntime.getServletContext().addJspFile("aaaaaa", webAppInfo.getLoginConfig().getLoginPage());
 //        }
