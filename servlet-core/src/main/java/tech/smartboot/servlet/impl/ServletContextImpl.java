@@ -125,7 +125,6 @@ public class ServletContextImpl implements ServletContext {
 
     @Override
     public int getEffectiveMinorVersion() {
-        checkContextInitializeState();
         return deploymentInfo.getEffectiveMinorVersion();
     }
 

@@ -76,10 +76,6 @@ public class WebAppInfo {
         this.contextParams.put(param, value);
     }
 
-    public ServletInfo getServlet(String servletName) {
-        return servlets.get(servletName);
-    }
-
     public void addErrorPage(ErrorPageInfo errorPageInfo) {
         errorPages.add(errorPageInfo);
     }
