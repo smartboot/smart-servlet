@@ -896,6 +896,19 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public PushBuilder newPushBuilder() {
         org.smartboot.http.server.PushBuilder pushBuilder = request.newPushBuilder();
+        if (pushBuilder == null) {
+            return null;
+        }
+        String sessionId;
+        HttpSession session = getSession(false);
+        if (session != null) {
+            sessionId = session.getId();
+        } else {
+            sessionId = getRequestedSessionId();
+        }
+        if (sessionId != null) {
+            pushBuilder.setHeader(HeaderNameEnum.COOKIE.getName(), "JSESSIONID=" + sessionId);
+        }
         return new PushBuilder() {
             @Override
             public PushBuilder method(String method) {
@@ -955,7 +968,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
             @Override
             public String getSessionId() {
-                return pushBuilder.getSessionId();
+                return sessionId;
             }
 
             @Override
