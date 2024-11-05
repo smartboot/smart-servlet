@@ -136,6 +136,7 @@ public class LicensePlugin extends Plugin {
         LicenseTO licenseTO = new LicenseTO();
         licenseTO.setApplicant(properties.getProperty("enterprise.license.user"));
         licenseTO.setSn(properties.getProperty("enterprise.license.number"));
+        licenseTO.setCompatible(properties.getProperty("enterprise.compatible"));
         licenseTO.setExpireTime(entity.getExpireTime());
         licenseTO.setTrialDuration(entity.getTrialDuration());
         licenseTO.setContact(entity.getContact());

@@ -36,6 +36,7 @@ public class LicenseTO {
      * 产品供应商
      */
     private String vendor;
+    private String compatible;
 
     public String getApplicant() {
         return applicant;
@@ -87,5 +88,13 @@ public class LicenseTO {
 
     public void setVendor(String vendor) {
         this.vendor = vendor;
+    }
+
+    public String getCompatible() {
+        return compatible;
+    }
+
+    public void setCompatible(String compatible) {
+        this.compatible = compatible;
     }
 }
