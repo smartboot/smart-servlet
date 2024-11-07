@@ -34,7 +34,7 @@ import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
 import org.smartboot.socket.extension.plugins.SslPlugin;
-import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
+import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -126,8 +126,9 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         if (containerConfig.isSsl()) {
 
             try {
-//                ServerSSLContextFactory sslPlugin = new ServerSSLContextFactory(new FileInputStream(containerConfig.getKeystorePath()), "changeit", "changeit");
-                PemServerSSLContextFactory sslPlugin = new PemServerSSLContextFactory(new FileInputStream("/Users/zhengjw22mac123/IdeaProjects/smart-servlet/tck/src/test/resources/smart-servlet.pem"));
+                ServerSSLContextFactory sslPlugin = new ServerSSLContextFactory(new FileInputStream(containerConfig.getKeystorePath()), "changeit", "changeit");
+//                PemServerSSLContextFactory sslPlugin = new PemServerSSLContextFactory(new FileInputStream("/Users/zhengjw22mac123/IdeaProjects/smart-servlet/tck/src/test/resources/smart-servlet.pem"));
+                bootstrap.configuration().host(containerConfig.getBindAddress());
                 bootstrap.configuration().addPlugin(new SslPlugin<>(sslPlugin, new Consumer<SSLEngine>() {
                     @Override
                     public void accept(SSLEngine sslEngine) {
@@ -142,8 +143,7 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         }
         bootstrap.configuration().setHttpIdleTimeout(120000);
         bootstrap.setPort(containerConfig.getBindHttpPort()).start();
-        listeningHost = "127.0.0.1";
-//        listeningHost = containerConfig.getBindAddress();
+        listeningHost = containerConfig.getBindAddress();
         listeningPort = containerConfig.getBindHttpPort();
         System.out.println("host: " + listeningHost + " port:" + listeningPort + " ssl:" + containerConfig.isSsl());
     }
