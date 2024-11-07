@@ -13,6 +13,7 @@ package tech.smartboot.servlet.plugins.license;
 import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
+import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
 import org.smartboot.http.server.HttpServerHandler;
@@ -36,7 +37,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class LicensePlugin extends Plugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(LicensePlugin.class);
-
+    private static final LicenseTO INVALID_LICENSE = new LicenseTO();
     private LicenseTO licenseTO;
     private License license;
 
@@ -50,7 +51,7 @@ public class LicensePlugin extends Plugin {
         containerRuntime.getConfiguration().setHttpServerHandler(new HttpServerHandler() {
             @Override
             public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) throws Throwable {
-                if (licenseTO != null || "/favicon.ico".equals(request.getRequestURI())) {
+                if ((licenseTO != null && licenseTO != INVALID_LICENSE) || "/favicon.ico".equals(request.getRequestURI())) {
                     baseHandler.handle(request, response, completableFuture);
                 } else {
                     try {
@@ -76,6 +77,10 @@ public class LicensePlugin extends Plugin {
         System.out.println("\033[1mLicense Plugin:\033[0m");
         if (licenseTO == null) {
             System.out.println("\t" + ConsoleColors.RED + "ERROR：License not found, please check the license file：[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield" : "${SERVLET_HOME}/conf/License.shield") + " ]." + ConsoleColors.RESET);
+            return;
+        }
+        if (licenseTO == INVALID_LICENSE) {
+            System.out.println("\t" + ConsoleColors.RED + "ERROR：License is invalid, please check the license file：[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield" : "${SERVLET_HOME}/conf/License.shield") + " ]." + ConsoleColors.RESET);
             return;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -126,7 +131,7 @@ public class LicensePlugin extends Plugin {
             LicenseEntity entity = license.loadLicense(outputStream.toByteArray());
             licenseTO = loadLicense(entity);
         } catch (Exception e) {
-            LOGGER.error("License load exception", e);
+            LOGGER.error("License load exception", e.getMessage());
         }
     }
 
@@ -136,12 +141,54 @@ public class LicensePlugin extends Plugin {
         LicenseTO licenseTO = new LicenseTO();
         licenseTO.setApplicant(properties.getProperty("enterprise.license.user"));
         licenseTO.setSn(properties.getProperty("enterprise.license.number"));
-        licenseTO.setCompatible(properties.getProperty("enterprise.compatible"));
         licenseTO.setExpireTime(entity.getExpireTime());
         licenseTO.setTrialDuration(entity.getTrialDuration());
         licenseTO.setContact(entity.getContact());
         licenseTO.setVendor(entity.getApplicant());
+
+        if (!isVersionSupported(Container.VERSION.substring(1), properties.getProperty("supportVersion"))) {
+            return INVALID_LICENSE;
+        }
         return licenseTO;
+    }
+
+    public static boolean isVersionSupported(String containerVersion, String supportVersion) {
+        if (StringUtils.isBlank(supportVersion)) {
+            return false;
+        }
+        // 解析支持版本范围
+        String[] versionRange = supportVersion.split("~");
+        String startVersion = versionRange[0];
+        String endVersion = versionRange.length == 2 ? versionRange[1] : "99.99.99";
+
+        // 将版本号转换为整数数组
+        int[] containerVersionArray = parseVersion(containerVersion);
+        int[] startVersionArray = parseVersion(startVersion);
+        int[] endVersionArray = parseVersion(endVersion);
+
+        // 比较版本号
+        return compareVersions(containerVersionArray, startVersionArray) >= 0 && compareVersions(containerVersionArray, endVersionArray) <= 0;
+    }
+
+    private static int[] parseVersion(String version) {
+        String[] parts = version.split("\\.");
+        int[] versionArray = new int[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            versionArray[i] = Integer.parseInt(parts[i]);
+        }
+        return versionArray;
+    }
+
+    private static int compareVersions(int[] version1, int[] version2) {
+        int length = Math.max(version1.length, version2.length);
+        for (int i = 0; i < length; i++) {
+            int v1 = i < version1.length ? version1[i] : 0;
+            int v2 = i < version2.length ? version2[i] : 0;
+            if (v1 != v2) {
+                return v1 - v2;
+            }
+        }
+        return 0;
     }
 
 
