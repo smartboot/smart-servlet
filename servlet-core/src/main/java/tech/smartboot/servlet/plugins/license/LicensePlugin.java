@@ -146,9 +146,9 @@ public class LicensePlugin extends Plugin {
         licenseTO.setContact(entity.getContact());
         licenseTO.setVendor(entity.getApplicant());
 
-        if (!isVersionSupported(Container.VERSION.substring(1), properties.getProperty("supportVersion"))) {
-            return INVALID_LICENSE;
-        }
+//        if (!isVersionSupported(Container.VERSION.substring(1), properties.getProperty("supportVersion"))) {
+//            return INVALID_LICENSE;
+//        }
         return licenseTO;
     }
 
