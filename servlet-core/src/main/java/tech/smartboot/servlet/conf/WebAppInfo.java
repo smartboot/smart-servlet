@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * web.xml对象
@@ -53,6 +54,7 @@ public class WebAppInfo {
     private final Map<String, String> securityRoles = new HashMap<>();
 
     private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
+    private final Map<String, Set<String>> securityRoleMapping = new HashMap<>();
     private List<String> absoluteOrdering;
     private boolean absoluteOrderingOther = false;
     private LoginConfig loginConfig;
@@ -146,6 +148,10 @@ public class WebAppInfo {
 
     public List<SecurityConstraint> getSecurityConstraints() {
         return securityConstraints;
+    }
+
+    public Map<String, Set<String>> getSecurityRoleMapping() {
+        return securityRoleMapping;
     }
 
     public List<String> getAbsoluteOrdering() {

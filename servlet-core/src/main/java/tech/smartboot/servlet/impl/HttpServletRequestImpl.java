@@ -49,6 +49,7 @@ import tech.smartboot.servlet.provider.SessionProvider;
 import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.DateUtil;
 
+import javax.net.ssl.SSLEngine;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -855,6 +856,11 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     public void setLoginAccount(LoginAccount loginAccount) {
         this.principal = loginAccount;
         getSession().setAttribute("principal", loginAccount);
+    }
+
+    @Override
+    public SSLEngine getSslEngine() {
+        return request.getSslEngine();
     }
 
     @Override

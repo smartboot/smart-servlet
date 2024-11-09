@@ -16,6 +16,8 @@ import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.plugins.security.LoginAccount;
 
+import javax.net.ssl.SSLEngine;
+
 /**
  * @author 三刀
  * @version V1.0 , 2020/11/22
@@ -47,4 +49,5 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
 
     void setLoginAccount(LoginAccount loginAccount);
 
+    SSLEngine getSslEngine();
 }

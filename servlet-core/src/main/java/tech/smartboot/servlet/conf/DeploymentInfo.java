@@ -67,6 +67,7 @@ public class DeploymentInfo {
     private final Set<String> securityRoles = new HashSet<>();
     private final Map<String, String> localeEncodingMappings = new HashMap<>();
     private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
+    private final Map<String, Set<String>> securityRoleMapping = new HashMap<>();
     private final ClassLoader classLoader;
     private String displayName;
     private URL contextUrl;
@@ -132,6 +133,10 @@ public class DeploymentInfo {
 
     public List<SecurityConstraint> getSecurityConstraints() {
         return securityConstraints;
+    }
+
+    public Map<String, Set<String>> getSecurityRoleMapping() {
+        return securityRoleMapping;
     }
 
     public void addErrorPage(final ErrorPageInfo servlet) {

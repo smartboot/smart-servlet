@@ -31,6 +31,8 @@ import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -48,6 +50,7 @@ public class SecurityProviderImpl implements SecurityProvider {
     private List<SecurityAccount> users = Arrays.asList(new SecurityAccount("j2ee", "j2ee", null, Set.of("Administrator", "Employee")), new SecurityAccount("javajoe", "javajoe", null, Set.of("VP", "Manager")));
     private LoginConfig loginConfig;
     private List<SecurityConstraint> constraints = new ArrayList<>();
+    private final Map<String, Set<String>> securityRoleMapping = new HashMap<>();
 
     @Override
     public void addUser(String username, String password, Set<String> roles) {
@@ -58,6 +61,7 @@ public class SecurityProviderImpl implements SecurityProvider {
     public void init(DeploymentInfo deploymentInfo) {
         this.constraints = deploymentInfo.getSecurityConstraints();
         this.loginConfig = deploymentInfo.getLoginConfig();
+        this.securityRoleMapping.putAll(deploymentInfo.getSecurityRoleMapping());
     }
 
     @Override
@@ -143,6 +147,18 @@ public class SecurityProviderImpl implements SecurityProvider {
 //            if ("FORM".equals(loginConfig.getAuthMethod())) {
 //                return users.stream().filter(user -> user.getUsername().equals(request.getParameter("j_username")) && user.getPassword().equals(request.getParameter("j_password"))).findFirst().orElse(null);
 //            }
+        }
+        if (loginConfig != null && "CLIENT-CERT".equals(loginConfig.getAuthMethod())) {
+            for (Certificate certificate : request.getSslEngine().getSession().getPeerCertificates()) {
+                if (certificate instanceof X509Certificate) {
+                    String name = ((X509Certificate) certificate).getIssuerX500Principal().getName();
+                    LoginAccount account = new LoginAccount(((X509Certificate) certificate).getIssuerX500Principal().getName(), null, securityRoleMapping.get(name), HttpServletRequest.CLIENT_CERT_AUTH);
+                    request.setLoginAccount(account);
+                    return account;
+                }
+            }
+        } else {
+
         }
         String authorization = request.getHeader("Authorization");
         if (authorization != null && authorization.startsWith("Basic ")) {

@@ -25,6 +25,7 @@ import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.plugins.security.LoginAccount;
 import tech.smartboot.servlet.provider.SecurityProvider;
 
+import javax.net.ssl.SSLEngine;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -190,6 +191,11 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     @Override
     public void setLoginAccount(LoginAccount loginAccount) {
         this.request.setLoginAccount(loginAccount);
+    }
+
+    @Override
+    public SSLEngine getSslEngine() {
+        return request.getSslEngine();
     }
 
 

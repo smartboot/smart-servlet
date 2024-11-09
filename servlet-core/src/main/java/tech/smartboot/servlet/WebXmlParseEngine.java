@@ -123,6 +123,8 @@ class WebXmlParseEngine {
 
         parseSecurityConstraint(webAppInfo, parentElement);
 
+        parseSecurityRoleMapping(webAppInfo, parentElement);
+
         parseAbsoluteOrdering(webAppInfo, parentElement);
 
         parseLoginConfig(webAppInfo, parentElement);
@@ -386,6 +388,15 @@ class WebXmlParseEngine {
         var othersNode = getChildNode(node, "others");
         if (othersNode != null) {
             webAppInfo.setAbsoluteOrderingOther(true);
+        }
+    }
+
+    private void parseSecurityRoleMapping(WebAppInfo webAppInfo, Element parentElement) {
+        List<Node> childNodeList = getChildNodes(parentElement, "security-role-mapping");
+        for (Node node : childNodeList) {
+            Map<String, String> nodeData = getNodeValue(node, Arrays.asList("role-name"));
+            String roleName = nodeData.get("role-name");
+            getNodeValues(node, "principal-name").forEach(principalName -> webAppInfo.getSecurityRoleMapping().computeIfAbsent(principalName, k -> new HashSet<>()).add(roleName));
         }
     }
 

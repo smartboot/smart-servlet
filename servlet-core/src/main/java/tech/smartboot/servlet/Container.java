@@ -338,6 +338,13 @@ public class Container {
             }
         }
 
+        File sunWebXmlFile = new File(contextFile, "WEB-INF" + File.separatorChar + "sun-web.xml");
+        if (sunWebXmlFile.isFile()) {
+//            LOGGER.info("web.xml info:" + IOUtils.toString(webXmlFile.toURI()));
+            try (InputStream inputStream = Files.newInputStream(sunWebXmlFile.toPath())) {
+                engine.load(webAppInfo, inputStream);
+            }
+        }
 
         //加载web-fragment.xml
         if (webAppInfo.getAbsoluteOrdering() != null) {
@@ -434,6 +441,7 @@ public class Container {
         webAppInfo.getMimeMappings().forEach((key, value) -> servletRuntime.getServletContext().putMimeTypes(key, value));
 
         webAppInfo.getSecurityConstraints().forEach(deploymentInfo::addSecurityConstraint);
+        deploymentInfo.getSecurityRoleMapping().putAll(webAppInfo.getSecurityRoleMapping());
 
         deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 

@@ -133,7 +133,8 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
                     @Override
                     public void accept(SSLEngine sslEngine) {
                         sslEngine.setUseClientMode(false);
-                        sslEngine.setNeedClientAuth(false);
+                        sslEngine.setNeedClientAuth(containerConfig.isNeedClientAuth());
+                        HttpRequest.SSL_ENGINE_THREAD_LOCAL.set(sslEngine);
                     }
                 }));
             } catch (Exception e) {
