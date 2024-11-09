@@ -149,14 +149,22 @@ public class SecurityProviderImpl implements SecurityProvider {
 //            }
         }
         if (loginConfig != null && "CLIENT-CERT".equals(loginConfig.getAuthMethod())) {
+            List<X509Certificate> certificates = new ArrayList<>();
             for (Certificate certificate : request.getSslEngine().getSession().getPeerCertificates()) {
                 if (certificate instanceof X509Certificate) {
-                    String name = ((X509Certificate) certificate).getIssuerX500Principal().getName();
-                    LoginAccount account = new LoginAccount(((X509Certificate) certificate).getIssuerX500Principal().getName(), null, securityRoleMapping.get(name), HttpServletRequest.CLIENT_CERT_AUTH);
-                    request.setLoginAccount(account);
-                    return account;
+                    certificates.add((X509Certificate) certificate);
                 }
             }
+            X509Certificate certificate = certificates.get(0);
+            String name = certificate.getIssuerX500Principal().getName();
+            LoginAccount account = new LoginAccount(certificate.getIssuerX500Principal().getName(), null, securityRoleMapping.get(name), HttpServletRequest.CLIENT_CERT_AUTH);
+            request.setLoginAccount(account);
+            request.setAttribute("jakarta.servlet.request.X509Certificate", certificates.toArray(new X509Certificate[certificates.size()]));
+            request.setAttribute("jakarta.servlet.request.cipher_suite", request.getSslEngine().getSession().getCipherSuite());
+            request.setAttribute("jakarta.servlet.request.key_size", calculateKeySize(request.getSslEngine().getSession().getCipherSuite()));
+            byte[] sessionId = request.getSslEngine().getSession().getId();
+            request.setAttribute("jakarta.servlet.request.ssl_session_id", sessionId != null ? convertToHexString(sessionId) : null);
+            return account;
         } else {
 
         }
@@ -253,5 +261,56 @@ public class SecurityProviderImpl implements SecurityProvider {
             return false;
         }
         return true;
+    }
+
+    static int calculateKeySize(String cipherSuite) {
+        // Roughly ordered from most common to least common.
+        if (cipherSuite == null) {
+            return 0;
+            //  TLS 1.3: https://wiki.openssl.org/index.php/TLS1.3
+        } else if (cipherSuite.equals("TLS_AES_256_GCM_SHA384")) {
+            return 256;
+        } else if (cipherSuite.equals("TLS_CHACHA20_POLY1305_SHA256")) {
+            return 256;
+        } else if (cipherSuite.startsWith("TLS_AES_128_")) {
+            return 128;
+            //  TLS <1.3
+        } else if (cipherSuite.contains("WITH_AES_128_")) {
+            return 128;
+        } else if (cipherSuite.contains("WITH_AES_256_")) {
+            return 256;
+        } else if (cipherSuite.contains("WITH_3DES_EDE_CBC_")) {
+            return 168;
+        } else if (cipherSuite.contains("WITH_RC4_128_")) {
+            return 128;
+        } else if (cipherSuite.contains("WITH_DES_CBC_")) {
+            return 56;
+        } else if (cipherSuite.contains("WITH_DES40_CBC_")) {
+            return 40;
+        } else if (cipherSuite.contains("WITH_RC4_40_")) {
+            return 40;
+        } else if (cipherSuite.contains("WITH_IDEA_CBC_")) {
+            return 128;
+        } else if (cipherSuite.contains("WITH_RC2_CBC_40_")) {
+            return 40;
+        } else {
+            return 0;
+        }
+    }
+
+    private static final char[] HEX_CHARS = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+    private static final byte[] HEX_BYTES = new byte[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+    public static String convertToHexString(byte[] toBeConverted) {
+
+        char[] converted = new char[toBeConverted.length * 2];
+        for (int i = 0; i < toBeConverted.length; i++) {
+            byte b = toBeConverted[i];
+            converted[i * 2] = HEX_CHARS[b >> 4 & 0x0F];
+            converted[i * 2 + 1] = HEX_CHARS[b & 0x0F];
+        }
+
+        return String.valueOf(converted);
     }
 }
