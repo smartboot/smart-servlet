@@ -78,7 +78,7 @@ public class Container {
             \\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_\s
             (____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)
             """;
-    public static final String VERSION = "v2.2";
+    public static final String VERSION = "v2.3";
     /**
      * 注册在当前 Servlet 容器中的运行环境
      */
