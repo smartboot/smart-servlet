@@ -3,6 +3,18 @@ title: 发版记录
 description: A reference page in my new Starlight docs site.
 ---
 
+## v2.3（2024-11-10）
+- 升级 `jakarta.servlet-api` 适配版本至 `6.1.0`
+- 实现 `HttpServletRequest#newPushBuilder` 规范。
+- 实现 `ServletContext#getEffectiveMajorVersion`规范
+- 实现 `ServletContext#getEffectiveMinorVersion`规范
+- 优化 `ServletInputStream` 规范实现
+- 优化 `CLIENT-CERT` 认证模式
+- 优化 `Plugin` 多个接口设计
+- 支持 `sun-web.xml` 的自动解析加载
+
+**下载：[smart-servlet-bin-2.3-release.tar.gz](https://github.com/smartboot/smart-servlet/releases/download/v2.3/smart-servlet-bin-2.3-release.tar.gz)**
+
 ## v2.2（2024-08-31）
 
 1. 优化 fragment 相关规范的实现。
@@ -12,7 +24,7 @@ description: A reference page in my new Starlight docs site.
 5. 实现 security 相关规范。
 6. 集成 smart-http 实现的 multipart 规范，移除 commons-fileupload 三方依赖
 
-**下载：[smart-servlet-bin-2.2-release.tar.gz](https://github.com/smartboot/smart-servlet/releases/download/v2.2/smart-servlet-bin-2.2-release.tar.gz)**
+**下载：~~smart-servlet-bin-2.2-release.tar.gz~~**
 
 ## v2.1（2024-08-11）
 
