@@ -1,0 +1,119 @@
+---
+export function getStaticPaths() {
+    return [
+        {
+            params: {
+                license: '2932A607C1C5B5260512F59D80D4105F',
+            },
+            props: {
+                user: 'smartboot社区开发者',
+                beginTime: '2023-01-01',
+                endTime: '2024-01-01',
+                type:'开源版',
+            }
+        },
+        {params: {license: undefined}, props: {user: '无效', beginTime: '2023-01-01', endTime: '2024-01-01'}},
+    ];
+}
+const {license} = Astro.params;
+---
+<html lang="zh">
+<head>
+    <meta charset="utf-8"/>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    <meta name="viewport" content="width=device-width"/>
+    <title>授权证书-{Astro.props.user}</title>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>smart-servlet 授权证书</h1>
+    </header>
+    <main>
+        <section class="certificate">
+            <div class="certificate-header">
+                <!--<h2>授权信息</h2>-->
+            </div>
+            <div class="certificate-body">
+                <p><strong>授权编号：</strong> <span id="licenseNumber">{license}</span></p>
+                <p><strong>授权用户：</strong> <span id="licenseUser">{Astro.props.user}</span></p>
+                <p><strong>授权日期：</strong> <span id="licenseDate">{Astro.props.beginTime}</span></p>
+                <p><strong>有效期至：</strong> <span id="validUntil">{Astro.props.endTime}</span></p>
+                <p><strong>授权产品：</strong> <span id="productName">{Astro.props.type}</span></p>
+            </div>
+            <div class="certificate-footer">
+                <p>本授权证书仅限于上述授权用户使用。</p>
+                <p>版权所有 ©2024 smartboot</p>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
+
+<style>
+    /* styles.css */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    header h1 {
+        color: #333;
+        font-size: 28px;
+    }
+
+    .certificate {
+        border: 2px solid #007bff;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #ffffff;
+    }
+
+    .certificate-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .certificate-header h2 {
+        color: #007bff;
+        font-size: 24px;
+    }
+
+    .certificate-body p {
+        margin: 10px 0;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .certificate-body strong {
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .certificate-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .certificate-footer p {
+        margin: 5px 0;
+    }
+</style>
