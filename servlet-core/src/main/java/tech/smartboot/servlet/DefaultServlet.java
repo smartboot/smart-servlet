@@ -54,13 +54,6 @@ class DefaultServlet extends HttpServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServlet.class);
     private static final int READ_BUFFER = 1024 * 1024;
     private static final String FAVICON_NAME = "favicon.ico";
-    private static final String URL_404 =
-            "<html>" +
-                    "<head>" +
-                    "<title>smart-http 404</title>" +
-                    "</head>" +
-                    "<body><h1>smart-http 找不到你所请求的地址资源，404</h1></body>" +
-                    "</html>";
     private static byte[] faviconBytes = null;
     private final ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
         @Override
@@ -72,7 +65,7 @@ class DefaultServlet extends HttpServlet {
      * 默认页面
      */
     private long faviconModifyTime;
-    private DeploymentInfo deploymentInfo;
+    private final DeploymentInfo deploymentInfo;
 
     public DefaultServlet(DeploymentInfo deploymentInfo) {
         this.deploymentInfo = deploymentInfo;
