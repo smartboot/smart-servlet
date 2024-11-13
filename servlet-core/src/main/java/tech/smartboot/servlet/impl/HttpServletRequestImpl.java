@@ -476,9 +476,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         }
         try {
             MultipartConfigElement multipartConfigElement = servletInfo.getMultipartConfig();
-            if (multipartConfigElement == null) {
-                multipartConfigElement = new MultipartConfigElement("");
-            }
             //获取文件存放目录
             File location = getLocation(multipartConfigElement);
             if (!location.isDirectory()) {

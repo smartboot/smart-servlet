@@ -56,12 +56,12 @@ public class ApplicationFilterRegistration implements FilterRegistration.Dynamic
 
     @Override
     public Collection<String> getServletNameMappings() {
-        return deploymentInfo.getFilterMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterDef.getFilterName()) && filterMappingInfo.getMappingType() == FilterMappingType.SERVLET).map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
+        return deploymentInfo.getFilterMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterDef.getFilterName()) && filterMappingInfo.isServletMappingType()).map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
     }
 
     @Override
     public Collection<String> getUrlPatternMappings() {
-        return deploymentInfo.getFilterMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterDef.getFilterName()) && filterMappingInfo.getMappingType() == FilterMappingType.URL).map(FilterMappingInfo::getUrlPattern).collect(Collectors.toList());
+        return deploymentInfo.getFilterMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterDef.getFilterName()) && !filterMappingInfo.isServletMappingType()).map(FilterMappingInfo::getUrlPattern).collect(Collectors.toList());
     }
 
     @Override

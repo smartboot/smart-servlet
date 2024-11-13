@@ -217,6 +217,13 @@ public class DeploymentInfo {
         if (requestAttributeListeners.isEmpty()) {
             requestAttributeListeners = Collections.emptyList();
         }
+        servlets.values().forEach(servletInfo -> {
+            servletInfo.setServletClass(null);
+            servletInfo.setJspFile(null);
+        });
+        filters.values().forEach(filterInfo -> {
+            filterInfo.setFilterClass(null);
+        });
     }
 
     public void addServletContextListener(ServletContextListener contextListener) {

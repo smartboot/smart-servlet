@@ -36,6 +36,7 @@ import java.util.Map;
  */
 public class ServletInfo {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletInfo.class);
+    private static final MultipartConfigElement DEFAULT_MULTIPART_CONFIG = new MultipartConfigElement("", -1, -1, -1);
     public static final String DEFAULT_SERVLET_NAME = "default";
     private final Map<String, String> initParams = new HashMap<>();
     private final Map<String, String> securityRoles = new HashMap<>();
@@ -47,11 +48,11 @@ public class ServletInfo {
     private String jspFile;
 
     private boolean dynamic;
-    private MultipartConfigElement multipartConfig;
+    private MultipartConfigElement multipartConfig = DEFAULT_MULTIPART_CONFIG;
 
     private boolean asyncSupported;
     private boolean init = false;
-    private List<SecurityConstraint> securityConstraints = new ArrayList<>();
+    private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
 
     public synchronized void init(ServletContextImpl servletContext) {
         if (init) {
