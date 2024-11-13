@@ -470,7 +470,7 @@ public class Container {
 //                    throw new IllegalArgumentException("invalid welcome file " + welcomeFile + " is endWith /");
 //                }
 //            }
-        if (webAppInfo.getWelcomeFileList() == null || webAppInfo.getWelcomeFileList().size() == 0) {
+        if (webAppInfo.getWelcomeFileList() == null || webAppInfo.getWelcomeFileList().isEmpty()) {
             deploymentInfo.setWelcomeFiles(Arrays.asList("index.html", "index.jsp"));
         } else {
             //实际使用中存在"/"开头的情况，将其矫正过来

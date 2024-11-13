@@ -229,7 +229,7 @@ public class AnnotationsLoader {
 
         if (javaClass.getAnnotationEntries() != null) {
             for (AnnotationEntry entry : javaClass.getAnnotationEntries()) {
-                System.out.println(entry.getAnnotationType() + " " + entry.getElementValuePairs());
+//                System.out.println(entry.getAnnotationType() + " " + entry.getElementValuePairs());
                 String annotationName = getClassName(entry.getAnnotationType());
                 if (WebListener.class.getName().equals(annotationName)) {
                     annotations.computeIfAbsent(WebListener.class, aClass -> new ArrayList<>()).add(className);

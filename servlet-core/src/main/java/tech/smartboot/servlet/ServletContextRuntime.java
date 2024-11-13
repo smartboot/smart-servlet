@@ -190,13 +190,15 @@ public class ServletContextRuntime {
             servletInfo.setServlet(servlet);
         }
         //绑定 default Servlet
-        if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getUrlPattern().equals("/"))) {
+        if (!deploymentInfo.getServlets().containsKey(ServletInfo.DEFAULT_SERVLET_NAME)) {
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
             servletInfo.setServlet(new DefaultServlet(deploymentInfo));
             servletInfo.setDynamic(true);
             servletInfo.setLoadOnStartup(1);
             deploymentInfo.addServlet(servletInfo);
+        }
+        if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getUrlPattern().equals("/"))) {
             deploymentInfo.addServletMapping(new ServletMappingInfo(ServletInfo.DEFAULT_SERVLET_NAME, "/"));
         }
 
@@ -243,10 +245,7 @@ public class ServletContextRuntime {
                 }
                 //当 在便携式部署描述符中的一个 security-constraint 包含一个 url-pattern ，其精确匹配 一个使用
                 //@ServletSecurity 注解的模式映射到的类，该注解必须不影响 Servlet 容器在该模式上实施的强制约束。
-                Set<String> annotationPatterns = deploymentInfo.getHandlesTypesLoader().getServletMappings()
-                        .stream()
-                        .filter(mapping -> mapping.getServletName().equals(servletInfo.getServletName()))
-                        .map(ServletMappingInfo::getUrlPattern).collect(Collectors.toSet());
+                Set<String> annotationPatterns = deploymentInfo.getHandlesTypesLoader().getServletMappings().stream().filter(mapping -> mapping.getServletName().equals(servletInfo.getServletName())).map(ServletMappingInfo::getUrlPattern).collect(Collectors.toSet());
                 annotationPatterns.forEach(pattern -> {
                     boolean exists = deploymentInfo.getSecurityConstraints().stream().anyMatch(securityConstraint -> securityConstraint.getUrlPatterns().stream().map(UrlPattern::getUrlPattern).toList().contains(pattern));
                     if (!exists) {
