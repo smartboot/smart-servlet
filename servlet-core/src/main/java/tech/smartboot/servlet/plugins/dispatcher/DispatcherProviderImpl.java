@@ -15,8 +15,10 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.MappingMatch;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.ServletInfo;
+import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.provider.DispatcherProvider;
@@ -44,10 +46,16 @@ class DispatcherProviderImpl implements DispatcherProvider {
     public RequestDispatcher getNamedDispatcher(ServletContextImpl servletContext, String name) {
         System.out.println("getNamedDispatcher:" + name);
         ServletInfo servletInfo = servletContext.getDeploymentInfo().getServlets().get(name);
-        if (servletInfo == null) {
-            return null;
+        if (servletInfo != null) {
+            return new RequestDispatcherImpl(servletContext, servletInfo, null);
         }
-        return new RequestDispatcherImpl(servletContext, servletInfo, null);
+        if (ServletInfo.DEFAULT_SERVLET_NAME.equals(name)) {
+            ServletMappingInfo mappingInfo = servletContext.getDeploymentInfo().getServletMappings().stream().filter(mapping -> mapping.getMappingMatch() == MappingMatch.DEFAULT).findFirst().orElse(null);
+            if (mappingInfo != null) {
+                return getNamedDispatcher(servletContext, mappingInfo.getServletName());
+            }
+        }
+        return null;
     }
 
     @Override
