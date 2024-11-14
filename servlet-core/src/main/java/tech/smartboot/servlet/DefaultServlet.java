@@ -238,10 +238,14 @@ class DefaultServlet extends HttpServlet {
         if (deploymentInfo.getWelcomeFiles().stream().anyMatch(requestUri::endsWith) || requestUri.indexOf(".") > 0) {
             return false;
         }
-        if (requestUri.equals(request.getContextPath())) {
+        URL url = servletContext.getResource(requestUri.substring(request.getContextPath().length()) + "/");
+        if (url != null) {
             response.sendRedirect(requestUri + "/");
+//            request.getRequestDispatcher(requestUri.substring(request.getContextPath().length()) + "/").forward(request, response);
             return true;
         }
+//        URL url = servletContext.getResource(requestUri.substring(request.getContextPath().length()) + "/");
+
         return false;
     }
 
