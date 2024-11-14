@@ -36,7 +36,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.MappedByteBuffer;
@@ -111,7 +110,11 @@ class DefaultServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String fileName = request.getDispatcherType() == DispatcherType.INCLUDE ? (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) : request.getRequestURI();
         String method = request.getMethod();
-        URL url = request.getServletContext().getResource(fileName.substring(request.getContextPath().length()));
+        String resource = fileName.substring(request.getContextPath().length());
+        if (StringUtils.isBlank(resource)) {
+            resource = "/";
+        }
+        URL url = request.getServletContext().getResource(resource);
         File file = null;
         boolean defaultFavicon = url == null && fileName.endsWith(FAVICON_NAME) && faviconBytes != null;
 
@@ -185,11 +188,8 @@ class DefaultServlet extends HttpServlet {
      * 尝试跳转至welcome页面
      */
     private void forwardWelcome(HttpServletRequest request, HttpServletResponse response, String method) throws URISyntaxException, IOException, ServletException {
-        String welcome = matchForwardWelcome(request);
-        if (StringUtils.isNotBlank(welcome)) {
+        if (matchForwardWelcome(request, response)) {
             //找到有效welcome file，执行服务端跳转
-            LOGGER.info("执行 welcome 服务端跳转:{} ", welcome);
-            request.getRequestDispatcher(welcome).forward(request, response);
             return;
         }
         // 404
@@ -215,7 +215,7 @@ class DefaultServlet extends HttpServlet {
 //        }
     }
 
-    private String matchForwardWelcome(HttpServletRequest request) throws MalformedURLException {
+    private boolean matchForwardWelcome(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String requestUri = request.getDispatcherType() == DispatcherType.INCLUDE ? (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) : request.getRequestURI();
         ServletContext servletContext = request.getServletContext();
         if (requestUri.endsWith("/")) {
@@ -223,20 +223,24 @@ class DefaultServlet extends HttpServlet {
                 String uri = requestUri.substring(request.getContextPath().length());
                 URL welcomeUrl = servletContext.getResource(uri + file);
                 if (welcomeUrl != null) {
-                    return uri + file;
+                    request.getRequestDispatcher(uri + file).forward(request, response);
+                    return true;
                 }
                 //是否匹配 Servlet url-pattern
                 if (deploymentInfo.getServletMappings().stream().anyMatch(mapping -> mapping.getUrlPattern().equals("/" + file))) {
-                    return uri + file;
+                    request.getRequestDispatcher(uri + file).forward(request, response);
+                    return true;
                 }
             }
-            return null;
-        }
-        if (deploymentInfo.getWelcomeFiles().stream().anyMatch(requestUri::endsWith)) {
-            return null;
+            return false;
         }
         // 例如: /abc/d.html ,由于d.html不存在而走到该分支
-        return requestUri.indexOf(".") > 0 ? null : requestUri.substring(request.getContextPath().length()) + "/";
+        if (deploymentInfo.getWelcomeFiles().stream().anyMatch(requestUri::endsWith) || requestUri.indexOf(".") > 0) {
+            return false;
+        }
+
+        response.sendRedirect(requestUri + "/");
+        return true;
     }
 
 }
