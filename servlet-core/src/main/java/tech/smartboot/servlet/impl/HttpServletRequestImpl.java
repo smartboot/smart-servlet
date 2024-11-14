@@ -265,11 +265,16 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public Principal getUserPrincipal() {
-        if (principal == null) {
-            Object o = getSession().getAttribute("principal");
-            if (o != null) {
-                principal = (LoginAccount) o;
-            }
+        if (principal != null) {
+            return principal;
+        }
+        HttpSession session = getSession(false);
+        if (session == null) {
+            return null;
+        }
+        Object o = session.getAttribute("principal");
+        if (o != null) {
+            principal = (LoginAccount) o;
         }
         return principal;
     }
