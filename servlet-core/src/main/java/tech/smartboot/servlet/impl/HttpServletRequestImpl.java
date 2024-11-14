@@ -120,6 +120,9 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     private ServletMappingInfo servletMappingInfo;
     private LoginAccount principal;
+    private final InetSocketAddress remoteAddress;
+    private final InetSocketAddress localAddress;
+
 
     public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, CompletableFuture<Object> completableFuture) {
         this.request = request;
@@ -133,6 +136,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             this.requestUri = request.getRequestURI().substring(0, index);
             this.requestedSessionId = request.getRequestURI().substring(index + URL_JSESSION_ID.length());
         }
+        this.remoteAddress = request.getRemoteAddress();
+        this.localAddress = request.getLocalAddress();
     }
 
     public void setHttpServletResponse(HttpServletResponse httpServletResponse) {
@@ -680,7 +685,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     public String getServerName() {
         String host = getHeader(HeaderNameEnum.HOST.getName());
         if (StringUtils.isBlank(host)) {
-            return request.getLocalAddress().getHostName();
+            return localAddress.getHostName();
         }
         int index = host.indexOf(":");
         if (index < 0) {
@@ -698,7 +703,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         }
         int index = host.indexOf(":");
         if (index < 0) {
-            return request.getRemoteAddress().getPort();
+            return localAddress.getPort();
         } else {
             return NumberUtils.toInt(host.substring(index + 1), -1);
         }
@@ -722,12 +727,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getRemoteAddr() {
-        return getAddress(request.getRemoteAddress());
+        return getAddress(remoteAddress);
     }
 
     @Override
     public String getRemoteHost() {
-        return request.getRemoteAddress().getHostString();
+        return remoteAddress.getHostString();
     }
 
     @Override
@@ -783,17 +788,17 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public int getRemotePort() {
-        return request.getRemoteAddress().getPort();
+        return remoteAddress.getPort();
     }
 
     @Override
     public String getLocalName() {
-        return request.getLocalAddress().getHostString();
+        return localAddress.getHostString();
     }
 
     @Override
     public String getLocalAddr() {
-        return getAddress(request.getLocalAddress());
+        return getAddress(localAddress);
     }
 
     private String getAddress(InetSocketAddress inetSocketAddress) {
@@ -805,7 +810,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public int getLocalPort() {
-        return request.getLocalAddress().getPort();
+        return localAddress.getPort();
     }
 
     public void setServletContext(ServletContextImpl servletContext) {
