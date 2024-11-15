@@ -11,6 +11,7 @@
 package tech.smartboot.servlet.plugins.security;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.Set;
 
 public class LoginAccount implements Principal {
@@ -22,7 +23,7 @@ public class LoginAccount implements Principal {
     public LoginAccount(String name, String password, Set<String> roles, String authType) {
         this.name = name;
         this.password = password;
-        this.roles = roles;
+        this.roles = roles == null ? Collections.emptySet() : roles;
         this.authType = authType;
     }
 
