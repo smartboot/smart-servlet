@@ -541,9 +541,9 @@ public class ServletContextImpl implements ServletContext {
         checkServletContextState();
         checkContextInitializeState();
         checkListenerClass(listener.getClass());
-        if (listener instanceof ServletContextListener) {
-            throw new IllegalArgumentException();
-        }
+//        if (listener instanceof ServletContextListener) {
+//            throw new IllegalArgumentException();
+//        }
         addListener0(listener);
     }
 
