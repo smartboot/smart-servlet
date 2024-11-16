@@ -238,7 +238,6 @@ public class ServletContextRuntime {
                 Class<? extends EventListener> clazz = (Class<? extends EventListener>) servletContext.getClassLoader().loadClass(listener);
                 servletContext.addListener0(clazz.newInstance());
             }
-            deploymentInfo.setDynamicListenerState(true);
             deploymentInfo.getHandlesTypesLoader().getServlets().forEach(servletInfo -> {
                 ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
                 if (webXmlInfo != null) {
@@ -278,6 +277,7 @@ public class ServletContextRuntime {
         for (ServletContainerInitializerInfo servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
             servletContainerInitializer.getServletContainerInitializer().onStartup(servletContainerInitializer.getHandlesTypes(), servletContext);
         }
+        deploymentInfo.setDynamicListenerState(true);
     }
 
     /**

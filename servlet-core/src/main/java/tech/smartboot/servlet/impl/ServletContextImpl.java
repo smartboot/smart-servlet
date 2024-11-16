@@ -539,11 +539,14 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public <T extends EventListener> void addListener(T listener) {
         checkServletContextState();
-        checkContextInitializeState();
+        if (currentInitializeContext != null && currentInitializeContext.isDynamic()) {
+            throw new UnsupportedOperationException();
+        }
+        if (currentInitializeContext != null &&
+                listener instanceof ServletContextListener) {
+            throw new IllegalArgumentException();
+        }
         checkListenerClass(listener.getClass());
-//        if (listener instanceof ServletContextListener) {
-//            throw new IllegalArgumentException();
-//        }
         addListener0(listener);
     }
 
