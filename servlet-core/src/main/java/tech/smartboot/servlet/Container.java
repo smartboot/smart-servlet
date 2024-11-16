@@ -51,6 +51,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -433,8 +434,10 @@ public class Container {
         webAppInfo.getContextParams().forEach(deploymentInfo::addInitParameter);
 
         //register ServletContextListener into deploymentInfo
-        webAppInfo.getListeners().forEach(listener -> servletRuntime.getServletContext().addListener(listener));
-        deploymentInfo.setDynamicListenerState(true);
+        for (String listener : webAppInfo.getListeners()) {
+            Class<? extends EventListener> clazz = (Class<? extends EventListener>) servletRuntime.getServletContext().getClassLoader().loadClass(listener);
+            servletRuntime.getServletContext().addListener0(clazz.newInstance());
+        }
 
         webAppInfo.getLocaleEncodingMappings().forEach(deploymentInfo::addLocaleEncodingMapping);
 
@@ -455,6 +458,7 @@ public class Container {
             LOGGER.info("load ServletContainerInitializer:" + containerInitializer.getClass().getName());
             deploymentInfo.addServletContainerInitializer(containerInitializer);
         }
+//        deploymentInfo.setDynamicListenerState(true);
         // ServletContainerInitializer 可能注解 handlesTypes
 //        if (CollectionUtils.isNotEmpty(deploymentInfo.getServletContainerInitializers())) {
 //            deploymentInfo.setHandlesTypesLoader(new HandlesTypesLoader(deploymentInfo.getClassLoader()));

@@ -46,6 +46,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EventListener;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -221,7 +222,7 @@ public class ServletContextRuntime {
      *
      * @param deploymentInfo 部署信息
      */
-    private void initContainer(DeploymentInfo deploymentInfo) throws ServletException {
+    private void initContainer(DeploymentInfo deploymentInfo) throws ServletException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         //注册临时目录
         servletContext.setAttribute(ServletContext.TEMPDIR, new File(System.getProperty("java.io.tmpdir")));
         //扫描 handleType
@@ -232,10 +233,12 @@ public class ServletContextRuntime {
                 ServletContainerInitializerInfo initializerInfo = new ServletContainerInitializerInfo(servletContainerInitializer, handlesTypes);
                 deploymentInfo.getServletContainerInitializers().add(initializerInfo);
             });
-            deploymentInfo.getHandlesTypesLoader().getAnnotations(WebListener.class).forEach(listener -> {
+            for (String listener : deploymentInfo.getHandlesTypesLoader().getAnnotations(WebListener.class)) {
                 System.out.println(listener);
-                servletContext.addListener(listener);
-            });
+                Class<? extends EventListener> clazz = (Class<? extends EventListener>) servletContext.getClassLoader().loadClass(listener);
+                servletContext.addListener0(clazz.newInstance());
+            }
+            deploymentInfo.setDynamicListenerState(true);
             deploymentInfo.getHandlesTypesLoader().getServlets().forEach(servletInfo -> {
                 ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
                 if (webXmlInfo != null) {

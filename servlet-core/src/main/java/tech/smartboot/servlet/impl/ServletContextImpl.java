@@ -539,18 +539,15 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public <T extends EventListener> void addListener(T listener) {
         checkServletContextState();
+        checkContextInitializeState();
         checkListenerClass(listener.getClass());
-
-        if (currentInitializeContext != null) {
-            if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
-                if (currentInitializeContext.isDynamic()) {
-                    throw new UnsupportedOperationException();
-                } else {
-                    throw new IllegalArgumentException();
-                }
-            }
+        if (listener instanceof ServletContextListener) {
+            throw new IllegalArgumentException();
         }
+        addListener0(listener);
+    }
 
+    public <T extends EventListener> void addListener0(T listener) {
         LOGGER.info(listener.getClass().getSimpleName() + " listener: " + listener);
         if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletContextListener((ServletContextListener) listener);
