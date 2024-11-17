@@ -20,6 +20,8 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.annotation.WebServlet;
+import org.smartboot.http.common.logging.Logger;
+import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
@@ -61,6 +63,7 @@ import java.util.jar.JarFile;
  * @version V1.0 , 2021/6/27
  */
 public class AnnotationsLoader {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationsLoader.class);
     private final Map<ServletContainerInitializer, Set<Class<?>>> initializerClassMap = new LinkedHashMap<>();
     /**
      * Map of Types to ServletContainerInitializer that are interested in those
@@ -212,7 +215,7 @@ public class AnnotationsLoader {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("skip file:" + file.getAbsolutePath());
+            LOGGER.info("skip file:" + file.getAbsolutePath());
         }
     }
 
