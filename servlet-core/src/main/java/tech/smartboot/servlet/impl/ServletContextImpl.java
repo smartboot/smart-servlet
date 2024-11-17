@@ -553,7 +553,7 @@ public class ServletContextImpl implements ServletContext {
     public <T extends EventListener> void addListener0(T listener) {
         LOGGER.info(listener.getClass().getSimpleName() + " listener: " + listener);
         if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
-            deploymentInfo.addServletContextListener((ServletContextListener) listener);
+            deploymentInfo.addServletContextListener(new ServletContextWrapperListener((ServletContextListener) listener, true));
         }
         if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletRequestListener((ServletRequestListener) listener);

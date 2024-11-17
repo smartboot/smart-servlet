@@ -15,6 +15,7 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebListener;
 import org.smartboot.http.common.logging.Logger;
@@ -236,7 +237,11 @@ public class ServletContextRuntime {
             for (String listener : deploymentInfo.getHandlesTypesLoader().getAnnotations(WebListener.class)) {
                 System.out.println(listener);
                 Class<? extends EventListener> clazz = (Class<? extends EventListener>) servletContext.getClassLoader().loadClass(listener);
-                servletContext.addListener0(clazz.newInstance());
+                if (ServletContextListener.class.isAssignableFrom(clazz)) {
+                    deploymentInfo.addServletContextListener(new ServletContextWrapperListener((ServletContextListener) clazz.newInstance(), false));
+                } else {
+                    servletContext.addListener(clazz);
+                }
             }
             deploymentInfo.getHandlesTypesLoader().getServlets().forEach(servletInfo -> {
                 ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
@@ -277,7 +282,6 @@ public class ServletContextRuntime {
         for (ServletContainerInitializerInfo servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
             servletContainerInitializer.getServletContainerInitializer().onStartup(servletContainerInitializer.getHandlesTypes(), servletContext);
         }
-        deploymentInfo.setDynamicListenerState(true);
     }
 
     /**

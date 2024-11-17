@@ -12,6 +12,7 @@ package tech.smartboot.servlet;
 
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
 import org.smartboot.http.common.logging.Logger;
@@ -38,6 +39,7 @@ import tech.smartboot.servlet.handler.ServletServiceHandler;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.HttpServletResponseImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
+import tech.smartboot.servlet.impl.ServletContextWrapperListener;
 import tech.smartboot.servlet.plugins.Plugin;
 
 import java.io.File;
@@ -436,7 +438,11 @@ public class Container {
         //register ServletContextListener into deploymentInfo
         for (String listener : webAppInfo.getListeners()) {
             Class<? extends EventListener> clazz = (Class<? extends EventListener>) servletRuntime.getServletContext().getClassLoader().loadClass(listener);
-            servletRuntime.getServletContext().addListener0(clazz.newInstance());
+            if (ServletContextListener.class.isAssignableFrom(clazz)) {
+                deploymentInfo.addServletContextListener(new ServletContextWrapperListener((ServletContextListener) clazz.newInstance(), false));
+            } else {
+                servletRuntime.getServletContext().addListener(clazz);
+            }
         }
 
         webAppInfo.getLocaleEncodingMappings().forEach(deploymentInfo::addLocaleEncodingMapping);
