@@ -547,13 +547,13 @@ public class ServletContextImpl implements ServletContext {
             throw new IllegalArgumentException();
         }
         checkListenerClass(listener.getClass());
-        addListener0(listener);
+        addListener0(listener, true);
     }
 
-    public <T extends EventListener> void addListener0(T listener) {
+    public <T extends EventListener> void addListener0(T listener, boolean dynamic) {
         LOGGER.info(listener.getClass().getSimpleName() + " listener: " + listener);
         if (ServletContextListener.class.isAssignableFrom(listener.getClass())) {
-            deploymentInfo.addServletContextListener(new ServletContextWrapperListener((ServletContextListener) listener, true));
+            deploymentInfo.addServletContextListener(new ServletContextWrapperListener((ServletContextListener) listener, dynamic));
         }
         if (ServletRequestListener.class.isAssignableFrom(listener.getClass())) {
             deploymentInfo.addServletRequestListener((ServletRequestListener) listener);
