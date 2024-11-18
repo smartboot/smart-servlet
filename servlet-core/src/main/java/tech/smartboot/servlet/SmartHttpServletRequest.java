@@ -45,6 +45,8 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
 
     void setServletMappingInfo(ServletMappingInfo servletMappingInfo);
 
+    ServletMappingInfo getServletMappingInfo();
+
     void setAsyncSupported(boolean supported);
 
     void setLoginAccount(LoginAccount loginAccount);

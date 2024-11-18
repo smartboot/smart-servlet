@@ -192,22 +192,19 @@ public class ServletContextRuntime {
             servletInfo.setServlet(servlet);
         }
         //绑定 default Servlet
-        ServletMappingInfo defaultMapping = deploymentInfo.getServletMappings().stream().filter(mapping -> mapping.getMappingMatch() == MappingMatch.DEFAULT).findFirst().orElse(null);
-        if (defaultMapping == null) {
+        if (!deploymentInfo.getServlets().containsKey(ServletInfo.DEFAULT_SERVLET_NAME)) {
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
             servletInfo.setServlet(new DefaultServlet(deploymentInfo));
             servletInfo.setDynamic(true);
             servletInfo.setLoadOnStartup(1);
             deploymentInfo.addServlet(servletInfo);
-        } else if (!defaultMapping.getServletName().equals(ServletInfo.DEFAULT_SERVLET_NAME)) {
-            ServletInfo servletInfo = new ServletInfo();
-            servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
-            servletInfo.setServlet(deploymentInfo.getServlets().get(defaultMapping.getServletName()).getServlet());
-            servletInfo.setDynamic(true);
-            deploymentInfo.addServlet(servletInfo);
+            //已经存在默认映射，则 default servlet 只适用于getNamedDispatcher场景
+            if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getMappingMatch() == MappingMatch.DEFAULT)) {
+                deploymentInfo.addServletMapping(new ServletMappingInfo(ServletInfo.DEFAULT_SERVLET_NAME, "/"));
+            }
         }
-       
+
 
         if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getUrlPattern().equals("/j_security_check"))) {
             ServletInfo servletInfo = new ServletInfo();

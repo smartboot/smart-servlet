@@ -454,6 +454,10 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         this.servletMappingInfo = servletMappingInfo;
     }
 
+    @Override
+    public ServletMappingInfo getServletMappingInfo() {
+        return servletMappingInfo;
+    }
 
     @Override
     public void logout() {

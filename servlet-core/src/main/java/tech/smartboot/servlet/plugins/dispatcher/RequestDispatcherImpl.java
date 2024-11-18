@@ -17,13 +17,14 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletRequestWrapper;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.ServletResponseWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.http.common.utils.HttpUtils;
 import org.smartboot.http.common.utils.StringUtils;
+import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.handler.HandlerContext;
-import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.HttpServletResponseImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 
@@ -82,7 +83,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
 
         ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, dispatcherType);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, false);
-        HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
+        HttpServletRequest requestImpl = requestWrapper.getRequest();
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
 
 
@@ -133,7 +134,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
         ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, DispatcherType.INCLUDE);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, true);
         HandlerContext handlerContext = new HandlerContext(requestWrapper, responseWrapper, servletContext, named);
-        HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
+        HttpServletRequest requestImpl = requestWrapper.getRequest();
 
 
         //《Servlet3.1规范中文版》9.3.1 包含(include)的请求参数
@@ -209,13 +210,13 @@ class RequestDispatcherImpl implements RequestDispatcher {
 
     private ServletRequestDispatcherWrapper wrapperRequest(final ServletRequest request, DispatcherType dispatcherType) {
         ServletRequest current = request;
-        while (current instanceof ServletRequestWrapper) {
+        while (current instanceof ServletRequestWrapper && !(current instanceof SmartHttpServletRequest)) {
             current = ((ServletRequestWrapper) current).getRequest();
         }
-        if (!(current instanceof HttpServletRequestImpl)) {
+        if (!(current instanceof SmartHttpServletRequest)) {
             throw new IllegalArgumentException("invalid request object: " + current);
         }
-        return new ServletRequestDispatcherWrapper((HttpServletRequestImpl) current, dispatcherType, named);
+        return new ServletRequestDispatcherWrapper((SmartHttpServletRequest) current, dispatcherType, named);
     }
 
     private ServletResponseDispatcherWrapper wrapperResponse(final ServletResponse response, boolean included) {

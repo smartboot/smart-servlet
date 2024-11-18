@@ -12,6 +12,7 @@ package tech.smartboot.servlet.plugins.dispatcher;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletMapping;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.MappingMatch;
 import org.smartboot.http.common.enums.HeaderNameEnum;
@@ -21,7 +22,6 @@ import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.impl.HttpServletMappingImpl;
-import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.plugins.security.LoginAccount;
 import tech.smartboot.servlet.provider.SecurityProvider;
 
@@ -35,7 +35,7 @@ import java.util.Map;
  * @version V1.0 , 2020/11/20
  */
 public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper implements SmartHttpServletRequest {
-    private final HttpServletRequestImpl request;
+    private final SmartHttpServletRequest request;
     private final boolean named;
     private String requestUri;
     private String queryString;
@@ -47,11 +47,12 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     private boolean pathInit = false;
     private String method;
 
-    public ServletRequestDispatcherWrapper(HttpServletRequestImpl request, DispatcherType dispatcherType, boolean named) {
+    public ServletRequestDispatcherWrapper(SmartHttpServletRequest request, DispatcherType dispatcherType, boolean named) {
         super(request);
         this.request = request;
         this.dispatcherType = dispatcherType;
         this.named = named;
+        this.servletMappingInfo = request.getServletMappingInfo();
         Object m = request.getAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD);
         if (m != null) {
             this.method = m.toString();
@@ -94,7 +95,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     }
 
     @Override
-    public HttpServletRequestImpl getRequest() {
+    public HttpServletRequest getRequest() {
         return request;
     }
 
@@ -181,6 +182,11 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     @Override
     public void setServletMappingInfo(ServletMappingInfo httpServletMapping) {
         this.servletMappingInfo = httpServletMapping;
+    }
+
+    @Override
+    public ServletMappingInfo getServletMappingInfo() {
+        return servletMappingInfo;
     }
 
     @Override
