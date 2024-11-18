@@ -17,6 +17,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebListener;
+import jakarta.servlet.http.MappingMatch;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -191,17 +192,22 @@ public class ServletContextRuntime {
             servletInfo.setServlet(servlet);
         }
         //绑定 default Servlet
-        if (!deploymentInfo.getServlets().containsKey(ServletInfo.DEFAULT_SERVLET_NAME)) {
+        ServletMappingInfo defaultMapping = deploymentInfo.getServletMappings().stream().filter(mapping -> mapping.getMappingMatch() == MappingMatch.DEFAULT).findFirst().orElse(null);
+        if (defaultMapping == null) {
             ServletInfo servletInfo = new ServletInfo();
             servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
             servletInfo.setServlet(new DefaultServlet(deploymentInfo));
             servletInfo.setDynamic(true);
             servletInfo.setLoadOnStartup(1);
             deploymentInfo.addServlet(servletInfo);
+        } else if (!defaultMapping.getServletName().equals(ServletInfo.DEFAULT_SERVLET_NAME)) {
+            ServletInfo servletInfo = new ServletInfo();
+            servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
+            servletInfo.setServlet(deploymentInfo.getServlets().get(defaultMapping.getServletName()).getServlet());
+            servletInfo.setDynamic(true);
+            deploymentInfo.addServlet(servletInfo);
         }
-        if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getUrlPattern().equals("/"))) {
-            deploymentInfo.addServletMapping(new ServletMappingInfo(ServletInfo.DEFAULT_SERVLET_NAME, "/"));
-        }
+       
 
         if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getUrlPattern().equals("/j_security_check"))) {
             ServletInfo servletInfo = new ServletInfo();

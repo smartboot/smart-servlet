@@ -31,13 +31,14 @@ class DispatcherProviderImpl implements DispatcherProvider {
 
     @Override
     public RequestDispatcherImpl getRequestDispatcher(ServletContextImpl servletContext, String path) {
+        //这个路径必须是相对于 ServletContext 的根路径，并且以‟/‟开头，或者为空
         if (path == null) {
             return null;
         }
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException("");
         }
-        return new RequestDispatcherImpl(servletContext, null, StringUtils.isBlank(servletContext.getContextPath()) ? path : servletContext.getContextPath() + path);
+        return new RequestDispatcherImpl(servletContext, StringUtils.isBlank(servletContext.getContextPath()) ? path : servletContext.getContextPath() + path);
     }
 
     @Override
@@ -45,7 +46,7 @@ class DispatcherProviderImpl implements DispatcherProvider {
         System.out.println("getNamedDispatcher:" + name);
         ServletInfo servletInfo = servletContext.getDeploymentInfo().getServlets().get(name);
         if (servletInfo != null) {
-            return new RequestDispatcherImpl(servletContext, servletInfo, null);
+            return new RequestDispatcherImpl(servletContext, servletInfo);
         }
         return null;
     }

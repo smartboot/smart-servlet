@@ -238,6 +238,7 @@ class DefaultServlet extends HttpServlet {
         if (deploymentInfo.getWelcomeFiles().stream().anyMatch(requestUri::endsWith) || requestUri.indexOf(".") > 0) {
             return false;
         }
+        //存在目录，则触发客户端跳转
         URL url = servletContext.getResource(requestUri.substring(request.getContextPath().length()) + "/");
         if (url != null) {
             response.sendRedirect(requestUri + "/");

@@ -46,17 +46,24 @@ class RequestDispatcherImpl implements RequestDispatcher {
     private final ServletInfo dispatcherServlet;
     private final String dispatcherURL;
 
-    public RequestDispatcherImpl(ServletContextImpl servletContext, ServletInfo dispatcherServlet, String dispatcherURL) {
-        if (dispatcherServlet == null && dispatcherURL == null) {
-            throw new IllegalArgumentException();
-        }
-        if (dispatcherServlet != null && dispatcherURL != null) {
+    public RequestDispatcherImpl(ServletContextImpl servletContext, ServletInfo dispatcherServlet) {
+        if (dispatcherServlet == null) {
             throw new IllegalArgumentException();
         }
         this.servletContext = servletContext;
         this.dispatcherServlet = dispatcherServlet;
+        this.dispatcherURL = null;
+        this.named = true;
+    }
+
+    public RequestDispatcherImpl(ServletContextImpl servletContext, String dispatcherURL) {
+        if (dispatcherURL == null) {
+            throw new IllegalArgumentException();
+        }
+        this.servletContext = servletContext;
+        this.dispatcherServlet = null;
         this.dispatcherURL = dispatcherURL;
-        this.named = dispatcherServlet != null;
+        this.named = false;
     }
 
     @Override
@@ -65,10 +72,14 @@ class RequestDispatcherImpl implements RequestDispatcher {
     }
 
     public void forward(ServletRequest request, ServletResponse response, boolean named, DispatcherType dispatcherType, Throwable throwable, String errorServletName, String errorMessage) throws ServletException, IOException {
+        //只有在没有输出提交到向客户端时，才能通过正在被调用的 servlet调用。
+        // 如果 response 缓冲区中存在尚未提交的输出数据，这些数据内容必须在目标 servlet 的 service 方法调用前清除。
+        // 如果 response 已经提交，必须抛出一个 IllegalStateException 异常。
         if (response.isCommitted()) {
             throw new IllegalStateException();
         }
         response.resetBuffer();
+
         ServletRequestDispatcherWrapper requestWrapper = wrapperRequest(request, dispatcherType);
         ServletResponseDispatcherWrapper responseWrapper = wrapperResponse(response, false);
         HttpServletRequestImpl requestImpl = requestWrapper.getRequest();
