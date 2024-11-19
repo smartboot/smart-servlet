@@ -347,7 +347,7 @@ public class Container {
                                     </pre>
                                     <hr/>
                                     <center>
-                                        <a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a> / """ + VERSION + """ 
+                                        <a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a>&nbsp;""" + VERSION + """ 
                                         &nbsp;|&nbsp;
                                         <a target='_blank' href='https://gitee.com/smartboot/smart-servlet'>Gitee</a>
                                     </center>
