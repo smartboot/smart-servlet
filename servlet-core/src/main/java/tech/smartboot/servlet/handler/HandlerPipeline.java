@@ -43,6 +43,15 @@ public final class HandlerPipeline extends Handler {
         return this;
     }
 
+    public HandlerPipeline head(Handler handle) {
+        if (handle == null || handle.nextHandler != null) {
+            throw new IllegalArgumentException("head handle must be null or head handle nextHandler must be null");
+        }
+        handle.nextHandler = nextHandler;
+        nextHandler = handle;
+        return this;
+    }
+
     @Override
     public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
         nextHandler.handleRequest(handlerContext);

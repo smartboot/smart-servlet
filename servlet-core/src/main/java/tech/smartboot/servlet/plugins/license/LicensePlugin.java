@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -73,17 +74,17 @@ public class LicensePlugin extends Plugin {
             runtime.setVendorProvider(response -> {
             });
         }
-        runtime.getServletContext().getPipeline().next(new Handler() {
+        runtime.getServletContext().getPipeline().head(new Handler() {
 
             @Override
             public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
                 if ((licenseTO != null && licenseTO != INVALID_LICENSE) || "/favicon.ico".equals(handlerContext.getOriginalRequest().getRequestURI())) {
                     doNext(handlerContext);
                 } else {
-                    throw new HttpException(HttpStatus.SERVICE_UNAVAILABLE, expireMessage) {
+                    throw new HttpException(HttpStatus.SERVICE_UNAVAILABLE) {
                         @Override
-                        public synchronized Throwable fillInStackTrace() {
-                            return this;
+                        public void printStackTrace(PrintWriter s) {
+                            s.write(expireMessage);
                         }
                     };
                 }
