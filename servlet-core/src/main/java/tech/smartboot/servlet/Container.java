@@ -14,6 +14,7 @@ import jakarta.servlet.AsyncContext;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
+import org.smartboot.http.common.exception.HttpException;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
@@ -40,9 +41,12 @@ import tech.smartboot.servlet.impl.HttpServletResponseImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.plugins.Plugin;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -279,6 +283,84 @@ public class Container {
                     response.close();
                 }
             }
+        } catch (HttpException e) {
+            try {
+                ByteArrayOutputStream stack = new ByteArrayOutputStream();
+                PrintWriter printWriter = new PrintWriter(stack);
+                e.printStackTrace(printWriter);
+                printWriter.close();
+                response.setHttpStatus(e.getHttpCode(), e.getDesc());
+                OutputStream outputStream = response.getOutputStream();
+                String resp = """
+                        <html>
+                            <head>
+                                <style>
+                                    body {
+                                        font-family: Arial, sans-serif;
+                                        background-color: #f4f4f9;
+                                        color: #333;
+                                        margin: 0;
+                                        padding: 0;
+                                    }
+                                    .container {
+                                        margin: 50px 10px;
+                                        padding: 20px;
+                                        background-color: #fff;
+                                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                                        border-radius: 8px;
+                                    }
+                                    h1 {
+                                        color: #d9534f;
+                                    }
+                                    hr {
+                                        border: 0;
+                                        height: 1px;
+                                        background: #ddd;
+                                        margin: 20px 0;
+                                    }
+                                    a {
+                                        color: #0275d8;
+                                        text-decoration: none;
+                                    }
+                                    a:hover {
+                                        text-decoration: underline;
+                                    }
+                                </style>
+                                <script>
+                                var _hmt = _hmt || [];
+                                (function() {
+                                  var hm = document.createElement("script");
+                                  hm.src = "https://hm.baidu.com/hm.js?f8aa96881897b9581e38e5bc5db0d7e5";
+                                  var s = document.getElementsByTagName("script")[0]; 
+                                  s.parentNode.insertBefore(hm, s);
+                                })();
+                                </script>
+                            </head>
+                            <body>
+                                <div class="container">
+                                    <center>
+                                        <h1>""" + e.getHttpCode() + " : " + e.getDesc() + """
+                                    </h1>
+                                    </center>
+                                    <hr/>
+                                    <pre>""" + stack.toString().replaceAll("\n", "<br/>").replaceAll(" ", "&nbsp;") + """
+                                    </pre>
+                                    <hr/>
+                                    <center>
+                                        <a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a> / """ + VERSION + """ 
+                                        &nbsp;|&nbsp; 
+                                        <a target='_blank' href='https://gitee.com/smartboot/smart-servlet'>Gitee</a>
+                                    </center>
+                                </div>
+                            </body>
+                        </html>
+                        """;
+                outputStream.write((resp).getBytes());
+            } catch (IOException ignore) {
+                LOGGER.warn("HttpError response exception", e);
+            } finally {
+                response.close();
+            }
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         } finally {
@@ -291,6 +373,7 @@ public class Container {
         }
 
     }
+
 
     public void stop() {
         runtimes.forEach(ServletContextRuntime::stop);

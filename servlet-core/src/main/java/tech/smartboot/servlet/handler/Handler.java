@@ -20,7 +20,7 @@ import java.io.IOException;
  * @author 三刀
  * @version V1.0 , 2019/12/11
  */
-abstract class Handler {
+public abstract class Handler {
     /**
      * 持有下一个处理器的句柄
      */

@@ -10,26 +10,25 @@
 
 package tech.smartboot.servlet.plugins.license;
 
+import jakarta.servlet.ServletException;
 import org.smartboot.http.common.enums.HttpStatus;
+import org.smartboot.http.common.exception.HttpException;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.http.server.HttpRequest;
-import org.smartboot.http.server.HttpResponse;
-import org.smartboot.http.server.HttpServerHandler;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ServletContextRuntime;
+import tech.smartboot.servlet.handler.Handler;
+import tech.smartboot.servlet.handler.HandlerContext;
 import tech.smartboot.servlet.plugins.Plugin;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
@@ -46,30 +45,6 @@ public class LicensePlugin extends Plugin {
     @Override
     public void initPlugin(Container containerRuntime) {
         loadLicense();
-
-        HttpServerHandler baseHandler = containerRuntime.getConfiguration().getHttpServerHandler();
-        containerRuntime.getConfiguration().setHttpServerHandler(new HttpServerHandler() {
-            @Override
-            public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) throws Throwable {
-                if ((licenseTO != null && licenseTO != INVALID_LICENSE) || "/favicon.ico".equals(request.getRequestURI())) {
-                    baseHandler.handle(request, response, completableFuture);
-                } else {
-                    try {
-                        response.setHttpStatus(HttpStatus.SERVICE_UNAVAILABLE);
-                        OutputStream outputStream = response.getOutputStream();
-                        outputStream.write("<center>".getBytes());
-                        outputStream.write(("<h1>" + HttpStatus.SERVICE_UNAVAILABLE.value() + " " + HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase() + "</h1>").getBytes());
-                        outputStream.write(expireMessage.getBytes());
-                        outputStream.write(("<hr/><a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a>/" + Container.VERSION + "&nbsp;|&nbsp; <a target='_blank' href='https://gitee.com/smartboot/smart-servlet'>Gitee</a>").getBytes());
-                        outputStream.write("</center>".getBytes());
-                    } catch (IOException e) {
-                        LOGGER.warn("HttpError response exception", e);
-                    } finally {
-                        response.close();
-                    }
-                }
-            }
-        });
     }
 
     @Override
@@ -103,6 +78,17 @@ public class LicensePlugin extends Plugin {
     @Override
     public void willStartServletContext(ServletContextRuntime containerRuntime) {
         containerRuntime.setFaviconProvider(runtime -> {
+        });
+        containerRuntime.getServletContext().getPipeline().next(new Handler() {
+
+            @Override
+            public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
+                if ((licenseTO != null && licenseTO != INVALID_LICENSE) || "/favicon.ico".equals(handlerContext.getOriginalRequest().getRequestURI())) {
+                    doNext(handlerContext);
+                } else {
+                    throw new HttpException(HttpStatus.SERVICE_UNAVAILABLE, expireMessage);
+                }
+            }
         });
     }
 
