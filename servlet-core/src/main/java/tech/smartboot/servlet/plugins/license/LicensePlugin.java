@@ -86,7 +86,12 @@ public class LicensePlugin extends Plugin {
                 if ((licenseTO != null && licenseTO != INVALID_LICENSE) || "/favicon.ico".equals(handlerContext.getOriginalRequest().getRequestURI())) {
                     doNext(handlerContext);
                 } else {
-                    throw new HttpException(HttpStatus.SERVICE_UNAVAILABLE, expireMessage);
+                    throw new HttpException(HttpStatus.SERVICE_UNAVAILABLE, expireMessage) {
+                        @Override
+                        public synchronized Throwable fillInStackTrace() {
+                            return this;
+                        }
+                    };
                 }
             }
         });
