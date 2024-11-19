@@ -73,13 +73,7 @@ public class LicensePlugin extends Plugin {
             runtime.setVendorProvider(response -> {
             });
         }
-    }
-
-    @Override
-    public void willStartServletContext(ServletContextRuntime containerRuntime) {
-        containerRuntime.setFaviconProvider(runtime -> {
-        });
-        containerRuntime.getServletContext().getPipeline().next(new Handler() {
+        runtime.getServletContext().getPipeline().next(new Handler() {
 
             @Override
             public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
@@ -94,6 +88,12 @@ public class LicensePlugin extends Plugin {
                     };
                 }
             }
+        });
+    }
+
+    @Override
+    public void willStartServletContext(ServletContextRuntime containerRuntime) {
+        containerRuntime.setFaviconProvider(runtime -> {
         });
     }
 

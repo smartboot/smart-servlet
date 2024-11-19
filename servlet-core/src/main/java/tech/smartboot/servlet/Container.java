@@ -348,7 +348,7 @@ public class Container {
                                     <hr/>
                                     <center>
                                         <a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a> / """ + VERSION + """ 
-                                        &nbsp;|&nbsp; 
+                                        &nbsp;|&nbsp;
                                         <a target='_blank' href='https://gitee.com/smartboot/smart-servlet'>Gitee</a>
                                     </center>
                                 </div>
