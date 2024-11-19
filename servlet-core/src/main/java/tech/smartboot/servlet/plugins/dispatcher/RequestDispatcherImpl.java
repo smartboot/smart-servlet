@@ -210,9 +210,16 @@ class RequestDispatcherImpl implements RequestDispatcher {
 
     private ServletRequestDispatcherWrapper wrapperRequest(final ServletRequest request, DispatcherType dispatcherType) {
         ServletRequest current = request;
-        while (current instanceof ServletRequestWrapper) {
-            current = ((ServletRequestWrapper) current).getRequest();
+        if (named) {
+            while (current instanceof ServletRequestWrapper && !(current instanceof SmartHttpServletRequest)) {
+                current = ((ServletRequestWrapper) current).getRequest();
+            }
+        } else {
+            while (current instanceof ServletRequestWrapper) {
+                current = ((ServletRequestWrapper) current).getRequest();
+            }
         }
+
         if (!(current instanceof SmartHttpServletRequest)) {
             throw new IllegalArgumentException("invalid request object: " + current);
         }
