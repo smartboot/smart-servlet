@@ -34,6 +34,7 @@ import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
 import org.smartboot.socket.extension.plugins.SslPlugin;
+import org.smartboot.socket.extension.plugins.StreamMonitorPlugin;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ServletContextRuntime;
@@ -116,7 +117,7 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
                 containerRuntime.doHandle(request, response);
             }
         });
-        bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024).debug(true);
+        bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024).addPlugin(new StreamMonitorPlugin<>(StreamMonitorPlugin.BLUE_TEXT_INPUT_STREAM, StreamMonitorPlugin.RED_TEXT_OUTPUT_STREAM));
 
         try {
             containerRuntime.start(this.bootstrap.configuration());

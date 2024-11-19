@@ -210,7 +210,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
 
     private ServletRequestDispatcherWrapper wrapperRequest(final ServletRequest request, DispatcherType dispatcherType) {
         ServletRequest current = request;
-        while (current instanceof ServletRequestWrapper && !(current instanceof SmartHttpServletRequest)) {
+        while (current instanceof ServletRequestWrapper) {
             current = ((ServletRequestWrapper) current).getRequest();
         }
         if (!(current instanceof SmartHttpServletRequest)) {
