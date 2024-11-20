@@ -91,7 +91,7 @@ public class ServletContextRuntime {
     private VendorProvider vendorProvider = SandBox.INSTANCE.getVendorProvider();
     private AsyncContextProvider asyncContextProvider = SandBox.INSTANCE.getAsyncContextProvider();
     private FaviconProvider faviconProvider = SandBox.INSTANCE.getFaviconProvider();
-    private SecurityProvider securityProvider = new SecurityProviderImpl();
+    private final SecurityProvider securityProvider;
     private MappingProvider mappingProvider = SandBox.INSTANCE.getMappingProvider();
     /**
      * 关联至本运行环境的插件集合
@@ -118,6 +118,7 @@ public class ServletContextRuntime {
         }
         deploymentInfo = new DeploymentInfo(classLoader);
         servletContext = new ServletContextImpl(this);
+        securityProvider = new SecurityProviderImpl(deploymentInfo);
     }
 
     /**

@@ -48,20 +48,15 @@ public class SecurityProviderImpl implements SecurityProvider {
     private Map<String, SecurityTO> methodSecurities = new HashMap<>();
     private final Map<String, SecurityAccount> headerSecurities = new HashMap<>();
     private List<SecurityAccount> users = Arrays.asList(new SecurityAccount("j2ee", "j2ee", null, Set.of("Administrator", "Employee")), new SecurityAccount("javajoe", "javajoe", null, Set.of("VP", "Manager")));
-    private LoginConfig loginConfig;
-    private List<SecurityConstraint> constraints = new ArrayList<>();
-    private final Map<String, Set<String>> securityRoleMapping = new HashMap<>();
+    private final DeploymentInfo deploymentInfo;
+
+    public SecurityProviderImpl(DeploymentInfo deploymentInfo) {
+        this.deploymentInfo = deploymentInfo;
+    }
 
     @Override
     public void addUser(String username, String password, Set<String> roles) {
         headerSecurities.put(username, new SecurityAccount(username, password, null, roles));
-    }
-
-    @Override
-    public void init(DeploymentInfo deploymentInfo) {
-        this.constraints.addAll(deploymentInfo.getSecurityConstraints());
-        this.loginConfig = deploymentInfo.getLoginConfig();
-        this.securityRoleMapping.putAll(deploymentInfo.getSecurityRoleMapping());
     }
 
     @Override
@@ -132,7 +127,7 @@ public class SecurityProviderImpl implements SecurityProvider {
         if (!ok) {
             return ok;
         }
-        return check(request, response, constraints.stream().filter(securityConstraint -> {
+        return check(request, response, deploymentInfo.getSecurityConstraints().stream().filter(securityConstraint -> {
             for (UrlPattern urlPattern : securityConstraint.getUrlPatterns()) {
                 if (PathMatcherUtil.matches(request, urlPattern)) {
                     return true;
@@ -143,6 +138,7 @@ public class SecurityProviderImpl implements SecurityProvider {
     }
 
     private LoginAccount login(SmartHttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        LoginConfig loginConfig = deploymentInfo.getLoginConfig();
         if (loginConfig != null) {
 //            if ("FORM".equals(loginConfig.getAuthMethod())) {
 //                return users.stream().filter(user -> user.getUsername().equals(request.getParameter("j_username")) && user.getPassword().equals(request.getParameter("j_password"))).findFirst().orElse(null);
@@ -157,7 +153,7 @@ public class SecurityProviderImpl implements SecurityProvider {
             }
             X509Certificate certificate = certificates.get(0);
             String name = certificate.getIssuerX500Principal().getName();
-            LoginAccount account = new LoginAccount(certificate.getIssuerX500Principal().getName(), null, securityRoleMapping.get(name), HttpServletRequest.CLIENT_CERT_AUTH);
+            LoginAccount account = new LoginAccount(certificate.getIssuerX500Principal().getName(), null, deploymentInfo.getSecurityRoleMapping().get(name), HttpServletRequest.CLIENT_CERT_AUTH);
             request.setLoginAccount(account);
             request.setAttribute("jakarta.servlet.request.X509Certificate", certificates.toArray(new X509Certificate[certificates.size()]));
             request.setAttribute("jakarta.servlet.request.cipher_suite", request.getSslEngine().getSession().getCipherSuite());

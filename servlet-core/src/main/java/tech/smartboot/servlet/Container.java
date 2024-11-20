@@ -563,8 +563,6 @@ public class Container {
             });
             deploymentInfo.setWelcomeFiles(welcomeFiles);
         }
-
-        servletRuntime.getSecurityProvider().init(deploymentInfo);
         return servletRuntime;
     }
 

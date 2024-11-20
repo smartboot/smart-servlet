@@ -64,7 +64,7 @@ public class DeploymentInfo {
     private List<String> welcomeFiles = Collections.emptyList();
     private final Set<String> securityRoles = new HashSet<>();
     private final Map<String, String> localeEncodingMappings = new HashMap<>();
-    private List<SecurityConstraint> securityConstraints = new ArrayList<>();
+    private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
     private Map<String, Set<String>> securityRoleMapping = new HashMap<>();
     private final ClassLoader classLoader;
     private String displayName;
@@ -220,7 +220,7 @@ public class DeploymentInfo {
         filters.values().forEach(filterInfo -> {
             filterInfo.setFilterClass(null);
         });
-        securityConstraints = null;
+//        securityConstraints = null;
         securityRoleMapping = null;
     }
 

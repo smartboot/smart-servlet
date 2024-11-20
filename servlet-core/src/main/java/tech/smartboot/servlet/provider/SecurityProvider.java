@@ -14,16 +14,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import tech.smartboot.servlet.SmartHttpServletRequest;
-import tech.smartboot.servlet.conf.DeploymentInfo;
-import tech.smartboot.servlet.conf.LoginConfig;
-import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.plugins.security.LoginAccount;
 import tech.smartboot.servlet.plugins.security.SecurityAccount;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
 public interface SecurityProvider {
@@ -31,8 +27,6 @@ public interface SecurityProvider {
     String LOGIN_REDIRECT_METHOD = SecurityProvider.class.getName() + "_login_redirect_method";
 
     void addUser(String username, String password, Set<String> roles);
-
-    void init(DeploymentInfo deploymentInfo);
 
     public SecurityAccount login(String username, String password) throws ServletException;
 
