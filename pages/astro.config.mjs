@@ -13,9 +13,9 @@ export default defineConfig({
 				github: 'https://github.com/smartboot/smart-servlet',
 			},
 			// 为此网站设置英语为默认语言。
-			defaultLocale: 'root',
+			defaultLocale: 'zh-cn',
 			locales: {
-				root: {
+				'zh-cn': {
 					label: '简体中文',
 					lang: 'zh-CN',
 				},

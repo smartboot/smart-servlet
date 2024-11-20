@@ -51,9 +51,9 @@ ab -k -c100 -t 10 http://127.0.0.1:8080/examples/servlets/servlet/HelloWorldExam
 - 而且从下图可以看到压测期间 tomcat 线程数增长至 118，而 smart-servlet 始终稳定在 23。
 - tomcat 不能很好的支持 http1.0 keep-alive。ab采用了的协议是 Http1.0，压测 tomcat 过程中发现实际建立的连接数超过了500个，而 smart-servlet 稳定在100个。
 
-![](./ab_tomcat.jpeg)
+![](ab_tomcat.jpeg)
 
-![](./ab_smart-servlet.jpeg)
+![](ab_smart-servlet.jpeg)
 
 #### 2.1.2 并发量：150
 
@@ -78,9 +78,9 @@ ab -k -c150 -t 10 -r http://127.0.0.1:8080/examples/servlets/servlet/HelloWorldE
 - 在 150 的并发下 smart-servlet 的性能比 tomcat 高出 50%~100% 。
 - tomcat 线程数增长值 169，smart-servlet 维持23个不变。
 
-![](./ab_tomcat_150.jpeg)
+![](ab_tomcat_150.jpeg)
 
-![](./ab_smart-servlet_150.jpeg)
+![](ab_smart-servlet_150.jpeg)
 
 #### 2.1.3 并发量：1000
 
