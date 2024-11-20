@@ -1,5 +1,61 @@
 ---
-title: release note
+title: Release Notes
 description: A reference page in my new Starlight docs site.
 ---
 
+## v2.4 (2024-11-19)
+- Optimized memory consumption required for service operation
+- Optimized `HttpServletRequest#getRemotePort` specification.
+- Optimized `HttpServletRequest#getLocalName` specification.
+- Optimized `HttpServletRequest#getLocalAddr` specification.
+- Optimized `RequestDispatcher` specification
+- Optimized `welcome-file` specification
+- Optimized Default Servlet implementation
+- Optimized listener initialization strategy
+- Disabled debugging log printing at startup
+
+**Download: [smart-servlet-bin-2.4-release.tar.gz](https://github.com/smartboot/smart-servlet/releases/download/v2.4/smart-servlet-bin-2.4-release.tar.gz)**
+
+## v2.3 (2024-11-10)
+- Upgraded `jakarta.servlet-api` to version `6.1.0`
+- Implemented `HttpServletRequest#newPushBuilder` specification.
+- Implemented `ServletContext#getEffectiveMajorVersion` specification
+- Implemented `ServletContext#getEffectiveMinorVersion` specification
+- Optimized `ServletInputStream` specification implementation
+- Optimized `CLIENT-CERT` authentication mode
+- Optimized multiple `Plugin` interface designs
+- Supported automatic parsing and loading of `sun-web.xml`
+
+**Download: ~~smart-servlet-bin-2.3-release.tar.gz~~**
+
+## v2.2 (2024-08-31)
+
+1. Optimized the implementation of fragment-related specifications.
+2. Optimized `ServletRequestListener` specification implementation.
+3. Optimized `DispatcherType.INCLUDE` specification implementation.
+4. Optimized `welcome file` specification implementation.
+5. Implemented security-related specifications.
+6. Integrated smart-http's multipart specification implementation, removed commons-fileupload third-party dependency
+
+**Download: ~~smart-servlet-bin-2.2-release.tar.gz~~**
+
+## v2.1 (2024-08-11)
+
+1. Optimized the implementation of fragment-related specifications.
+3. Optimized the logic for handling Error Pages.
+4. Optimized `HttpServletRequest` specification implementation.
+5. Optimized `HttpServletResponse` specification implementation.
+6. Optimized `ServletContext` specification implementation.
+7. Optimized `ServletOutputStream` specification implementation.
+8. Optimized `RequestDispatcher` specification implementation.
+9. Fixed the issue with incorrect Session Cookie path value.
+
+**Download: ~~smart-servlet-bin-2.1-release.tar.gz~~**
+
+## v2.0 (2024-07-28)
+
+This is the first version of smart-servlet adapted to the Jakarta Servlet specification.
+
+It inherits all the research and development achievements of smart-servlet v1.5 for javax-servlet and has been upgraded to the Jakarta Servlet specification.
+
+**Download: ~~smart-servlet-bin-2.0-release.tar.gz~~**
