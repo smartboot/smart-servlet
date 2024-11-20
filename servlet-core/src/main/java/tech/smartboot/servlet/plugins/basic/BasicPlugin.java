@@ -140,6 +140,7 @@ public class BasicPlugin extends Plugin {
                 httpBootstrap.setPort(config.getPort());
                 httpBootstrap.configuration().group(group).readBufferSize(config.getReadBufferSize()).host(config.getHost()).bannerEnabled(false);
                 httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
+                httpBootstrap.configuration().addPlugin(config.getPlugins());
                 httpBootstrap.start();
             }
             startSslServer(config, group, httpServerHandler, webSocketHandler);
@@ -185,7 +186,7 @@ public class BasicPlugin extends Plugin {
                 throw new UnsupportedOperationException("无效证书类型");
         }
         httpBootstrap.configuration().addPlugin(sslPlugin);
-
+        httpBootstrap.configuration().addPlugin(config.getPlugins());
         httpBootstrap.start();
     }
 

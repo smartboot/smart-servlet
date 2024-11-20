@@ -96,7 +96,7 @@ public class Container {
      * Servlet容器运行环境是否完成启动
      */
     private volatile boolean started = false;
-    private ContainerConfig configuration = new ContainerConfig();
+    private final ContainerConfig configuration = new ContainerConfig();
 
     public void initialize() throws Throwable {
         if (started) {

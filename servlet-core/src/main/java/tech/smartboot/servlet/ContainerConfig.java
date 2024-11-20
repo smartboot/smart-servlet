@@ -73,7 +73,7 @@ public class ContainerConfig {
     private int sspReadBufferSize = 1024;
 
 
-    private List<Plugin<Request>> plugins = new ArrayList<>();
+    private final List<Plugin<Request>> plugins = new ArrayList<>();
 
     ContainerConfig() {
 
