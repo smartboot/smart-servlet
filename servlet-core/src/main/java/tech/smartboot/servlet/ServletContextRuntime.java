@@ -193,10 +193,9 @@ public class ServletContextRuntime {
         }
         //绑定 default Servlet
         if (!deploymentInfo.getServlets().containsKey(ServletInfo.DEFAULT_SERVLET_NAME)) {
-            ServletInfo servletInfo = new ServletInfo();
+            ServletInfo servletInfo = new ServletInfo(true);
             servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
             servletInfo.setServlet(new DefaultServlet(deploymentInfo));
-            servletInfo.setDynamic(true);
             servletInfo.setLoadOnStartup(1);
             deploymentInfo.addServlet(servletInfo);
             //已经存在默认映射，则 default servlet 只适用于getNamedDispatcher场景
@@ -207,10 +206,9 @@ public class ServletContextRuntime {
 
 
         if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getUrlPattern().equals("/j_security_check"))) {
-            ServletInfo servletInfo = new ServletInfo();
+            ServletInfo servletInfo = new ServletInfo(true);
             servletInfo.setServletName("SecurityCheckServlet");
             servletInfo.setServlet(new SecurityCheckServlet(deploymentInfo));
-            servletInfo.setDynamic(true);
             servletInfo.setLoadOnStartup(1);
             deploymentInfo.addServlet(servletInfo);
             deploymentInfo.addServletMapping(new ServletMappingInfo(servletInfo.getServletName(), "/j_security_check"));

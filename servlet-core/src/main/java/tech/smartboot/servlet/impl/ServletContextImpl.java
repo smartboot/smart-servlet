@@ -380,10 +380,9 @@ public class ServletContextImpl implements ServletContext {
             return null;
         }
 
-        ServletInfo servletInfo = new ServletInfo();
+        ServletInfo servletInfo = new ServletInfo(true);
         servletInfo.setServletName(servletName);
         servletInfo.setServlet(servlet);
-        servletInfo.setDynamic(true);
         deploymentInfo.addServlet(servletInfo);
         return new ApplicationServletRegistration(deploymentInfo, servletInfo);
     }

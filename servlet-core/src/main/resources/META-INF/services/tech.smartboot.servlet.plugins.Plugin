@@ -7,12 +7,9 @@
 #   and legally in accordance with the AGPL-3.0 open source agreement
 #  without special permission from the smartboot organization.
 #
-
+tech.smartboot.servlet.plugins.basic.BasicPlugin
 tech.smartboot.servlet.plugins.session.SessionPlugin
-tech.smartboot.servlet.plugins.tls.TlsPlugin
-tech.smartboot.servlet.plugins.license.LicensePlugin
 tech.smartboot.servlet.plugins.dispatcher.DispatcherPlugin
-tech.smartboot.servlet.plugins.contact.ContactPlugin
 tech.smartboot.servlet.plugins.websocket.WebsocketPlugin
 tech.smartboot.servlet.plugins.async.AsyncContextPlugin
 tech.smartboot.servlet.plugins.mapping.MappingPlugin

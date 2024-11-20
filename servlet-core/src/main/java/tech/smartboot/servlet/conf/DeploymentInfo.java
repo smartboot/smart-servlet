@@ -64,8 +64,8 @@ public class DeploymentInfo {
     private List<String> welcomeFiles = Collections.emptyList();
     private final Set<String> securityRoles = new HashSet<>();
     private final Map<String, String> localeEncodingMappings = new HashMap<>();
-    private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
-    private final Map<String, Set<String>> securityRoleMapping = new HashMap<>();
+    private List<SecurityConstraint> securityConstraints = new ArrayList<>();
+    private Map<String, Set<String>> securityRoleMapping = new HashMap<>();
     private final ClassLoader classLoader;
     private String displayName;
     private URL contextUrl;
@@ -191,9 +191,7 @@ public class DeploymentInfo {
     }
 
     public void amazing() {
-        if (servletContainerInitializers.isEmpty()) {
-            servletContainerInitializers = Collections.emptyList();
-        }
+        servletContainerInitializers = null;
         if (servletContextAttributeListeners.isEmpty()) {
             servletContextAttributeListeners = Collections.emptyList();
         }
@@ -222,6 +220,8 @@ public class DeploymentInfo {
         filters.values().forEach(filterInfo -> {
             filterInfo.setFilterClass(null);
         });
+        securityConstraints = null;
+        securityRoleMapping = null;
     }
 
     public void addServletContextListener(ServletContextWrapperListener contextListener) {

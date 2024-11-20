@@ -23,32 +23,19 @@ import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
-import org.smartboot.http.common.codec.websocket.CloseReason;
-import org.smartboot.http.server.HttpBootstrap;
 import org.smartboot.http.server.HttpRequest;
-import org.smartboot.http.server.HttpResponse;
-import org.smartboot.http.server.HttpServerHandler;
-import org.smartboot.http.server.WebSocketHandler;
-import org.smartboot.http.server.WebSocketRequest;
-import org.smartboot.http.server.WebSocketResponse;
-import org.smartboot.http.server.impl.WebSocketRequestImpl;
-import org.smartboot.http.server.impl.WebSocketResponseImpl;
 import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.plugins.StreamMonitorPlugin;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.servlet.Container;
+import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletInfo;
-import tech.smartboot.servlet.provider.WebsocketProvider;
 
-import javax.net.ssl.SSLEngine;
 import java.io.FileInputStream;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbeddedConfiguration> {
 
-    private HttpBootstrap bootstrap;
     private Container containerRuntime;
     private ArquillianAppProvider appProvider;
 
@@ -92,61 +79,40 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
 
     public void start() throws LifecycleException {
         appProvider = new ArquillianAppProvider(containerConfig);
-        this.bootstrap = new HttpBootstrap();
-        containerRuntime = new Container();
-        bootstrap.httpHandler(new HttpServerHandler() {
-            @Override
-            public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
-                containerRuntime.doHandle(request, response, completableFuture);
-            }
-        }).webSocketHandler(new WebSocketHandler() {
-            @Override
-            public void whenHeaderComplete(WebSocketRequestImpl request, WebSocketResponseImpl response) {
-                CompletableFuture<Object> completableFuture = new CompletableFuture<>();
-                try {
-                    containerRuntime.doHandle(request, response, completableFuture);
-                } finally {
-                    if (request.getAttachment() == null || request.getAttachment().get(WebsocketProvider.WEBSOCKET_SESSION_ATTACH_KEY) == null) {
-                        response.close(CloseReason.UNEXPECTED_ERROR, "");
-                    }
-                }
-            }
 
-            @Override
-            public void handle(WebSocketRequest request, WebSocketResponse response) {
-                containerRuntime.doHandle(request, response);
-            }
-        });
-        bootstrap.configuration().bannerEnabled(false).readBufferSize(1024 * 1024).addPlugin(new StreamMonitorPlugin<>(StreamMonitorPlugin.BLUE_TEXT_INPUT_STREAM, StreamMonitorPlugin.RED_TEXT_OUTPUT_STREAM));
+        containerRuntime = new Container();
 
         try {
-            containerRuntime.start(this.bootstrap.configuration());
+            containerRuntime.initialize();
         } catch (Throwable e) {
             throw new LifecycleException(e.getMessage(), e);
         }
-        if (containerConfig.isSsl()) {
 
+        ContainerConfig config = containerRuntime.getConfiguration();
+        config.setPort(containerConfig.getBindHttpPort());
+        config.setReadBufferSize(1024 * 1024);
+        config.setHttpIdleTimeout(120000);
+        config.setSslEnable(false);
+        config.setHost(containerConfig.getBindAddress());
+        config.getPlugins().add(new StreamMonitorPlugin<>(StreamMonitorPlugin.BLUE_TEXT_INPUT_STREAM, StreamMonitorPlugin.RED_TEXT_OUTPUT_STREAM));
+
+        if (containerConfig.isSsl()) {
             try {
                 ServerSSLContextFactory sslPlugin = new ServerSSLContextFactory(new FileInputStream(containerConfig.getKeystorePath()), "changeit", "changeit");
 //                PemServerSSLContextFactory sslPlugin = new PemServerSSLContextFactory(new FileInputStream("/Users/zhengjw22mac123/IdeaProjects/smart-servlet/tck/src/test/resources/smart-servlet.pem"));
-                bootstrap.configuration().host(containerConfig.getBindAddress());
-                bootstrap.configuration().addPlugin(new SslPlugin<>(sslPlugin, new Consumer<SSLEngine>() {
-                    @Override
-                    public void accept(SSLEngine sslEngine) {
-                        sslEngine.setUseClientMode(false);
-                        sslEngine.setNeedClientAuth(containerConfig.isNeedClientAuth());
-                        HttpRequest.SSL_ENGINE_THREAD_LOCAL.set(sslEngine);
-                    }
+                config.getPlugins().add(new SslPlugin<>(sslPlugin, sslEngine -> {
+                    sslEngine.setUseClientMode(false);
+                    sslEngine.setNeedClientAuth(containerConfig.isNeedClientAuth());
+                    HttpRequest.SSL_ENGINE_THREAD_LOCAL.set(sslEngine);
                 }));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
         }
-        bootstrap.configuration().setHttpIdleTimeout(120000);
-        bootstrap.setPort(containerConfig.getBindHttpPort()).start();
         listeningHost = containerConfig.getBindAddress();
         listeningPort = containerConfig.getBindHttpPort();
+        containerRuntime.start();
         System.out.println("host: " + listeningHost + " port:" + listeningPort + " ssl:" + containerConfig.isSsl());
     }
 
@@ -155,7 +121,6 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         try {
             System.out.println("stop.....");
             containerRuntime.stop();
-            bootstrap.shutdown();
         } catch (Exception e) {
             throw new LifecycleException("Could not stop container", e);
         }

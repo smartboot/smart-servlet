@@ -20,7 +20,6 @@ import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.StringUtils;
 import org.smartboot.http.server.HttpRequest;
 import org.smartboot.http.server.HttpResponse;
-import org.smartboot.http.server.HttpServerConfiguration;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 import tech.smartboot.servlet.conf.DeploymentInfo;
@@ -84,6 +83,7 @@ public class Container {
             (____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)
             """;
     public static final String VERSION = "v2.4";
+    public static final String CONFIGURATION_FILE = "smart-servlet.properties";
     /**
      * 注册在当前 Servlet 容器中的运行环境
      */
@@ -96,19 +96,13 @@ public class Container {
      * Servlet容器运行环境是否完成启动
      */
     private volatile boolean started = false;
+    private ContainerConfig configuration = new ContainerConfig();
 
-    /**
-     * Http服务相关配置
-     */
-    private HttpServerConfiguration configuration;
-
-    public void start(HttpServerConfiguration configuration) throws Throwable {
+    public void initialize() throws Throwable {
         if (started) {
             return;
         }
         started = true;
-        this.configuration = configuration;
-        configuration.serverName("smart-servlet");
 
 
         //设置默认
@@ -139,6 +133,9 @@ public class Container {
         for (ServletContextRuntime runtime : runtimes) {
             runtime.start();
         }
+    }
+
+    public void start() {
         System.out.println("====================================================================================================");
         System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -340,14 +337,14 @@ public class Container {
                                 <div class="container">
                                     <center>
                                         <h1>""" + e.getHttpCode() + " : " + e.getDesc() + """
-                                    </h1>
-                                    </center>
-                                    <hr/>
-                                    <pre>""" + stack.toString().replaceAll("\n", "<br/>").replaceAll(" ", "&nbsp;") + """
-                                    </pre>
-                                    <hr/>
-                                    <center>
-                                        <a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a>&nbsp;""" + VERSION + """ 
+                        </h1>
+                        </center>
+                        <hr/>
+                        <pre>""" + stack.toString().replaceAll("\n", "<br/>").replaceAll(" ", "&nbsp;") + """
+                        </pre>
+                        <hr/>
+                        <center>
+                            <a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a>&nbsp;""" + VERSION + """ 
                                         &nbsp;|&nbsp;
                                         <a target='_blank' href='https://gitee.com/smartboot/smart-servlet'>Gitee</a>
                                     </center>
@@ -378,17 +375,12 @@ public class Container {
     public void stop() {
         runtimes.forEach(ServletContextRuntime::stop);
         //卸载插件
-        plugins.forEach(Plugin::uninstall);
+        plugins.forEach(plugin -> plugin.uninstall(this));
     }
 
     public boolean isStarted() {
         return started;
     }
-
-    public HttpServerConfiguration getConfiguration() {
-        return configuration;
-    }
-
 
     public ServletContextRuntime matchRuntime(String requestUri) {
         for (ServletContextRuntime matchRuntime : runtimes) {
@@ -574,6 +566,10 @@ public class Container {
 
         servletRuntime.getSecurityProvider().init(deploymentInfo);
         return servletRuntime;
+    }
+
+    public ContainerConfig getConfiguration() {
+        return configuration;
     }
 
     private URLClassLoader getClassLoader(String localPath, ClassLoader parentClassLoader) throws MalformedURLException {

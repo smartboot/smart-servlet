@@ -35,6 +35,9 @@ import java.util.Map;
  * @version V1.0 , 2019/12/11
  */
 public class ServletInfo {
+    private static final byte MASK_INITIALIZED = 0x01;
+    private static final byte MASK_ASYNC_SUPPORT = 0x02;
+    private static final byte MASK_DYNAMIC = 0x04;
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletInfo.class);
     private static final MultipartConfigElement DEFAULT_MULTIPART_CONFIG = new MultipartConfigElement("", -1, -1, -1);
     public static final String DEFAULT_SERVLET_NAME = "default";
@@ -47,15 +50,23 @@ public class ServletInfo {
 
     private String jspFile;
 
-    private boolean dynamic;
     private MultipartConfigElement multipartConfig = DEFAULT_MULTIPART_CONFIG;
 
-    private boolean asyncSupported;
-    private boolean init = false;
+    private byte mask;
     private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
 
+    public ServletInfo() {
+        this(false);
+    }
+
+    public ServletInfo(boolean dynamic) {
+        if (dynamic) {
+            addMask(MASK_DYNAMIC);
+        }
+    }
+
     public synchronized void init(ServletContextImpl servletContext) {
-        if (init) {
+        if (initialized()) {
             return;
         }
         ServletConfig servletConfig = new ServletConfigImpl(this, servletContext);
@@ -94,8 +105,16 @@ public class ServletInfo {
                 }
             };
         } finally {
-            init = true;
+            addMask(MASK_INITIALIZED);
         }
+    }
+
+    private void addMask(byte v) {
+        mask |= v;
+    }
+
+    private boolean masked(byte v) {
+        return (mask & v) == v;
     }
 
     public int getLoadOnStartup() {
@@ -140,11 +159,7 @@ public class ServletInfo {
     }
 
     public boolean isDynamic() {
-        return dynamic;
-    }
-
-    public void setDynamic(boolean dynamic) {
-        this.dynamic = dynamic;
+        return masked(MASK_DYNAMIC);
     }
 
     public MultipartConfigElement getMultipartConfig() {
@@ -156,11 +171,15 @@ public class ServletInfo {
     }
 
     public boolean isAsyncSupported() {
-        return asyncSupported;
+        return masked(MASK_ASYNC_SUPPORT);
     }
 
     public void setAsyncSupported(boolean asyncSupported) {
-        this.asyncSupported = asyncSupported;
+        if (asyncSupported) {
+            addMask(MASK_ASYNC_SUPPORT);
+        } else {
+            mask &= ~MASK_ASYNC_SUPPORT;
+        }
     }
 
     public String getJspFile() {
@@ -190,6 +209,6 @@ public class ServletInfo {
      * @return
      */
     public boolean initialized() {
-        return init;
+        return masked(MASK_INITIALIZED);
     }
 }

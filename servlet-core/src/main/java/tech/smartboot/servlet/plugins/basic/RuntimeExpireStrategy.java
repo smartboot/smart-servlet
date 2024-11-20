@@ -8,7 +8,7 @@
  *  without special permission from the smartboot organization.
  */
 
-package tech.smartboot.servlet.plugins.license;
+package tech.smartboot.servlet.plugins.basic;
 
 /**
  * 软件运行时过期

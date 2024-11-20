@@ -125,8 +125,8 @@ public abstract class Plugin {
     /**
      * 卸载插件,在容器服务停止前调用
      */
-    public final void uninstall() {
-        destroyPlugin();
+    public final void uninstall(Container container) {
+        destroyPlugin(container);
     }
 
     protected InputStream getResource(String fileName) throws IOException {
@@ -164,7 +164,7 @@ public abstract class Plugin {
     /**
      * 销毁插件
      */
-    protected void destroyPlugin() {
+    protected void destroyPlugin(Container container) {
         LOGGER.info("plugin:[" + pluginName() + "] do nothing when destroyPlugin!");
     }
 

@@ -59,7 +59,7 @@ public class SecurityProviderImpl implements SecurityProvider {
 
     @Override
     public void init(DeploymentInfo deploymentInfo) {
-        this.constraints = deploymentInfo.getSecurityConstraints();
+        this.constraints.addAll(deploymentInfo.getSecurityConstraints());
         this.loginConfig = deploymentInfo.getLoginConfig();
         this.securityRoleMapping.putAll(deploymentInfo.getSecurityRoleMapping());
     }

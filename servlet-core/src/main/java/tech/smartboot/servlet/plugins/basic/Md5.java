@@ -8,7 +8,7 @@
  *  without special permission from the smartboot organization.
  */
 
-package tech.smartboot.servlet.plugins.license;
+package tech.smartboot.servlet.plugins.basic;
 
 import java.security.MessageDigest;
 
