@@ -39,6 +39,7 @@ import tech.smartboot.servlet.handler.Handler;
 import tech.smartboot.servlet.handler.HandlerContext;
 import tech.smartboot.servlet.plugins.Plugin;
 import tech.smartboot.servlet.provider.WebsocketProvider;
+import tech.smartboot.servlet.util.CommonUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -79,7 +80,7 @@ public class BasicPlugin extends Plugin {
 
     @Override
     public void onContainerInitialized(Container container) {
-        System.out.println("\033[1mLicense Plugin:\033[0m");
+        System.out.println("\033[1mLicense Info:\033[0m");
         if (licenseTO == null) {
             System.out.println("\t" + ConsoleColors.RED + "ERROR：License not found, please check the license file：[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield" : "${SERVLET_HOME}/conf/License.shield") + " ]." + ConsoleColors.RESET);
             return;
@@ -97,11 +98,7 @@ public class BasicPlugin extends Plugin {
         }
         System.out.println();
         System.out.println("\033[1mTechnical Support:\033[0m");
-        System.out.println(" · Document: https://smartboot.tech]");
-        System.out.println(" · Gitee: https://gitee.com/smartboot/smart-servlet");
-        System.out.println(" · Github: https://github.com/smartboot/smart-servlet");
-        System.out.println(" · E-mail: zhengjunweimail@163.com");
-        System.out.println(" · 温馨提示：开源不易，拒绝盗版，请通过正规渠道获取产品授权");
+        System.out.println(CommonUtil.getResourceAsString("smart-servlet/support.txt"));
 
         ContainerConfig config = container.getConfiguration();
         if (!config.isEnabled() && !config.isSslEnable()) {

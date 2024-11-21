@@ -1,0 +1,68 @@
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin: 50px 10px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #d9534f;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #ddd;
+            margin: 20px 0;
+        }
+
+        a {
+            color: #0275d8;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f8aa96881897b9581e38e5bc5db0d7e5";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</head>
+<body>
+<div class="container">
+    <center>
+        <h1> {{statusCode}} : {{statusDesc}}
+        </h1>
+    </center>
+    <hr/>
+    <pre>
+{{detailMessage}}
+    </pre>
+    <hr/>
+    <center>
+        <a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a>&nbsp;{{version}}
+        &nbsp;|&nbsp;
+        <a target='_blank' href='https://gitee.com/smartboot/smart-servlet'>Gitee</a>
+    </center>
+</div>
+</body>
+</html>

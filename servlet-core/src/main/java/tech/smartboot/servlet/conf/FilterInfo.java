@@ -77,12 +77,4 @@ public class FilterInfo {
     public void setAsyncSupported(boolean asyncSupported) {
         this.asyncSupported = asyncSupported;
     }
-
-    @Override
-    public String toString() {
-        return "FilterInfo{" +
-                "filterClass=" + filterClass +
-                ", name='" + filterName + '\'' +
-                '}';
-    }
 }

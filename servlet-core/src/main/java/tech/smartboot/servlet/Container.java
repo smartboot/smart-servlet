@@ -14,6 +14,7 @@ import jakarta.servlet.AsyncContext;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
+import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.exception.HttpException;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -39,6 +40,7 @@ import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.HttpServletResponseImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.plugins.Plugin;
+import tech.smartboot.servlet.util.CommonUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -74,14 +76,14 @@ public class Container {
      * http://patorjk.com/software/taag/
      * Font Name: Puffy
      */
-    private static final String BANNER = """
-                                           _                                 _           _  \s
-                                          ( )_                              (_ )        ( )_\s
-              ___   ___ ___     _ _  _ __ | ,_)     ___    __   _ __  _   _  | |    __  | ,_)
-            /',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| | \s
-            \\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_\s
-            (____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)
-            """;
+//    private static final String BANNER = """
+//                                           _                                 _           _  \s
+//                                          ( )_                              (_ )        ( )_\s
+//              ___   ___ ___     _ _  _ __ | ,_)     ___    __   _ __  _   _  | |    __  | ,_)
+//            /',__)/' _ ` _ `\\ /'_` )( '__)| |     /',__) /'__`\\( '__)( ) ( ) | |  /'__`\\| | \s
+//            \\__, \\| ( ) ( ) |( (_| || |   | |_    \\__, \\(  ___/| |   | \\_/ | | | (  ___/| |_\s
+//            (____/(_) (_) (_)`\\__,_)(_)   `\\__)   (____/`\\____)(_)   `\\___/'(___)`\\____)`\\__)
+//            """;
     public static final String VERSION = "v2.4";
     public static final String CONFIGURATION_FILE = "smart-servlet.properties";
     /**
@@ -136,11 +138,21 @@ public class Container {
     }
 
     public void start() {
-        System.out.println("====================================================================================================");
-        System.out.println(ConsoleColors.GREEN + BANNER + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        for (int i = 0; i < 100; i++) {
+            System.out.print('=');
+        }
+        System.out.println();
+
+        System.out.println(ConsoleColors.GREEN + CommonUtil.getResourceAsString("smart-servlet/banner.txt") + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
+        for (int i = 0; i < 26; i++) {
+            System.out.print('~');
+        }
+        System.out.println();
         plugins.forEach(plugin -> plugin.onContainerInitialized(this));
-        System.out.println("====================================================================================================");
+        for (int i = 0; i < 100; i++) {
+            System.out.print('=');
+        }
+        System.out.println();
     }
 
     /**
@@ -288,70 +300,9 @@ public class Container {
                 printWriter.close();
                 response.setHttpStatus(e.getHttpCode(), e.getDesc());
                 OutputStream outputStream = response.getOutputStream();
-                String resp = """
-                        <html>
-                            <head>
-                                <style>
-                                    body {
-                                        font-family: Arial, sans-serif;
-                                        background-color: #f4f4f9;
-                                        color: #333;
-                                        margin: 0;
-                                        padding: 0;
-                                    }
-                                    .container {
-                                        margin: 50px 10px;
-                                        padding: 20px;
-                                        background-color: #fff;
-                                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                                        border-radius: 8px;
-                                    }
-                                    h1 {
-                                        color: #d9534f;
-                                    }
-                                    hr {
-                                        border: 0;
-                                        height: 1px;
-                                        background: #ddd;
-                                        margin: 20px 0;
-                                    }
-                                    a {
-                                        color: #0275d8;
-                                        text-decoration: none;
-                                    }
-                                    a:hover {
-                                        text-decoration: underline;
-                                    }
-                                </style>
-                                <script>
-                                var _hmt = _hmt || [];
-                                (function() {
-                                  var hm = document.createElement("script");
-                                  hm.src = "https://hm.baidu.com/hm.js?f8aa96881897b9581e38e5bc5db0d7e5";
-                                  var s = document.getElementsByTagName("script")[0]; 
-                                  s.parentNode.insertBefore(hm, s);
-                                })();
-                                </script>
-                            </head>
-                            <body>
-                                <div class="container">
-                                    <center>
-                                        <h1>""" + e.getHttpCode() + " : " + e.getDesc() + """
-                        </h1>
-                        </center>
-                        <hr/>
-                        <pre>""" + stack.toString().replaceAll("\n", "<br/>").replaceAll(" ", "&nbsp;") + """
-                        </pre>
-                        <hr/>
-                        <center>
-                            <a target='_blank' href='https://smartboot.tech/smart-servlet'>smart-servlet</a>&nbsp;""" + VERSION + """ 
-                                        &nbsp;|&nbsp;
-                                        <a target='_blank' href='https://gitee.com/smartboot/smart-servlet'>Gitee</a>
-                                    </center>
-                                </div>
-                            </body>
-                        </html>
-                        """;
+                String resp = CommonUtil.getResourceAsString("smart-servlet/error.html");
+                resp = resp.replace("{{statusCode}}", String.valueOf(e.getHttpCode())).replace("{{statusDesc}}", e.getDesc()).replace("{{detailMessage}}", stack.toString().replaceAll("\n", "<br/>").replaceAll(" ", "&nbsp;"))
+                        .replace("{{version}}", VERSION);
                 outputStream.write((resp).getBytes());
             } catch (IOException ignore) {
                 LOGGER.warn("HttpError response exception", e);
