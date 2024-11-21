@@ -12,7 +12,6 @@ package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
-import org.smartboot.http.common.io.BufferOutputStream;
 import org.smartboot.http.server.HttpResponse;
 
 import java.io.IOException;
@@ -23,7 +22,6 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
  * @version V1.0 , 2020/10/19
  */
 public class ServletOutputStreamImpl extends ServletOutputStream {
-    private final BufferOutputStream outputStream;
     protected static final AtomicIntegerFieldUpdater<ServletOutputStreamImpl> stateUpdater = AtomicIntegerFieldUpdater.newUpdater(ServletOutputStreamImpl.class, "state");
     private boolean committed = false;
     /**
@@ -40,13 +38,12 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     private static final int FLAG_DELEGATE_SHUTDOWN = 1 << 3;
     private static final int FLAG_IN_CALLBACK = 1 << 4;
     private final HttpServletRequestImpl request;
-    private final long contentLength;
+    private final HttpResponse response;
+    private int bufferSize;
 
-    public ServletOutputStreamImpl(HttpServletRequestImpl request, HttpResponse response, byte[] buffer, long contentLength) {
+    public ServletOutputStreamImpl(HttpServletRequestImpl request, HttpResponse response) {
         this.request = request;
-        this.outputStream = response.getOutputStream();
-        this.buffer = buffer;
-        this.contentLength = contentLength;
+        this.response = response;
     }
 
     @Override
@@ -90,8 +87,10 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
             written += len;
             return;
         }
-
-        if (len < buffer.length - written - 1) {
+        if (written == 0 && len > 0 && len < bufferSize) {
+            buffer = new byte[bufferSize];
+        }
+        if (len < bufferSize - written - 1) {
             System.arraycopy(b, off, buffer, (int) written, len);
             written += len;
         } else {
@@ -101,11 +100,15 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         }
     }
 
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
+    }
+
     private void doWrite(byte[] b, int off, int len) throws IOException {
         if (writeListener == null || anyAreSet(state, FLAG_IN_CALLBACK)) {
-            outputStream.write(b, off, len);
+            response.getOutputStream().write(b, off, len);
         } else {
-            outputStream.write(b, off, len, bufferOutputStream -> {
+            response.getOutputStream().write(b, off, len, bufferOutputStream -> {
                 try {
                     setFlags(FLAG_IN_CALLBACK);
                     writeListener.onWritePossible();
@@ -115,23 +118,23 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
                 }
             });
         }
-        if (written == contentLength) {
-            outputStream.flush();
+        if (written == response.getContentLength()) {
+            response.getOutputStream().flush();
         }
     }
 
     @Override
     public void close() throws IOException {
-        outputStream.close();
+        response.getOutputStream().close();
     }
 
     @Override
     public void flush() throws IOException {
-        if (contentLength > 0 && written == contentLength) {
+        if (response.getContentLength() > 0 && written == response.getContentLength()) {
             return;
         }
         flushServletBuffer();
-        outputStream.flush();
+        response.getOutputStream().flush();
     }
 
     public void flushServletBuffer() throws IOException {
