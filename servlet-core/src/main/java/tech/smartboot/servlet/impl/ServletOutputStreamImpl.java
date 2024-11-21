@@ -39,8 +39,8 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     private static final int FLAG_READY = 1 << 2;
     private static final int FLAG_DELEGATE_SHUTDOWN = 1 << 3;
     private static final int FLAG_IN_CALLBACK = 1 << 4;
-    private HttpServletRequestImpl request;
-    private long contentLength;
+    private final HttpServletRequestImpl request;
+    private final long contentLength;
 
     public ServletOutputStreamImpl(HttpServletRequestImpl request, HttpResponse response, byte[] buffer, long contentLength) {
         this.request = request;
@@ -115,7 +115,9 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
                 }
             });
         }
-
+        if (written == contentLength) {
+            outputStream.flush();
+        }
     }
 
     @Override
