@@ -135,7 +135,7 @@ public class BasicPlugin extends Plugin {
             if (config.isEnabled()) {
                 HttpBootstrap httpBootstrap = new HttpBootstrap();
                 httpBootstrap.setPort(config.getPort());
-                httpBootstrap.configuration().group(group).readBufferSize(config.getReadBufferSize()).host(config.getHost()).bannerEnabled(false).setHttpIdleTimeout(config.getHttpIdleTimeout());
+                httpBootstrap.configuration().group(group).readMemoryPool(1024 * 1024).writeMemoryPool(Runtime.getRuntime().availableProcessors() * 1024 * 1024, Runtime.getRuntime().availableProcessors()).readBufferSize(config.getReadBufferSize()).host(config.getHost()).bannerEnabled(false).setHttpIdleTimeout(config.getHttpIdleTimeout());
                 httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
                 httpBootstrap.configuration().addPlugin(config.getPlugins());
                 httpBootstrap.start();

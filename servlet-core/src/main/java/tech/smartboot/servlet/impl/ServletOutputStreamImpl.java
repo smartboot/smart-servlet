@@ -30,7 +30,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
      * buffer仅用于提供response.resetBuffer能力,commit之后即失效
      */
     private byte[] buffer;
-    private int written;
+    private long written;
     private byte[] cacheByte;
     private WriteListener writeListener;
     private volatile int state;
@@ -40,11 +40,13 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
     private static final int FLAG_DELEGATE_SHUTDOWN = 1 << 3;
     private static final int FLAG_IN_CALLBACK = 1 << 4;
     private HttpServletRequestImpl request;
+    private long contentLength;
 
-    public ServletOutputStreamImpl(HttpServletRequestImpl request, HttpResponse response, byte[] buffer) {
+    public ServletOutputStreamImpl(HttpServletRequestImpl request, HttpResponse response, byte[] buffer, long contentLength) {
         this.request = request;
         this.outputStream = response.getOutputStream();
         this.buffer = buffer;
+        this.contentLength = contentLength;
     }
 
     @Override
@@ -90,7 +92,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         }
 
         if (len < buffer.length - written - 1) {
-            System.arraycopy(b, off, buffer, written, len);
+            System.arraycopy(b, off, buffer, (int) written, len);
             written += len;
         } else {
             flushServletBuffer();
@@ -123,18 +125,21 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
 
     @Override
     public void flush() throws IOException {
+        if (contentLength > 0 && written == contentLength) {
+            return;
+        }
         flushServletBuffer();
         outputStream.flush();
     }
 
     public void flushServletBuffer() throws IOException {
         committed = true;
-        if (buffer != null) {
-            doWrite(buffer, 0, written);
-            buffer = null;
+        if (buffer != null && written > 0) {
+            doWrite(buffer, 0, (int) written);
         } else if (writeListener != null) {
             writeListener.onWritePossible();
         }
+        buffer = null;
     }
 
     public boolean isCommitted() {
@@ -148,7 +153,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         written = 0;
     }
 
-    public int getWritten() {
+    public long getWritten() {
         return written;
     }
 
