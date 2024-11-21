@@ -267,6 +267,9 @@ public class Container {
 //            if (!runtime.isStarted()) {
 //                throw new IllegalStateException("container is not started");
 //            }
+//            if(true){
+//                throw new HttpException(HttpStatus.FORBIDDEN);
+//            }
             ServletContextImpl servletContext = runtime.getServletContext();
             Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
 
@@ -301,9 +304,24 @@ public class Container {
                 response.setHttpStatus(e.getHttpCode(), e.getDesc());
                 OutputStream outputStream = response.getOutputStream();
                 String resp = CommonUtil.getResourceAsString("smart-servlet/error.html");
-                resp = resp.replace("{{statusCode}}", String.valueOf(e.getHttpCode())).replace("{{statusDesc}}", e.getDesc()).replace("{{detailMessage}}", stack.toString().replaceAll("\n", "<br/>").replaceAll(" ", "&nbsp;"))
-                        .replace("{{version}}", VERSION);
-                outputStream.write((resp).getBytes());
+                StringBuilder sb = new StringBuilder(resp);
+                int index = sb.indexOf("{{statusCode}}");
+                if (index != -1) {
+                    sb.replace(index, index + "{{statusCode}}".length(), String.valueOf(e.getHttpCode()));
+                }
+                index = sb.indexOf("{{statusDesc}}");
+                if (index != -1) {
+                    sb.replace(index, index + "{{statusDesc}}".length(), e.getDesc());
+                }
+                index = sb.indexOf("{{stackTrace}}");
+                if (index != -1) {
+                    sb.replace(index, index + "{{stackTrace}}".length(), stack.toString().replaceAll("\n", "<br/>").replaceAll(" ", "&nbsp;"));
+                }
+                index = sb.indexOf("{{version}}");
+                if (index != -1) {
+                    sb.replace(index, index + "{{version}}".length(), VERSION);
+                }
+                outputStream.write(sb.toString().getBytes());
             } catch (IOException ignore) {
                 LOGGER.warn("HttpError response exception", e);
             } finally {
