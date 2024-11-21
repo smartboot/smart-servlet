@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import starlightImageZoomPlugin from "starlight-image-zoom";
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,6 +13,7 @@ export default defineConfig({
 			social: {
 				github: 'https://github.com/smartboot/smart-servlet',
 			},
+			plugins:[starlightImageZoomPlugin()],
 			// 为此网站设置英语为默认语言。
 			defaultLocale: 'root',
 			locales: {

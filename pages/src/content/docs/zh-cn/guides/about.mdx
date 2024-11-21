@@ -3,7 +3,7 @@ title: 概述
 sidebar:
     order: 1
 ---
-
+import {Image} from "astro:assets";
 import {CardGrid, LinkCard, TabItem, Tabs,FileTree} from '@astrojs/starlight/components';
 
 smart-servlet 是一个基于 Jakarta Servlet 6.1 的轻量级 Servlet 容器，适用于 Java 17+ 环境。
@@ -99,5 +99,16 @@ smart-servlet 是一个基于 Jakarta Servlet 6.1 的轻量级 Servlet 容器，
 </Tabs>
 
 
+## 产品对比
 
+**测试场景：**
+以工程中的 springboot-demo 模块为压测用例，压测工具为 wrk，1024个并发持续15秒。
+
+| 产品名称 | smart-servlet | Tomcat | Undertow |
+| --- | --- | --- | --- |
+| 初始Heap内存 | 12MB | 15MB | 15MB |
+|初始Metaspace|29MB|30MB|30MB|
+|压测 QPS|16W/s|8W/s|14W/s|
+|压测Heap峰值|300MB|550MB|750MB|
+|结论|性能高、内存低|性能弱、内存中等|性能高、内存高|
 
