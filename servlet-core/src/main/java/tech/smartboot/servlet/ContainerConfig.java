@@ -69,8 +69,23 @@ public class ContainerConfig {
     @Param(name = "ssl.port")
     private int sslPort = 443;
 
+    @Param(name = "ssl.jks.keystore")
+    private String sslKeyStore;
+
+    @Param(name = "ssl.jks.keyStorePassword")
+    private String sslKeyStorePassword;
+
+    @Param(name = "ssl.jks.keyPassword")
+    private String sslKeyPassword;
+
     @Param(name = "ssl.readBufferSize")
     private int sslReadBufferSize = 1024;
+
+    /**
+     * 是否需要客户端认证
+     */
+    @Param(name = "ssl.needClientAuth")
+    private boolean needClientAuth;
 
     @Param(name = "virtualThreadEnable")
     private boolean virtualThreadEnable = false;
@@ -175,6 +190,38 @@ public class ContainerConfig {
 
     public void setVirtualThreadEnable(boolean virtualThreadEnable) {
         this.virtualThreadEnable = virtualThreadEnable;
+    }
+
+    public boolean isNeedClientAuth() {
+        return needClientAuth;
+    }
+
+    public void setNeedClientAuth(boolean needClientAuth) {
+        this.needClientAuth = needClientAuth;
+    }
+
+    public String getSslKeyStore() {
+        return sslKeyStore;
+    }
+
+    public void setSslKeyStore(String sslKeyStore) {
+        this.sslKeyStore = sslKeyStore;
+    }
+
+    public String getSslKeyStorePassword() {
+        return sslKeyStorePassword;
+    }
+
+    public void setSslKeyStorePassword(String sslKeyStorePassword) {
+        this.sslKeyStorePassword = sslKeyStorePassword;
+    }
+
+    public String getSslKeyPassword() {
+        return sslKeyPassword;
+    }
+
+    public void setSslKeyPassword(String sslKeyPassword) {
+        this.sslKeyPassword = sslKeyPassword;
     }
 
     public void setEnabled(boolean enabled) {

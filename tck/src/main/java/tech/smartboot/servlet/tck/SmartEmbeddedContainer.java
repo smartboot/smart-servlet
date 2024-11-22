@@ -23,16 +23,11 @@ import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
-import org.smartboot.http.server.HttpRequest;
-import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.plugins.StreamMonitorPlugin;
-import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletInfo;
-
-import java.io.FileInputStream;
 
 public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbeddedConfiguration> {
 
@@ -92,23 +87,19 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         config.setPort(containerConfig.getBindHttpPort());
         config.setReadBufferSize(1024 * 1024);
         config.setHttpIdleTimeout(120000);
-        config.setSslEnable(false);
         config.setHost(containerConfig.getBindAddress());
         config.getPlugins().add(new StreamMonitorPlugin<>(StreamMonitorPlugin.BLUE_TEXT_INPUT_STREAM, StreamMonitorPlugin.RED_TEXT_OUTPUT_STREAM));
 
         if (containerConfig.isSsl()) {
-            try {
-                ServerSSLContextFactory sslPlugin = new ServerSSLContextFactory(new FileInputStream(containerConfig.getKeystorePath()), "changeit", "changeit");
-//                PemServerSSLContextFactory sslPlugin = new PemServerSSLContextFactory(new FileInputStream("/Users/zhengjw22mac123/IdeaProjects/smart-servlet/tck/src/test/resources/smart-servlet.pem"));
-                config.getPlugins().add(new SslPlugin<>(sslPlugin, sslEngine -> {
-                    sslEngine.setUseClientMode(false);
-                    sslEngine.setNeedClientAuth(containerConfig.isNeedClientAuth());
-                    HttpRequest.SSL_ENGINE_THREAD_LOCAL.set(sslEngine);
-                }));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
+            config.setEnabled(false);
+            config.setSslEnable(true);
+            config.setNeedClientAuth(containerConfig.isNeedClientAuth());
+            config.setSslKeyStore(containerConfig.getKeystorePath());
+            config.setSslKeyStorePassword("changeit");
+            config.setSslKeyPassword("changeit");
+            config.setSslCertType("jks");
+            config.setSslPort(containerConfig.getBindHttpPort());
+            config.setNeedClientAuth(containerConfig.isNeedClientAuth());
         }
         listeningHost = containerConfig.getBindAddress();
         listeningPort = containerConfig.getBindHttpPort();

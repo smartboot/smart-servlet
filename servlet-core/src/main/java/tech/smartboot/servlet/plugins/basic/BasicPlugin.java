@@ -31,6 +31,8 @@ import org.smartboot.http.server.impl.WebSocketResponseImpl;
 import org.smartboot.socket.enhance.EnhanceAsynchronousChannelProvider;
 import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
+import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
+import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
@@ -43,6 +45,7 @@ import tech.smartboot.servlet.util.CommonUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -150,20 +153,25 @@ public class BasicPlugin extends Plugin {
                 httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
                 httpBootstrap.configuration().addPlugin(config.getPlugins());
                 httpBootstrap.start();
+            } else {
+                System.out.println("\tHTTP is disabled.");
             }
-            startSslServer(config, group, httpServerHandler, webSocketHandler);
-        } catch (Exception e) {
+            System.out.println("\033[1mTLS Plugin:\033[0m");
+            if (config.isSslEnable()) {
+                startSslServer(config, group, httpServerHandler, webSocketHandler);
+            } else {
+                System.out.println("\tTLS is disabled.");
+            }
+
+        } catch (
+                Exception e) {
             LOGGER.error("initPlugin error", e);
             throw new WrappedRuntimeException(e);
         }
     }
 
     private void startSslServer(ContainerConfig config, AsynchronousChannelGroup group, HttpServerHandler httpServerHandler, WebSocketHandler webSocketHandler) {
-        System.out.println("\033[1mTLS Plugin:\033[0m");
-        if (!config.isSslEnable()) {
-            System.out.println("\tTLS is disabled.");
-            return;
-        }
+
         HttpBootstrap httpBootstrap = new HttpBootstrap();
         httpBootstrap.setPort(config.getSslPort());
         httpBootstrap.configuration().group(group).readBufferSize(config.getSslReadBufferSize()).host(config.getHost()).setHttpIdleTimeout(config.getHttpIdleTimeout()).bannerEnabled(false);
@@ -176,7 +184,12 @@ public class BasicPlugin extends Plugin {
             case "pem":
                 try (InputStream pemStream = getResource("smart-servlet.pem")) {
                     if (pemStream != null) {
-                        sslPlugin = new SslPlugin<>(new PemServerSSLContextFactory(pemStream));
+                        SSLContextFactory sslContextFactory = new PemServerSSLContextFactory(pemStream);
+                        sslPlugin = new SslPlugin<>(sslContextFactory, sslEngine -> {
+                            sslEngine.setUseClientMode(false);
+                            sslEngine.setNeedClientAuth(config.isNeedClientAuth());
+                            HttpRequest.SSL_ENGINE_THREAD_LOCAL.set(sslEngine);
+                        });
                     } else {
                         System.out.println("\t" + ConsoleColors.RED + "smart-servlet.pem not found, please check the file:[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/smart-servlet.pem" : "${SERVLET_HOME}/conf/smart-servlet.pem") + " ]." + ConsoleColors.RESET);
                         return;
@@ -188,8 +201,18 @@ public class BasicPlugin extends Plugin {
 
                 break;
             case "jks":
-//                    sslPlugin = new SslPlugin<>(new ServerSSLContextFactory(Files.newInputStream(new File(getServletHome(), "conf/smart-servlet.keystore").toPath()), "123456", "123456"), ClientAuth.NONE);
-//                    break;
+                try (InputStream jksStream = new FileInputStream(config.getSslKeyStore())) {
+                    SSLContextFactory sslContextFactory = new ServerSSLContextFactory(jksStream, config.getSslKeyStorePassword(), config.getSslKeyPassword());
+                    sslPlugin = new SslPlugin<>(sslContextFactory, sslEngine -> {
+                        sslEngine.setUseClientMode(false);
+                        sslEngine.setNeedClientAuth(config.isNeedClientAuth());
+                        HttpRequest.SSL_ENGINE_THREAD_LOCAL.set(sslEngine);
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                break;
             default:
                 throw new UnsupportedOperationException("无效证书类型");
         }
