@@ -155,7 +155,7 @@ public class BasicPlugin extends Plugin {
         }
         HttpBootstrap httpBootstrap = new HttpBootstrap();
         httpBootstrap.setPort(config.getSslPort());
-        httpBootstrap.configuration().group(group).readBufferSize(config.getSspReadBufferSize()).host(config.getHost()).setHttpIdleTimeout(config.getHttpIdleTimeout()).bannerEnabled(false);
+        httpBootstrap.configuration().group(group).readBufferSize(config.getSslReadBufferSize()).host(config.getHost()).setHttpIdleTimeout(config.getHttpIdleTimeout()).bannerEnabled(false);
         httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
 
         System.out.println("\tTLS enabled, port:" + config.getSslPort());

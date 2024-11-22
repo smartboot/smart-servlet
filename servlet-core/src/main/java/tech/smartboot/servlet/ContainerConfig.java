@@ -49,10 +49,10 @@ public class ContainerConfig {
     private String rootContext;
 
     @Param(name = "http.readBufferSize", value = "1024")
-    private int readBufferSize = 512;
+    private int readBufferSize = 1024;
 
     @Param(name = "http.threadNum", value = "4")
-    private int threadNum = 2;
+    private int threadNum = Runtime.getRuntime().availableProcessors();
 
     /**
      * SSL是否可用
@@ -70,7 +70,7 @@ public class ContainerConfig {
     private int sslPort = 443;
 
     @Param(name = "ssl.readBufferSize")
-    private int sspReadBufferSize = 1024;
+    private int sslReadBufferSize = 1024;
 
 
     private final List<Plugin<Request>> plugins = new ArrayList<>();
@@ -135,12 +135,12 @@ public class ContainerConfig {
         this.sslPort = sslPort;
     }
 
-    public int getSspReadBufferSize() {
-        return sspReadBufferSize;
+    public int getSslReadBufferSize() {
+        return sslReadBufferSize;
     }
 
-    public void setSspReadBufferSize(int sspReadBufferSize) {
-        this.sspReadBufferSize = sspReadBufferSize;
+    public void setSslReadBufferSize(int sslReadBufferSize) {
+        this.sslReadBufferSize = sslReadBufferSize;
     }
 
     public int getHttpIdleTimeout() {
