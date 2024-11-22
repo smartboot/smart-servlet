@@ -221,7 +221,9 @@ public class DeploymentInfo {
             filterInfo.setFilterClass(null);
         });
 //        securityConstraints = null;
-        securityRoleMapping = null;
+        if (securityRoleMapping.isEmpty()) {
+            securityRoleMapping = Collections.emptyMap();
+        }
     }
 
     public void addServletContextListener(ServletContextWrapperListener contextListener) {
