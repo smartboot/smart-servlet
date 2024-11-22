@@ -170,8 +170,7 @@ public class AnnotationsLoader {
     }
 
     private void processAnnotationsJar(URL url, Map<String, JavaClassCacheEntry> javaClassCache) {
-        try {
-            JarFile jarFile = new JarFile(url.getFile());
+        try (JarFile jarFile = new JarFile(url.getFile())) {
             Enumeration<JarEntry> entrys = jarFile.entries();
 
             while (entrys.hasMoreElements()) {

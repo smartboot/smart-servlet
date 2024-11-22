@@ -65,7 +65,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class ServletContextImpl implements ServletContext {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextImpl.class);
-    private final ConcurrentMap<String, Object> attributes = new ConcurrentHashMap<>();
+    private final Map<String, Object> attributes = new ConcurrentHashMap<>();
     private final ServletContextRuntime runtime;
     private final DeploymentInfo deploymentInfo;
     private final SessionCookieConfig sessionCookieConfig;
