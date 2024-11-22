@@ -26,13 +26,13 @@ import tech.smartboot.servlet.provider.WebsocketProvider;
 public class SandBox {
     public static final String UPGRADE_MESSAGE_ZH = "请升级至 smart-servlet 企业版以启用该功能";
     public static final SandBox INSTANCE = new SandBox();
-    private final DispatcherProvider dispatcherProvider = new MockDispatcherProvider();
-    private final WebsocketProvider websocketProvider = new MockWebsocketProvider();
+    private final DispatcherProvider dispatcherProvider = MockProvider.INSTANCE;
+    private final WebsocketProvider websocketProvider = MockProvider.INSTANCE;
 
-    private final VendorProvider vendorProvider = new MockVendorProvider();
-    private final AsyncContextProvider asyncContextProvider = new MockAsyncContextProvider();
-    private final FaviconProvider faviconProvider = new MockFaviconProvider();
-    private final MappingProvider mappingProvider = new MockMappingProvider();
+    private final VendorProvider vendorProvider = MockProvider.INSTANCE;
+    private final AsyncContextProvider asyncContextProvider = MockProvider.INSTANCE;
+    private final FaviconProvider faviconProvider = MockProvider.INSTANCE;
+    private final MappingProvider mappingProvider = MockProvider.INSTANCE;
 
     public VendorProvider getVendorProvider() {
         return vendorProvider;
