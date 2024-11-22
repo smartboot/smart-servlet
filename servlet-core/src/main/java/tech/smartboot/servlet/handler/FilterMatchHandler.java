@@ -128,7 +128,11 @@ public class FilterMatchHandler extends Handler {
                 return;
         }
         Servlet servlet = handlerContext.getServletInfo() == null ? NONE : handlerContext.getServletInfo().getServlet();
-        Map<String, List<FilterInfo>> urlMap = map.computeIfAbsent(servlet, k -> new ConcurrentHashMap<>());
+        Map<String, List<FilterInfo>> urlMap = map.get(servlet);
+        if (urlMap == null) {
+            urlMap = new ConcurrentHashMap<>();
+            map.put(servlet, urlMap);
+        }
         urlMap.put(handlerContext.getOriginalRequest().getRequestURI(), filters);
     }
 
