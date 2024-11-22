@@ -72,6 +72,8 @@ public class ContainerConfig {
     @Param(name = "ssl.readBufferSize")
     private int sslReadBufferSize = 1024;
 
+    @Param(name = "virtualThreadEnable")
+    private boolean virtualThreadEnable = false;
 
     private final List<Plugin<Request>> plugins = new ArrayList<>();
 
@@ -165,6 +167,14 @@ public class ContainerConfig {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public boolean isVirtualThreadEnable() {
+        return virtualThreadEnable;
+    }
+
+    public void setVirtualThreadEnable(boolean virtualThreadEnable) {
+        this.virtualThreadEnable = virtualThreadEnable;
     }
 
     public void setEnabled(boolean enabled) {

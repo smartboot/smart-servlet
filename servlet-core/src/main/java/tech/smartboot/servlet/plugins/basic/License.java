@@ -10,6 +10,8 @@
 
 package tech.smartboot.servlet.plugins.basic;
 
+import org.smartboot.socket.timer.HashedWheelTimer;
+
 import javax.crypto.Cipher;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,7 +21,6 @@ import java.io.InputStream;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -99,32 +100,26 @@ public class License {
      * 启动License过期监控
      */
     private void monitorExpireThread() {
-        Thread thread = new Thread(() -> {
-            while (true) {
-                long sleep = Math.min(entity.getExpireTime() - System.currentTimeMillis(), period);
-
-                if (entity.getTrialDuration() > 0) {
-                    sleep = Math.min(sleep, entity.getTrialDuration() * 60000L);
-                }
-
-                if (sleep <= 0) {
-                    sleep = 10000;
-                }
-
-                try {
-                    Thread.sleep(sleep);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
                 if (entity.getExpireTime() < System.currentTimeMillis()) {
                     expireStrategy.expire(entity);
                 } else if (entity.getTrialDuration() > 0 && System.currentTimeMillis() - timestamp > entity.getTrialDuration() * 60000L) {
                     trialExpireStrategy.expire(entity);
                 }
+
+                long sleep = Math.min(entity.getExpireTime() - System.currentTimeMillis(), period);
+                if (entity.getTrialDuration() > 0) {
+                    sleep = Math.min(sleep, entity.getTrialDuration() * 60000L);
+                }
+                if (sleep <= 0) {
+                    sleep = 10000;
+                }
+                HashedWheelTimer.DEFAULT_TIMER.schedule(this, sleep, TimeUnit.MILLISECONDS);
             }
-        }, "licenseMonitor");
-        thread.setDaemon(true);
-        thread.start();
+        };
+        task.run();
     }
 
     public LicenseEntity loadLicense(byte[] bytes) throws IOException {

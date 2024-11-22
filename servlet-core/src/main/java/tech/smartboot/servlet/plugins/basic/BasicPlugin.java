@@ -108,12 +108,23 @@ public class BasicPlugin extends Plugin {
             AtomicInteger threadSeqNumber = new AtomicInteger();
             AsynchronousChannelGroup group = new EnhanceAsynchronousChannelProvider(false).openAsynchronousChannelGroup(config.getThreadNum(), r -> new Thread(r, "smart-servlet:Thread-" + (threadSeqNumber.getAndIncrement())));
 
-            HttpServerHandler httpServerHandler = new HttpServerHandler() {
-                @Override
-                public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
-                    container.doHandle(request, response, completableFuture);
-                }
-            };
+            HttpServerHandler httpServerHandler;
+            if (config.isVirtualThreadEnable()) {
+                throw new UnsupportedOperationException();
+//                httpServerHandler = new HttpServerHandler() {
+//                    @Override
+//                    public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
+//                        Thread.startVirtualThread(() -> container.doHandle(request, response, completableFuture));
+//                    }
+//                };
+            } else {
+                httpServerHandler = new HttpServerHandler() {
+                    @Override
+                    public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
+                        container.doHandle(request, response, completableFuture);
+                    }
+                };
+            }
             WebSocketHandler webSocketHandler = new WebSocketHandler() {
                 @Override
                 public void whenHeaderComplete(WebSocketRequestImpl request, WebSocketResponseImpl response) {
