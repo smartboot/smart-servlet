@@ -10,6 +10,10 @@
 
 package org.smartboot.demo.starter;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.security.Principal;
 import java.util.Date;
 
@@ -33,6 +33,7 @@ public class Bootstrap {
         session.setAttribute("time", new Date().getTime());
         System.out.println("session...");
     }
+
     @GetMapping(path = "/logout")
     void logout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
@@ -51,6 +52,11 @@ public class Bootstrap {
         System.out.println(principal);
         System.out.println(request.getSession().getAttribute("time"));
         return "Hello World!" + time;
+    }
+
+    @RequestMapping("/test")
+    String test() throws ServletException {
+        return "Hello World!";
     }
 
     public static void main(String[] args) {
