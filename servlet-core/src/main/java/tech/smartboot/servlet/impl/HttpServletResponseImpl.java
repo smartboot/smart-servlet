@@ -203,7 +203,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     public void setStatus(int sc) {
         HttpStatus httpStatus = HttpStatus.valueOf(sc);
         if (httpStatus == null) {
-            httpStatus = new HttpStatus(sc, "");
+            httpStatus = new HttpStatus(sc, "UnKnow");
         }
         response.setHttpStatus(httpStatus);
     }
