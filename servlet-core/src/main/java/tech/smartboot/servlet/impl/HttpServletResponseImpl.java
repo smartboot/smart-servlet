@@ -196,12 +196,16 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public int getStatus() {
-        return response.getHttpStatus();
+        return response.getHttpStatus().value();
     }
 
     @Override
     public void setStatus(int sc) {
-        response.setHttpStatus(HttpStatus.valueOf(sc));
+        HttpStatus httpStatus = HttpStatus.valueOf(sc);
+        if (httpStatus == null) {
+            httpStatus = new HttpStatus(sc, "");
+        }
+        response.setHttpStatus(httpStatus);
     }
 
     @Override

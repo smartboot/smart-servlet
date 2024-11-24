@@ -14,7 +14,6 @@ import jakarta.servlet.AsyncContext;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
-import org.smartboot.http.common.enums.HttpStatus;
 import org.smartboot.http.common.exception.HttpException;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
@@ -301,17 +300,17 @@ public class Container {
                 PrintWriter printWriter = new PrintWriter(stack);
                 e.printStackTrace(printWriter);
                 printWriter.close();
-                response.setHttpStatus(e.getHttpCode(), e.getDesc());
+                response.setHttpStatus(e.getHttpStatus());
                 OutputStream outputStream = response.getOutputStream();
                 String resp = CommonUtil.getResourceAsString("smart-servlet/error.html");
                 StringBuilder sb = new StringBuilder(resp);
                 int index = sb.indexOf("{{statusCode}}");
                 if (index != -1) {
-                    sb.replace(index, index + "{{statusCode}}".length(), String.valueOf(e.getHttpCode()));
+                    sb.replace(index, index + "{{statusCode}}".length(), String.valueOf(e.getHttpStatus().value()));
                 }
                 index = sb.indexOf("{{statusDesc}}");
                 if (index != -1) {
-                    sb.replace(index, index + "{{statusDesc}}".length(), e.getDesc());
+                    sb.replace(index, index + "{{statusDesc}}".length(), e.getHttpStatus().getReasonPhrase());
                 }
                 index = sb.indexOf("{{stackTrace}}");
                 if (index != -1) {

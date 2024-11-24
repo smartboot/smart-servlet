@@ -677,7 +677,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getProtocol() {
-        return request.getProtocol();
+        return request.getProtocol().getProtocol();
     }
 
     @Override
