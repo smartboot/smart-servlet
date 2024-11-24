@@ -51,8 +51,8 @@ public class ContainerConfig {
     @Param(name = "http.readBufferSize", value = "1024")
     private int readBufferSize = 1024;
 
-    @Param(name = "http.threadNum", value = "4")
-    private int threadNum = Runtime.getRuntime().availableProcessors();
+    @Param(name = "http.threadNum")
+    private int threadNum = Runtime.getRuntime().availableProcessors() + 1;
 
     /**
      * SSL是否可用
