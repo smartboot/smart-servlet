@@ -127,6 +127,9 @@ public class SecurityProviderImpl implements SecurityProvider {
         if (!ok) {
             return ok;
         }
+        if (deploymentInfo.getSecurityConstraints().isEmpty()) {
+            return true;
+        }
         return check(request, response, deploymentInfo.getSecurityConstraints().stream().filter(securityConstraint -> {
             for (UrlPattern urlPattern : securityConstraint.getUrlPatterns()) {
                 if (PathMatcherUtil.matches(request, urlPattern)) {

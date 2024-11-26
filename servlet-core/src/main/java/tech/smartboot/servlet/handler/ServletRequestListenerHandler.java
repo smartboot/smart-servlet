@@ -36,7 +36,11 @@ public class ServletRequestListenerHandler extends Handler {
         }
         ServletContext servletContext = handlerContext.getServletContext();
         List<ServletRequestListener> servletRequestListeners = handlerContext.getServletContext().getDeploymentInfo().getServletRequestListeners();
-        ServletRequestEvent servletRequestEvent = servletRequestListeners.isEmpty() ? null : new ServletRequestEvent(servletContext, handlerContext.getRequest());
+        if (servletRequestListeners.isEmpty()) {
+            doNext(handlerContext);
+            return;
+        }
+        ServletRequestEvent servletRequestEvent = new ServletRequestEvent(servletContext, handlerContext.getRequest());
         servletRequestListeners.forEach(requestListener -> {
             requestListener.requestInitialized(servletRequestEvent);
             LOGGER.info("requestInitialized " + requestListener);
