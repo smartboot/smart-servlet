@@ -50,7 +50,8 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
     /*
      * (non-Javadoc)
      *
-     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
+     * @see org.jboss.arquillian.spi.client.container
+     * .DeployableContainer#getConfigurationClass()
      */
     public Class<SmartEmbeddedConfiguration> getConfigurationClass() {
         return SmartEmbeddedConfiguration.class;
@@ -59,7 +60,8 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
     /*
      * (non-Javadoc)
      *
-     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getDefaultProtocol()
+     * @see org.jboss.arquillian.spi.client.container
+     * .DeployableContainer#getDefaultProtocol()
      */
     public ProtocolDescription getDefaultProtocol() {
         // Jetty 9 is a Servlet 3.1 container.
@@ -84,22 +86,11 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         }
 
         ContainerConfig config = containerRuntime.getConfiguration();
-        config.setPort(containerConfig.getBindHttpPort());
-        config.setReadBufferSize(1024 * 1024);
-        config.setHttpIdleTimeout(120000);
-        config.setHost(containerConfig.getBindAddress());
+        config.setPort(containerConfig.getBindHttpPort()).setReadBufferSize(1024 * 1024).setHttpIdleTimeout(120000).setHost(containerConfig.getBindAddress());
         config.getPlugins().add(new StreamMonitorPlugin<>(StreamMonitorPlugin.BLUE_TEXT_INPUT_STREAM, StreamMonitorPlugin.RED_TEXT_OUTPUT_STREAM));
 
         if (containerConfig.isSsl()) {
-            config.setEnabled(false);
-            config.setSslEnable(true);
-            config.setNeedClientAuth(containerConfig.isNeedClientAuth());
-            config.setSslKeyStore(containerConfig.getKeystorePath());
-            config.setSslKeyStorePassword("changeit");
-            config.setSslKeyPassword("changeit");
-            config.setSslCertType("jks");
-            config.setSslPort(containerConfig.getBindHttpPort());
-            config.setNeedClientAuth(containerConfig.isNeedClientAuth());
+            config.setEnabled(false).setSslEnable(true).setNeedClientAuth(containerConfig.isNeedClientAuth()).setSslKeyStore(containerConfig.getKeystorePath()).setSslKeyStorePassword("changeit").setSslKeyPassword("changeit").setSslCertType("jks").setSslPort(containerConfig.getBindHttpPort()).setNeedClientAuth(containerConfig.isNeedClientAuth());
         }
         listeningHost = containerConfig.getBindAddress();
         listeningPort = containerConfig.getBindHttpPort();
@@ -120,7 +111,9 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
     /*
      * (non-Javadoc)
      *
-     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#deploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
+     * @see org.jboss.arquillian.spi.client.container
+     * .DeployableContainer#deploy(org.jboss.shrinkwrap.descriptor.api
+     * .Descriptor)
      */
     public void deploy(Descriptor descriptor) throws DeploymentException {
         throw new UnsupportedOperationException("Not implemented");
@@ -129,7 +122,9 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
     /*
      * (non-Javadoc)
      *
-     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
+     * @see org.jboss.arquillian.spi.client.container
+     * .DeployableContainer#undeploy(org.jboss.shrinkwrap.descriptor.api
+     * .Descriptor)
      */
     public void undeploy(Descriptor descriptor) throws DeploymentException {
         throw new UnsupportedOperationException("Not implemented");
@@ -137,16 +132,20 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
 
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
         try {
-            ServletContextRuntime app = appProvider.createApp(containerRuntime, archive);
+            ServletContextRuntime app =
+                    appProvider.createApp(containerRuntime, archive);
 
             app.start();
 
             webAppContextProducer.set(app);
             servletContextInstanceProducer.set(app.getServletContext());
 
-            HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
-            for (ServletInfo servlet : app.getDeploymentInfo().getServlets().values()) {
-                httpContext.add(new Servlet(servlet.getServletName(), app.getContextPath()));
+            HTTPContext httpContext = new HTTPContext(listeningHost,
+                    listeningPort);
+            for (ServletInfo servlet :
+                    app.getDeploymentInfo().getServlets().values()) {
+                httpContext.add(new Servlet(servlet.getServletName(),
+                        app.getContextPath()));
             }
             return new ProtocolMetaData().addContext(httpContext);
         } catch (Throwable e) {

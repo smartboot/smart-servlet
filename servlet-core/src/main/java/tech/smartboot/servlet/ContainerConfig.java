@@ -100,8 +100,9 @@ public class ContainerConfig {
         return port;
     }
 
-    public void setPort(int port) {
+    public ContainerConfig setPort(int port) {
         this.port = port;
+        return this;
     }
 
     public String getRootContext() {
@@ -116,56 +117,63 @@ public class ContainerConfig {
         return readBufferSize;
     }
 
-    public void setReadBufferSize(int readBufferSize) {
+    public ContainerConfig setReadBufferSize(int readBufferSize) {
         this.readBufferSize = readBufferSize;
+        return this;
     }
 
     public int getThreadNum() {
         return threadNum;
     }
 
-    public void setThreadNum(int threadNum) {
+    public ContainerConfig setThreadNum(int threadNum) {
         this.threadNum = threadNum;
+        return this;
     }
 
     public boolean isSslEnable() {
         return sslEnable;
     }
 
-    public void setSslEnable(boolean sslEnable) {
+    public ContainerConfig setSslEnable(boolean sslEnable) {
         this.sslEnable = sslEnable;
+        return this;
     }
 
     public String getSslCertType() {
         return sslCertType;
     }
 
-    public void setSslCertType(String sslCertType) {
+    public ContainerConfig setSslCertType(String sslCertType) {
         this.sslCertType = sslCertType;
+        return this;
     }
 
     public int getSslPort() {
         return sslPort;
     }
 
-    public void setSslPort(int sslPort) {
+    public ContainerConfig setSslPort(int sslPort) {
         this.sslPort = sslPort;
+        return this;
     }
 
     public int getSslReadBufferSize() {
         return sslReadBufferSize;
     }
 
-    public void setSslReadBufferSize(int sslReadBufferSize) {
+    public ContainerConfig setSslReadBufferSize(int sslReadBufferSize) {
         this.sslReadBufferSize = sslReadBufferSize;
+        return this;
     }
 
     public int getHttpIdleTimeout() {
         return httpIdleTimeout;
     }
 
-    public void setHttpIdleTimeout(int httpIdleTimeout) {
+    public ContainerConfig setHttpIdleTimeout(int httpIdleTimeout) {
         this.httpIdleTimeout = httpIdleTimeout;
+        return this;
     }
 
     public List<Plugin<Request>> getPlugins() {
@@ -176,8 +184,9 @@ public class ContainerConfig {
         return host;
     }
 
-    public void setHost(String host) {
+    public ContainerConfig setHost(String host) {
         this.host = host;
+        return this;
     }
 
     public boolean isEnabled() {
@@ -196,35 +205,40 @@ public class ContainerConfig {
         return needClientAuth;
     }
 
-    public void setNeedClientAuth(boolean needClientAuth) {
+    public ContainerConfig setNeedClientAuth(boolean needClientAuth) {
         this.needClientAuth = needClientAuth;
+        return this;
     }
 
     public String getSslKeyStore() {
         return sslKeyStore;
     }
 
-    public void setSslKeyStore(String sslKeyStore) {
+    public ContainerConfig setSslKeyStore(String sslKeyStore) {
         this.sslKeyStore = sslKeyStore;
+        return this;
     }
 
     public String getSslKeyStorePassword() {
         return sslKeyStorePassword;
     }
 
-    public void setSslKeyStorePassword(String sslKeyStorePassword) {
+    public ContainerConfig setSslKeyStorePassword(String sslKeyStorePassword) {
         this.sslKeyStorePassword = sslKeyStorePassword;
+        return this;
     }
 
     public String getSslKeyPassword() {
         return sslKeyPassword;
     }
 
-    public void setSslKeyPassword(String sslKeyPassword) {
+    public ContainerConfig setSslKeyPassword(String sslKeyPassword) {
         this.sslKeyPassword = sslKeyPassword;
+        return this;
     }
 
-    public void setEnabled(boolean enabled) {
+    public ContainerConfig setEnabled(boolean enabled) {
         this.enabled = enabled;
+        return this;
     }
 }
