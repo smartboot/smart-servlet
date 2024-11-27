@@ -54,7 +54,7 @@ public class Bootstrap {
         return "Hello World!" + time;
     }
 
-    @RequestMapping("/test")
+    @RequestMapping("/plaintext")
     String test() throws ServletException {
         return "Hello World!";
     }

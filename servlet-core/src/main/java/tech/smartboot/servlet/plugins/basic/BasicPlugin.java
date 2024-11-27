@@ -63,10 +63,48 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BasicPlugin extends Plugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(BasicPlugin.class);
     private static final LicenseTO INVALID_LICENSE = new LicenseTO();
+    private static String expireMessage = "The LICENSE has expired. Please renew it in time.";
     private LicenseTO licenseTO;
     private License license;
 
-    private static String expireMessage = "The LICENSE has expired. Please renew it in time.";
+    public static boolean isVersionSupported(String containerVersion, String supportVersion) {
+        if (StringUtils.isBlank(supportVersion)) {
+            return false;
+        }
+        // 解析支持版本范围
+        String[] versionRange = supportVersion.split("~");
+        String startVersion = versionRange[0];
+        String endVersion = versionRange.length == 2 ? versionRange[1] : "99.99.99";
+
+        // 将版本号转换为整数数组
+        int[] containerVersionArray = parseVersion(containerVersion);
+        int[] startVersionArray = parseVersion(startVersion);
+        int[] endVersionArray = parseVersion(endVersion);
+
+        // 比较版本号
+        return compareVersions(containerVersionArray, startVersionArray) >= 0 && compareVersions(containerVersionArray, endVersionArray) <= 0;
+    }
+
+    private static int[] parseVersion(String version) {
+        String[] parts = version.split("\\.");
+        int[] versionArray = new int[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            versionArray[i] = Integer.parseInt(parts[i]);
+        }
+        return versionArray;
+    }
+
+    private static int compareVersions(int[] version1, int[] version2) {
+        int length = Math.max(version1.length, version2.length);
+        for (int i = 0; i < length; i++) {
+            int v1 = i < version1.length ? version1[i] : 0;
+            int v2 = i < version2.length ? version2[i] : 0;
+            if (v1 != v2) {
+                return v1 - v2;
+            }
+        }
+        return 0;
+    }
 
     @Override
     public void initPlugin(Container container) {
@@ -89,7 +127,9 @@ public class BasicPlugin extends Plugin {
             return;
         }
         if (licenseTO == INVALID_LICENSE) {
-            System.out.println("\t" + ConsoleColors.RED + "ERROR：License is invalid, please check the license file：[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield" : "${SERVLET_HOME}/conf/License.shield") + " ]." + ConsoleColors.RESET);
+            System.out.println("\t" + ConsoleColors.RED + "ERROR：License is invalid, please check the license file：[ "
+                    + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield" : "${SERVLET_HOME}/conf" +
+                    "/License.shield") + " ]." + ConsoleColors.RESET);
             return;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -105,25 +145,29 @@ public class BasicPlugin extends Plugin {
 
         ContainerConfig config = container.getConfiguration();
         if (!config.isEnabled() && !config.isSslEnable()) {
-            System.err.println(ConsoleColors.RED + "WARN: smart-servlet is disabled, please check the configuration file: " + Container.CONFIGURATION_FILE + ConsoleColors.RESET);
+            System.err.println(ConsoleColors.RED + "WARN: smart-servlet is disabled, please check the configuration " + "file: " + Container.CONFIGURATION_FILE + ConsoleColors.RESET);
         }
         try {
             AtomicInteger threadSeqNumber = new AtomicInteger();
-            AsynchronousChannelGroup group = new EnhanceAsynchronousChannelProvider(false).openAsynchronousChannelGroup(config.getThreadNum(), r -> new Thread(r, "smart-servlet:Thread-" + (threadSeqNumber.getAndIncrement())));
+            AsynchronousChannelGroup group =
+                    new EnhanceAsynchronousChannelProvider(false).openAsynchronousChannelGroup(config.getThreadNum(),
+                            r -> new Thread(r, "smart-servlet:Thread-" + (threadSeqNumber.getAndIncrement())));
 
             HttpServerHandler httpServerHandler;
             if (config.isVirtualThreadEnable()) {
                 throw new UnsupportedOperationException();
 //                httpServerHandler = new HttpServerHandler() {
 //                    @Override
-//                    public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
+//                    public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object>
+//                    completableFuture) {
 //                        Thread.startVirtualThread(() -> container.doHandle(request, response, completableFuture));
 //                    }
 //                };
             } else {
                 httpServerHandler = new HttpServerHandler() {
                     @Override
-                    public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
+                    public void handle(HttpRequest request, HttpResponse response,
+                                       CompletableFuture<Object> completableFuture) {
                         container.doHandle(request, response, completableFuture);
                     }
                 };
@@ -149,7 +193,7 @@ public class BasicPlugin extends Plugin {
             if (config.isEnabled()) {
                 HttpBootstrap httpBootstrap = new HttpBootstrap();
                 httpBootstrap.setPort(config.getPort());
-                httpBootstrap.configuration().group(group).readMemoryPool(1024 * 1024).writeMemoryPool(Runtime.getRuntime().availableProcessors() * 1024 * 1024, Runtime.getRuntime().availableProcessors()).readBufferSize(config.getReadBufferSize()).host(config.getHost()).bannerEnabled(false).setHttpIdleTimeout(config.getHttpIdleTimeout());
+                httpBootstrap.configuration().group(group).readMemoryPool(config.getReadBufferPageSize()).writeMemoryPool(Runtime.getRuntime().availableProcessors() * config.getWriteBufferPageSize(), Runtime.getRuntime().availableProcessors()).readBufferSize(config.getReadBufferSize()).host(config.getHost()).bannerEnabled(false).setHttpIdleTimeout(config.getHttpIdleTimeout());
                 httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
                 httpBootstrap.configuration().addPlugin(config.getPlugins());
                 httpBootstrap.start();
@@ -163,14 +207,14 @@ public class BasicPlugin extends Plugin {
                 System.out.println("\tTLS is disabled.");
             }
 
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             LOGGER.error("initPlugin error", e);
             throw new WrappedRuntimeException(e);
         }
     }
 
-    private void startSslServer(ContainerConfig config, AsynchronousChannelGroup group, HttpServerHandler httpServerHandler, WebSocketHandler webSocketHandler) {
+    private void startSslServer(ContainerConfig config, AsynchronousChannelGroup group,
+                                HttpServerHandler httpServerHandler, WebSocketHandler webSocketHandler) {
 
         HttpBootstrap httpBootstrap = new HttpBootstrap();
         httpBootstrap.setPort(config.getSslPort());
@@ -191,7 +235,9 @@ public class BasicPlugin extends Plugin {
                             HttpRequest.SSL_ENGINE_THREAD_LOCAL.set(sslEngine);
                         });
                     } else {
-                        System.out.println("\t" + ConsoleColors.RED + "smart-servlet.pem not found, please check the file:[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/smart-servlet.pem" : "${SERVLET_HOME}/conf/smart-servlet.pem") + " ]." + ConsoleColors.RESET);
+                        System.out.println("\t" + ConsoleColors.RED + "smart-servlet.pem not found, please check the "
+                                + "file:[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/smart-servlet.pem"
+                                : "${SERVLET_HOME}/conf/smart-servlet.pem") + " ]." + ConsoleColors.RESET);
                         return;
                     }
                 } catch (Exception e) {
@@ -202,7 +248,8 @@ public class BasicPlugin extends Plugin {
                 break;
             case "jks":
                 try (InputStream jksStream = new FileInputStream(config.getSslKeyStore())) {
-                    SSLContextFactory sslContextFactory = new ServerSSLContextFactory(jksStream, config.getSslKeyStorePassword(), config.getSslKeyPassword());
+                    SSLContextFactory sslContextFactory = new ServerSSLContextFactory(jksStream,
+                            config.getSslKeyStorePassword(), config.getSslKeyPassword());
                     sslPlugin = new SslPlugin<>(sslContextFactory, sslEngine -> {
                         sslEngine.setUseClientMode(false);
                         sslEngine.setNeedClientAuth(config.isNeedClientAuth());
@@ -300,45 +347,6 @@ public class BasicPlugin extends Plugin {
 //            return INVALID_LICENSE;
 //        }
         return licenseTO;
-    }
-
-    public static boolean isVersionSupported(String containerVersion, String supportVersion) {
-        if (StringUtils.isBlank(supportVersion)) {
-            return false;
-        }
-        // 解析支持版本范围
-        String[] versionRange = supportVersion.split("~");
-        String startVersion = versionRange[0];
-        String endVersion = versionRange.length == 2 ? versionRange[1] : "99.99.99";
-
-        // 将版本号转换为整数数组
-        int[] containerVersionArray = parseVersion(containerVersion);
-        int[] startVersionArray = parseVersion(startVersion);
-        int[] endVersionArray = parseVersion(endVersion);
-
-        // 比较版本号
-        return compareVersions(containerVersionArray, startVersionArray) >= 0 && compareVersions(containerVersionArray, endVersionArray) <= 0;
-    }
-
-    private static int[] parseVersion(String version) {
-        String[] parts = version.split("\\.");
-        int[] versionArray = new int[parts.length];
-        for (int i = 0; i < parts.length; i++) {
-            versionArray[i] = Integer.parseInt(parts[i]);
-        }
-        return versionArray;
-    }
-
-    private static int compareVersions(int[] version1, int[] version2) {
-        int length = Math.max(version1.length, version2.length);
-        for (int i = 0; i < length; i++) {
-            int v1 = i < version1.length ? version1[i] : 0;
-            int v2 = i < version2.length ? version2[i] : 0;
-            if (v1 != v2) {
-                return v1 - v2;
-            }
-        }
-        return 0;
     }
 
 

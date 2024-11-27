@@ -23,6 +23,7 @@ import java.util.List;
  * @version V1.0 , 2020/12/10
  */
 public class ContainerConfig {
+    private final List<Plugin<Request>> plugins = new ArrayList<>();
     /**
      * http服务端口号
      */
@@ -33,13 +34,11 @@ public class ContainerConfig {
      */
     @Param(name = "http.port", value = "8080")
     private int port;
-
     /**
      * http服务端口号
      */
     @Param(name = "http.host", value = "0.0.0.0")
     private String host;
-
     @Param(name = "http.idleTimeout", value = "60000")
     private int httpIdleTimeout;
     /**
@@ -47,50 +46,43 @@ public class ContainerConfig {
      */
     @Param(name = "root.context")
     private String rootContext;
-
     @Param(name = "http.readBufferSize", value = "1024")
     private int readBufferSize = 1024;
+    @Param(name = "http.readBufferPageSize", value = "1024")
+    private int readBufferPageSize = 1024 * 1024;
+
+    @Param(name = "http.writeBufferPageSize", value = "1024")
+    private int writeBufferPageSize = 1024 * 1024;
 
     @Param(name = "http.threadNum")
     private int threadNum = Runtime.getRuntime().availableProcessors() + 1;
-
     /**
      * SSL是否可用
      */
     @Param(name = "ssl.enable")
     private boolean sslEnable = false;
-
     /**
      * 证书类型: pem,jks
      */
     @Param(name = "ssl.certType")
     private String sslCertType = "pem";
-
     @Param(name = "ssl.port")
     private int sslPort = 443;
-
     @Param(name = "ssl.jks.keystore")
     private String sslKeyStore;
-
     @Param(name = "ssl.jks.keyStorePassword")
     private String sslKeyStorePassword;
-
     @Param(name = "ssl.jks.keyPassword")
     private String sslKeyPassword;
-
     @Param(name = "ssl.readBufferSize")
     private int sslReadBufferSize = 1024;
-
     /**
      * 是否需要客户端认证
      */
     @Param(name = "ssl.needClientAuth")
     private boolean needClientAuth;
-
     @Param(name = "virtualThreadEnable")
     private boolean virtualThreadEnable = false;
-
-    private final List<Plugin<Request>> plugins = new ArrayList<>();
 
     ContainerConfig() {
 
@@ -193,6 +185,11 @@ public class ContainerConfig {
         return enabled;
     }
 
+    public ContainerConfig setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
+    }
+
     public boolean isVirtualThreadEnable() {
         return virtualThreadEnable;
     }
@@ -237,8 +234,19 @@ public class ContainerConfig {
         return this;
     }
 
-    public ContainerConfig setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        return this;
+    public int getReadBufferPageSize() {
+        return readBufferPageSize;
+    }
+
+    public void setReadBufferPageSize(int readBufferPageSize) {
+        this.readBufferPageSize = readBufferPageSize;
+    }
+
+    public int getWriteBufferPageSize() {
+        return writeBufferPageSize;
+    }
+
+    public void setWriteBufferPageSize(int writeBufferPageSize) {
+        this.writeBufferPageSize = writeBufferPageSize;
     }
 }
