@@ -18,13 +18,7 @@ import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.ParamReflect;
 import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.http.server.HttpBootstrap;
-import org.smartboot.http.server.HttpRequest;
-import org.smartboot.http.server.HttpResponse;
-import org.smartboot.http.server.HttpServerHandler;
-import org.smartboot.http.server.WebSocketHandler;
-import org.smartboot.http.server.WebSocketRequest;
-import org.smartboot.http.server.WebSocketResponse;
+import org.smartboot.http.server.*;
 import org.smartboot.http.server.impl.Request;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
@@ -43,12 +37,7 @@ import tech.smartboot.servlet.plugins.Plugin;
 import tech.smartboot.servlet.provider.WebsocketProvider;
 import tech.smartboot.servlet.util.CommonUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -193,7 +182,11 @@ public class BasicPlugin extends Plugin {
             if (config.isEnabled()) {
                 HttpBootstrap httpBootstrap = new HttpBootstrap();
                 httpBootstrap.setPort(config.getPort());
-                httpBootstrap.configuration().group(group).readMemoryPool(config.getReadBufferPageSize()).writeMemoryPool(Runtime.getRuntime().availableProcessors() * config.getWriteBufferPageSize(), Runtime.getRuntime().availableProcessors()).readBufferSize(config.getReadBufferSize()).host(config.getHost()).bannerEnabled(false).setHttpIdleTimeout(config.getHttpIdleTimeout());
+                httpBootstrap.configuration().group(group)
+                        .readBufferSize(config.getReadBufferSize())
+                        .host(config.getHost())
+                        .bannerEnabled(false)
+                        .setHttpIdleTimeout(config.getHttpIdleTimeout());
                 httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
                 httpBootstrap.configuration().addPlugin(config.getPlugins());
                 httpBootstrap.start();
@@ -218,7 +211,10 @@ public class BasicPlugin extends Plugin {
 
         HttpBootstrap httpBootstrap = new HttpBootstrap();
         httpBootstrap.setPort(config.getSslPort());
-        httpBootstrap.configuration().group(group).readBufferSize(config.getSslReadBufferSize()).host(config.getHost()).setHttpIdleTimeout(config.getHttpIdleTimeout()).bannerEnabled(false);
+        httpBootstrap.configuration()
+                .group(group)
+                .readBufferSize(config.getSslReadBufferSize())
+                .host(config.getHost()).setHttpIdleTimeout(config.getHttpIdleTimeout()).bannerEnabled(false);
         httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
 
         System.out.println("\tTLS enabled, port:" + config.getSslPort());
