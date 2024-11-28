@@ -48,11 +48,7 @@ public class ContainerConfig {
     private String rootContext;
     @Param(name = "http.readBufferSize", value = "1024")
     private int readBufferSize = 1024;
-    @Param(name = "http.readBufferPageSize", value = "1024")
-    private int readBufferPageSize = 1024 * 1024;
 
-    @Param(name = "http.writeBufferPageSize", value = "1024")
-    private int writeBufferPageSize = 1024 * 1024;
 
     @Param(name = "http.threadNum")
     private int threadNum = Runtime.getRuntime().availableProcessors() + 1;
@@ -234,19 +230,4 @@ public class ContainerConfig {
         return this;
     }
 
-    public int getReadBufferPageSize() {
-        return readBufferPageSize;
-    }
-
-    public void setReadBufferPageSize(int readBufferPageSize) {
-        this.readBufferPageSize = readBufferPageSize;
-    }
-
-    public int getWriteBufferPageSize() {
-        return writeBufferPageSize;
-    }
-
-    public void setWriteBufferPageSize(int writeBufferPageSize) {
-        this.writeBufferPageSize = writeBufferPageSize;
-    }
 }
