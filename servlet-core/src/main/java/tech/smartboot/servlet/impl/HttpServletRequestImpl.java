@@ -124,7 +124,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private final InetSocketAddress localAddress;
 
 
-    public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, CompletableFuture<Object> completableFuture) {
+    public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime,
+                                  CompletableFuture<Object> completableFuture) {
         this.request = request;
         this.servletContext = runtime.getServletContext();
         this.runtime = runtime;
@@ -350,7 +351,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                 pathInfo = null;
             }
             case PATH -> {
-                servletPath = servletMappingInfo.getUrlPattern().substring(0, servletMappingInfo.getUrlPattern().length() - 2);
+                servletPath = servletMappingInfo.getUrlPattern().substring(0,
+                        servletMappingInfo.getUrlPattern().length() - 2);
                 if (getContextPath().length() + servletPath.length() < getRequestURI().length()) {
                     pathInfo = getRequestURI().substring(getContextPath().length() + servletPath.length());
                 }
@@ -405,7 +407,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     public void login(String username, String password) throws ServletException {
         SecurityAccount securityAccount = runtime.getSecurityProvider().login(username, password);
         if (securityAccount != null) {
-            setLoginAccount(new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(), securityAccount.getRoles(), HttpServletRequest.FORM_AUTH));
+            setLoginAccount(new LoginAccount(securityAccount.getUsername(), securityAccount.getPassword(),
+                    securityAccount.getRoles(), HttpServletRequest.FORM_AUTH));
         }
     }
 
@@ -442,7 +445,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                 }
                 break;
             case EXTENSION:
-                matchValue = getServletPath().substring(getServletPath().charAt(0) == '/' ? 1 : 0, getServletPath().length() - servletMappingInfo.getUrlPattern().length() + 1);
+                matchValue = getServletPath().substring(getServletPath().charAt(0) == '/' ? 1 : 0,
+                        getServletPath().length() - servletMappingInfo.getUrlPattern().length() + 1);
                 break;
             default:
                 throw new IllegalStateException();
@@ -495,7 +499,9 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             if (!location.isDirectory()) {
                 throw new IOException("there's no upload-file directory!");
             }
-            MultipartConfig config = new MultipartConfig(location.getAbsolutePath(), multipartConfigElement.getMaxFileSize(), multipartConfigElement.getMaxRequestSize(), multipartConfigElement.getFileSizeThreshold());
+            MultipartConfig config = new MultipartConfig(location.getAbsolutePath(),
+                    multipartConfigElement.getMaxFileSize(), multipartConfigElement.getMaxRequestSize(),
+                    multipartConfigElement.getFileSizeThreshold());
             parts = new ArrayList<>();
 
             Collection<org.smartboot.http.common.multipart.Part> items = request.getParts(config);
@@ -525,7 +531,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             location = new File(locationStr);
             //非绝对路径，则存放于临时目录下
             if (!location.isAbsolute()) {
-                location = new File((File) servletContext.getAttribute(ServletContext.TEMPDIR), locationStr).getAbsoluteFile();
+                location =
+                        new File((File) servletContext.getAttribute(ServletContext.TEMPDIR), locationStr).getAbsoluteFile();
             }
         }
         if (!location.exists()) {
@@ -751,7 +758,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                 ServletRequestAttributeEvent event = new ServletRequestAttributeEvent(servletContext, this, name, o);
                 runtime.getDeploymentInfo().getRequestAttributeListeners().forEach(request -> request.attributeAdded(event));
             } else {
-                ServletRequestAttributeEvent event = new ServletRequestAttributeEvent(servletContext, this, name, replace);
+                ServletRequestAttributeEvent event = new ServletRequestAttributeEvent(servletContext, this, name,
+                        replace);
                 runtime.getDeploymentInfo().getRequestAttributeListeners().forEach(request -> request.attributeReplaced(event));
             }
         }
@@ -809,7 +817,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (inetSocketAddress == null) {
             return "";
         }
-        return inetSocketAddress.getAddress() == null ? inetSocketAddress.getHostString() : inetSocketAddress.getAddress().getHostAddress();
+        return inetSocketAddress.getAddress() == null ? inetSocketAddress.getHostString() :
+                inetSocketAddress.getAddress().getHostAddress();
     }
 
     @Override
@@ -839,7 +848,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             throw new IllegalStateException();
         }
         asyncStarted = true;
-        asyncContext = runtime.getAsyncContextProvider().startAsync(this, servletRequest, servletResponse, asyncContext);
+        asyncContext = runtime.getAsyncContextProvider().startAsync(this, servletRequest, servletResponse,
+                asyncContext);
         return asyncContext;
     }
 
@@ -924,7 +934,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             sessionId = getRequestedSessionId();
         }
         if (sessionId != null) {
-            pushBuilder.setHeader(HeaderNameEnum.COOKIE.getName(), "JSESSIONID=" + sessionId);
+            pushBuilder.addHeader(HeaderNameEnum.COOKIE.getName(), "JSESSIONID=" + sessionId);
         }
         return new PushBuilder() {
             @Override
