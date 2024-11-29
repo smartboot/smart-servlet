@@ -22,6 +22,7 @@ import org.smartboot.http.server.*;
 import org.smartboot.http.server.impl.Request;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
+import org.smartboot.socket.buffer.BufferPagePool;
 import org.smartboot.socket.enhance.EnhanceAsynchronousChannelProvider;
 import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
@@ -55,6 +56,8 @@ public class BasicPlugin extends Plugin {
     private static String expireMessage = "The LICENSE has expired. Please renew it in time.";
     private LicenseTO licenseTO;
     private License license;
+    private BufferPagePool readBufferPool = new BufferPagePool(1, false);
+    private BufferPagePool writeBufferPool = new BufferPagePool(Runtime.getRuntime().availableProcessors(), false);
 
     public static boolean isVersionSupported(String containerVersion, String supportVersion) {
         if (StringUtils.isBlank(supportVersion)) {
@@ -185,6 +188,8 @@ public class BasicPlugin extends Plugin {
                 httpBootstrap.configuration().group(group)
                         .readBufferSize(config.getReadBufferSize())
                         .host(config.getHost())
+                        .setReadBufferPool(readBufferPool)
+                        .setWriteBufferPool(writeBufferPool)
                         .bannerEnabled(false)
                         .setHttpIdleTimeout(config.getHttpIdleTimeout());
                 httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
@@ -213,6 +218,8 @@ public class BasicPlugin extends Plugin {
         httpBootstrap.setPort(config.getSslPort());
         httpBootstrap.configuration()
                 .group(group)
+                .setReadBufferPool(readBufferPool)
+                .setWriteBufferPool(writeBufferPool)
                 .readBufferSize(config.getSslReadBufferSize())
                 .host(config.getHost()).setHttpIdleTimeout(config.getHttpIdleTimeout()).bannerEnabled(false);
         httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
