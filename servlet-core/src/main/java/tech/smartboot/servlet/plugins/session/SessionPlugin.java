@@ -32,4 +32,8 @@ public class SessionPlugin extends Plugin {
         containerRuntime.setSessionProvider(sessionProvider);
     }
 
+    @Override
+    public void onServletContextStopped(ServletContextRuntime runtime) {
+        runtime.getSessionProvider().destroy();
+    }
 }

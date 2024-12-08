@@ -10,10 +10,9 @@
 
 package tech.smartboot.servlet.provider;
 
-import tech.smartboot.servlet.impl.HttpServletRequestImpl;
-
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 
 /**
  * @author 三刀
@@ -28,8 +27,10 @@ public interface SessionProvider {
     void changeSessionId(HttpSession httpSession);
 
     void updateAccessTime(HttpServletRequestImpl request);
+
     void pauseAccessTime(HttpServletRequestImpl request);
 
-    boolean isRequestedSessionIdValid(HttpServletRequestImpl request);
+    void destroy();
 
+    boolean isRequestedSessionIdValid(HttpServletRequestImpl request);
 }
