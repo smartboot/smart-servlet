@@ -18,7 +18,13 @@ import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.ParamReflect;
 import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.http.server.*;
+import org.smartboot.http.server.HttpBootstrap;
+import org.smartboot.http.server.HttpRequest;
+import org.smartboot.http.server.HttpResponse;
+import org.smartboot.http.server.HttpServerHandler;
+import org.smartboot.http.server.WebSocketHandler;
+import org.smartboot.http.server.WebSocketRequest;
+import org.smartboot.http.server.WebSocketResponse;
 import org.smartboot.http.server.impl.Request;
 import org.smartboot.http.server.impl.WebSocketRequestImpl;
 import org.smartboot.http.server.impl.WebSocketResponseImpl;
@@ -38,7 +44,12 @@ import tech.smartboot.servlet.plugins.Plugin;
 import tech.smartboot.servlet.provider.WebsocketProvider;
 import tech.smartboot.servlet.util.CommonUtil;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,11 +64,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BasicPlugin extends Plugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(BasicPlugin.class);
     private static final LicenseTO INVALID_LICENSE = new LicenseTO();
-    private static String expireMessage = "The LICENSE has expired. Please renew it in time.";
+    private static String expireMessage = "The smart-servlet LICENSE has expired. Please renew it in time.";
     private LicenseTO licenseTO;
     private License license;
-    private BufferPagePool readBufferPool = new BufferPagePool(1, false);
-    private BufferPagePool writeBufferPool = new BufferPagePool(Runtime.getRuntime().availableProcessors(), false);
+    private final BufferPagePool readBufferPool = new BufferPagePool(1, false);
+    private final BufferPagePool writeBufferPool = new BufferPagePool(Runtime.getRuntime().availableProcessors(), false);
 
     public static boolean isVersionSupported(String containerVersion, String supportVersion) {
         if (StringUtils.isBlank(supportVersion)) {
@@ -115,26 +126,24 @@ public class BasicPlugin extends Plugin {
     public void onContainerInitialized(Container container) {
         System.out.println("\033[1mLicense Info:\033[0m");
         if (licenseTO == null) {
-            System.out.println("\t" + ConsoleColors.RED + "ERROR：License not found, please check the license file：[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield" : "${SERVLET_HOME}/conf/License.shield") + " ]." + ConsoleColors.RESET);
-            return;
-        }
-        if (licenseTO == INVALID_LICENSE) {
+            System.out.println("\t" + ConsoleColors.RED + "ERROR：License not found, please check the license file：[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield" : "$" +
+                    "{SERVLET_HOME}/conf/License.shield") + " ]." + ConsoleColors.RESET);
+        } else if (licenseTO == INVALID_LICENSE) {
             System.out.println("\t" + ConsoleColors.RED + "ERROR：License is invalid, please check the license file：[ "
-                    + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield" : "${SERVLET_HOME}/conf" +
-                    "/License.shield") + " ]." + ConsoleColors.RESET);
-            return;
+                    + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield"
+                    : "${SERVLET_HOME}/conf/License.shield") + " ]." + ConsoleColors.RESET);
+        } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            System.out.println("\t:: Licensed to " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + licenseTO.getApplicant() + ConsoleColors.ANSI_RESET + " until " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + sdf.format(new Date(licenseTO.getExpireTime())) + ConsoleColors.ANSI_RESET);
+            System.out.println("\t:: License ID: " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + licenseTO.getSn() + ConsoleColors.RESET);
+            System.out.println("\t:: Copyright© " + licenseTO.getVendor() + " ,E-mail: " + licenseTO.getContact());
+            if (licenseTO.getTrialDuration() > 0) {
+                System.out.println(ConsoleColors.RED + "\t:: Trial: " + licenseTO.getTrialDuration() + " minutes" + ConsoleColors.RESET);
+            }
+            System.out.println();
+            System.out.println("\033[1mTechnical Support:\033[0m");
+            System.out.println(CommonUtil.getResourceAsString("smart-servlet/support.txt"));
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        System.out.println("\t:: Licensed to " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + licenseTO.getApplicant() + ConsoleColors.ANSI_RESET + " until " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + sdf.format(new Date(licenseTO.getExpireTime())) + ConsoleColors.ANSI_RESET);
-        System.out.println("\t:: License ID: " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + licenseTO.getSn() + ConsoleColors.RESET);
-        System.out.println("\t:: Copyright© " + licenseTO.getVendor() + " ,E-mail: " + licenseTO.getContact());
-        if (licenseTO.getTrialDuration() > 0) {
-            System.out.println(ConsoleColors.RED + "\t:: Trial: " + licenseTO.getTrialDuration() + " minutes" + ConsoleColors.RESET);
-        }
-        System.out.println();
-        System.out.println("\033[1mTechnical Support:\033[0m");
-        System.out.println(CommonUtil.getResourceAsString("smart-servlet/support.txt"));
-
         ContainerConfig config = container.getConfiguration();
         if (!config.isEnabled() && !config.isSslEnable()) {
             System.err.println(ConsoleColors.RED + "WARN: smart-servlet is disabled, please check the configuration " + "file: " + Container.CONFIGURATION_FILE + ConsoleColors.RESET);
@@ -244,7 +253,10 @@ public class BasicPlugin extends Plugin {
                         return;
                     }
                 } catch (Exception e) {
-                    System.out.println("\t" + ConsoleColors.RED + "load smart-servlet.pem exception:" + e.getMessage() + ", please check the file:[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/smart-servlet.pem" : "${SERVLET_HOME}/conf/smart-servlet.pem") + " ]." + ConsoleColors.RESET);
+                    System.out.println("\t" + ConsoleColors.RED + "load smart-servlet.pem exception:" + e.getMessage()
+                            + ", please check the file:[ "
+                            + (isSpringBoot() ? "src/main/resources/smart-servlet/smart-servlet.pem" : "${SERVLET_HOME}/conf/smart-servlet.pem")
+                            + " ]." + ConsoleColors.RESET);
                     return;
                 }
 
