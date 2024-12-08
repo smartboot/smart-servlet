@@ -33,12 +33,12 @@ public class ContainerConfig {
      * http服务端口号
      */
     @Param(name = "http.port", value = "8080")
-    private int port;
+    private int port = 8080;
     /**
      * http服务端口号
      */
     @Param(name = "http.host", value = "0.0.0.0")
-    private String host;
+    private String host = "0.0.0.0";
     @Param(name = "http.idleTimeout", value = "60000")
     private int httpIdleTimeout;
     /**

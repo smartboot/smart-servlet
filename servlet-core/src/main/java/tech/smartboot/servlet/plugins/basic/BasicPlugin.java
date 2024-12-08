@@ -107,9 +107,10 @@ public class BasicPlugin extends Plugin {
         loadLicense();
         try (InputStream fileInputStream = getResource(Container.CONFIGURATION_FILE)) {
             if (fileInputStream == null) {
-                throw new IllegalArgumentException("smart-servlet.properties not found");
+                System.err.println("smart-servlet.properties not found");
+            } else {
+                ParamReflect.reflect(fileInputStream, container.getConfiguration());
             }
-            ParamReflect.reflect(fileInputStream, container.getConfiguration());
         } catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
