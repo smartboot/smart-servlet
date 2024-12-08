@@ -51,7 +51,11 @@ class SessionProviderImpl implements SessionProvider {
      */
     private int maxInactiveInterval = DEFAULT_MAX_INACTIVE_INTERVAL;
 
-    private final HashedWheelTimer timer = new HashedWheelTimer(r -> new Thread(r, "smartboot-session-timer"), 10, 64);
+    private final HashedWheelTimer timer = new HashedWheelTimer(r -> {
+        Thread thread = new Thread(r, "smartboot-session-timer");
+        thread.setDaemon(true);
+        return thread;
+    }, 10, 64);
 
 
     @Override
