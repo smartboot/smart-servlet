@@ -10,10 +10,7 @@
 
 package tech.smartboot.servlet.plugins.basic;
 
-import jakarta.servlet.ServletException;
 import org.smartboot.http.common.codec.websocket.CloseReason;
-import org.smartboot.http.common.enums.HttpStatus;
-import org.smartboot.http.common.exception.HttpException;
 import org.smartboot.http.common.logging.Logger;
 import org.smartboot.http.common.logging.LoggerFactory;
 import org.smartboot.http.common.utils.ParamReflect;
@@ -38,8 +35,6 @@ import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
-import tech.smartboot.servlet.handler.Handler;
-import tech.smartboot.servlet.handler.HandlerContext;
 import tech.smartboot.servlet.plugins.Plugin;
 import tech.smartboot.servlet.provider.WebsocketProvider;
 import tech.smartboot.servlet.util.CommonUtil;
@@ -49,7 +44,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -64,7 +58,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BasicPlugin extends Plugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(BasicPlugin.class);
     private static final LicenseTO INVALID_LICENSE = new LicenseTO();
-    private static String expireMessage = "The smart-servlet LICENSE has expired. Please renew it in time.";
     private LicenseTO licenseTO;
     private License license;
     private final BufferPagePool readBufferPool = new BufferPagePool(1, false);
@@ -124,14 +117,21 @@ public class BasicPlugin extends Plugin {
 
     @Override
     public void onContainerInitialized(Container container) {
+        ContainerConfig config = container.getConfiguration();
         System.out.println("\033[1mLicense Info:\033[0m");
-        if (licenseTO == null) {
-            System.out.println("\t" + ConsoleColors.RED + "ERROR：License not found, please check the license file：[ " + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield" : "$" +
-                    "{SERVLET_HOME}/conf/License.shield") + " ]." + ConsoleColors.RESET);
-        } else if (licenseTO == INVALID_LICENSE) {
-            System.out.println("\t" + ConsoleColors.RED + "ERROR：License is invalid, please check the license file：[ "
-                    + (isSpringBoot() ? "src/main/resources/smart-servlet/License.shield"
-                    : "${SERVLET_HOME}/conf/License.shield") + " ]." + ConsoleColors.RESET);
+        if (licenseTO == null || licenseTO == INVALID_LICENSE) {
+            System.out.println("\t" + ConsoleColors.RED + "ERROR：Authorization failed!!!");
+            System.out.print("\tplease check the license file：[ ");
+            if (isSpringBoot()) {
+                System.out.print("src/main/resources/smart-servlet/License.shield");
+            } else {
+                System.out.print("${SERVLET_HOME}/conf/License.shield");
+            }
+            System.out.println(" ]." + ConsoleColors.RESET);
+            System.out.println();
+            System.out.println("\033[1mTechnical Support:\033[0m");
+            System.out.println(CommonUtil.getResourceAsString("smart-servlet/support.txt"));
+            config.setThreadNum(1);
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             System.out.println("\t:: Licensed to " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + licenseTO.getApplicant() + ConsoleColors.ANSI_RESET + " until " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + sdf.format(new Date(licenseTO.getExpireTime())) + ConsoleColors.ANSI_RESET);
@@ -140,11 +140,8 @@ public class BasicPlugin extends Plugin {
             if (licenseTO.getTrialDuration() > 0) {
                 System.out.println(ConsoleColors.RED + "\t:: Trial: " + licenseTO.getTrialDuration() + " minutes" + ConsoleColors.RESET);
             }
-            System.out.println();
-            System.out.println("\033[1mTechnical Support:\033[0m");
-            System.out.println(CommonUtil.getResourceAsString("smart-servlet/support.txt"));
         }
-        ContainerConfig config = container.getConfiguration();
+
         if (!config.isEnabled() && !config.isSslEnable()) {
             System.err.println(ConsoleColors.RED + "WARN: smart-servlet is disabled, please check the configuration " + "file: " + Container.CONFIGURATION_FILE + ConsoleColors.RESET);
         }
@@ -191,6 +188,7 @@ public class BasicPlugin extends Plugin {
                     container.doHandle(request, response);
                 }
             };
+            System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
                 HttpBootstrap httpBootstrap = new HttpBootstrap();
                 httpBootstrap.setPort(config.getPort());
@@ -204,14 +202,14 @@ public class BasicPlugin extends Plugin {
                 httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
                 httpBootstrap.configuration().addPlugin(config.getPlugins());
                 httpBootstrap.start();
+                System.out.println("\tHTTP is enabled, " + config.getHost() + ":" + config.getPort());
             } else {
                 System.out.println("\tHTTP is disabled.");
             }
-            System.out.println("\033[1mTLS Plugin:\033[0m");
             if (config.isSslEnable()) {
                 startSslServer(config, group, httpServerHandler, webSocketHandler);
             } else {
-                System.out.println("\tTLS is disabled.");
+                System.out.println("\tHTTPS is disabled.");
             }
 
         } catch (Exception e) {
@@ -294,22 +292,6 @@ public class BasicPlugin extends Plugin {
             runtime.setVendorProvider(response -> {
             });
         }
-        runtime.getServletContext().getPipeline().head(new Handler() {
-
-            @Override
-            public void handleRequest(HandlerContext handlerContext) throws ServletException, IOException {
-                if ((licenseTO != null && licenseTO != INVALID_LICENSE) || "/favicon.ico".equals(handlerContext.getOriginalRequest().getRequestURI())) {
-                    doNext(handlerContext);
-                } else {
-                    throw new HttpException(HttpStatus.SERVICE_UNAVAILABLE) {
-                        @Override
-                        public void printStackTrace(PrintWriter s) {
-                            s.write(expireMessage);
-                        }
-                    };
-                }
-            }
-        });
     }
 
     @Override
@@ -326,7 +308,6 @@ public class BasicPlugin extends Plugin {
             if (entity == license.getEntity()) {
                 System.err.println("The trial version License has expired.");
                 licenseTO = null;
-                expireMessage = "The trial period is over. Please purchase the authorized full version of LICENSE.";
             }
         }, 10000);
 
