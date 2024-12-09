@@ -342,7 +342,9 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         pathInit = true;
         switch (servletMappingInfo.getMappingMatch()) {
             case DEFAULT: {
-                servletPath = "/";
+                //12.2 空字符串“”是一个特殊的 URL 模式，其精确映射到应用的上下文根，即，http://host:port/<context-root>/请求形式。
+                // 在这种情况下，路径信息是‘/’且 servlet 路径和上下文路径是空字符串（“”）。
+                servletPath = "";
                 if (getContextPath().length() + servletPath.length() < getRequestURI().length()) {
                     pathInfo = getRequestURI().substring(getContextPath().length());
                 }
