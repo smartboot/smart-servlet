@@ -14,6 +14,8 @@ package tech.smartboot.servlet;
 import org.smartboot.http.common.utils.Param;
 import org.smartboot.http.server.impl.Request;
 import org.smartboot.socket.extension.plugins.Plugin;
+import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
+import tech.smartboot.servlet.enums.SslCertType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +82,8 @@ public class ContainerConfig {
     @Param(name = "virtualThreadEnable")
     private boolean virtualThreadEnable = false;
 
+    private SSLContextFactory factory;
+
     ContainerConfig() {
 
     }
@@ -128,12 +132,12 @@ public class ContainerConfig {
         return this;
     }
 
-    public String getSslCertType() {
-        return sslCertType;
+    public SslCertType getSslCertType() {
+        return SslCertType.getByCode(sslCertType);
     }
 
-    public ContainerConfig setSslCertType(String sslCertType) {
-        this.sslCertType = sslCertType;
+    public ContainerConfig setSslCertType(SslCertType sslCertType) {
+        this.sslCertType = sslCertType.name();
         return this;
     }
 
@@ -230,4 +234,11 @@ public class ContainerConfig {
         return this;
     }
 
+    public SSLContextFactory getFactory() {
+        return factory;
+    }
+
+    public void setFactory(SSLContextFactory factory) {
+        this.factory = factory;
+    }
 }

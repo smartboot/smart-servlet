@@ -34,6 +34,7 @@ import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
+import tech.smartboot.servlet.enums.SslCertType;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.plugins.Plugin;
 import tech.smartboot.servlet.provider.WebsocketProvider;
@@ -235,8 +236,9 @@ public class BasicPlugin extends Plugin {
         System.out.println("\tTLS enabled, port:" + config.getSslPort());
 
         SslPlugin<Request> sslPlugin;
-        switch (config.getSslCertType()) {
-            case "pem":
+        SslCertType type = config.getSslCertType();
+        switch (type) {
+            case pem:
                 try (InputStream pemStream = getResource("smart-servlet.pem")) {
                     if (pemStream != null) {
                         SSLContextFactory sslContextFactory = new PemServerSSLContextFactory(pemStream);
@@ -260,7 +262,7 @@ public class BasicPlugin extends Plugin {
                 }
 
                 break;
-            case "jks":
+            case jks:
                 try (InputStream jksStream = new FileInputStream(config.getSslKeyStore())) {
                     SSLContextFactory sslContextFactory = new ServerSSLContextFactory(jksStream,
                             config.getSslKeyStorePassword(), config.getSslKeyPassword());
@@ -272,6 +274,17 @@ public class BasicPlugin extends Plugin {
                 } catch (Exception e) {
                     e.printStackTrace();
                     return;
+                }
+                break;
+            case custom:
+                try {
+                    sslPlugin = new SslPlugin<>(config.getFactory(), sslEngine -> {
+                        sslEngine.setUseClientMode(false);
+                        sslEngine.setNeedClientAuth(config.isNeedClientAuth());
+                        HttpRequest.SSL_ENGINE_THREAD_LOCAL.set(sslEngine);
+                    });
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
                 break;
             default:

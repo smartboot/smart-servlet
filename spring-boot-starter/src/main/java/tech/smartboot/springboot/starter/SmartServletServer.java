@@ -12,6 +12,7 @@ package tech.smartboot.springboot.starter;
 
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ServletContextRuntime;
 
@@ -23,14 +24,17 @@ public class SmartServletServer implements WebServer {
     private final Object monitor = new Object();
     private final Container container;
     private volatile boolean started = false;
-    private final int port;
+    private final AbstractServletWebServerFactory factory;
 
-
-    public SmartServletServer(ServletContextRuntime runtime, int port) throws Throwable {
-        this.port = port;
+    public SmartServletServer(ServletContextRuntime runtime, AbstractServletWebServerFactory factory) throws Throwable {
+        this.factory = factory;
         container = new Container();
         container.addRuntime(runtime);
         container.initialize();
+    }
+
+    public Container getContainer() {
+        return container;
     }
 
     @Override
@@ -61,6 +65,6 @@ public class SmartServletServer implements WebServer {
 
     @Override
     public int getPort() {
-        return port;
+        return factory.getPort();
     }
 }

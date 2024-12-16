@@ -28,6 +28,7 @@ import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletInfo;
+import tech.smartboot.servlet.enums.SslCertType;
 
 public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbeddedConfiguration> {
 
@@ -90,7 +91,7 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         config.getPlugins().add(new StreamMonitorPlugin<>(StreamMonitorPlugin.BLUE_TEXT_INPUT_STREAM, StreamMonitorPlugin.RED_TEXT_OUTPUT_STREAM));
 
         if (containerConfig.isSsl()) {
-            config.setEnabled(false).setSslEnable(true).setNeedClientAuth(containerConfig.isNeedClientAuth()).setSslKeyStore(containerConfig.getKeystorePath()).setSslKeyStorePassword("changeit").setSslKeyPassword("changeit").setSslCertType("jks").setSslPort(containerConfig.getBindHttpPort()).setNeedClientAuth(containerConfig.isNeedClientAuth());
+            config.setEnabled(false).setSslEnable(true).setNeedClientAuth(containerConfig.isNeedClientAuth()).setSslKeyStore(containerConfig.getKeystorePath()).setSslKeyStorePassword("changeit").setSslKeyPassword("changeit").setSslCertType(SslCertType.jks).setSslPort(containerConfig.getBindHttpPort()).setNeedClientAuth(containerConfig.isNeedClientAuth());
         }
         listeningHost = containerConfig.getBindAddress();
         listeningPort = containerConfig.getBindHttpPort();

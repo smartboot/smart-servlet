@@ -10,15 +10,16 @@
 
 package tech.smartboot.springboot.starter;
 
-import tech.smartboot.servlet.ServletContextRuntime;
-import tech.smartboot.servlet.conf.DeploymentInfo;
+import jakarta.websocket.server.ServerContainer;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
+import tech.smartboot.servlet.ServletContextRuntime;
+import tech.smartboot.servlet.conf.DeploymentInfo;
+import tech.smartboot.servlet.enums.SslCertType;
 
-import jakarta.websocket.server.ServerContainer;
 import java.io.File;
 
 /**
@@ -41,10 +42,23 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
         deployment.setDisplayName(getDisplayName());
         deployment.addServletContainerInitializer(initializer);
         try {
-            return new SmartServletServer(servletRuntime, getPort());
+            SmartServletServer server = new SmartServletServer(servletRuntime, this);
+            if (getSsl().isEnabled()) {
+                server.getContainer().getConfiguration().setEnabled(false);
+                server.getContainer().getConfiguration().setSslEnable(true);
+                server.getContainer().getConfiguration().setSslPort(getPort());
+                server.getContainer().getConfiguration().setFactory(() -> getSslBundle().createSslContext());
+                server.getContainer().getConfiguration().setSslCertType(SslCertType.custom);
+            } else {
+                server.getContainer().getConfiguration().setEnabled(true);
+                server.getContainer().getConfiguration().setSslEnable(false);
+                server.getContainer().getConfiguration().setPort(getPort());
+            }
+            return server;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+
     }
 
     @Override
