@@ -294,7 +294,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             int size = bufferSize;
 
             if (size == -1) {
-                size = 512;
+                size = 8192;
             }
             if (size > 0 && response.getContentLength() >= 0 && response.getContentLength() < size) {
                 size = (int) response.getContentLength();
