@@ -43,7 +43,7 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
         deployment.addServletContainerInitializer(initializer);
         try {
             SmartServletServer server = new SmartServletServer(servletRuntime, this);
-            if (getSsl().isEnabled()) {
+            if (getSsl() != null && getSsl().isEnabled()) {
                 server.getContainer().getConfiguration().setEnabled(false);
                 server.getContainer().getConfiguration().setSslEnable(true);
                 server.getContainer().getConfiguration().setSslPort(getPort());
