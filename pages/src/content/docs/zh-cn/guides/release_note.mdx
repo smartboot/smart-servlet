@@ -2,6 +2,7 @@
 title: 发版记录
 description: A reference page in my new Starlight docs site.
 ---
+import { LinkCard } from '@astrojs/starlight/components';
 
 ## v2.6 (2024-12-10)
 - 🚀进一步减少服务基础内存开销。
@@ -13,8 +14,11 @@ description: A reference page in my new Starlight docs site.
 - 🐛修复特定条件下 ServletPath、PathInfo 解析错误问题。
 - 🐛修复 PushBuilder 中 Cookie 缺失问题。
 
-**Download: [smart-servlet-bin-2.6-release.tar.gz](https://github.com/smartboot/smart-servlet/releases/download/v2.6/smart-servlet-bin-2.6-release.tar.gz)**
+[//]: # (<CardGrid>)
+<LinkCard title="下载二进制包" description="smart-servlet-bin-2.6-release.tar.gz"
+          href="https://github.com/smartboot/smart-servlet/releases/download/v2.6/smart-servlet-bin-2.6-release.tar.gz" />
 
+[//]: # (</CardGrid>)
 
 ## v2.4（2024-11-19）
 - 优化服务运行所需内存开销
