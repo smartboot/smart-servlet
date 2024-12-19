@@ -16,7 +16,7 @@ hero:
       icon: external
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid ,LinkButton,Icon} from '@astrojs/starlight/components';
 
 
 ## 特性
@@ -35,3 +35,32 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 		时代需要的不再仅仅是一个 web 服务器。并发稳定性、数据安全性、服务可靠性，由我来守护。
 	</Card>
 </CardGrid>
+
+<center>
+<h2>联系我们</h2>
+
+    <p>
+        嗨，我是 **三刀**，smart-servlet 的作者。
+
+        您可以跟我聊聊：您如何将应用迁移到 smart-servlet 容器;
+
+        也可以向我了解：更多关于商业版本;
+
+        也可以跟我讨论：双方如何合作......
+
+        期待您通过下面方式，与我取得联系。
+    </p>
+
+        <h4>微信</h4>
+    <img src="/smart-servlet/wx.png" width="25%"/>
+
+    <h4>邮件</h4>
+    <LinkButton
+        href="mailto:zhengjunweimail@163.com"
+        variant="secondary"
+        icon="email"
+        iconPlacement="start"
+    >
+        zhengjunweimail@ 163.com
+    </LinkButton>
+</center>
