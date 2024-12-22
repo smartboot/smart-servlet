@@ -30,15 +30,15 @@ import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.MappingMatch;
 import jakarta.servlet.http.Part;
 import jakarta.servlet.http.PushBuilder;
-import org.smartboot.http.common.enums.HeaderNameEnum;
-import org.smartboot.http.common.enums.HeaderValueEnum;
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.multipart.MultipartConfig;
-import org.smartboot.http.common.utils.NumberUtils;
-import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.http.server.HttpRequest;
 import org.smartboot.socket.util.Attachment;
+import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
+import tech.smartboot.feat.core.common.enums.HeaderValueEnum;
+import tech.smartboot.feat.core.common.logging.Logger;
+import tech.smartboot.feat.core.common.logging.LoggerFactory;
+import tech.smartboot.feat.core.common.multipart.MultipartConfig;
+import tech.smartboot.feat.core.common.utils.NumberUtils;
+import tech.smartboot.feat.core.common.utils.StringUtils;
+import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -155,12 +155,12 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (cookies != null) {
             return cookies == NONE_COOKIE ? null : cookies;
         }
-        org.smartboot.http.common.Cookie[] cookie = request.getCookies();
+        tech.smartboot.feat.core.common.Cookie[] cookie = request.getCookies();
         if (cookie == null || cookie.length == 0) {
             cookies = NONE_COOKIE;
         } else {
             List<Cookie> list = new ArrayList<>(cookie.length);
-            for (org.smartboot.http.common.Cookie value : cookie) {
+            for (tech.smartboot.feat.core.common.Cookie value : cookie) {
                 if ("Path".equals(value.getName())) {
                     LOGGER.warn("invalid cookie name: " + value.getName());
                     continue;
@@ -509,8 +509,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                     multipartConfigElement.getFileSizeThreshold());
             parts = new ArrayList<>();
 
-            Collection<org.smartboot.http.common.multipart.Part> items = request.getParts(config);
-            for (org.smartboot.http.common.multipart.Part item : items) {
+            Collection<tech.smartboot.feat.core.common.multipart.Part> items = request.getParts(config);
+            for (tech.smartboot.feat.core.common.multipart.Part item : items) {
                 PartImpl part = new PartImpl(item, location);
                 parts.add(part);
                 if (part.getSubmittedFileName() == null) {
@@ -923,7 +923,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public PushBuilder newPushBuilder() {
-        org.smartboot.http.server.PushBuilder pushBuilder = request.newPushBuilder();
+        tech.smartboot.feat.core.server.PushBuilder pushBuilder = request.newPushBuilder();
         if (pushBuilder == null) {
             return null;
         }

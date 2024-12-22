@@ -18,9 +18,9 @@ import jakarta.servlet.UnavailableException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.smartboot.http.common.enums.HttpStatus;
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
+import tech.smartboot.feat.core.common.enums.HttpStatus;
+import tech.smartboot.feat.core.common.logging.Logger;
+import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.servlet.impl.ServletConfigImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 

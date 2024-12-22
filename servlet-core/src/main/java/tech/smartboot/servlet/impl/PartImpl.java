@@ -23,10 +23,10 @@ import java.util.Collection;
  */
 public class PartImpl implements Part {
 
-    private final org.smartboot.http.common.multipart.Part fileItem;
+    private final tech.smartboot.feat.core.common.multipart.Part fileItem;
     private final File location;
 
-    public PartImpl(org.smartboot.http.common.multipart.Part fileItem, File location) {
+    public PartImpl(tech.smartboot.feat.core.common.multipart.Part fileItem, File location) {
         this.fileItem = fileItem;
         this.location = location;
     }

@@ -13,9 +13,9 @@
 //import jakarta.servlet.http.Cookie;
 //import jakarta.servlet.http.HttpSession;
 //import jakarta.servlet.http.PushBuilder;
-//import org.smartboot.http.common.HeaderValue;
-//import org.smartboot.http.common.enums.HeaderNameEnum;
-//import org.smartboot.http.common.enums.HttpMethodEnum;
+//import tech.smartboot.feat.core.common.HeaderValue;
+//import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
+//import tech.smartboot.feat.core.common.enums.HttpMethodEnum;
 //
 //import java.util.Collections;
 //import java.util.Enumeration;

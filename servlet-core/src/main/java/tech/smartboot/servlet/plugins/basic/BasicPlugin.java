@@ -10,27 +10,26 @@
 
 package tech.smartboot.servlet.plugins.basic;
 
-import org.smartboot.http.common.codec.websocket.CloseReason;
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.utils.ParamReflect;
-import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.http.server.HttpBootstrap;
-import org.smartboot.http.server.HttpRequest;
-import org.smartboot.http.server.HttpResponse;
-import org.smartboot.http.server.HttpServerHandler;
-import org.smartboot.http.server.WebSocketHandler;
-import org.smartboot.http.server.WebSocketRequest;
-import org.smartboot.http.server.WebSocketResponse;
-import org.smartboot.http.server.impl.Request;
-import org.smartboot.http.server.impl.WebSocketRequestImpl;
-import org.smartboot.http.server.impl.WebSocketResponseImpl;
-import org.smartboot.socket.buffer.BufferPagePool;
 import org.smartboot.socket.enhance.EnhanceAsynchronousChannelProvider;
 import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
+import tech.smartboot.feat.core.common.codec.websocket.CloseReason;
+import tech.smartboot.feat.core.common.logging.Logger;
+import tech.smartboot.feat.core.common.logging.LoggerFactory;
+import tech.smartboot.feat.core.common.utils.ParamReflect;
+import tech.smartboot.feat.core.common.utils.StringUtils;
+import tech.smartboot.feat.core.server.HttpRequest;
+import tech.smartboot.feat.core.server.HttpResponse;
+import tech.smartboot.feat.core.server.HttpServer;
+import tech.smartboot.feat.core.server.HttpServerHandler;
+import tech.smartboot.feat.core.server.WebSocketHandler;
+import tech.smartboot.feat.core.server.WebSocketRequest;
+import tech.smartboot.feat.core.server.WebSocketResponse;
+import tech.smartboot.feat.core.server.impl.Request;
+import tech.smartboot.feat.core.server.impl.WebSocketRequestImpl;
+import tech.smartboot.feat.core.server.impl.WebSocketResponseImpl;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
@@ -61,8 +60,6 @@ public class BasicPlugin extends Plugin {
     private static final LicenseTO INVALID_LICENSE = new LicenseTO();
     private LicenseTO licenseTO;
     private License license;
-    private final BufferPagePool readBufferPool = new BufferPagePool(1, false);
-    private final BufferPagePool writeBufferPool = new BufferPagePool(Runtime.getRuntime().availableProcessors(), false);
 
     public static boolean isVersionSupported(String containerVersion, String supportVersion) {
         if (StringUtils.isBlank(supportVersion)) {
@@ -192,13 +189,11 @@ public class BasicPlugin extends Plugin {
             };
             System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
-                HttpBootstrap httpBootstrap = new HttpBootstrap();
+                HttpServer httpBootstrap = new HttpServer();
                 httpBootstrap.setPort(config.getPort());
                 httpBootstrap.configuration().group(group)
                         .readBufferSize(config.getReadBufferSize())
                         .host(config.getHost())
-                        .setReadBufferPool(readBufferPool)
-                        .setWriteBufferPool(writeBufferPool)
                         .bannerEnabled(false)
                         .setHttpIdleTimeout(config.getHttpIdleTimeout());
                 httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
@@ -223,12 +218,10 @@ public class BasicPlugin extends Plugin {
     private void startSslServer(ContainerConfig config, AsynchronousChannelGroup group,
                                 HttpServerHandler httpServerHandler, WebSocketHandler webSocketHandler) {
 
-        HttpBootstrap httpBootstrap = new HttpBootstrap();
+        HttpServer httpBootstrap = new HttpServer();
         httpBootstrap.setPort(config.getSslPort());
         httpBootstrap.configuration()
                 .group(group)
-                .setReadBufferPool(readBufferPool)
-                .setWriteBufferPool(writeBufferPool)
                 .readBufferSize(config.getSslReadBufferSize())
                 .host(config.getHost()).setHttpIdleTimeout(config.getHttpIdleTimeout()).bannerEnabled(false);
         httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);

@@ -11,8 +11,8 @@
 package tech.smartboot.servlet.provider;
 
 import jakarta.websocket.server.ServerContainer;
-import org.smartboot.http.server.WebSocketRequest;
-import org.smartboot.http.server.WebSocketResponse;
+import tech.smartboot.feat.core.server.WebSocketRequest;
+import tech.smartboot.feat.core.server.WebSocketResponse;
 import org.smartboot.socket.util.AttachKey;
 
 import jakarta.websocket.Session;

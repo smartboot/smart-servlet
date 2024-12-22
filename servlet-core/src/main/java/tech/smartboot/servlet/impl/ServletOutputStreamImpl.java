@@ -12,7 +12,7 @@ package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
-import org.smartboot.http.server.HttpResponse;
+import tech.smartboot.feat.core.server.HttpResponse;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;

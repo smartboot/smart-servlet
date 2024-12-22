@@ -15,7 +15,7 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.smartboot.http.common.utils.StringUtils;
+import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;

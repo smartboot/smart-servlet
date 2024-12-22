@@ -11,8 +11,8 @@
 package tech.smartboot.servlet;
 
 
-import org.smartboot.http.common.utils.Param;
-import org.smartboot.http.server.impl.Request;
+import tech.smartboot.feat.core.common.utils.Param;
+import tech.smartboot.feat.core.server.impl.Request;
 import org.smartboot.socket.extension.plugins.Plugin;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import tech.smartboot.servlet.enums.SslCertType;

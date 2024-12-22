@@ -12,7 +12,7 @@ package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
-import org.smartboot.http.common.io.BodyInputStream;
+import tech.smartboot.feat.core.common.io.BodyInputStream;
 
 import java.io.IOException;
 
@@ -52,7 +52,7 @@ public class ServletInputStreamImpl extends ServletInputStream {
             throw new IllegalStateException();
         }
 
-        inputStream.setReadListener(new org.smartboot.http.common.io.ReadListener() {
+        inputStream.setReadListener(new tech.smartboot.feat.core.common.io.ReadListener() {
             @Override
             public void onDataAvailable() throws IOException {
                 readListener.onDataAvailable();

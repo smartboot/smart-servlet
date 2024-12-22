@@ -27,8 +27,8 @@
             <version>1.6.55</version>
         </dependency>
         <dependency>
-            <groupId>io.github.smartboot.http</groupId>
-            <artifactId>smart-http-server</artifactId>
+            <groupId>tech.smartboot.feat</groupId>
+            <artifactId>feat-core</artifactId>
         </dependency>
 
         <dependency>

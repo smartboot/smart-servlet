@@ -13,12 +13,12 @@ package tech.smartboot.servlet.impl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletResponse;
-import org.smartboot.http.common.enums.HeaderNameEnum;
-import org.smartboot.http.common.enums.HttpStatus;
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
-import org.smartboot.http.common.utils.StringUtils;
-import org.smartboot.http.server.HttpResponse;
+import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
+import tech.smartboot.feat.core.common.enums.HttpStatus;
+import tech.smartboot.feat.core.common.logging.Logger;
+import tech.smartboot.feat.core.common.logging.LoggerFactory;
+import tech.smartboot.feat.core.common.utils.StringUtils;
+import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.servlet.util.DateUtil;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
@@ -58,7 +58,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         this.response = response;
     }
 
-    private org.smartboot.http.common.Cookie sessionCookie;
+    private tech.smartboot.feat.core.common.Cookie sessionCookie;
 
     @Override
     public void addCookie(Cookie cookie) {
@@ -70,7 +70,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             sessionCookie.setSecure(cookie.getSecure());
             return;
         }
-        org.smartboot.http.common.Cookie httpCookie = new org.smartboot.http.common.Cookie(cookie.getName(), cookie.getValue());
+        tech.smartboot.feat.core.common.Cookie httpCookie = new tech.smartboot.feat.core.common.Cookie(cookie.getName(), cookie.getValue());
         cookie.getAttributes().forEach(httpCookie::setAttribute);
         response.addCookie(httpCookie);
         if (cookie.getName().equals(request.getServletContext().getSessionCookieConfig().getName())) {

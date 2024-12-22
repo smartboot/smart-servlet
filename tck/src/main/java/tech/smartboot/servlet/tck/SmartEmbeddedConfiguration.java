@@ -11,7 +11,7 @@ package tech.smartboot.servlet.tck;
 
 import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
-import org.smartboot.http.server.HttpServerConfiguration;
+import tech.smartboot.feat.core.server.HttpServerConfiguration;
 
 import java.io.File;
 import java.net.URI;

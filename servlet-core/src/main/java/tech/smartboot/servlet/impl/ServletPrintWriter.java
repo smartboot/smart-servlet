@@ -10,8 +10,8 @@
 
 package tech.smartboot.servlet.impl;
 
-import org.smartboot.http.common.logging.Logger;
-import org.smartboot.http.common.logging.LoggerFactory;
+import tech.smartboot.feat.core.common.logging.Logger;
+import tech.smartboot.feat.core.common.logging.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
