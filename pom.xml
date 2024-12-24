@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <smarthttp.version>1.0</smarthttp.version>
+        <feat.version>0.1</feat.version>
         <smartservlet.version>2.6</smartservlet.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,7 +24,7 @@
             <dependency>
                 <groupId>tech.smartboot.feat</groupId>
                 <artifactId>feat-core</artifactId>
-                <version>${smarthttp.version}</version>
+                <version>${feat.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.slf4j</groupId>
