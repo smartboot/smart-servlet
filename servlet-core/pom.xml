@@ -15,7 +15,7 @@
     <parent>
         <artifactId>smart-servlet-parent</artifactId>
         <groupId>tech.smartboot.servlet</groupId>
-        <version>2.6</version>
+        <version>2.6.1-dev</version>
     </parent>
     <name>servlet-core</name>
     <modelVersion>4.0.0</modelVersion>
