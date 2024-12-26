@@ -304,8 +304,7 @@ public class BasicPlugin extends Plugin {
             if (clazz != null) {
                 System.err.println("探测到" + runtime.getContextPath() + "正在依赖旧版本：javax.servlet规范, 请先升级到 jakarta.servlet");
             }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (ClassNotFoundException ignore) {
         }
     }
 
