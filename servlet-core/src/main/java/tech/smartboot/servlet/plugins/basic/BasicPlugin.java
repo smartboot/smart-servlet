@@ -60,6 +60,7 @@ public class BasicPlugin extends Plugin {
     private static final LicenseTO INVALID_LICENSE = new LicenseTO();
     private LicenseTO licenseTO;
     private License license;
+    private String waringMessage = "";
 
     public static boolean isVersionSupported(String containerVersion, String supportVersion) {
         if (StringUtils.isBlank(supportVersion)) {
@@ -213,6 +214,11 @@ public class BasicPlugin extends Plugin {
             LOGGER.error("initPlugin error", e);
             throw new WrappedRuntimeException(e);
         }
+
+        if (StringUtils.isNotBlank(waringMessage)) {
+            System.out.println(ConsoleColors.RED + waringMessage + ConsoleColors.RESET);
+            waringMessage = null;
+        }
     }
 
     private void startSslServer(ContainerConfig config, AsynchronousChannelGroup group,
@@ -302,7 +308,12 @@ public class BasicPlugin extends Plugin {
         try {
             Class clazz = runtime.getDeploymentInfo().getClassLoader().loadClass("javax.servlet.Servlet");
             if (clazz != null) {
-                System.err.println("探测到" + runtime.getContextPath() + "正在依赖旧版本：javax.servlet规范, 请先升级到 jakarta.servlet");
+                if (isSpringBoot()) {
+                    waringMessage += "检测到你的工程正在依赖旧版本：javax.servlet规范, 请确保你所使用的 Springboot 版本号高于 3.0\r\n";
+                } else {
+                    waringMessage += "检测到 " + runtime.getContextPath() + " 正在依赖旧版本：javax.servlet 规范, 请先升级到：jakarta.servlet\r\n";
+                }
+
             }
         } catch (ClassNotFoundException ignore) {
         }
