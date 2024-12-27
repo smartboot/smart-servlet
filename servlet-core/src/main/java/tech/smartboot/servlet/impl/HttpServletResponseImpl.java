@@ -313,6 +313,9 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             return writer;
         }
         createOutputStream();
+        if (charset == null) {
+            setCharacterEncoding(getCharacterEncoding());
+        }
         writer = new PrintWriter(new ServletPrintWriter(servletOutputStream, getCharacterEncoding()));
         return writer;
     }
@@ -407,7 +410,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             encoding = request.getServletContext().getDeploymentInfo().getLocaleEncodingMappings().get(loc.getLanguage());
         }
         if (!charsetFlag && StringUtils.isNotBlank(encoding)) {
-            charset = encoding;
+            setCharacterEncoding(encoding);
             if (contentType != null) {
                 response.setContentType(getContentType());
             }
