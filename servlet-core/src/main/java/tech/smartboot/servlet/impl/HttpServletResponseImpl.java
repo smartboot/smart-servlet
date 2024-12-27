@@ -228,14 +228,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (charset != null) {
             return charset;
         }
-        charset = request.getServletContext().getResponseCharacterEncoding();
-        if (charset == null) {
-            charset = StandardCharsets.ISO_8859_1.name();
+        if (request.getServletContext().getResponseCharacterEncoding() != null) {
+            return request.getServletContext().getResponseCharacterEncoding();
         }
-        if (contentType != null) {
-            response.setContentType(getContentType());
-        }
-        return charset;
+        return StandardCharsets.ISO_8859_1.name();
     }
 
     @Override
@@ -255,8 +251,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (contentType == null) {
             return null;
         }
-        return contentType + ";charset=" + getCharacterEncoding();
-
+        if (charsetFlag) {
+            return contentType + ";charset=" + getCharacterEncoding();
+        } else {
+            return contentType;
+        }
     }
 
     @Override
