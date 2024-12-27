@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>tech.smartboot.servlet</groupId>
     <artifactId>smart-servlet-parent</artifactId>
-    <version>2.6.1-dev</version>
+    <version>2.7</version>
     <packaging>pom</packaging>
 
     <properties>
-        <feat.version>0.1</feat.version>
-        <smartservlet.version>2.6.1-dev</smartservlet.version>
+        <feat.version>0.2</feat.version>
+        <smartservlet.version>2.7</smartservlet.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
