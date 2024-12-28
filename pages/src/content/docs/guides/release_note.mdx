@@ -4,6 +4,20 @@ description: A reference page in my new Starlight docs site.
 ---
 import { LinkCard } from '@astrojs/starlight/components';
 
+## v2.7 (2024-12-28)
+- 🚀 Remove smart-http dependency and switch to Feat.
+- 🚀 Added javax.servlet specification check prompt feature.
+- 🚀 Compatible with custom port numbers and SSL configuration for springboot.
+- 🛠️ Optimized the implementation of HttpServletRequest#getCharacterEncoding to conform to specifications.
+- 🛠️ Optimized the implementation of HttpServletRequest#getContentType to conform to specifications.
+- 🛠️ Optimized the implementation of HttpServletRequest#getWriter to conform to specifications.
+- 🛠️ Optimized the implementation of HttpServletRequest#setLocale to conform to specifications.
+- 🛠️ Adjusted the default buffer size of ServletOutputStream to 8k.
+- 🐛 Fixed the issue of Chinese garbled text when response encoding is not specified.
+
+<LinkCard title="Download" description="smart-servlet-bin-2.7-release.tar.gz"
+          href="https://github.com/smartboot/smart-servlet/releases/download/v2.7/smart-servlet-bin-2.7-release.tar.gz" />
+
 ## v2.6 (2024-12-10)
 - 🚀 Further reduce the memory overhead of the service foundation.
 - 🚀 Upgrade smart-http to v2.4.

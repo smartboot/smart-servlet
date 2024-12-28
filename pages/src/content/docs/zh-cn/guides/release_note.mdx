@@ -4,6 +4,20 @@ description: A reference page in my new Starlight docs site.
 ---
 import { LinkCard } from '@astrojs/starlight/components';
 
+## v2.7 (2024-12-28)
+- 🚀移除 smart-http 依赖，切换为 Feat。
+- 🚀新增 javax.servlet 规范检测提示功能
+- 🚀适配 springboot 自定义端口号和 SSL 配置
+- 🛠️优化 HttpServletRequest#getCharacterEncoding 实现规范。
+- 🛠️优化 HttpServletRequest#getContentType 实现规范。
+- 🛠️优化 HttpServletRequest#getWriter 实现规范。
+- 🛠️优化 HttpServletRequest#setLocale 实现规范。
+- 🛠️ ServletOutputStream 默认缓冲区调整为8k。
+- 🐛修复未指定响应编码情况下的中文乱码问题。
+
+<LinkCard title="下载二进制包" description="smart-servlet-bin-2.7-release.tar.gz"
+          href="https://github.com/smartboot/smart-servlet/releases/download/v2.7/smart-servlet-bin-2.7-release.tar.gz" />
+
 ## v2.6 (2024-12-10)
 - 🚀进一步减少服务基础内存开销。
 - 🚀升级 smart-http 至 v2.4
