@@ -36,6 +36,18 @@ import { Card, CardGrid ,LinkButton,Icon} from '@astrojs/starlight/components';
 	</Card>
 </CardGrid>
 
+## 性能测试报告
+<Card title="SpringBoot项目 <u>100万</u> 次请求">
+服务端测试代码：[Bootstrap.java](https://github.com/smartboot/smart-servlet/blob/master/springboot-demo/src/main/java/org/smartboot/demo/starter/Bootstrap.java)
+|concurrency|Tomcat|Undertow|smart-servlet|压测指令|
+|:---|:---:|:---:|:---:|---|
+|10|64311|74860|93812|**`ab -n 1000000 -c  10 -k http://127.0.0.1:8080/plaintext`**|
+|100|92047|89037|108844|**`ab -n 1000000 -c  100 -k http://127.0.0.1:8080/plaintext`**|
+|1000|88997|102439|111308|**`ab -n 1000000 -c  1000 -k http://127.0.0.1:8080/plaintext`**|
+
+</Card>
+
+
 <center>
 <h2>联系我们</h2>
 
