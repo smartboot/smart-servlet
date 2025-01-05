@@ -28,7 +28,11 @@ export default defineConfig({
                     attrs: {
                         src: 'https://smartboot.tech/js/gitee.js'
                     }
-                }
+                },
+                {
+                    tag:'script',
+                    content: 'checkStar("smartboot-x","smart-servlet");'
+                },
             ],
             social: {
                 github: 'https://github.com/smartboot/smart-servlet',
