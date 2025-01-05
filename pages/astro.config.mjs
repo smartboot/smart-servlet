@@ -31,7 +31,7 @@ export default defineConfig({
                 },
                 {
                     tag:'script',
-                    content: 'checkStar("smartboot-x","smart-servlet");'
+                    content: 'if(!location.pathname.endsWith("smart-servlet/")){checkStar("smartboot-x","smart-servlet");}'
                 },
             ],
             social: {
