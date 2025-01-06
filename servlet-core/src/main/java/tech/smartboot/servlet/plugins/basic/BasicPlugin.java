@@ -195,8 +195,13 @@ public class BasicPlugin extends Plugin {
                 httpBootstrap.configuration().group(group)
                         .readBufferSize(config.getReadBufferSize())
                         .host(config.getHost())
+                        .serverName("smart-servlet")
+                        .debug(config.isDebugEnable())
                         .bannerEnabled(false)
                         .setHttpIdleTimeout(config.getHttpIdleTimeout());
+                if (config.isProxyProtocolEnable()) {
+                    httpBootstrap.configuration().proxyProtocolSupport();
+                }
                 httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
                 httpBootstrap.configuration().addPlugin(config.getPlugins());
                 httpBootstrap.start();
@@ -228,8 +233,13 @@ public class BasicPlugin extends Plugin {
         httpBootstrap.setPort(config.getSslPort());
         httpBootstrap.configuration()
                 .group(group)
+                .serverName("smart-servlet")
+                .debug(config.isDebugEnable())
                 .readBufferSize(config.getSslReadBufferSize())
                 .host(config.getHost()).setHttpIdleTimeout(config.getHttpIdleTimeout()).bannerEnabled(false);
+        if (config.isProxyProtocolEnable()) {
+            httpBootstrap.configuration().proxyProtocolSupport();
+        }
         httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
 
         System.out.println("\tTLS enabled, port:" + config.getSslPort());

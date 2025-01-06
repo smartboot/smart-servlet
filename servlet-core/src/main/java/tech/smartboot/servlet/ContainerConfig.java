@@ -11,10 +11,10 @@
 package tech.smartboot.servlet;
 
 
-import tech.smartboot.feat.core.common.utils.Param;
-import tech.smartboot.feat.core.server.impl.Request;
 import org.smartboot.socket.extension.plugins.Plugin;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
+import tech.smartboot.feat.core.common.utils.Param;
+import tech.smartboot.feat.core.server.impl.Request;
 import tech.smartboot.servlet.enums.SslCertType;
 
 import java.util.ArrayList;
@@ -31,6 +31,12 @@ public class ContainerConfig {
      */
     @Param(name = "http.enable", value = "true")
     private boolean enabled = true;
+
+    @Param(name = "http.debugEnable", value = "false")
+    private boolean debugEnable = false;
+
+    @Param(name = "http.proxyProtocolEnable", value = "false")
+    private boolean proxyProtocolEnable = false;
     /**
      * http服务端口号
      */
@@ -240,5 +246,21 @@ public class ContainerConfig {
 
     public void setFactory(SSLContextFactory factory) {
         this.factory = factory;
+    }
+
+    public boolean isDebugEnable() {
+        return debugEnable;
+    }
+
+    public void setDebugEnable(boolean debugEnable) {
+        this.debugEnable = debugEnable;
+    }
+
+    public boolean isProxyProtocolEnable() {
+        return proxyProtocolEnable;
+    }
+
+    public void setProxyProtocolEnable(boolean proxyProtocolEnable) {
+        this.proxyProtocolEnable = proxyProtocolEnable;
     }
 }

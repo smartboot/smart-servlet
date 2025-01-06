@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 
@@ -57,6 +58,18 @@ public class Bootstrap {
     @RequestMapping("/plaintext")
     String test() throws ServletException {
         return "Hello World!";
+    }
+
+    @RequestMapping("/fileupload")
+    String fileupload(HttpServletRequest request) throws ServletException, IOException {
+        request.getParts().forEach(part -> System.out.println(part.getSubmittedFileName()));
+        return "aa";
+    }
+
+    @RequestMapping("/test")
+    String test(HttpServletRequest request) throws ServletException, IOException {
+        request.getParameterMap().forEach((k, v) -> System.out.println(k + ":" + v[0]));
+        return "aa";
     }
 
     public static void main(String[] args) {
