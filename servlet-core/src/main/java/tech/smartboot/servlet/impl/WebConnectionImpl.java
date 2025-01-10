@@ -10,43 +10,19 @@
 
 package tech.smartboot.servlet.impl;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.WebConnection;
 import tech.smartboot.feat.core.server.HttpRequest;
 
-import java.io.IOException;
-
-public class WebConnectionImpl implements WebConnection {
+public abstract class WebConnectionImpl implements WebConnection {
     private final HttpRequest request;
-    private final ServletContext servletContext;
 
-    public WebConnectionImpl(HttpRequest request, ServletContext servletContext) {
-        this.request = request;
-        this.servletContext = servletContext;
+    public WebConnectionImpl(HttpRequest httpRequest) {
+        this.request = httpRequest;
     }
 
-    @Override
-    public ServletInputStream getInputStream() throws IOException {
-        return null;
-    }
-
-    @Override
-    public ServletOutputStream getOutputStream() throws IOException {
-        return null;
-    }
-
-    @Override
-    public void close() throws Exception {
-
-    }
 
     public HttpRequest getRequest() {
         return request;
     }
 
-    public ServletContext getServletContext() {
-        return servletContext;
-    }
 }

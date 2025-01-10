@@ -177,24 +177,6 @@ public class BasicPlugin extends Plugin {
                     }
                 };
             }
-//            WebSocketHandler webSocketHandler = new WebSocketHandler() {
-//                @Override
-//                public void whenHeaderComplete(WebSocketRequestImpl request, WebSocketResponseImpl response) {
-//                    CompletableFuture<Object> completableFuture = new CompletableFuture<>();
-//                    try {
-//                        container.doHandle(request, response, completableFuture);
-//                    } finally {
-//                        if (request.getAttachment() == null || request.getAttachment().get(WebsocketProvider.WEBSOCKET_SESSION_ATTACH_KEY) == null) {
-//                            response.close(CloseReason.UNEXPECTED_ERROR, "");
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void handle(WebSocketRequest request, WebSocketResponse response) {
-//                    container.doHandle(request, response);
-//                }
-//            };
             System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
                 HttpServer httpBootstrap = new HttpServer();

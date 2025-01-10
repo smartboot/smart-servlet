@@ -12,27 +12,54 @@ package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
+import tech.smartboot.feat.core.common.io.BodyInputStream;
 
 import java.io.IOException;
 
 public class UpgradeServletInputStream extends ServletInputStream {
+    private final BodyInputStream inputStream;
+
+    public UpgradeServletInputStream(BodyInputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
     @Override
     public boolean isFinished() {
-        return false;
+        return inputStream.isFinished();
     }
 
     @Override
     public boolean isReady() {
-        return false;
+        return inputStream.isReady();
     }
 
     @Override
     public void setReadListener(ReadListener readListener) {
+        inputStream.setReadListener(new tech.smartboot.feat.core.common.io.ReadListener() {
+            @Override
+            public void onDataAvailable() throws IOException {
+                readListener.onDataAvailable();
+            }
 
+            @Override
+            public void onAllDataRead() throws IOException {
+                readListener.onAllDataRead();
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                readListener.onError(t);
+            }
+        });
     }
 
     @Override
     public int read() throws IOException {
-        return 0;
+        return inputStream.read();
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        return inputStream.read(b, off, len);
     }
 }

@@ -18,6 +18,7 @@ import jakarta.servlet.ServletConnection;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletRequestAttributeEvent;
 import jakarta.servlet.ServletResponse;
@@ -57,6 +58,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.security.Principal;
@@ -573,7 +575,41 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         T t = null;
         try {
             t = handlerClass.newInstance();
-            t.init(new WebConnectionImpl(request, servletContext));
+            t.init(new WebConnectionImpl(request) {
+                @Override
+                public void close() throws Exception {
+
+                }
+
+                @Override
+                public ServletInputStream getInputStream() throws IOException {
+                    return new UpgradeServletInputStream(HttpServletRequestImpl.this.request.getInputStream());
+                }
+
+                @Override
+                public ServletOutputStream getOutputStream() throws IOException {
+                    return httpServletResponse.getOutputStream();
+                }
+            });
+            request.upgrade(new tech.smartboot.feat.core.server.impl.HttpUpgradeHandler() {
+
+                @Override
+                public void init() throws IOException {
+                    System.out.println("init...");
+                }
+
+                @Override
+                public void onBodyStream(ByteBuffer buffer) {
+                    System.out.println("onBodyStream...");
+                    if (request.getInputStream().getReadListener() != null) {
+                        try {
+                            request.getInputStream().getReadListener().onDataAvailable();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            });
         } catch (Exception e) {
             throw new ServletException(e);
         }
