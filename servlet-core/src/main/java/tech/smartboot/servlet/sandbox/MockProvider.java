@@ -12,7 +12,6 @@ package tech.smartboot.servlet.sandbox;
 
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -29,8 +28,6 @@ import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
 import tech.smartboot.feat.core.common.enums.HttpMethodEnum;
 import tech.smartboot.feat.core.common.enums.HttpStatus;
 import tech.smartboot.feat.core.common.utils.StringUtils;
-import tech.smartboot.feat.core.server.WebSocketRequest;
-import tech.smartboot.feat.core.server.WebSocketResponse;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.WebSocketServerContainer;
@@ -158,10 +155,6 @@ final class MockProvider implements VendorProvider, WebsocketProvider, MappingPr
         };
     }
 
-    @Override
-    public void doHandle(WebSocketRequest request, WebSocketResponse response) {
-        throw new PluginException(SandBox.UPGRADE_MESSAGE_ZH);
-    }
 
     @Override
     public ServletMappingInfo matchServlet(String url) {

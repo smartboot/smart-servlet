@@ -25,7 +25,7 @@ import java.util.List;
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2021/3/28
  */
-public class SmartServerEndpointConfig {
+public class AnnotatedEndpointConfig {
     private final ServerEndpointConfig serverEndpointConfig;
     private final List<OnMessageConfig> onMessageConfigs = new ArrayList<>();
     private final List<PathNode> pathNodes;
@@ -37,7 +37,7 @@ public class SmartServerEndpointConfig {
     private Annotation[][] onCloseAnnotations;
     private Annotation[][] onErrorAnnotations;
 
-    public SmartServerEndpointConfig(ServerEndpointConfig serverEndpointConfig) {
+    public AnnotatedEndpointConfig(ServerEndpointConfig serverEndpointConfig) {
         this.serverEndpointConfig = serverEndpointConfig;
         try {
             instance = serverEndpointConfig.getEndpointClass().newInstance();

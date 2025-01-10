@@ -10,20 +10,9 @@
 
 package tech.smartboot.servlet.plugins.websocket;
 
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.PongMessage;
 import jakarta.websocket.server.ServerContainer;
-import tech.smartboot.feat.core.common.utils.WebSocketUtil;
-import tech.smartboot.feat.core.server.WebSocketRequest;
-import tech.smartboot.feat.core.server.WebSocketResponse;
-import tech.smartboot.feat.core.server.impl.WebSocketRequestImpl;
-import tech.smartboot.servlet.plugins.websocket.impl.HandlerWrapper;
 import tech.smartboot.servlet.plugins.websocket.impl.WebSocketServerContainerImpl;
-import tech.smartboot.servlet.plugins.websocket.impl.WebsocketSession;
 import tech.smartboot.servlet.provider.WebsocketProvider;
-import org.smartboot.socket.util.Attachment;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
@@ -36,96 +25,6 @@ public class WebsocketProviderImpl implements WebsocketProvider {
     @Override
     public ServerContainer getWebSocketServerContainer() {
         return serverContainer;
-    }
-
-    @Override
-    public void doHandle(WebSocketRequest request, WebSocketResponse response) {
-        Attachment attachment = request.getAttachment();
-        WebsocketSession session = (WebsocketSession) attachment.get(WebsocketProvider.WEBSOCKET_SESSION_ATTACH_KEY);
-        try {
-            switch (request.getFrameOpcode()) {
-                case WebSocketUtil.OPCODE_TEXT:
-                    if (session.getTextMessageHandler() == null) {
-                        session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "none messageHandler found"));
-                    } else {
-                        handleTextMessage(session.getTextMessageHandler(), new String(request.getPayload(), StandardCharsets.UTF_8));
-                    }
-                    break;
-                case WebSocketUtil.OPCODE_BINARY:
-                    if (session.getBinaryMessageHandler() == null) {
-                        session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "none messageHandler found"));
-                    } else {
-                        handleBinaryMessage(session.getBinaryMessageHandler(), request.getPayload());
-                    }
-
-                    break;
-                case WebSocketUtil.OPCODE_CLOSE:
-                    try {
-                        onClose(request, response);
-                    } finally {
-                        response.close();
-                    }
-                    break;
-                case WebSocketUtil.OPCODE_PING:
-//                            onPing(request, response);
-                    throw new UnsupportedOperationException();
-//                            break;
-                case WebSocketUtil.OPCODE_PONG:
-                    onPong(request, session.getPongMessageHandler());
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-
-        } catch (Throwable throwable) {
-            onError(throwable);
-        }
-    }
-
-
-    private void handleTextMessage(HandlerWrapper handler, String message) {
-        if (handler.isPartial()) {
-            if (handler.getMessageType() == String.class) {
-                handler.getPartialHandler().onMessage(message, true);
-            } else {
-                throw new UnsupportedOperationException();
-            }
-        } else {
-            if (handler.getMessageType() == String.class) {
-                handler.getWholeHandler().onMessage(message);
-            } else {
-                throw new UnsupportedOperationException();
-            }
-        }
-    }
-
-    private void onError(Throwable throwable) {
-        throwable.printStackTrace();
-    }
-
-    private void onClose(WebSocketRequest request, WebSocketResponse response) {
-        throw new UnsupportedOperationException();
-    }
-
-    private void onPong(WebSocketRequest request, HandlerWrapper handler) {
-        PongMessage message = null;
-        handler.getWholeHandler().onMessage(message);
-    }
-
-    private void handleBinaryMessage(HandlerWrapper handler, byte[] data) {
-        if (handler.isPartial()) {
-            if (handler.getMessageType() == byte[].class) {
-                handler.getPartialHandler().onMessage(data, true);
-            } else {
-                throw new UnsupportedOperationException();
-            }
-        } else {
-            if (handler.getMessageType() == byte[].class) {
-                handler.getWholeHandler().onMessage(data);
-            } else {
-                throw new UnsupportedOperationException();
-            }
-        }
     }
 
 }

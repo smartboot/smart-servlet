@@ -18,11 +18,15 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.DeploymentException;
 import jakarta.websocket.server.ServerContainer;
 import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
+import tech.smartboot.feat.core.common.enums.HeaderValueEnum;
 import tech.smartboot.feat.core.common.utils.StringUtils;
+import tech.smartboot.servlet.plugins.websocket.impl.AnnotatedEndpoint;
+import tech.smartboot.servlet.plugins.websocket.impl.AnnotatedEndpointConfig;
 import tech.smartboot.servlet.plugins.websocket.impl.PathNode;
-import tech.smartboot.servlet.plugins.websocket.impl.SmartServerEndpointConfig;
+import tech.smartboot.servlet.plugins.websocket.impl.ServerEndpointConfigProxy;
 import tech.smartboot.servlet.plugins.websocket.impl.WebSocketServerContainerImpl;
 
 import java.io.IOException;
@@ -40,13 +44,14 @@ public class WebSocketFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
-        if (req.getHeader(HeaderNameEnum.UPGRADE.getName()) == null) {
+        String upgrade = req.getHeader(HeaderNameEnum.UPGRADE.getName());
+        if (!HeaderValueEnum.Upgrade.WEBSOCKET.equalsIgnoreCase(upgrade)) {
             chain.doFilter(request, response);
             return;
         }
         WebSocketServerContainerImpl container = (WebSocketServerContainerImpl) request.getServletContext().getAttribute(ServerContainer.class.getName());
         List<PathNode> requestPathNodes = PathNode.convertToPathNodes(req.getRequestURI());
-        for (SmartServerEndpointConfig serverEndpointConfig : container.getEndpointConfigs()) {
+        for (AnnotatedEndpointConfig serverEndpointConfig : container.getEndpointConfigs()) {
             List<PathNode> pathNodes = serverEndpointConfig.getPathNodes();
             if (requestPathNodes.size() != pathNodes.size()) {
                 continue;
@@ -66,7 +71,13 @@ public class WebSocketFilter implements Filter {
             }
             //匹配成功
             if (matched) {
-                container.upgradeHttpToWebSocket(req, resp, serverEndpointConfig.getServerEndpointConfig(), matchData);
+                AnnotatedEndpoint endpoint = new AnnotatedEndpoint(serverEndpointConfig, matchData);
+                ServerEndpointConfigProxy proxy = new ServerEndpointConfigProxy(serverEndpointConfig.getServerEndpointConfig(), endpoint);
+                try {
+                    container.upgradeHttpToWebSocket(req, resp, proxy, matchData);
+                } catch (DeploymentException e) {
+                    throw new ServletException(e);
+                }
                 return;
             }
         }

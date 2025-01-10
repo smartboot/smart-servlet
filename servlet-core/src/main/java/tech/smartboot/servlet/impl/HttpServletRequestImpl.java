@@ -495,7 +495,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (parts != null || partsParseException != null) {
             return;
         }
-        if (!request.getContentType().startsWith(HeaderValueEnum.MULTIPART_FORM_DATA.getName())) {
+        if (!request.getContentType().startsWith(HeaderValueEnum.ContentType.MULTIPART_FORM_DATA)) {
             throw new ServletException("Not a multipart request");
         }
         try {
@@ -570,30 +570,14 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
-//        T t = null;
-//        try {
-//            t = handlerClass.newInstance();
-//            t.init(new WebConnection() {
-//                @Override
-//                public ServletInputStream getInputStream() throws IOException {
-//                    return HttpServletRequestImpl.this.getInputStream();
-//                }
-//
-//                @Override
-//                public ServletOutputStream getOutputStream() throws IOException {
-//                    return httpServletResponse.getOutputStream();
-//                }
-//
-//                @Override
-//                public void close() throws Exception {
-//
-//                }
-//            });
-//        } catch (Exception e) {
-//            throw new ServletException(e);
-//        }
-//        return t;
-        throw new UnsupportedOperationException();
+        T t = null;
+        try {
+            t = handlerClass.newInstance();
+            t.init(new WebConnectionImpl(request, servletContext));
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+        return t;
     }
 
     @Override
@@ -661,7 +645,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public String getParameter(String name) {
         String value = request.getParameter(name);
-        if (value == null && request.getContentType() != null && request.getContentType().startsWith(HeaderValueEnum.MULTIPART_FORM_DATA.getName())) {
+        if (value == null && request.getContentType() != null && request.getContentType().startsWith(HeaderValueEnum.ContentType.MULTIPART_FORM_DATA)) {
             try {
                 parseParts();
             } catch (ServletException e) {

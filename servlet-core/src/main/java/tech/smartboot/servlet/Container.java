@@ -20,8 +20,6 @@ import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpResponse;
-import tech.smartboot.feat.core.server.WebSocketRequest;
-import tech.smartboot.feat.core.server.WebSocketResponse;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.OrderMeta;
@@ -235,21 +233,6 @@ public class Container {
         return contextRuntime;
     }
 
-    public void doHandle(WebSocketRequest request, WebSocketResponse response) {
-        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
-            ServletContextRuntime runtime = matchRuntime(request.getRequestURI());
-            if (!runtime.isStarted()) {
-                throw new IllegalStateException("container is not started");
-            }
-            ServletContextImpl servletContext = runtime.getServletContext();
-            Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
-            runtime.getWebsocketProvider().doHandle(request, response);
-        } finally {
-            Thread.currentThread().setContextClassLoader(classLoader);
-        }
-    }
 
     /**
      * 执行 Http 请求

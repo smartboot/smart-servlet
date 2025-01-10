@@ -10,6 +10,7 @@
 
 package tech.smartboot.servlet.plugins.websocket.impl;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.ClientEndpointConfig;
@@ -20,9 +21,6 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerContainer;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.websocket.server.ServerEndpointConfig;
-import tech.smartboot.servlet.impl.HttpServletRequestImpl;
-import tech.smartboot.servlet.provider.WebsocketProvider;
-import org.smartboot.socket.util.Attachment;
 
 import java.io.IOException;
 import java.net.URI;
@@ -41,7 +39,7 @@ import java.util.Set;
  */
 public class WebSocketServerContainerImpl implements ServerContainer {
     private final Set<Class<?>> endpointClassSet = new HashSet<>();
-    private final Map<ServerEndpointConfig, SmartServerEndpointConfig> endpointConfigs =
+    private final Map<ServerEndpointConfig, AnnotatedEndpointConfig> endpointConfigs =
             new HashMap<>();
     private boolean deployed = false;
     private final List<Extension> installedExtensions = Collections.emptyList();
@@ -59,10 +57,11 @@ public class WebSocketServerContainerImpl implements ServerContainer {
         try {
             ServerEndpoint serverEndpoint = endpointClass.getAnnotation(ServerEndpoint.class);
             Class<? extends ServerEndpointConfig.Configurator> configuratorClass = serverEndpoint.configurator();
-            ServerEndpointConfig serverEndpointConfig = ServerEndpointConfig.Builder.create(endpointClass, serverEndpoint.value()).decoders(Arrays.asList(serverEndpoint.decoders())).encoders(Arrays.asList(serverEndpoint.encoders())).subprotocols(Arrays.asList(serverEndpoint.subprotocols())).encoders(Collections.emptyList()).configurator(configuratorClass.newInstance()).build();
+            ServerEndpointConfig serverEndpointConfig =
+                    ServerEndpointConfig.Builder.create(endpointClass, serverEndpoint.value()).decoders(Arrays.asList(serverEndpoint.decoders())).encoders(Arrays.asList(serverEndpoint.encoders())).subprotocols(Arrays.asList(serverEndpoint.subprotocols())).encoders(Collections.emptyList()).configurator(configuratorClass.newInstance()).build();
             addEndpoint(serverEndpointConfig);
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new DeploymentException("", e);
         }
     }
 
@@ -71,11 +70,12 @@ public class WebSocketServerContainerImpl implements ServerContainer {
         if (deployed) {
             throw new DeploymentException("");
         }
-        endpointConfigs.put(serverConfig, new SmartServerEndpointConfig(serverConfig));
+        endpointConfigs.put(serverConfig, new AnnotatedEndpointConfig(serverConfig));
     }
 
     @Override
-    public void upgradeHttpToWebSocket(Object httpServletRequest, Object httpServletResponse, ServerEndpointConfig sec, Map<String, String> pathParameters) {
+    public void upgradeHttpToWebSocket(Object httpServletRequest, Object httpServletResponse, ServerEndpointConfig sec, Map<String, String> pathParameters) throws IOException, DeploymentException {
+
         HttpServletRequest request = (HttpServletRequest) httpServletRequest;
         HttpServletResponse response = (HttpServletResponse) httpServletResponse;
 
@@ -84,17 +84,17 @@ public class WebSocketServerContainerImpl implements ServerContainer {
         ServerEndpointConfig.Configurator c = sec.getConfigurator();
         c.modifyHandshake(sec, handshakeRequest, handshakeResponse);
 
-        HttpServletRequestImpl req = (HttpServletRequestImpl) request;
-        Attachment attachment = req.getAttachment();
-        if (attachment == null) {
-            attachment = new Attachment();
-            req.setAttachment(attachment);
+        try {
+            Object t = sec.getConfigurator().getEndpointInstance(sec.getEndpointClass());
+            Endpoint endpoint = (Endpoint) t;
+            WebsocketSession websocketSession = new WebsocketSession(this, endpoint, URI.create(request.getRequestURI()));
+            endpoint.onOpen(websocketSession, sec);
+            WebSocketUpgradeHandler handler = request.upgrade(WebSocketUpgradeHandler.class);
+            handler.upgrade(websocketSession);
+        } catch (InstantiationException | ServletException e) {
+            throw new DeploymentException("", e);
         }
-        SmartServerEndpointConfig endpointConfig = endpointConfigs.get(sec);
-        AnnotatedEndpoint endpoint = new AnnotatedEndpoint(endpointConfig, pathParameters);
-        WebsocketSession websocketSession = new WebsocketSession(this, endpoint, URI.create(request.getRequestURI()));
-        attachment.put(WebsocketProvider.WEBSOCKET_SESSION_ATTACH_KEY, websocketSession);
-        endpoint.onOpen(websocketSession, sec);
+
     }
 
     @Override
@@ -166,7 +166,7 @@ public class WebSocketServerContainerImpl implements ServerContainer {
         deployed = true;
     }
 
-    public Collection<SmartServerEndpointConfig> getEndpointConfigs() {
+    public Collection<AnnotatedEndpointConfig> getEndpointConfigs() {
         return endpointConfigs.values();
     }
 

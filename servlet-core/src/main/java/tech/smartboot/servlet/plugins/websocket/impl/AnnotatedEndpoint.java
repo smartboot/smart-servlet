@@ -27,10 +27,11 @@ import java.util.Objects;
  */
 public class AnnotatedEndpoint extends Endpoint {
 
-    private final SmartServerEndpointConfig smartServerEndpointConfig;
+    private final AnnotatedEndpointConfig smartServerEndpointConfig;
     private final Map<String, String> uriData;
 
-    public AnnotatedEndpoint(SmartServerEndpointConfig config, Map<String, String> uriData) {
+    public AnnotatedEndpoint(AnnotatedEndpointConfig config, Map<String, String> uriData) {
+        Objects.requireNonNull(config, "SmartServerEndpointConfig cannot be null");
         this.smartServerEndpointConfig = config;
         this.uriData = uriData;
     }

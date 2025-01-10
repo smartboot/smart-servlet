@@ -11,20 +11,11 @@
 package tech.smartboot.servlet.provider;
 
 import jakarta.websocket.server.ServerContainer;
-import tech.smartboot.feat.core.server.WebSocketRequest;
-import tech.smartboot.feat.core.server.WebSocketResponse;
-import org.smartboot.socket.util.AttachKey;
-
-import jakarta.websocket.Session;
 
 /**
  * @author 三刀（zhengjunweimail@163.com）
  * @version V1.0 , 2021/3/28
  */
 public interface WebsocketProvider {
-    AttachKey<? super Session> WEBSOCKET_SESSION_ATTACH_KEY = AttachKey.valueOf("websocketSession");
-
     ServerContainer getWebSocketServerContainer();
-
-    void doHandle(WebSocketRequest request, WebSocketResponse response);
 }

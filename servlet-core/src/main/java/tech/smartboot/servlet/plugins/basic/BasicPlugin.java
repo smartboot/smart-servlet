@@ -15,7 +15,8 @@ import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
-import tech.smartboot.feat.core.common.codec.websocket.CloseReason;
+import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
+import tech.smartboot.feat.core.common.enums.HeaderValueEnum;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.ParamReflect;
@@ -24,19 +25,14 @@ import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.feat.core.server.HttpServer;
 import tech.smartboot.feat.core.server.HttpServerHandler;
-import tech.smartboot.feat.core.server.WebSocketHandler;
-import tech.smartboot.feat.core.server.WebSocketRequest;
-import tech.smartboot.feat.core.server.WebSocketResponse;
 import tech.smartboot.feat.core.server.impl.Request;
-import tech.smartboot.feat.core.server.impl.WebSocketRequestImpl;
-import tech.smartboot.feat.core.server.impl.WebSocketResponseImpl;
+import tech.smartboot.feat.core.server.upgrade.Http2UpgradeHandler;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.enums.SslCertType;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.plugins.Plugin;
-import tech.smartboot.servlet.provider.WebsocketProvider;
 import tech.smartboot.servlet.util.CommonUtil;
 
 import java.io.ByteArrayInputStream;
@@ -165,29 +161,40 @@ public class BasicPlugin extends Plugin {
                 httpServerHandler = new HttpServerHandler() {
                     @Override
                     public void handle(HttpRequest request, HttpResponse response,
-                                       CompletableFuture<Object> completableFuture) {
-                        container.doHandle(request, response, completableFuture);
+                                       CompletableFuture<Object> completableFuture) throws Throwable {
+                        String upgrade = request.getHeader(HeaderNameEnum.UPGRADE.getName());
+                        if (HeaderValueEnum.Upgrade.H2C.equalsIgnoreCase(upgrade)) {
+                            request.upgrade(new Http2UpgradeHandler() {
+                                @Override
+                                public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) throws Throwable {
+                                    container.doHandle(request, response, completableFuture);
+                                }
+                            });
+                        } else {
+                            container.doHandle(request, response, completableFuture);
+                        }
+
                     }
                 };
             }
-            WebSocketHandler webSocketHandler = new WebSocketHandler() {
-                @Override
-                public void whenHeaderComplete(WebSocketRequestImpl request, WebSocketResponseImpl response) {
-                    CompletableFuture<Object> completableFuture = new CompletableFuture<>();
-                    try {
-                        container.doHandle(request, response, completableFuture);
-                    } finally {
-                        if (request.getAttachment() == null || request.getAttachment().get(WebsocketProvider.WEBSOCKET_SESSION_ATTACH_KEY) == null) {
-                            response.close(CloseReason.UNEXPECTED_ERROR, "");
-                        }
-                    }
-                }
-
-                @Override
-                public void handle(WebSocketRequest request, WebSocketResponse response) {
-                    container.doHandle(request, response);
-                }
-            };
+//            WebSocketHandler webSocketHandler = new WebSocketHandler() {
+//                @Override
+//                public void whenHeaderComplete(WebSocketRequestImpl request, WebSocketResponseImpl response) {
+//                    CompletableFuture<Object> completableFuture = new CompletableFuture<>();
+//                    try {
+//                        container.doHandle(request, response, completableFuture);
+//                    } finally {
+//                        if (request.getAttachment() == null || request.getAttachment().get(WebsocketProvider.WEBSOCKET_SESSION_ATTACH_KEY) == null) {
+//                            response.close(CloseReason.UNEXPECTED_ERROR, "");
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void handle(WebSocketRequest request, WebSocketResponse response) {
+//                    container.doHandle(request, response);
+//                }
+//            };
             System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
                 HttpServer httpBootstrap = new HttpServer();
@@ -202,7 +209,7 @@ public class BasicPlugin extends Plugin {
                 if (config.isProxyProtocolEnable()) {
                     httpBootstrap.configuration().proxyProtocolSupport();
                 }
-                httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
+                httpBootstrap.httpHandler(httpServerHandler);
                 httpBootstrap.configuration().addPlugin(config.getPlugins());
                 httpBootstrap.start();
                 System.out.println("\tHTTP is enabled, " + config.getHost() + ":" + config.getPort());
@@ -210,7 +217,7 @@ public class BasicPlugin extends Plugin {
                 System.out.println("\tHTTP is disabled.");
             }
             if (config.isSslEnable()) {
-                startSslServer(config, group, httpServerHandler, webSocketHandler);
+                startSslServer(config, group, httpServerHandler);
             } else {
                 System.out.println("\tHTTPS is disabled.");
             }
@@ -227,7 +234,7 @@ public class BasicPlugin extends Plugin {
     }
 
     private void startSslServer(ContainerConfig config, AsynchronousChannelGroup group,
-                                HttpServerHandler httpServerHandler, WebSocketHandler webSocketHandler) {
+                                HttpServerHandler httpServerHandler) {
 
         HttpServer httpBootstrap = new HttpServer();
         httpBootstrap.setPort(config.getSslPort());
@@ -240,7 +247,7 @@ public class BasicPlugin extends Plugin {
         if (config.isProxyProtocolEnable()) {
             httpBootstrap.configuration().proxyProtocolSupport();
         }
-        httpBootstrap.httpHandler(httpServerHandler).webSocketHandler(webSocketHandler);
+        httpBootstrap.httpHandler(httpServerHandler);
 
         System.out.println("\tTLS enabled, port:" + config.getSslPort());
 
