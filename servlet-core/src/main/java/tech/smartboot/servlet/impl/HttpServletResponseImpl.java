@@ -251,7 +251,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (contentType == null) {
             return null;
         }
-        if (charsetFlag) {
+        if (charset != null) {
             return contentType + ";charset=" + getCharacterEncoding();
         } else {
             return contentType;
