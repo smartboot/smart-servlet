@@ -395,7 +395,6 @@ public class Container {
             }
         } else {
             Enumeration<URL> fragments = urlClassLoader.getResources("META-INF/web-fragment.xml");
-            Map<String, WebFragmentInfo> fragmentInfos = new HashMap<>();
             List<OrderMeta> list = new ArrayList<>();
             while (fragments.hasMoreElements()) {
                 URL url = fragments.nextElement();
