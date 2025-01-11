@@ -410,7 +410,14 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             encoding = request.getServletContext().getDeploymentInfo().getLocaleEncodingMappings().get(loc.getLanguage());
         }
         if (!charsetFlag && StringUtils.isNotBlank(encoding)) {
-            setCharacterEncoding(encoding);
+            //It also sets the response's character encoding appropriately for the locale,
+            // if the character encoding has not been explicitly set using
+            //  - setContentType,
+            //  - setCharacterEncoding(String)
+            //  - setCharacterEncoding(Charset)
+            //  - getWriter
+            //  hasn't been called yet, and the response hasn't been committed yet.
+            this.charset = encoding;
             if (contentType != null) {
                 response.setContentType(getContentType());
             }
