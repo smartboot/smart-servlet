@@ -11,7 +11,6 @@ package tech.smartboot.servlet.tck;
 
 import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
-import tech.smartboot.feat.core.server.HttpServerConfiguration;
 
 import java.io.File;
 import java.net.URI;
@@ -57,12 +56,6 @@ public class SmartEmbeddedConfiguration implements ContainerConfiguration {
     private boolean dumpServerAfterStart = false;
 
     /**
-     * Optional HttpConfiguration for the ServerConnector that Arquillian
-     * creates.
-     */
-    private HttpServerConfiguration httpConfiguration;
-
-    /**
      * Idle Timeout (in milliseconds) for active connections.
      * <p>
      * Default: 30,000ms
@@ -82,9 +75,6 @@ public class SmartEmbeddedConfiguration implements ContainerConfiguration {
         return defaultsDescriptor;
     }
 
-    public HttpServerConfiguration getHttpConfiguration() {
-        return httpConfiguration;
-    }
 
     public long getIdleTimeoutMillis() {
         return idleTimeoutMillis;
@@ -113,10 +103,7 @@ public class SmartEmbeddedConfiguration implements ContainerConfiguration {
     public void setDumpServerAfterStart(boolean serverDumpAfterStart) {
         this.dumpServerAfterStart = serverDumpAfterStart;
     }
-
-    public void setHttpConfiguration(HttpServerConfiguration httpConfiguration) {
-        this.httpConfiguration = httpConfiguration;
-    }
+    
 
     public void setIdleTimeoutMillis(long milliseconds) {
         this.idleTimeoutMillis = milliseconds;

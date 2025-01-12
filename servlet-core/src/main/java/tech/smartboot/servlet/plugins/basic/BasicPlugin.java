@@ -15,6 +15,7 @@ import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
+import tech.smartboot.feat.core.Feat;
 import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
 import tech.smartboot.feat.core.common.enums.HeaderValueEnum;
 import tech.smartboot.feat.core.common.logging.Logger;
@@ -179,21 +180,19 @@ public class BasicPlugin extends Plugin {
             }
             System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
-                HttpServer httpBootstrap = new HttpServer();
-                httpBootstrap.setPort(config.getPort());
-                httpBootstrap.configuration().group(group)
-                        .readBufferSize(config.getReadBufferSize())
-                        .host(config.getHost())
-                        .serverName("smart-servlet")
-                        .debug(config.isDebugEnable())
-                        .bannerEnabled(false)
-                        .setHttpIdleTimeout(config.getHttpIdleTimeout());
-                if (config.isProxyProtocolEnable()) {
-                    httpBootstrap.configuration().proxyProtocolSupport();
-                }
-                httpBootstrap.httpHandler(httpServerHandler);
-                httpBootstrap.configuration().addPlugin(config.getPlugins());
-                httpBootstrap.start();
+                HttpServer httpBootstrap = Feat.createHttpServer(options -> {
+                    options.group(group)
+                            .readBufferSize(config.getReadBufferSize())
+                            .serverName("smart-servlet")
+                            .debug(config.isDebugEnable())
+                            .bannerEnabled(false)
+                            .setHttpIdleTimeout(config.getHttpIdleTimeout())
+                            .addPlugin(config.getPlugins());
+                    if (config.isProxyProtocolEnable()) {
+                        options.proxyProtocolSupport();
+                    }
+                });
+                httpBootstrap.httpHandler(httpServerHandler).listen(config.getHost(), config.getPort());
                 System.out.println("\tHTTP is enabled, " + config.getHost() + ":" + config.getPort());
             } else {
                 System.out.println("\tHTTP is disabled.");
@@ -217,22 +216,7 @@ public class BasicPlugin extends Plugin {
 
     private void startSslServer(ContainerConfig config, AsynchronousChannelGroup group,
                                 HttpServerHandler httpServerHandler) {
-
-        HttpServer httpBootstrap = new HttpServer();
-        httpBootstrap.setPort(config.getSslPort());
-        httpBootstrap.configuration()
-                .group(group)
-                .serverName("smart-servlet")
-                .debug(config.isDebugEnable())
-                .readBufferSize(config.getSslReadBufferSize())
-                .host(config.getHost()).setHttpIdleTimeout(config.getHttpIdleTimeout()).bannerEnabled(false);
-        if (config.isProxyProtocolEnable()) {
-            httpBootstrap.configuration().proxyProtocolSupport();
-        }
-        httpBootstrap.httpHandler(httpServerHandler);
-
         System.out.println("\tTLS enabled, port:" + config.getSslPort());
-
         SslPlugin<Request> sslPlugin;
         SslCertType type = config.getSslCertType();
         switch (type) {
@@ -288,9 +272,20 @@ public class BasicPlugin extends Plugin {
             default:
                 throw new UnsupportedOperationException("无效证书类型");
         }
-        httpBootstrap.configuration().addPlugin(sslPlugin);
-        httpBootstrap.configuration().addPlugin(config.getPlugins());
-        httpBootstrap.start();
+        HttpServer httpBootstrap = Feat.createHttpServer(options -> {
+            options.group(group)
+                    .readBufferSize(config.getSslReadBufferSize())
+                    .serverName("smart-servlet")
+                    .debug(config.isDebugEnable())
+                    .bannerEnabled(false)
+                    .setHttpIdleTimeout(config.getHttpIdleTimeout())
+                    .addPlugin(sslPlugin)
+                    .addPlugin(config.getPlugins());
+            if (config.isProxyProtocolEnable()) {
+                options.proxyProtocolSupport();
+            }
+        });
+        httpBootstrap.httpHandler(httpServerHandler).listen(config.getHost(), config.getSslPort());
     }
 
     @Override
