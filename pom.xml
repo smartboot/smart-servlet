@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <feat.version>0.2</feat.version>
+        <feat.version>0.3</feat.version>
         <smartservlet.version>2.7</smartservlet.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
