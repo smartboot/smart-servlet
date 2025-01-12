@@ -180,7 +180,7 @@ public class BasicPlugin extends Plugin {
             }
             System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
-                HttpServer httpBootstrap = Feat.createHttpServer(options -> {
+                HttpServer httpServer = Feat.createHttpServer(options -> {
                     options.group(group)
                             .readBufferSize(config.getReadBufferSize())
                             .serverName("smart-servlet")
@@ -192,7 +192,7 @@ public class BasicPlugin extends Plugin {
                         options.proxyProtocolSupport();
                     }
                 });
-                httpBootstrap.httpHandler(httpServerHandler).listen(config.getHost(), config.getPort());
+                httpServer.httpHandler(httpServerHandler).listen(config.getHost(), config.getPort());
                 System.out.println("\tHTTP is enabled, " + config.getHost() + ":" + config.getPort());
             } else {
                 System.out.println("\tHTTP is disabled.");
@@ -272,7 +272,7 @@ public class BasicPlugin extends Plugin {
             default:
                 throw new UnsupportedOperationException("无效证书类型");
         }
-        HttpServer httpBootstrap = Feat.createHttpServer(options -> {
+        HttpServer httpServer = Feat.createHttpServer(options -> {
             options.group(group)
                     .readBufferSize(config.getSslReadBufferSize())
                     .serverName("smart-servlet")
@@ -285,7 +285,7 @@ public class BasicPlugin extends Plugin {
                 options.proxyProtocolSupport();
             }
         });
-        httpBootstrap.httpHandler(httpServerHandler).listen(config.getHost(), config.getSslPort());
+        httpServer.httpHandler(httpServerHandler).listen(config.getHost(), config.getSslPort());
     }
 
     @Override
