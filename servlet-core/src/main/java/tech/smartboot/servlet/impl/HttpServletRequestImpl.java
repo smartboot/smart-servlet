@@ -40,6 +40,7 @@ import tech.smartboot.feat.core.common.multipart.MultipartConfig;
 import tech.smartboot.feat.core.common.utils.NumberUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpRequest;
+import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -594,7 +595,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             request.upgrade(new tech.smartboot.feat.core.server.impl.HttpUpgradeHandler() {
 
                 @Override
-                public void init() throws IOException {
+                public void init(HttpRequest request, HttpResponse response) throws IOException {
                     System.out.println("init...");
                 }
 

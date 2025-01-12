@@ -26,7 +26,7 @@ import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.feat.core.server.HttpServer;
 import tech.smartboot.feat.core.server.HttpServerHandler;
 import tech.smartboot.feat.core.server.impl.Request;
-import tech.smartboot.feat.core.server.upgrade.Http2UpgradeHandler;
+import tech.smartboot.feat.core.server.upgrade.http2.Http2UpgradeHandler;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
