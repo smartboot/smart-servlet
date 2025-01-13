@@ -27,7 +27,7 @@ import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.feat.core.server.HttpServer;
 import tech.smartboot.feat.core.server.handler.BaseHttpHandler;
-import tech.smartboot.feat.core.server.impl.Request;
+import tech.smartboot.feat.core.server.impl.HttpEndpoint;
 import tech.smartboot.feat.core.server.upgrade.http2.Http2UpgradeHandler;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
@@ -218,7 +218,7 @@ public class BasicPlugin extends Plugin {
     private void startSslServer(ContainerConfig config, AsynchronousChannelGroup group,
                                 HttpHandler httpServerHandler) {
         System.out.println("\tTLS enabled, port:" + config.getSslPort());
-        SslPlugin<Request> sslPlugin;
+        SslPlugin<HttpEndpoint> sslPlugin;
         SslCertType type = config.getSslCertType();
         switch (type) {
             case pem:

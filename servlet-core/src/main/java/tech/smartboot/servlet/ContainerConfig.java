@@ -14,7 +14,7 @@ package tech.smartboot.servlet;
 import org.smartboot.socket.extension.plugins.Plugin;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import tech.smartboot.feat.core.common.utils.Param;
-import tech.smartboot.feat.core.server.impl.Request;
+import tech.smartboot.feat.core.server.impl.HttpEndpoint;
 import tech.smartboot.servlet.enums.SslCertType;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.List;
  * @version V1.0 , 2020/12/10
  */
 public class ContainerConfig {
-    private final List<Plugin<Request>> plugins = new ArrayList<>();
+    private final List<Plugin<HttpEndpoint>> plugins = new ArrayList<>();
     /**
      * http服务端口号
      */
@@ -174,7 +174,7 @@ public class ContainerConfig {
         return this;
     }
 
-    public List<Plugin<Request>> getPlugins() {
+    public List<Plugin<HttpEndpoint>> getPlugins() {
         return plugins;
     }
 
