@@ -22,10 +22,11 @@ import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.ParamReflect;
 import tech.smartboot.feat.core.common.utils.StringUtils;
+import tech.smartboot.feat.core.server.HttpHandler;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.feat.core.server.HttpServer;
-import tech.smartboot.feat.core.server.HttpServerHandler;
+import tech.smartboot.feat.core.server.handler.BaseHttpHandler;
 import tech.smartboot.feat.core.server.impl.Request;
 import tech.smartboot.feat.core.server.upgrade.http2.Http2UpgradeHandler;
 import tech.smartboot.servlet.Container;
@@ -148,7 +149,7 @@ public class BasicPlugin extends Plugin {
                     new EnhanceAsynchronousChannelProvider(false).openAsynchronousChannelGroup(config.getThreadNum(),
                             r -> new Thread(r, "smart-servlet:Thread-" + (threadSeqNumber.getAndIncrement())));
 
-            HttpServerHandler httpServerHandler;
+            BaseHttpHandler httpServerHandler;
             if (config.isVirtualThreadEnable()) {
                 throw new UnsupportedOperationException();
 //                httpServerHandler = new HttpServerHandler() {
@@ -159,20 +160,20 @@ public class BasicPlugin extends Plugin {
 //                    }
 //                };
             } else {
-                httpServerHandler = new HttpServerHandler() {
+                httpServerHandler = new BaseHttpHandler() {
                     @Override
-                    public void handle(HttpRequest request, HttpResponse response,
+                    public void handle(HttpRequest request,
                                        CompletableFuture<Object> completableFuture) throws Throwable {
                         String upgrade = request.getHeader(HeaderNameEnum.UPGRADE.getName());
                         if (HeaderValueEnum.Upgrade.H2C.equalsIgnoreCase(upgrade)) {
                             request.upgrade(new Http2UpgradeHandler() {
                                 @Override
                                 public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) throws Throwable {
-                                    container.doHandle(request, response, completableFuture);
+                                    container.doHandle(request, completableFuture);
                                 }
                             });
                         } else {
-                            container.doHandle(request, response, completableFuture);
+                            container.doHandle(request, completableFuture);
                         }
 
                     }
@@ -215,7 +216,7 @@ public class BasicPlugin extends Plugin {
     }
 
     private void startSslServer(ContainerConfig config, AsynchronousChannelGroup group,
-                                HttpServerHandler httpServerHandler) {
+                                HttpHandler httpServerHandler) {
         System.out.println("\tTLS enabled, port:" + config.getSslPort());
         SslPlugin<Request> sslPlugin;
         SslCertType type = config.getSslCertType();

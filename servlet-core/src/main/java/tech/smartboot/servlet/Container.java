@@ -25,7 +25,6 @@ import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.OrderMeta;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
-import tech.smartboot.servlet.conf.WebFragmentInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.handler.FilterMatchHandler;
 import tech.smartboot.servlet.handler.HandlerContext;
@@ -238,9 +237,9 @@ public class Container {
      * 执行 Http 请求
      *
      * @param request
-     * @param response
      */
-    public void doHandle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) {
+    public void doHandle(HttpRequest request, CompletableFuture<Object> completableFuture) {
+        HttpResponse response = request.getResponse();
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         AsyncContext asyncContext = null;
         try {
