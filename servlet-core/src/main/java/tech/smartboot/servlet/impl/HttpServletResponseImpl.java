@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
@@ -385,7 +386,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (servletOutputStream != null) {
             servletOutputStream.resetBuffer();
         }
-        response.getHeaderNames().forEach(headerName -> response.setHeader(headerName, null));
+        new ArrayList<>(response.getHeaderNames()).forEach(headerName -> response.setHeader(headerName, null));
         setContentLength(-1);
         contentType = null;
         charset = null;
