@@ -4,6 +4,18 @@ description: A reference page in my new Starlight docs site.
 ---
 import { LinkCard } from '@astrojs/starlight/components';
 
+## v2.8 (2025-01-16)
+- 🚀新增 PROXY Protocol 特性。
+- 🚀开放 http.debugEnable 配置参数，用于开发模式下控制台打印 HTTP 报文。
+- 🚀实现 HttpServletRequest#upgrade  规范。
+- 🛠️优化 HttpServletResponse#getContentType 实现规范。
+- 🛠️优化 HttpServletResponse#setLocale 实现规范。
+- 🛠️优化 WebSocketContainer 实现规范。
+
+<LinkCard title="下载二进制包" description="smart-servlet-bin-2.8-release.tar.gz"
+          href="https://github.com/smartboot/smart-servlet/releases/download/v2.8/smart-servlet-bin-2.8-release.tar.gz" />
+
+
 ## v2.7 (2024-12-28)
 - 🚀移除 smart-http 依赖，切换为 Feat。
 - 🚀新增 javax.servlet 规范检测提示功能
