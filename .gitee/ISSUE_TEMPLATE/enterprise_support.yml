@@ -34,7 +34,7 @@ body:
     attributes:
       label: 信息确认
       options:
-        - label: 我已经向 smart-servlet 作者完成了案例反馈。
+        - label: 我已获得 smart-servlet 的使用授权？
           required: true
   - type: dropdown
     id: os_type
