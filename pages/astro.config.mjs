@@ -15,7 +15,7 @@ export default defineConfig({
                     tag: 'meta',
                     attrs: {
                         property: 'keywords',
-                        content: '信创,tomcat,国产Tomcat,国产Servlet容器,国产Servlet,smart-servlet,smartservlet,undertow,jetty,自研,自研Tomcat',
+                        content: '信创,国产,国产化,替代,tomcat,国产Servlet容器,国产Servlet,smart-servlet,smartservlet,undertow,jetty,自研,自研Tomcat',
                     }
                 }, {
                     tag: 'meta',
