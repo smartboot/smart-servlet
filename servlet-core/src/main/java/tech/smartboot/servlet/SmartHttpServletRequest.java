@@ -29,20 +29,6 @@ public interface SmartHttpServletRequest extends HttpServletRequest {
 
     ServletInfo getServletInfo();
 
-    /**
-     * 获取附件对象
-     *
-     * @return 附件
-     */
-    Attachment getAttachment();
-
-    /**
-     * 存放附件，支持任意类型
-     *
-     * @param attachment 附件对象
-     */
-    void setAttachment(Attachment attachment);
-
     void setServletMappingInfo(ServletMappingInfo servletMappingInfo);
 
     ServletMappingInfo getServletMappingInfo();

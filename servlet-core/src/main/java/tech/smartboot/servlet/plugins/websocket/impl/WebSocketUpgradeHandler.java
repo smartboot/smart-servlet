@@ -18,6 +18,7 @@ import tech.smartboot.feat.core.common.utils.WebSocketUtil;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.WebSocketRequest;
 import tech.smartboot.feat.core.server.WebSocketResponse;
+import tech.smartboot.feat.core.server.upgrade.websocket.WebSocketUpgrade;
 import tech.smartboot.servlet.impl.WebConnectionImpl;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class WebSocketUpgradeHandler implements HttpUpgradeHandler {
 
     public void upgrade(WebsocketSession session) throws IOException {
         final ClassLoader servletClassLoader = Thread.currentThread().getContextClassLoader();
-        request.upgrade(new tech.smartboot.feat.core.server.upgrade.websocket.WebSocketUpgradeHandler() {
+        request.upgrade(new WebSocketUpgrade() {
             @Override
             public void handle(WebSocketRequest request, WebSocketResponse response) throws Throwable {
                 final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

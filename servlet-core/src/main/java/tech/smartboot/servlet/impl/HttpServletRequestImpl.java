@@ -41,6 +41,7 @@ import tech.smartboot.feat.core.common.utils.NumberUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpResponse;
+import tech.smartboot.feat.core.server.impl.Upgrade;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -233,16 +234,6 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public ServletInfo getServletInfo() {
         return servletInfo;
-    }
-
-    @Override
-    public Attachment getAttachment() {
-        return request.getAttachment();
-    }
-
-    @Override
-    public void setAttachment(Attachment attachment) {
-        request.setAttachment(attachment);
     }
 
     @Override
@@ -592,7 +583,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                     return httpServletResponse.getOutputStream();
                 }
             });
-            request.upgrade(new tech.smartboot.feat.core.server.impl.HttpUpgradeHandler() {
+            request.upgrade(new Upgrade() {
 
                 @Override
                 public void init(HttpRequest request, HttpResponse response) throws IOException {

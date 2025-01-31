@@ -15,7 +15,7 @@ import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
-import tech.smartboot.feat.core.Feat;
+import tech.smartboot.feat.Feat;
 import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
 import tech.smartboot.feat.core.common.enums.HeaderValueEnum;
 import tech.smartboot.feat.core.common.logging.Logger;
@@ -24,11 +24,10 @@ import tech.smartboot.feat.core.common.utils.ParamReflect;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpHandler;
 import tech.smartboot.feat.core.server.HttpRequest;
-import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.feat.core.server.HttpServer;
 import tech.smartboot.feat.core.server.handler.BaseHttpHandler;
 import tech.smartboot.feat.core.server.impl.HttpEndpoint;
-import tech.smartboot.feat.core.server.upgrade.http2.Http2UpgradeHandler;
+import tech.smartboot.feat.core.server.upgrade.http2.Http2Upgrade;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
@@ -166,9 +165,9 @@ public class BasicPlugin extends Plugin {
                                        CompletableFuture<Object> completableFuture) throws Throwable {
                         String upgrade = request.getHeader(HeaderNameEnum.UPGRADE.getName());
                         if (HeaderValueEnum.Upgrade.H2C.equalsIgnoreCase(upgrade)) {
-                            request.upgrade(new Http2UpgradeHandler() {
+                            request.upgrade(new Http2Upgrade() {
                                 @Override
-                                public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object> completableFuture) throws Throwable {
+                                public void handle(HttpRequest request, CompletableFuture<Object> completableFuture) throws Throwable {
                                     container.doHandle(request, completableFuture);
                                 }
                             });
@@ -181,13 +180,13 @@ public class BasicPlugin extends Plugin {
             }
             System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
-                HttpServer httpServer = Feat.createHttpServer(options -> {
+                HttpServer httpServer = Feat.httpServer(options -> {
                     options.group(group)
                             .readBufferSize(config.getReadBufferSize())
                             .serverName("smart-servlet")
                             .debug(config.isDebugEnable())
                             .bannerEnabled(false)
-                            .setHttpIdleTimeout(config.getHttpIdleTimeout())
+                            .setIdleTimeout(config.getHttpIdleTimeout())
                             .addPlugin(config.getPlugins());
                     if (config.isProxyProtocolEnable()) {
                         options.proxyProtocolSupport();
@@ -273,13 +272,13 @@ public class BasicPlugin extends Plugin {
             default:
                 throw new UnsupportedOperationException("无效证书类型");
         }
-        HttpServer httpServer = Feat.createHttpServer(options -> {
+        HttpServer httpServer = Feat.httpServer(options -> {
             options.group(group)
                     .readBufferSize(config.getSslReadBufferSize())
                     .serverName("smart-servlet")
                     .debug(config.isDebugEnable())
                     .bannerEnabled(false)
-                    .setHttpIdleTimeout(config.getHttpIdleTimeout())
+                    .setIdleTimeout(config.getHttpIdleTimeout())
                     .addPlugin(sslPlugin)
                     .addPlugin(config.getPlugins());
             if (config.isProxyProtocolEnable()) {

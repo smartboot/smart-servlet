@@ -170,16 +170,6 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     }
 
     @Override
-    public Attachment getAttachment() {
-        return request.getAttachment();
-    }
-
-    @Override
-    public void setAttachment(Attachment attachment) {
-        request.setAttachment(attachment);
-    }
-
-    @Override
     public void setServletMappingInfo(ServletMappingInfo httpServletMapping) {
         this.servletMappingInfo = httpServletMapping;
     }
