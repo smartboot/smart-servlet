@@ -92,6 +92,7 @@ public class FilterMatchHandler extends Handler {
                 }
             }
         });
+        filters.sort((o1, o2) -> o1.getOrder() - o2.getOrder());
         return filters;
     }
 

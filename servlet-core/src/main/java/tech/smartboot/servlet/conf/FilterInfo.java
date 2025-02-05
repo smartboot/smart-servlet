@@ -28,6 +28,8 @@ public class FilterInfo {
     private Filter filter;
     private boolean dynamic;
     private boolean asyncSupported;
+    private static int index;
+    private int order = index++;
 
     public Filter getFilter() {
         return filter;
@@ -76,5 +78,9 @@ public class FilterInfo {
 
     public void setAsyncSupported(boolean asyncSupported) {
         this.asyncSupported = asyncSupported;
+    }
+
+    public int getOrder() {
+        return order;
     }
 }
