@@ -16,8 +16,8 @@ import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.feat.Feat;
+import tech.smartboot.feat.core.common.HeaderValue;
 import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
-import tech.smartboot.feat.core.common.enums.HeaderValueEnum;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.ParamReflect;
@@ -164,7 +164,7 @@ public class BasicPlugin extends Plugin {
                     public void handle(HttpRequest request,
                                        CompletableFuture<Object> completableFuture) throws Throwable {
                         String upgrade = request.getHeader(HeaderNameEnum.UPGRADE.getName());
-                        if (HeaderValueEnum.Upgrade.H2C.equalsIgnoreCase(upgrade)) {
+                        if (HeaderValue.Upgrade.H2C.equalsIgnoreCase(upgrade)) {
                             request.upgrade(new Http2Upgrade() {
                                 @Override
                                 public void handle(HttpRequest request, CompletableFuture<Object> completableFuture) throws Throwable {

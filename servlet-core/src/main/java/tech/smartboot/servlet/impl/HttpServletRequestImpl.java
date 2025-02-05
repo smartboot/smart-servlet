@@ -31,9 +31,8 @@ import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.MappingMatch;
 import jakarta.servlet.http.Part;
 import jakarta.servlet.http.PushBuilder;
-import org.smartboot.socket.util.Attachment;
+import tech.smartboot.feat.core.common.HeaderValue;
 import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
-import tech.smartboot.feat.core.common.enums.HeaderValueEnum;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.multipart.MultipartConfig;
@@ -489,7 +488,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (parts != null || partsParseException != null) {
             return;
         }
-        if (!request.getContentType().startsWith(HeaderValueEnum.ContentType.MULTIPART_FORM_DATA)) {
+        if (!request.getContentType().startsWith(HeaderValue.ContentType.MULTIPART_FORM_DATA)) {
             throw new ServletException("Not a multipart request");
         }
         try {
@@ -673,7 +672,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public String getParameter(String name) {
         String value = request.getParameter(name);
-        if (value == null && request.getContentType() != null && request.getContentType().startsWith(HeaderValueEnum.ContentType.MULTIPART_FORM_DATA)) {
+        if (value == null && request.getContentType() != null && request.getContentType().startsWith(HeaderValue.ContentType.MULTIPART_FORM_DATA)) {
             try {
                 parseParts();
             } catch (ServletException e) {
