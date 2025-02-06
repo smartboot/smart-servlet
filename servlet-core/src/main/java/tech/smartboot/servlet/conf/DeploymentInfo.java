@@ -45,7 +45,7 @@ public class DeploymentInfo {
     private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
     private final Map<Integer, ErrorPageInfo> errorStatusPages = new HashMap<>();
     private final Map<String, ErrorPageInfo> errorPages = new HashMap<>();
-    private final Map<String, FilterInfo> filters = new HashMap<>();
+    private final List<FilterInfo> filters = new ArrayList<>();
     /**
      * web.xml中的Filter映射信息配置
      */
@@ -179,7 +179,7 @@ public class DeploymentInfo {
     }
 
     public void addFilter(final FilterInfo filter) {
-        filters.put(filter.getFilterName(), filter);
+        filters.add(filter);
     }
 
     public LoginConfig getLoginConfig() {
@@ -217,7 +217,7 @@ public class DeploymentInfo {
             servletInfo.setServletClass(null);
             servletInfo.setJspFile(null);
         });
-        filters.values().forEach(filterInfo -> {
+        filters.forEach(filterInfo -> {
             filterInfo.setFilterClass(null);
         });
 //        securityConstraints = null;
@@ -282,7 +282,7 @@ public class DeploymentInfo {
         return requestAttributeListeners;
     }
 
-    public Map<String, FilterInfo> getFilters() {
+    public List<FilterInfo> getFilters() {
         return filters;
     }
 

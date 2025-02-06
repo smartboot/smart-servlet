@@ -309,7 +309,7 @@ public class ServletContextRuntime {
      * @param deploymentInfo 部署信息
      */
     private void initFilter(DeploymentInfo deploymentInfo) throws Exception {
-        for (FilterInfo filterInfo : deploymentInfo.getFilters().values()) {
+        for (FilterInfo filterInfo : deploymentInfo.getFilters()) {
             FilterConfig filterConfig = new FilterConfigImpl(filterInfo, servletContext);
             Filter filter;
             if (filterInfo.isDynamic()) {

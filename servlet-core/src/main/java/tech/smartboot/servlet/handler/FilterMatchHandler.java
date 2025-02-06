@@ -80,7 +80,7 @@ public class FilterMatchHandler extends Handler {
         mappings.stream().filter(filterMappingInfo -> filterMappingInfo.contains(request.getDispatcherType())).forEach(mappingInfo -> {
             if (mappingInfo.isServletMappingType()) {
                 if (handlerContext.getServletInfo() != null && StringUtils.equals(mappingInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName())) {
-                    filters.add(handlerContext.getServletContext().getDeploymentInfo().getFilters().get(mappingInfo.getFilterName()));
+                    filters.addAll(handlerContext.getServletContext().getDeploymentInfo().getFilters().stream().filter(filterInfo -> StringUtils.equals(filterInfo.getFilterName(), mappingInfo.getFilterName())).toList());
                 }
             } else {
                 String requestURI = request.getRequestURI();
@@ -88,11 +88,11 @@ public class FilterMatchHandler extends Handler {
                     requestURI = (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI);
                 }
                 if (PathMatcherUtil.matches(requestURI, contextPath.length(), mappingInfo)) {
-                    filters.add(handlerContext.getServletContext().getDeploymentInfo().getFilters().get(mappingInfo.getFilterName()));
+                    filters.addAll(handlerContext.getServletContext().getDeploymentInfo().getFilters().stream().filter(filterInfo -> StringUtils.equals(filterInfo.getFilterName(), mappingInfo.getFilterName())).toList());
                 }
             }
         });
-        filters.sort((o1, o2) -> o1.getOrder() - o2.getOrder());
+//        filters.sort((o1, o2) -> o1.getOrder() - o2.getOrder());
         return filters;
     }
 

@@ -445,7 +445,7 @@ public class ServletContextImpl implements ServletContext {
         if (StringUtils.isBlank(filterName)) {
             throw new IllegalArgumentException("filterName is null or an empty String");
         }
-        if (deploymentInfo.getFilters().values().stream().anyMatch(filterInfo -> filterName.equals(filterInfo.getFilterName()))) {
+        if (deploymentInfo.getFilters().stream().anyMatch(filterInfo -> filterName.equals(filterInfo.getFilterName()))) {
             return null;
         }
         FilterInfo filterInfo = new FilterInfo();
@@ -481,7 +481,7 @@ public class ServletContextImpl implements ServletContext {
     @Override
     public FilterRegistration getFilterRegistration(String filterName) {
         checkContextInitializeState();
-        Optional<FilterInfo> optional = deploymentInfo.getFilters().values().stream().filter(filter -> filterName.equals(filter.getFilterName())).findFirst();
+        Optional<FilterInfo> optional = deploymentInfo.getFilters().stream().filter(filter -> filterName.equals(filter.getFilterName())).findFirst();
         return optional.map(filterInfo -> new ApplicationFilterRegistration(deploymentInfo, filterInfo)).orElse(null);
     }
 
@@ -489,7 +489,7 @@ public class ServletContextImpl implements ServletContext {
     public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
         checkContextInitializeState();
         Map<String, ApplicationFilterRegistration> filterMap = new HashMap<>();
-        deploymentInfo.getFilters().values().forEach(filterInfo -> filterMap.put(filterInfo.getFilterName(), new ApplicationFilterRegistration(deploymentInfo, filterInfo)));
+        deploymentInfo.getFilters().forEach(filterInfo -> filterMap.put(filterInfo.getFilterName(), new ApplicationFilterRegistration(deploymentInfo, filterInfo)));
         return filterMap;
     }
 
