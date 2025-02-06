@@ -38,7 +38,7 @@ public class WebsocketPlugin extends Plugin {
         filterInfo.setFilterClass(WebSocketFilter.class.getName());
         filterInfo.setAsyncSupported(true);
         containerRuntime.getDeploymentInfo().addFilter(filterInfo);
-        containerRuntime.getDeploymentInfo().addFilterMapping(new FilterMappingInfo(filterInfo.getFilterName(), FilterMappingType.URL, null, "/*", Collections.singleton(DispatcherType.REQUEST)));
+        filterInfo.getMappings().add(new FilterMappingInfo(filterInfo.getFilterName(), FilterMappingType.URL, null, "/*", Collections.singleton(DispatcherType.REQUEST)));
     }
 
     @Override

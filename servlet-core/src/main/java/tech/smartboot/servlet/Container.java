@@ -450,9 +450,13 @@ public class Container {
         webAppInfo.getErrorPages().forEach(deploymentInfo::addErrorPage);
 
         //register Filter
-        webAppInfo.getFilterMappingInfos().forEach(deploymentInfo::addFilterMapping);
         for (FilterInfo filterInfo : webAppInfo.getFilters()) {
             deploymentInfo.addFilter(filterInfo);
+            webAppInfo.getFilterMappingInfos().stream()
+                    .filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterInfo.getFilterName()))
+                    .forEach(filterMappingInfo -> {
+                        filterInfo.getMappings().add(filterMappingInfo);
+                    });
         }
         //register servletContext into deploymentInfo
         webAppInfo.getContextParams().forEach(deploymentInfo::addInitParameter);

@@ -12,7 +12,6 @@ package tech.smartboot.servlet.impl;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterRegistration;
-import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
@@ -33,35 +32,33 @@ public class ApplicationFilterRegistration implements FilterRegistration.Dynamic
 
 
     private final FilterInfo filterDef;
-    private DeploymentInfo deploymentInfo;
 
-    public ApplicationFilterRegistration(DeploymentInfo deploymentInfo, FilterInfo filterDef) {
-        this.deploymentInfo = deploymentInfo;
+    public ApplicationFilterRegistration(FilterInfo filterDef) {
         this.filterDef = filterDef;
     }
 
     @Override
     public void addMappingForServletNames(EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter, String... servletNames) {
         for (String servletName : servletNames) {
-            deploymentInfo.addFilterMapping(new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.SERVLET, servletName, null, dispatcherTypes));
+            filterDef.getMappings().add(new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.SERVLET, servletName, null, dispatcherTypes));
         }
     }
 
     @Override
     public void addMappingForUrlPatterns(EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter, String... urlPatterns) {
         for (String urlPattern : urlPatterns) {
-            deploymentInfo.addFilterMapping(new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.URL, null, urlPattern, dispatcherTypes));
+            filterDef.getMappings().add(new FilterMappingInfo(filterDef.getFilterName(), FilterMappingType.URL, null, urlPattern, dispatcherTypes));
         }
     }
 
     @Override
     public Collection<String> getServletNameMappings() {
-        return deploymentInfo.getFilterMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterDef.getFilterName()) && filterMappingInfo.isServletMappingType()).map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
+        return filterDef.getMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterDef.getFilterName()) && filterMappingInfo.isServletMappingType()).map(FilterMappingInfo::getServletNameMapping).collect(Collectors.toList());
     }
 
     @Override
     public Collection<String> getUrlPatternMappings() {
-        return deploymentInfo.getFilterMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterDef.getFilterName()) && !filterMappingInfo.isServletMappingType()).map(FilterMappingInfo::getUrlPattern).collect(Collectors.toList());
+        return filterDef.getMappings().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterDef.getFilterName()) && !filterMappingInfo.isServletMappingType()).map(FilterMappingInfo::getUrlPattern).collect(Collectors.toList());
     }
 
     @Override

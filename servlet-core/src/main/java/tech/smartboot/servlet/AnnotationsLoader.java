@@ -87,7 +87,6 @@ public class AnnotationsLoader {
     private final List<ServletInfo> servlets = new ArrayList<>();
     private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
     private final List<FilterInfo> filters = new ArrayList<>();
-    private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
 
     public AnnotationsLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -154,10 +153,6 @@ public class AnnotationsLoader {
 
     public List<FilterInfo> getFilters() {
         return filters;
-    }
-
-    public List<FilterMappingInfo> getFilterMappings() {
-        return filterMappings;
     }
 
     public List<ServletMappingInfo> getServletMappings() {
@@ -251,10 +246,10 @@ public class AnnotationsLoader {
                     }
                     Set<DispatcherType> set = new HashSet<>(Arrays.asList(webFilter.dispatcherTypes()));
                     for (String urlPattern : webFilter.urlPatterns()) {
-                        filterMappings.add(new FilterMappingInfo(name, FilterMappingType.URL, null, urlPattern, set));
+                        filterInfo.getMappings().add(new FilterMappingInfo(name, FilterMappingType.URL, null, urlPattern, set));
                     }
                     for (String servletName : webFilter.servletNames()) {
-                        filterMappings.add(new FilterMappingInfo(name, FilterMappingType.SERVLET, servletName, null, set));
+                        filterInfo.getMappings().add(new FilterMappingInfo(name, FilterMappingType.SERVLET, servletName, null, set));
                     }
                     filters.add(filterInfo);
                 } else if (WebServlet.class.getName().equals(annotationName)) {

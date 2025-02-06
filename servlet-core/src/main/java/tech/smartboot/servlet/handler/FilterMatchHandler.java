@@ -25,7 +25,6 @@ import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -75,25 +74,21 @@ public class FilterMatchHandler extends Handler {
     private List<FilterInfo> matchFilters(HandlerContext handlerContext) {
         String contextPath = handlerContext.getServletContext().getContextPath();
         HttpServletRequest request = (HttpServletRequest) handlerContext.getRequest();
-        List<FilterInfo> filters = new ArrayList<>();
-        List<FilterMappingInfo> mappings = handlerContext.getServletContext().getDeploymentInfo().getFilterMappings();
-        mappings.stream().filter(filterMappingInfo -> filterMappingInfo.contains(request.getDispatcherType())).forEach(mappingInfo -> {
-            if (mappingInfo.isServletMappingType()) {
-                if (handlerContext.getServletInfo() != null && StringUtils.equals(mappingInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName())) {
-                    filters.addAll(handlerContext.getServletContext().getDeploymentInfo().getFilters().stream().filter(filterInfo -> StringUtils.equals(filterInfo.getFilterName(), mappingInfo.getFilterName())).toList());
-                }
-            } else {
-                String requestURI = request.getRequestURI();
-                if (request.getDispatcherType() == DispatcherType.INCLUDE) {
-                    requestURI = (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI);
-                }
-                if (PathMatcherUtil.matches(requestURI, contextPath.length(), mappingInfo)) {
-                    filters.addAll(handlerContext.getServletContext().getDeploymentInfo().getFilters().stream().filter(filterInfo -> StringUtils.equals(filterInfo.getFilterName(), mappingInfo.getFilterName())).toList());
-                }
+        List<FilterInfo> filters = handlerContext.getServletContext().getDeploymentInfo().getFilters();
+        return filters.stream().filter(filterInfo -> filterInfo.getMappings().stream().filter(filterMappingInfo -> StringUtils.equals(filterMappingInfo.getFilterName(), filterInfo.getFilterName())).anyMatch(mappingInfo -> {
+            if (!mappingInfo.contains(request.getDispatcherType())) {
+                return false;
             }
-        });
-        filters.sort((o1, o2) -> o1.getOrder() - o2.getOrder());
-        return filters;
+            if (mappingInfo.isServletMappingType()) {
+                return handlerContext.getServletInfo() != null && StringUtils.equals(mappingInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName());
+            }
+
+            String requestURI = request.getRequestURI();
+            if (request.getDispatcherType() == DispatcherType.INCLUDE) {
+                requestURI = (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI);
+            }
+            return PathMatcherUtil.matches(requestURI, contextPath.length(), mappingInfo);
+        })).toList();
     }
 
     private List<FilterInfo> filterCacheFilterList(HandlerContext handlerContext) {

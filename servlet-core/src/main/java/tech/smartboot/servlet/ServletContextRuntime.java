@@ -264,7 +264,6 @@ public class ServletContextRuntime {
             });
             deploymentInfo.getHandlesTypesLoader().getServletMappings().forEach(deploymentInfo::addServletMapping);
             deploymentInfo.getHandlesTypesLoader().getFilters().forEach(deploymentInfo::addFilter);
-            deploymentInfo.getHandlesTypesLoader().getFilterMappings().forEach(deploymentInfo::addFilterMapping);
             deploymentInfo.getHandlesTypesLoader().clear();
             deploymentInfo.setHandlesTypesLoader(null);
 //            System.out.println("scanHandleTypes use :" + (System.currentTimeMillis() - start));

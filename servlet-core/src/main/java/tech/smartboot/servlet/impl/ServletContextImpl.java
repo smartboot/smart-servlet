@@ -57,7 +57,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author 三刀
@@ -454,7 +453,7 @@ public class ServletContextImpl implements ServletContext {
         filterInfo.setFilterClass(filter.getClass().getName());
         filterInfo.setDynamic(true);
         deploymentInfo.addFilter(filterInfo);
-        return new ApplicationFilterRegistration(deploymentInfo, filterInfo);
+        return new ApplicationFilterRegistration(filterInfo);
     }
 
     private void checkServletContextState() {
@@ -482,14 +481,14 @@ public class ServletContextImpl implements ServletContext {
     public FilterRegistration getFilterRegistration(String filterName) {
         checkContextInitializeState();
         Optional<FilterInfo> optional = deploymentInfo.getFilters().stream().filter(filter -> filterName.equals(filter.getFilterName())).findFirst();
-        return optional.map(filterInfo -> new ApplicationFilterRegistration(deploymentInfo, filterInfo)).orElse(null);
+        return optional.map(filterInfo -> new ApplicationFilterRegistration(filterInfo)).orElse(null);
     }
 
     @Override
     public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
         checkContextInitializeState();
         Map<String, ApplicationFilterRegistration> filterMap = new HashMap<>();
-        deploymentInfo.getFilters().forEach(filterInfo -> filterMap.put(filterInfo.getFilterName(), new ApplicationFilterRegistration(deploymentInfo, filterInfo)));
+        deploymentInfo.getFilters().forEach(filterInfo -> filterMap.put(filterInfo.getFilterName(), new ApplicationFilterRegistration(filterInfo)));
         return filterMap;
     }
 

@@ -12,8 +12,10 @@ package tech.smartboot.servlet.conf;
 
 import jakarta.servlet.Filter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,6 +32,7 @@ public class FilterInfo {
     private boolean asyncSupported;
     private static int index;
     private int order = index++;
+    private final List<FilterMappingInfo> mappings = new ArrayList<>();
 
     public Filter getFilter() {
         return filter;
@@ -78,6 +81,10 @@ public class FilterInfo {
 
     public void setAsyncSupported(boolean asyncSupported) {
         this.asyncSupported = asyncSupported;
+    }
+
+    public List<FilterMappingInfo> getMappings() {
+        return mappings;
     }
 
     public int getOrder() {

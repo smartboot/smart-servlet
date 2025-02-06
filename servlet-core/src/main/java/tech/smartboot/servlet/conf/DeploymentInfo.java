@@ -46,10 +46,6 @@ public class DeploymentInfo {
     private final Map<Integer, ErrorPageInfo> errorStatusPages = new HashMap<>();
     private final Map<String, ErrorPageInfo> errorPages = new HashMap<>();
     private final List<FilterInfo> filters = new ArrayList<>();
-    /**
-     * web.xml中的Filter映射信息配置
-     */
-    private final List<FilterMappingInfo> filterMappings = new ArrayList<>();
     private final Map<String, String> initParameters = new HashMap<>();
     private List<ServletContainerInitializerInfo> servletContainerInitializers = new ArrayList<>();
     private List<ServletContextAttributeListener> servletContextAttributeListeners = new ArrayList<>();
@@ -168,14 +164,6 @@ public class DeploymentInfo {
 
     public List<ServletMappingInfo> getServletMappings() {
         return servletMappings;
-    }
-
-    public void addFilterMapping(final FilterMappingInfo filterMapping) {
-        filterMappings.add(filterMapping);
-    }
-
-    public List<FilterMappingInfo> getFilterMappings() {
-        return filterMappings;
     }
 
     public void addFilter(final FilterInfo filter) {
