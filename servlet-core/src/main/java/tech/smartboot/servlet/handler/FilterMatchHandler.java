@@ -21,7 +21,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.FilterInfo;
-import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;
@@ -75,7 +74,7 @@ public class FilterMatchHandler extends Handler {
         String contextPath = handlerContext.getServletContext().getContextPath();
         HttpServletRequest request = (HttpServletRequest) handlerContext.getRequest();
         List<FilterInfo> filters = handlerContext.getServletContext().getDeploymentInfo().getFilters();
-        return filters.stream().filter(filterInfo -> filterInfo.getMappings().stream().filter(filterMappingInfo -> StringUtils.equals(filterMappingInfo.getFilterName(), filterInfo.getFilterName())).anyMatch(mappingInfo -> {
+        return filters.stream().filter(filterInfo -> filterInfo.getMappings().stream().anyMatch(mappingInfo -> {
             if (!mappingInfo.contains(request.getDispatcherType())) {
                 return false;
             }
