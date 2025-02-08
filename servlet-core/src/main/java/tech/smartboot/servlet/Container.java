@@ -441,19 +441,14 @@ public class Container {
                 deploymentInfo.setEffectiveMinorVersion(Integer.parseInt(array[1]));
             }
         }
-//        if (webAppInfo.getLoginConfig() != null && webAppInfo.getLoginConfig().getLoginPage().endsWith(".jsp")) {
-//            servletRuntime.getServletContext().addJspFile("aaaaaa", webAppInfo.getLoginConfig().getLoginPage());
-//        }
+
         //register Servlet into deploymentInfo
         for (ServletInfo servletInfo : webAppInfo.getServlets().values()) {
             deploymentInfo.addServlet(servletInfo);
             List<String> list = webAppInfo.getServletMappings().get(servletInfo.getServletName());
             if (list != null) {
-                for (String s : list) {
-                    servletInfo.addServletMapping(s, servletRuntime);
-                }
+                list.forEach(s -> servletInfo.addServletMapping(s, servletRuntime));
             }
-
         }
 
         webAppInfo.getErrorPages().forEach(deploymentInfo::addErrorPage);
