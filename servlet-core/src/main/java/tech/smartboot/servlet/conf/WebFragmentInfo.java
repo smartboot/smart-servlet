@@ -37,8 +37,8 @@ public class WebFragmentInfo extends WebAppInfo {
             }
             //具有相同<servlet-name>的<servlet-mapping>元素可以添加到多个 web-fragment。在 web.xml 中
             //指定的<servlet-mapping>覆盖在 web-fragment 中指定的同名的<servlet-name>的<servlet-mapping>
-            if (webAppInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getServletName().equals(servletInfo.getServletName()))) {
-                webAppInfo.getServletMappings().addAll(getServletMappings().stream().filter(mapping -> mapping.getServletName().equals(servletInfo.getServletName())).toList());
+            if (webAppInfo.getServletMappings().get(servletInfo.getServletName()) == null && getServletMappings().get(servletInfo.getServletName()) != null) {
+                webAppInfo.getServletMappings().put(servletInfo.getServletName(), getServletMappings().get(servletInfo.getServletName()));
             }
 
         });

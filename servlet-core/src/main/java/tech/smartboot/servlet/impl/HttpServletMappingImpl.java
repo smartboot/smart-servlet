@@ -37,7 +37,7 @@ public class HttpServletMappingImpl implements HttpServletMapping {
 
     @Override
     public String getServletName() {
-        return servletMappingInfo.getServletName();
+        return servletMappingInfo.getServletInfo().getServletName();
     }
 
     @Override

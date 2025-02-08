@@ -12,4 +12,3 @@ tech.smartboot.servlet.plugins.session.SessionPlugin
 tech.smartboot.servlet.plugins.dispatcher.DispatcherPlugin
 tech.smartboot.servlet.plugins.websocket.WebsocketPlugin
 tech.smartboot.servlet.plugins.async.AsyncContextPlugin
-tech.smartboot.servlet.plugins.mapping.MappingPlugin

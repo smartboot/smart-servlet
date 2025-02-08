@@ -42,7 +42,6 @@ public class DeploymentInfo {
     private int effectiveMajorVersion;
     private int effectiveMinorVersion;
     private final Map<String, ServletInfo> servlets = new HashMap<>();
-    private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
     private final Map<Integer, ErrorPageInfo> errorStatusPages = new HashMap<>();
     private final Map<String, ErrorPageInfo> errorPages = new HashMap<>();
     private final List<FilterInfo> filters = new ArrayList<>();
@@ -156,14 +155,6 @@ public class DeploymentInfo {
             errorPage = errorPages.get(clazz.getName());
         }
         return errorPage == null ? null : errorPage.getLocation();
-    }
-
-    public void addServletMapping(final ServletMappingInfo servletMapping) {
-        servletMappings.add(servletMapping);
-    }
-
-    public List<ServletMappingInfo> getServletMappings() {
-        return servletMappings;
     }
 
     public void addFilter(final FilterInfo filter) {

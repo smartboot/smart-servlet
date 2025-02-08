@@ -27,7 +27,6 @@ import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.ServletInfo;
-import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
 import tech.smartboot.servlet.third.bcel.Const;
 import tech.smartboot.servlet.third.bcel.classfile.AnnotationEntry;
@@ -85,11 +84,12 @@ public class AnnotationsLoader {
     private final Map<Class, List<String>> annotations = new HashMap<>();
 
     private final List<ServletInfo> servlets = new ArrayList<>();
-    private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
     private final List<FilterInfo> filters = new ArrayList<>();
+    private final ServletContextRuntime servletContextRuntime;
 
-    public AnnotationsLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
+    public AnnotationsLoader(ServletContextRuntime servletContextRuntime) {
+        this.servletContextRuntime = servletContextRuntime;
+        this.classLoader = servletContextRuntime.getDeploymentInfo().getClassLoader();
     }
 
     public void add(ServletContainerInitializer initializer, Class handlesType) {
@@ -153,10 +153,6 @@ public class AnnotationsLoader {
 
     public List<FilterInfo> getFilters() {
         return filters;
-    }
-
-    public List<ServletMappingInfo> getServletMappings() {
-        return servletMappings;
     }
 
     public List<String> getAnnotations(Class clazz) {
@@ -268,10 +264,10 @@ public class AnnotationsLoader {
                         servletInfo.addInitParam(param.name(), param.value());
                     }
                     for (String urlPattern : webServlet.urlPatterns()) {
-                        servletMappings.add(new ServletMappingInfo(name, urlPattern));
+                        servletInfo.addServletMapping(urlPattern, servletContextRuntime);
                     }
                     for (String url : webServlet.value()) {
-                        servletMappings.add(new ServletMappingInfo(name, url));
+                        servletInfo.addServletMapping(url, servletContextRuntime);
                     }
                     ServletSecurity servletSecurity = clazz.getAnnotation(ServletSecurity.class);
                     if (servletSecurity != null) {

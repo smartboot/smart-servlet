@@ -23,6 +23,7 @@ import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.OrderMeta;
+import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
@@ -260,7 +261,7 @@ public class Container {
             servletRequest.setHttpServletResponse(servletResponse);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
             ServletMappingInfo servletMappingInfo = runtime.getMappingProvider().matchServlet(servletRequest.getRequestURI());
-            handlerContext.setServletInfo(runtime.getDeploymentInfo().getServlets().get(servletMappingInfo.getServletName()));
+            handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
             servletRequest.setServletMappingInfo(servletMappingInfo);
             runtime.getVendorProvider().signature(servletResponse);
             // just do it
@@ -444,19 +445,21 @@ public class Container {
 //            servletRuntime.getServletContext().addJspFile("aaaaaa", webAppInfo.getLoginConfig().getLoginPage());
 //        }
         //register Servlet into deploymentInfo
-        webAppInfo.getServletMappings().forEach(deploymentInfo::addServletMapping);
-        webAppInfo.getServlets().values().forEach(deploymentInfo::addServlet);
+        for (ServletInfo servletInfo : webAppInfo.getServlets().values()) {
+            deploymentInfo.addServlet(servletInfo);
+            for (String s : webAppInfo.getServletMappings().get(servletInfo.getServletName())) {
+                servletInfo.addServletMapping(s, servletRuntime);
+            }
+        }
 
         webAppInfo.getErrorPages().forEach(deploymentInfo::addErrorPage);
 
         //register Filter
         for (FilterInfo filterInfo : webAppInfo.getFilters()) {
             deploymentInfo.addFilter(filterInfo);
-            webAppInfo.getFilterMappingInfos().stream()
-                    .filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterInfo.getFilterName()))
-                    .forEach(filterMappingInfo -> {
-                        filterInfo.getMappings().add(filterMappingInfo);
-                    });
+            webAppInfo.getFilterMappingInfos().stream().filter(filterMappingInfo -> filterMappingInfo.getFilterName().equals(filterInfo.getFilterName())).forEach(filterMappingInfo -> {
+                filterInfo.getMappings().add(filterMappingInfo);
+            });
         }
         //register servletContext into deploymentInfo
         webAppInfo.getContextParams().forEach(deploymentInfo::addInitParameter);
@@ -479,7 +482,7 @@ public class Container {
         //如果 web.xml 描述符中的 metadata-complete 元素设置为 true，
         // 将不会处理在 class 文件和绑定在 jar 包中的 web-fragments 中的注解
         if (!webAppInfo.isMetadataComplete() && webAppInfo.getAbsoluteOrdering() == null) {
-            deploymentInfo.setHandlesTypesLoader(new AnnotationsLoader(deploymentInfo.getClassLoader()));
+            deploymentInfo.setHandlesTypesLoader(new AnnotationsLoader(servletRuntime));
         }
 
         for (ServletContainerInitializer containerInitializer : ServiceLoader.load(ServletContainerInitializer.class, deploymentInfo.getClassLoader())) {

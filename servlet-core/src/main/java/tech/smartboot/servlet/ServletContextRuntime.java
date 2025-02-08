@@ -31,6 +31,7 @@ import tech.smartboot.servlet.impl.FilterConfigImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.impl.ServletContextWrapperListener;
 import tech.smartboot.servlet.plugins.Plugin;
+import tech.smartboot.servlet.plugins.mapping.MappingProviderImpl;
 import tech.smartboot.servlet.plugins.security.SecurityCheckServlet;
 import tech.smartboot.servlet.plugins.security.SecurityProviderImpl;
 import tech.smartboot.servlet.provider.AsyncContextProvider;
@@ -92,7 +93,7 @@ public class ServletContextRuntime {
     private AsyncContextProvider asyncContextProvider = SandBox.INSTANCE.getAsyncContextProvider();
     private FaviconProvider faviconProvider = SandBox.INSTANCE.getFaviconProvider();
     private final SecurityProvider securityProvider;
-    private MappingProvider mappingProvider = SandBox.INSTANCE.getMappingProvider();
+    private final MappingProvider mappingProvider;
     /**
      * 关联至本运行环境的插件集合
      */
@@ -119,6 +120,7 @@ public class ServletContextRuntime {
         deploymentInfo = new DeploymentInfo(classLoader);
         servletContext = new ServletContextImpl(this);
         securityProvider = new SecurityProviderImpl(deploymentInfo);
+        mappingProvider = new MappingProviderImpl(servletContext.getContextPath().length());
     }
 
     /**
@@ -200,19 +202,19 @@ public class ServletContextRuntime {
             servletInfo.setLoadOnStartup(1);
             deploymentInfo.addServlet(servletInfo);
             //已经存在默认映射，则 default servlet 只适用于getNamedDispatcher场景
-            if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getMappingMatch() == MappingMatch.DEFAULT)) {
-                deploymentInfo.addServletMapping(new ServletMappingInfo(ServletInfo.DEFAULT_SERVLET_NAME, "/"));
+            if (deploymentInfo.getServlets().values().stream().noneMatch(mapping -> mapping.getServletMappings().stream().anyMatch(m -> m.getMappingMatch() == MappingMatch.DEFAULT))) {
+                servletInfo.addServletMapping("/", this);
             }
         }
 
 
-        if (deploymentInfo.getServletMappings().stream().noneMatch(mapping -> mapping.getUrlPattern().equals("/j_security_check"))) {
+        if (deploymentInfo.getServlets().values().stream().noneMatch(mapping -> mapping.getServletMappings().stream().anyMatch(m -> m.getUrlPattern().equals("/j_security_check")))) {
             ServletInfo servletInfo = new ServletInfo(true);
             servletInfo.setServletName("SecurityCheckServlet");
             servletInfo.setServlet(new SecurityCheckServlet(deploymentInfo));
             servletInfo.setLoadOnStartup(1);
             deploymentInfo.addServlet(servletInfo);
-            deploymentInfo.addServletMapping(new ServletMappingInfo(servletInfo.getServletName(), "/j_security_check"));
+            servletInfo.addServletMapping("/j_security_check", this);
         }
 
 
@@ -249,7 +251,7 @@ public class ServletContextRuntime {
                 }
                 //当 在便携式部署描述符中的一个 security-constraint 包含一个 url-pattern ，其精确匹配 一个使用
                 //@ServletSecurity 注解的模式映射到的类，该注解必须不影响 Servlet 容器在该模式上实施的强制约束。
-                Set<String> annotationPatterns = deploymentInfo.getHandlesTypesLoader().getServletMappings().stream().filter(mapping -> mapping.getServletName().equals(servletInfo.getServletName())).map(ServletMappingInfo::getUrlPattern).collect(Collectors.toSet());
+                Set<String> annotationPatterns = servletInfo.getServletMappings().stream().map(ServletMappingInfo::getUrlPattern).collect(Collectors.toSet());
                 annotationPatterns.forEach(pattern -> {
                     boolean exists = deploymentInfo.getSecurityConstraints().stream().anyMatch(securityConstraint -> securityConstraint.getUrlPatterns().stream().map(UrlPattern::getUrlPattern).toList().contains(pattern));
                     if (!exists) {
@@ -262,7 +264,6 @@ public class ServletContextRuntime {
                 });
 
             });
-            deploymentInfo.getHandlesTypesLoader().getServletMappings().forEach(deploymentInfo::addServletMapping);
             deploymentInfo.getHandlesTypesLoader().getFilters().forEach(deploymentInfo::addFilter);
             deploymentInfo.getHandlesTypesLoader().clear();
             deploymentInfo.setHandlesTypesLoader(null);
@@ -386,10 +387,6 @@ public class ServletContextRuntime {
 
     public MappingProvider getMappingProvider() {
         return mappingProvider;
-    }
-
-    public void setMappingProvider(MappingProvider mappingProvider) {
-        this.mappingProvider = mappingProvider;
     }
 
     public String getContextPath() {

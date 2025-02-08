@@ -227,7 +227,7 @@ class DefaultServlet extends HttpServlet {
                     return true;
                 }
                 //是否匹配 Servlet url-pattern
-                if (deploymentInfo.getServletMappings().stream().anyMatch(mapping -> mapping.getUrlPattern().equals("/" + file))) {
+                if (deploymentInfo.getServlets().values().stream().anyMatch(servletInfo -> servletInfo.getServletMappings().stream().anyMatch(mapping -> mapping.getUrlPattern().equals("/" + file)))) {
                     request.getRequestDispatcher(uri + file).forward(request, response);
                     return true;
                 }

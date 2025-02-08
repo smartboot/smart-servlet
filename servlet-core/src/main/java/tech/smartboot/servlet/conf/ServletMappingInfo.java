@@ -15,14 +15,14 @@ package tech.smartboot.servlet.conf;
  * @version V1.0 , 2020/10/11
  */
 public class ServletMappingInfo extends UrlPattern {
-    private final String servletName;
+    private final ServletInfo servletInfo;
 
-    public ServletMappingInfo(String servletName, String mapping) {
+    public ServletMappingInfo(ServletInfo servletName, String mapping) {
         super(mapping);
-        this.servletName = servletName;
+        this.servletInfo = servletName;
     }
 
-    public String getServletName() {
-        return servletName;
+    public ServletInfo getServletInfo() {
+        return servletInfo;
     }
 }

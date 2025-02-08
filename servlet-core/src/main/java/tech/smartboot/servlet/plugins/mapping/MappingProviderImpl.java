@@ -96,4 +96,22 @@ public class MappingProviderImpl implements MappingProvider {
         return pathMappings;
     }
 
+    @Override
+    public void addMapping(ServletMappingInfo mapping) {
+        switch (mapping.getMappingMatch()) {
+            case DEFAULT:
+                setDefaultMapping(mapping);
+                break;
+            case EXACT:
+                getExactMapping().put(mapping.getUrlPattern(), mapping);
+                break;
+            case EXTENSION:
+                getExtensionMappings().add(mapping);
+                break;
+            case PATH:
+                getPathMappings().add(mapping);
+                getPathMappings().sort((o1, o2) -> o2.getUrlPattern().length() - o1.getUrlPattern().length());
+                break;
+        }
+    }
 }

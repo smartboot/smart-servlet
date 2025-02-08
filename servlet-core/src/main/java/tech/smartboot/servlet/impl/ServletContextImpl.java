@@ -383,7 +383,7 @@ public class ServletContextImpl implements ServletContext {
         servletInfo.setServletName(servletName);
         servletInfo.setServlet(servlet);
         deploymentInfo.addServlet(servletInfo);
-        return new ApplicationServletRegistration(deploymentInfo, servletInfo);
+        return new ApplicationServletRegistration(runtime, servletInfo);
     }
 
     @Override
@@ -413,7 +413,7 @@ public class ServletContextImpl implements ServletContext {
     public ServletRegistration getServletRegistration(String servletName) {
         checkContextInitializeState();
         ServletInfo servletInfo = deploymentInfo.getServlets().get(servletName);
-        return servletInfo == null ? null : new ApplicationServletRegistration(deploymentInfo, servletInfo);
+        return servletInfo == null ? null : new ApplicationServletRegistration(runtime, servletInfo);
     }
 
     @Override
@@ -421,7 +421,7 @@ public class ServletContextImpl implements ServletContext {
         checkContextInitializeState();
         Map<String, ApplicationServletRegistration> map = new HashMap<>();
         deploymentInfo.getServlets().forEach((servletName, servletInfo) -> {
-            map.put(servletName, new ApplicationServletRegistration(deploymentInfo, servletInfo));
+            map.put(servletName, new ApplicationServletRegistration(runtime, servletInfo));
         });
         return map;
     }

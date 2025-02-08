@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import tech.smartboot.feat.core.common.enums.HttpStatus;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
+import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.impl.ServletConfigImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 
@@ -54,6 +55,8 @@ public class ServletInfo {
 
     private byte mask;
     private final List<SecurityConstraint> securityConstraints = new ArrayList<>();
+
+    private final List<ServletMappingInfo> servletMappings = new ArrayList<>();
 
     public ServletInfo() {
         this(false);
@@ -210,5 +213,15 @@ public class ServletInfo {
      */
     public boolean initialized() {
         return masked(MASK_INITIALIZED);
+    }
+
+    public List<ServletMappingInfo> getServletMappings() {
+        return servletMappings;
+    }
+
+    public void addServletMapping(String urlPattern, ServletContextRuntime runtime) {
+        ServletMappingInfo servletMappingInfo = new ServletMappingInfo(this, urlPattern);
+        servletMappings.add(servletMappingInfo);
+        runtime.getMappingProvider().addMapping(servletMappingInfo);
     }
 }

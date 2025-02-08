@@ -13,13 +13,13 @@ package tech.smartboot.servlet;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.annotation.ServletSecurity;
-import tech.smartboot.feat.core.common.utils.NumberUtils;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import tech.smartboot.feat.core.common.utils.NumberUtils;
+import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.ErrorPageInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
@@ -27,7 +27,6 @@ import tech.smartboot.servlet.conf.LoginConfig;
 import tech.smartboot.servlet.conf.OrderMeta;
 import tech.smartboot.servlet.conf.SecurityConstraint;
 import tech.smartboot.servlet.conf.ServletInfo;
-import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.conf.UrlPattern;
 import tech.smartboot.servlet.conf.WebAppInfo;
 import tech.smartboot.servlet.conf.WebFragmentInfo;
@@ -339,10 +338,7 @@ class WebXmlParseEngine {
             Map<String, String> nodeData = getNodeValue(node, Collections.singletonList("servlet-name"));
             String servletName = nodeData.get("servlet-name");
             getNodeValues(node, "url-pattern").forEach(urlPattern -> {
-                ServletMappingInfo servletMappingInfo = new ServletMappingInfo(servletName, urlPattern);
-                if (servletMappingInfo.getMappingMatch() != null) {
-                    webAppInfo.getServletMappings().add(servletMappingInfo);
-                }
+                webAppInfo.getServletMappings().computeIfAbsent(servletName, s -> new ArrayList<>()).add(urlPattern);
             });
         }
     }

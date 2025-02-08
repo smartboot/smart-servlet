@@ -208,7 +208,7 @@ public class AsyncContextImpl implements AsyncContext {
                 originalRequest.resetAsyncStarted();
                 HandlerContext handlerContext = new HandlerContext(wrapper, response, servletContext, false);
                 ServletMappingInfo servletMappingInfo = servletContext.getRuntime().getMappingProvider().matchServlet(wrapper.getRequestURI());
-                handlerContext.setServletInfo(servletContext.getDeploymentInfo().getServlets().get(servletMappingInfo.getServletName()));
+                handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
                 wrapper.setServletMappingInfo(servletMappingInfo);
                 servletContext.getPipeline().handleRequest(handlerContext);
             } catch (Throwable e) {
