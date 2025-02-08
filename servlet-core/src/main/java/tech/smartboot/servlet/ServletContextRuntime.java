@@ -245,6 +245,7 @@ public class ServletContextRuntime {
                 ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
                 if (webXmlInfo != null) {
                     servletInfo.getInitParams().forEach(webXmlInfo::addInitParam);
+                    servletInfo = webXmlInfo;
                 } else {
                     deploymentInfo.addServlet(servletInfo);
                 }
@@ -254,8 +255,8 @@ public class ServletContextRuntime {
                 if (patterns == null) {
                     patterns = Collections.emptyList();
                 }
-                patterns.forEach(pattern -> {
-                    deploymentInfo.getServlets().get(servletInfo.getServletName()).addServletMapping(pattern, this);
+                for (String pattern : patterns) {
+                    servletInfo.addServletMapping(pattern, this);
                     boolean exists = deploymentInfo.getSecurityConstraints().stream().anyMatch(securityConstraint -> securityConstraint.getUrlPatterns().stream().map(UrlPattern::getUrlPattern).toList().contains(pattern));
                     if (!exists) {
                         servletInfo.getSecurityConstraints().forEach(securityConstraint -> {
@@ -264,7 +265,7 @@ public class ServletContextRuntime {
                         });
                     }
 
-                });
+                }
 
             });
             deploymentInfo.getHandlesTypesLoader().getFilters().forEach(deploymentInfo::addFilter);

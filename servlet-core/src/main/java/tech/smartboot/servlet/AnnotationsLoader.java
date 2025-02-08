@@ -85,12 +85,10 @@ public class AnnotationsLoader {
 
     private final List<ServletInfo> servlets = new ArrayList<>();
     private final List<FilterInfo> filters = new ArrayList<>();
-    private final ServletContextRuntime servletContextRuntime;
-    private Map<String, List<String>> servletMappings = new HashMap<>();
+    private final Map<String, List<String>> servletMappings = new HashMap<>();
 
-    public AnnotationsLoader(ServletContextRuntime servletContextRuntime) {
-        this.servletContextRuntime = servletContextRuntime;
-        this.classLoader = servletContextRuntime.getDeploymentInfo().getClassLoader();
+    public AnnotationsLoader(ClassLoader loader) {
+        this.classLoader = loader;
     }
 
     public void add(ServletContainerInitializer initializer, Class handlesType) {
@@ -272,7 +270,7 @@ public class AnnotationsLoader {
                         servletMappings.computeIfAbsent(name, k -> new ArrayList<>()).add(urlPattern);
                     }
                     for (String url : webServlet.value()) {
-                        servletMappings.computeIfAbsent(name, k -> new ArrayList<>()).add(name);
+                        servletMappings.computeIfAbsent(name, k -> new ArrayList<>()).add(url);
                     }
                     ServletSecurity servletSecurity = clazz.getAnnotation(ServletSecurity.class);
                     if (servletSecurity != null) {

@@ -486,7 +486,7 @@ public class Container {
         //如果 web.xml 描述符中的 metadata-complete 元素设置为 true，
         // 将不会处理在 class 文件和绑定在 jar 包中的 web-fragments 中的注解
         if (!webAppInfo.isMetadataComplete() && webAppInfo.getAbsoluteOrdering() == null) {
-            deploymentInfo.setHandlesTypesLoader(new AnnotationsLoader(servletRuntime));
+            deploymentInfo.setHandlesTypesLoader(new AnnotationsLoader(deploymentInfo.getClassLoader()));
         }
 
         for (ServletContainerInitializer containerInitializer : ServiceLoader.load(ServletContainerInitializer.class, deploymentInfo.getClassLoader())) {
