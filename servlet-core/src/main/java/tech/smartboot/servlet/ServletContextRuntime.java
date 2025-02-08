@@ -242,23 +242,24 @@ public class ServletContextRuntime {
                 servletContext.addListener0(clazz.newInstance(), false);
             }
             deploymentInfo.getHandlesTypesLoader().getServlets().forEach(servletInfo -> {
-                ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
-                if (webXmlInfo != null) {
-                    servletInfo.getInitParams().forEach(webXmlInfo::addInitParam);
-                    webXmlInfo.getSecurityConstraints().addAll(servletInfo.getSecurityConstraints());
-                    webXmlInfo.getSecurityRoles().putAll(servletInfo.getSecurityRoles());
-                    servletInfo = webXmlInfo;
-                } else {
-                    deploymentInfo.addServlet(servletInfo);
-                }
                 //当 在便携式部署描述符中的一个 security-constraint 包含一个 url-pattern ，其精确匹配 一个使用
                 //@ServletSecurity 注解的模式映射到的类，该注解必须不影响 Servlet 容器在该模式上实施的强制约束。
                 List<String> patterns = deploymentInfo.getHandlesTypesLoader().getServletMappings().get(servletInfo.getServletName());
                 if (patterns == null) {
                     patterns = Collections.emptyList();
                 }
+                ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
+                if (webXmlInfo != null) {
+
+                    servletInfo.getInitParams().forEach(webXmlInfo::addInitParam);
+                    webXmlInfo.getSecurityRoles().putAll(servletInfo.getSecurityRoles());
+
+                } else {
+                    webXmlInfo = servletInfo;
+                    deploymentInfo.addServlet(servletInfo);
+                }
                 for (String pattern : patterns) {
-                    servletInfo.addServletMapping(pattern, this);
+                    webXmlInfo.addServletMapping(pattern, this);
                     boolean exists = deploymentInfo.getSecurityConstraints().stream().anyMatch(securityConstraint -> securityConstraint.getUrlPatterns().stream().map(UrlPattern::getUrlPattern).toList().contains(pattern));
                     if (!exists) {
                         servletInfo.getSecurityConstraints().forEach(securityConstraint -> {
@@ -266,9 +267,7 @@ public class ServletContextRuntime {
                             deploymentInfo.getSecurityConstraints().add(securityConstraint);
                         });
                     }
-
                 }
-
             });
             deploymentInfo.getHandlesTypesLoader().getFilters().forEach(deploymentInfo::addFilter);
             deploymentInfo.getHandlesTypesLoader().clear();

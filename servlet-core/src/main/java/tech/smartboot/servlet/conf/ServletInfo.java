@@ -220,6 +220,9 @@ public class ServletInfo {
     }
 
     public void addServletMapping(String urlPattern, ServletContextRuntime runtime) {
+        if (servletMappings.stream().anyMatch(servletMapping -> servletMapping.getUrlPattern().equals(urlPattern))) {
+            return;
+        }
         ServletMappingInfo servletMappingInfo = new ServletMappingInfo(this, urlPattern);
         if (servletMappingInfo.getMappingMatch() != null) {
             servletMappings.add(servletMappingInfo);
