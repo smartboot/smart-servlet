@@ -24,8 +24,8 @@ import jakarta.websocket.Endpoint;
 import jakarta.websocket.Extension;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpointConfig;
+import tech.smartboot.feat.core.common.HttpMethod;
 import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
-import tech.smartboot.feat.core.common.enums.HttpMethodEnum;
 import tech.smartboot.feat.core.common.enums.HttpStatus;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.Container;
@@ -192,7 +192,7 @@ final class MockProvider implements VendorProvider, WebsocketProvider, MappingPr
             resp.setHeader(HeaderNameEnum.LAST_MODIFIED.getName(), sdf.get().format(new Date(faviconModifyTime)));
             resp.setContentType("image/x-icon");
             //HEAD不输出内容
-            if (HttpMethodEnum.HEAD.getMethod().equals(req.getMethod())) {
+            if (HttpMethod.HEAD.equals(req.getMethod())) {
                 return;
             }
             resp.setContentLength(faviconBytes.length);
