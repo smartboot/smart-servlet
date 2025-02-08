@@ -250,10 +250,8 @@ public class ServletContextRuntime {
                 }
                 ServletInfo webXmlInfo = deploymentInfo.getServlets().get(servletInfo.getServletName());
                 if (webXmlInfo != null) {
-
                     servletInfo.getInitParams().forEach(webXmlInfo::addInitParam);
                     webXmlInfo.getSecurityRoles().putAll(servletInfo.getSecurityRoles());
-
                 } else {
                     webXmlInfo = servletInfo;
                     deploymentInfo.addServlet(servletInfo);
