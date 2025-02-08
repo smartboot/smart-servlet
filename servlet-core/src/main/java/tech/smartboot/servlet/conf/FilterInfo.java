@@ -30,8 +30,6 @@ public class FilterInfo {
     private Filter filter;
     private boolean dynamic;
     private boolean asyncSupported;
-    private static int index;
-    private int order = index++;
     private final List<FilterMappingInfo> mappings = new ArrayList<>();
 
     public Filter getFilter() {
@@ -87,7 +85,4 @@ public class FilterInfo {
         return mappings;
     }
 
-    public int getOrder() {
-        return order;
-    }
 }
