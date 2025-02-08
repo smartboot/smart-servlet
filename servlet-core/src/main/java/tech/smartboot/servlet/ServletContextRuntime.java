@@ -50,8 +50,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventListener;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 应用级子容器的运行时环境
@@ -198,17 +196,18 @@ public class ServletContextRuntime {
         if (!deploymentInfo.getServlets().containsKey(ServletInfo.DEFAULT_SERVLET_NAME)) {
             ServletInfo servletInfo = new ServletInfo(true);
             servletInfo.setServletName(ServletInfo.DEFAULT_SERVLET_NAME);
-            servletInfo.setServlet(new DefaultServlet(deploymentInfo));
+            servletInfo.setServlet(new DefaultServlet(this));
             servletInfo.setLoadOnStartup(1);
             deploymentInfo.addServlet(servletInfo);
             //已经存在默认映射，则 default servlet 只适用于getNamedDispatcher场景
-            if (deploymentInfo.getServlets().values().stream().noneMatch(mapping -> mapping.getServletMappings().stream().anyMatch(m -> m.getMappingMatch() == MappingMatch.DEFAULT))) {
+            ServletMappingInfo mappingInfo = getMappingProvider().matchWithoutContextPath("/");
+            if (mappingInfo == null) {
                 servletInfo.addServletMapping("/", this);
             }
         }
 
-
-        if (deploymentInfo.getServlets().values().stream().noneMatch(mapping -> mapping.getServletMappings().stream().anyMatch(m -> m.getUrlPattern().equals("/j_security_check")))) {
+        ServletMappingInfo mappingInfo = getMappingProvider().matchWithoutContextPath("/j_security_check");
+        if (mappingInfo == null || mappingInfo.getMappingMatch() != MappingMatch.EXACT) {
             ServletInfo servletInfo = new ServletInfo(true);
             servletInfo.setServletName("SecurityCheckServlet");
             servletInfo.setServlet(new SecurityCheckServlet(deploymentInfo));
@@ -251,8 +250,12 @@ public class ServletContextRuntime {
                 }
                 //当 在便携式部署描述符中的一个 security-constraint 包含一个 url-pattern ，其精确匹配 一个使用
                 //@ServletSecurity 注解的模式映射到的类，该注解必须不影响 Servlet 容器在该模式上实施的强制约束。
-                Set<String> annotationPatterns = servletInfo.getServletMappings().stream().map(ServletMappingInfo::getUrlPattern).collect(Collectors.toSet());
-                annotationPatterns.forEach(pattern -> {
+                List<String> patterns = deploymentInfo.getHandlesTypesLoader().getServletMappings().get(servletInfo.getServletName());
+                if (patterns == null) {
+                    patterns = Collections.emptyList();
+                }
+                patterns.forEach(pattern -> {
+                    deploymentInfo.getServlets().get(servletInfo.getServletName()).addServletMapping(pattern, this);
                     boolean exists = deploymentInfo.getSecurityConstraints().stream().anyMatch(securityConstraint -> securityConstraint.getUrlPatterns().stream().map(UrlPattern::getUrlPattern).toList().contains(pattern));
                     if (!exists) {
                         servletInfo.getSecurityConstraints().forEach(securityConstraint -> {

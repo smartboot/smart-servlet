@@ -19,6 +19,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.MappingMatch;
 import tech.smartboot.feat.core.common.HttpMethod;
 import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
 import tech.smartboot.feat.core.common.enums.HttpStatus;
@@ -27,6 +28,7 @@ import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.Mimetypes;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.DeploymentInfo;
+import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.impl.WriterOutputStream;
 
@@ -64,10 +66,10 @@ class DefaultServlet extends HttpServlet {
      * 默认页面
      */
     private long faviconModifyTime;
-    private final DeploymentInfo deploymentInfo;
+    private final ServletContextRuntime runtime;
 
-    public DefaultServlet(DeploymentInfo deploymentInfo) {
-        this.deploymentInfo = deploymentInfo;
+    public DefaultServlet(ServletContextRuntime runtime) {
+        this.runtime = runtime;
     }
 
     @Override
@@ -218,6 +220,7 @@ class DefaultServlet extends HttpServlet {
     private boolean matchForwardWelcome(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String requestUri = request.getDispatcherType() == DispatcherType.INCLUDE ? (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) : request.getRequestURI();
         ServletContext servletContext = request.getServletContext();
+        DeploymentInfo deploymentInfo = runtime.getDeploymentInfo();
         if (requestUri.endsWith("/")) {
             for (String file : deploymentInfo.getWelcomeFiles()) {
                 String uri = requestUri.substring(request.getContextPath().length());
@@ -227,7 +230,8 @@ class DefaultServlet extends HttpServlet {
                     return true;
                 }
                 //是否匹配 Servlet url-pattern
-                if (deploymentInfo.getServlets().values().stream().anyMatch(servletInfo -> servletInfo.getServletMappings().stream().anyMatch(mapping -> mapping.getUrlPattern().equals("/" + file)))) {
+                ServletMappingInfo mappingInfo = runtime.getMappingProvider().matchWithoutContextPath("/" + file);
+                if (mappingInfo != null && mappingInfo.getMappingMatch() == MappingMatch.EXACT) {
                     request.getRequestDispatcher(uri + file).forward(request, response);
                     return true;
                 }

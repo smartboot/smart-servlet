@@ -31,14 +31,12 @@ import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.WebSocketServerContainer;
-import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.plugins.PluginException;
 import tech.smartboot.servlet.provider.AsyncContextProvider;
 import tech.smartboot.servlet.provider.DispatcherProvider;
 import tech.smartboot.servlet.provider.FaviconProvider;
-import tech.smartboot.servlet.provider.MappingProvider;
 import tech.smartboot.servlet.provider.VendorProvider;
 import tech.smartboot.servlet.provider.WebsocketProvider;
 
@@ -53,7 +51,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-final class MockProvider implements VendorProvider, WebsocketProvider, MappingProvider, FaviconProvider, DispatcherProvider, AsyncContextProvider {
+final class MockProvider implements VendorProvider, WebsocketProvider, FaviconProvider, DispatcherProvider, AsyncContextProvider {
     public static final MockProvider INSTANCE = new MockProvider();
 
     @Override
@@ -153,12 +151,6 @@ final class MockProvider implements VendorProvider, WebsocketProvider, MappingPr
                 return Collections.emptySet();
             }
         };
-    }
-
-
-    @Override
-    public ServletMappingInfo matchServlet(String url) {
-        return null;
     }
 
 

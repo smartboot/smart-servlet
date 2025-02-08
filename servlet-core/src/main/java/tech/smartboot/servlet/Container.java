@@ -260,7 +260,7 @@ public class Container {
             HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
             servletRequest.setHttpServletResponse(servletResponse);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
-            ServletMappingInfo servletMappingInfo = runtime.getMappingProvider().matchServlet(servletRequest.getRequestURI());
+            ServletMappingInfo servletMappingInfo = runtime.getMappingProvider().matchWithContextPath(servletRequest.getRequestURI());
             handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
             servletRequest.setServletMappingInfo(servletMappingInfo);
             runtime.getVendorProvider().signature(servletResponse);
@@ -447,9 +447,13 @@ public class Container {
         //register Servlet into deploymentInfo
         for (ServletInfo servletInfo : webAppInfo.getServlets().values()) {
             deploymentInfo.addServlet(servletInfo);
-            for (String s : webAppInfo.getServletMappings().get(servletInfo.getServletName())) {
-                servletInfo.addServletMapping(s, servletRuntime);
+            List<String> list = webAppInfo.getServletMappings().get(servletInfo.getServletName());
+            if (list != null) {
+                for (String s : list) {
+                    servletInfo.addServletMapping(s, servletRuntime);
+                }
             }
+
         }
 
         webAppInfo.getErrorPages().forEach(deploymentInfo::addErrorPage);

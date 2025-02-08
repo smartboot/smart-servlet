@@ -221,7 +221,12 @@ public class ServletInfo {
 
     public void addServletMapping(String urlPattern, ServletContextRuntime runtime) {
         ServletMappingInfo servletMappingInfo = new ServletMappingInfo(this, urlPattern);
-        servletMappings.add(servletMappingInfo);
-        runtime.getMappingProvider().addMapping(servletMappingInfo);
+        if (servletMappingInfo.getMappingMatch() != null) {
+            servletMappings.add(servletMappingInfo);
+            runtime.getMappingProvider().addMapping(servletMappingInfo);
+        } else {
+            LOGGER.error("invalid mapping : " + urlPattern);
+        }
+
     }
 }

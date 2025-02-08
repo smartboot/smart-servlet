@@ -116,7 +116,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
             requestWrapper.setAttribute(FORWARD_QUERY_STRING, requestImpl.getQueryString());
             String[] array = StringUtils.split(dispatcherURL, "?");
             requestWrapper.setRequestUri(array[0]);
-            ServletMappingInfo servletMappingInfo = servletContext.getRuntime().getMappingProvider().matchServlet(array[0]);
+            ServletMappingInfo servletMappingInfo = servletContext.getRuntime().getMappingProvider().matchWithContextPath(array[0]);
             requestWrapper.setServletMappingInfo(servletMappingInfo);
             handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
             Map<String, String[]> parameters = new HashMap<>();
@@ -165,7 +165,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
             requestWrapper.setAttribute(INCLUDE_MAPPING, requestImpl.getHttpServletMapping());
 
             String[] array = StringUtils.split(dispatcherURL, "?");
-            ServletMappingInfo servletMappingInfo = servletContext.getRuntime().getMappingProvider().matchServlet(array[0]);
+            ServletMappingInfo servletMappingInfo = servletContext.getRuntime().getMappingProvider().matchWithContextPath(array[0]);
             handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
             requestWrapper.setAttribute(INCLUDE_REQUEST_URI, array[0]);
             requestWrapper.setAttribute(INCLUDE_SERVLET_PATH, getServerPath(servletMappingInfo, array[0]));

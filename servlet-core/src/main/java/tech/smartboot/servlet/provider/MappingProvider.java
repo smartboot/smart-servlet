@@ -16,5 +16,7 @@ public interface MappingProvider {
     default void addMapping(ServletMappingInfo servletMappingInfo) {
     }
 
-    ServletMappingInfo matchServlet(String url);
+    ServletMappingInfo matchWithContextPath(String url);
+
+    ServletMappingInfo matchWithoutContextPath(String url);
 }

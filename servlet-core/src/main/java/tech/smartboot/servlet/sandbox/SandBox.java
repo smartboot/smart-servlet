@@ -13,7 +13,6 @@ package tech.smartboot.servlet.sandbox;
 import tech.smartboot.servlet.provider.AsyncContextProvider;
 import tech.smartboot.servlet.provider.DispatcherProvider;
 import tech.smartboot.servlet.provider.FaviconProvider;
-import tech.smartboot.servlet.provider.MappingProvider;
 import tech.smartboot.servlet.provider.VendorProvider;
 import tech.smartboot.servlet.provider.WebsocketProvider;
 
@@ -32,7 +31,6 @@ public class SandBox {
     private final VendorProvider vendorProvider = MockProvider.INSTANCE;
     private final AsyncContextProvider asyncContextProvider = MockProvider.INSTANCE;
     private final FaviconProvider faviconProvider = MockProvider.INSTANCE;
-    private final MappingProvider mappingProvider = MockProvider.INSTANCE;
 
     public VendorProvider getVendorProvider() {
         return vendorProvider;
@@ -55,7 +53,4 @@ public class SandBox {
         return faviconProvider;
     }
 
-    public MappingProvider getMappingProvider() {
-        return mappingProvider;
-    }
 }

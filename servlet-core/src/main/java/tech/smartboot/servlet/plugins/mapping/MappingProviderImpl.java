@@ -30,7 +30,11 @@ public class MappingProviderImpl implements MappingProvider {
     }
 
     @Override
-    public ServletMappingInfo matchServlet(String requestUri) {
+    public ServletMappingInfo matchWithContextPath(String requestUri) {
+        return match(requestUri, offset);
+    }
+
+    public ServletMappingInfo match(String requestUri, int offset) {
         String mappingUrl = requestUri.substring(offset);
         //精准匹配
         ServletMappingInfo servletMappingInfo = exactMapping.get(mappingUrl);
@@ -75,6 +79,11 @@ public class MappingProviderImpl implements MappingProvider {
 
         //默认
         return defaultMapping;
+    }
+
+    @Override
+    public ServletMappingInfo matchWithoutContextPath(String url) {
+        return match(url, 0);
     }
 
     public void setDefaultMapping(ServletMappingInfo defaultMapping) {
