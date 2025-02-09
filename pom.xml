@@ -34,6 +34,14 @@
                         <groupId>io.github.smartboot.socket</groupId>
                         <artifactId>aio-pro</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>com.alibaba.fastjson2</groupId>
+                        <artifactId>fastjson2</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.mybatis</groupId>
+                        <artifactId>mybatis</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
