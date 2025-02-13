@@ -24,6 +24,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.socket.timer.HashedWheelTimer;
 import org.smartboot.socket.timer.TimerTask;
 import tech.smartboot.feat.core.common.enums.HttpStatus;
+import tech.smartboot.feat.core.common.logging.Logger;
+import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.HttpUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.ServletContextRuntime;
@@ -48,18 +50,21 @@ import java.util.concurrent.TimeUnit;
  * @version V1.0 , 2022/11/23
  */
 public class AsyncContextImpl implements AsyncContext {
+    private static final Logger logger = LoggerFactory.getLogger(AsyncContextImpl.class);
     private final List<ListenerUnit> listeners = new LinkedList<>();
     private final HttpServletRequestImpl originalRequest;
     private final ServletRequest request;
     private final ServletResponse response;
     private long timeout = -1;
-    private boolean dispatched;
-    private boolean finishDispatch;
+    private boolean dispatchInited;
+    private boolean dispatchCalled;
     private boolean complete;
     private final ServletContextRuntime servletContextRuntime;
     private final CompletableFuture<Object> future;
+    /**
+     * 前一个异步上下文
+     */
     private final AsyncContextImpl preAsyncContext;
-    private boolean subAsyncContext;
 
     private TimerTask timerTask;
 
@@ -76,9 +81,10 @@ public class AsyncContextImpl implements AsyncContext {
                     e.printStackTrace();
                 }
             });
-            if (dispatched) {
-                return;
+            if (dispatchInited) {
+                dispatchInited = false;
             }
+//            dispatchInited = true;
             if (!response.isCommitted()) {
                 ServletResponse r = response;
                 while (r instanceof ServletResponseWrapper) {
@@ -92,8 +98,6 @@ public class AsyncContextImpl implements AsyncContext {
                     }
                 }
             }
-            dispatched = true;
-            finishDispatch();
             complete();
         }
     };
@@ -105,11 +109,11 @@ public class AsyncContextImpl implements AsyncContext {
         this.servletContextRuntime = runtime;
         this.future = future;
         this.preAsyncContext = preAsyncContext;
-        if (preAsyncContext != null) {
-            preAsyncContext.subAsyncContext = true;
-        }
-        if (timeout > 0) {
-            timerTask = HashedWheelTimer.DEFAULT_TIMER.schedule(timeoutTask, timeout, TimeUnit.MILLISECONDS);
+
+        if (preAsyncContext != null && preAsyncContext.getTimeout() > 0) {
+            setTimeout(preAsyncContext.getTimeout());
+        } else {
+            setTimeout(3000);
         }
     }
 
@@ -163,20 +167,19 @@ public class AsyncContextImpl implements AsyncContext {
         return request.getQueryString();
     }
 
-    ServletRequestDispatcherWrapper wrapper;
-    Runnable runnable;
+    private Runnable dispatchRunnable;
 
     @Override
     public void dispatch(ServletContext context, String path) {
-        if (dispatched) {
+        if (dispatchInited) {
             throw new IllegalStateException();
         }
         if (!(context instanceof ServletContextImpl)) {
             throw new IllegalStateException();
         }
-        dispatched = true;
+        dispatchInited = true;
         ServletContextImpl servletContext = (ServletContextImpl) context;
-        wrapper = new ServletRequestDispatcherWrapper(originalRequest, DispatcherType.ASYNC, false);
+        ServletRequestDispatcherWrapper wrapper = new ServletRequestDispatcherWrapper(originalRequest, DispatcherType.ASYNC, false);
         path = context.getContextPath() + path;
         String[] array = StringUtils.split(path, "?");
         wrapper.setRequestUri(array[0]);
@@ -205,7 +208,7 @@ public class AsyncContextImpl implements AsyncContext {
         originalRequest.setServletContext(servletContext);
 
 
-        runnable = () -> {
+        dispatchRunnable = () -> {
             try {
                 originalRequest.resetAsyncStarted();
                 HandlerContext handlerContext = new HandlerContext(wrapper, response, servletContext, false);
@@ -217,8 +220,8 @@ public class AsyncContextImpl implements AsyncContext {
                 e.printStackTrace();
                 throw new WrappedRuntimeException(e);
             } finally {
-                finishDispatch();
-                originalRequest.getInternalAsyncContext().complete();
+                complete();
+//                originalRequest.getInternalAsyncContext().complete();
             }
         };
     }
@@ -226,36 +229,58 @@ public class AsyncContextImpl implements AsyncContext {
     @Override
     public synchronized void complete() {
         if (complete) {
-            if (preAsyncContext != null) {
-                if (preAsyncContext.subAsyncContext) {
-                    throw new IllegalStateException();
-                }
-                preAsyncContext.complete();
+            logger.warn("Async context is already complete");
+            return;
+        }
+
+        if (dispatchInited) {
+            if (!dispatchCalled) {
+                dispatchCalled = true;
+                servletContextRuntime.getDeploymentInfo().getExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        dispatchRunnable.run();
+                        if (timerTask != null) {
+                            timerTask.cancel();
+                            timerTask = null;
+                        }
+                        complete = true;
+                        onListenerComplete();
+                        if (preAsyncContext != null) {
+                            preAsyncContext.complete();
+                        } else {
+                            try {
+                                response.flushBuffer();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            future.complete(null);
+                        }
+                    }
+                });
             }
             return;
         }
-        if (!dispatched) {
-            finishDispatch();
-            dispatched = true;
-            return;
+        dispatchInited = dispatchCalled = true;
+        if (timerTask != null) {
+            timerTask.cancel();
+            timerTask = null;
         }
-        //dispatched 为true,触发complete场景：
-        // 1. 在service方法中，调用了AsyncContext的complete方法
-        // 2. 退出service，异步任务还未执行完毕。
-        if (finishDispatch) {
-            doComplete();
-        } else if (runnable != null) {
-            servletContextRuntime.getDeploymentInfo().getExecutor().execute(runnable);
+        complete = true;
+        onListenerComplete();
+        if (preAsyncContext != null) {
+            preAsyncContext.complete();
+        } else {
+            try {
+                response.flushBuffer();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            future.complete(null);
         }
     }
 
-
-    public synchronized void doComplete() {
-        if (subAsyncContext) {
-            //最末尾的异步任务优先complete
-            originalRequest.getInternalAsyncContext().complete();
-            return;
-        }
+    private void onListenerComplete() {
         listeners.forEach(unit -> {
             try {
                 unit.listener.onComplete(new AsyncEvent(this, unit.request, unit.response));
@@ -263,21 +288,6 @@ public class AsyncContextImpl implements AsyncContext {
                 e.printStackTrace();
             }
         });
-        if (timerTask != null) {
-            timerTask.cancel();
-        }
-        complete = true;
-        if (preAsyncContext == null) {
-            try {
-                response.flushBuffer();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            future.complete(null);
-        } else {
-            preAsyncContext.subAsyncContext = false;
-            preAsyncContext.complete();
-        }
     }
 
     @Override
@@ -292,7 +302,7 @@ public class AsyncContextImpl implements AsyncContext {
 
     @Override
     public void addListener(AsyncListener listener, ServletRequest servletRequest, ServletResponse servletResponse) {
-        if (finishDispatch) {
+        if (dispatchInited) {
             throw new IllegalStateException();
         }
         listeners.add(new ListenerUnit(listener, request, response));
@@ -310,17 +320,15 @@ public class AsyncContextImpl implements AsyncContext {
     @Override
     public void setTimeout(long timeout) {
         this.timeout = timeout;
-        timerTask.cancel();
+        if (timerTask != null) {
+            timerTask.cancel();
+        }
         timerTask = HashedWheelTimer.DEFAULT_TIMER.schedule(timeoutTask, timeout, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public long getTimeout() {
         return timeout;
-    }
-
-    public void finishDispatch() {
-        finishDispatch = true;
     }
 
     static class ListenerUnit {
