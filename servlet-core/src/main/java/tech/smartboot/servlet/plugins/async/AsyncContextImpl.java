@@ -21,11 +21,11 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.ServletResponseWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.smartboot.socket.timer.HashedWheelTimer;
+import org.smartboot.socket.timer.TimerTask;
 import tech.smartboot.feat.core.common.enums.HttpStatus;
 import tech.smartboot.feat.core.common.utils.HttpUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
-import org.smartboot.socket.timer.HashedWheelTimer;
-import org.smartboot.socket.timer.TimerTask;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
@@ -52,7 +52,7 @@ public class AsyncContextImpl implements AsyncContext {
     private final HttpServletRequestImpl originalRequest;
     private final ServletRequest request;
     private final ServletResponse response;
-    private long timeout = 3000;
+    private long timeout = -1;
     private boolean dispatched;
     private boolean finishDispatch;
     private boolean complete;
@@ -108,7 +108,9 @@ public class AsyncContextImpl implements AsyncContext {
         if (preAsyncContext != null) {
             preAsyncContext.subAsyncContext = true;
         }
-        timerTask = HashedWheelTimer.DEFAULT_TIMER.schedule(timeoutTask, timeout, TimeUnit.MILLISECONDS);
+        if (timeout > 0) {
+            timerTask = HashedWheelTimer.DEFAULT_TIMER.schedule(timeoutTask, timeout, TimeUnit.MILLISECONDS);
+        }
     }
 
 
