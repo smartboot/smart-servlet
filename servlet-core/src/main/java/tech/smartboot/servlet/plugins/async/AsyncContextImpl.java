@@ -55,7 +55,7 @@ public class AsyncContextImpl implements AsyncContext {
     private final HttpServletRequestImpl originalRequest;
     private final ServletRequest request;
     private final ServletResponse response;
-    private long timeout = -1;
+    private long timeout;
     private boolean dispatchInited;
     private boolean dispatchCalled;
     private boolean complete;
@@ -110,7 +110,7 @@ public class AsyncContextImpl implements AsyncContext {
         this.future = future;
         this.preAsyncContext = preAsyncContext;
 
-        if (preAsyncContext != null && preAsyncContext.getTimeout() > 0) {
+        if (preAsyncContext != null && preAsyncContext.getTimeout() > 30000) {
             setTimeout(preAsyncContext.getTimeout());
         } else {
             setTimeout(3000);
