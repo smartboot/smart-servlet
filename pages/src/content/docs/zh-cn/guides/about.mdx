@@ -1,13 +1,29 @@
 ---
-title: 概述
+title: 1.1 概述
 sidebar:
     order: 1
 ---
 import {Image} from "astro:assets";
 import {CardGrid, LinkCard, TabItem, Tabs, FileTree, Aside} from '@astrojs/starlight/components';
 
-smart-servlet 是一个基于 Jakarta Servlet 6.1 的轻量级 Servlet 容器，适用于 Java 17+ 环境。
+smart-servlet 是一个基于 Jakarta Servlet 6.1 规范的轻量级、高性能的 Servlet 容器，专为 Java 17+ 环境设计。
+
+它以低资源占用、高并发处理能力和灵活的扩展性著称，是 Tomcat 和 Undertow 的理想替代方案。
 ![](/smart-servlet/smart-servlet.svg)
+
+**核心优势**
+
+- **轻量级设计**：内存占用低至 12MB，启动快速，适合资源受限的环境。
+- **高性能**：支持十万级 QPS，适用于高并发场景。
+- **灵活扩展**：丰富的 SPI 接口和插件机制，支持自定义协议处理、安全策略扩展等。
+- **安全可靠**：内置完善的安全机制，支持热部署和高可用性配置。
+
+**适用场景**
+
+- 信创需求：满足国产化要求，提供自主可控的解决方案。
+- 高并发应用：处理大量并发请求，提升服务性能。
+- 微服务架构：无缝支持 Spring Boot、Spring Cloud 等现代化架构。
+
 
 **开源仓库：**
 
@@ -15,88 +31,7 @@ smart-servlet 是一个基于 Jakarta Servlet 6.1 的轻量级 Servlet 容器，
 - Gitee：[https://gitee.com/smartboot/smart-servlet](https://gitee.com/smartboot/smart-servlet)
 
 
-**目标用户：**
-- 有着 **信创需求** 的企业用户。
-- 对服务并发能力要求高的企业用户。
-- 对技术有着强烈热爱的个人开发者。
 
-## 功能指引
-
-<Tabs>
-    <TabItem label="tar包" icon="seti:folder">
-        这是一种面向 War 包部署方式提供的解决方案。
-        <FileTree>
-            - smart-servlet-bin-$\{version\} 主目录
-                - bin
-                    - start.sh  linux 环境下的启动脚本
-                    - start.bat windows 环境下的启动脚本
-                - conf
-                    - License.shield 企业授权证书
-                    - smart-servlet.properties 服务配置文件
-                    - smart-servlet.pem SSL 证书
-                - lib/  smart-servlet 依赖包
-                - webapps 部署 war 包的目录
-                    - .war
-                - README.md
-        </FileTree>
-    </TabItem>
-    <TabItem label="springboot" icon="seti:spring">
-        用过 springboot 的 spring-boot-starter-tomcat 或者 spring-boot-starter-undertow 的朋友应该对此不陌生。
-
-        smart-servlet-spring-boot-starter 本质上就是 smart-servlet 对 spring-boot-starter-web 的另一种适配。
-
-        只需按照以下方式调整 springboot 工程中 pom.xml 文件的配置，便可将 springboot 的默认 Servlet 容器替换成
-        smart-servlet。
-
-        ```xml
-        <dependencys>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <exclusions>
-                    <!-- Exclude the Tomcat dependency -->
-                    <exclusion>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-tomcat</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <!-- Use smart-servlet instead -->
-            <dependency>
-                <groupId>tech.smartboot.servlet</groupId>
-                <artifactId>smart-servlet-spring-boot-starter</artifactId>
-                <version>${最新版本号}</version>
-                <!--最新版本 -->
-            </dependency>
-        </dependencys>
-        ```
-    </TabItem>
-    <TabItem label="maven 插件" icon="seti:maven">
-        这是一种类似：`tomcat-maven-plugin`的使用方式，通常应用于 Java Web 工程的本地开发环境。
-        集成该插件只需在 pom.xml 中加入以下代码，便可以在 IDE 中启动 servlet 服务。
-        ```xml
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>tech.smartboot.servlet</groupId>
-                    <artifactId>smart-servlet-maven-plugin</artifactId>
-                    <version>${最新版本号}</version>
-                    <!--最新版本 -->
-                    <configuration>
-                        <port>8080</port>
-                        <path>/</path>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-        ```
-        插件的版本建议采用最新版本，另外主要的配置项包括：
-        - port：servlet服务启动的监听端口
-        - path：Servlet容器上下文路径，即 ContextPath，通常以`/`表示。当然也支持自定义，但必须以`/`开头
-
-        完成配置后在控制台输入：`mvn package smart-servlet:run`即可。
-    </TabItem>
-</Tabs>
 
 
 ## 产品对比
@@ -116,3 +51,18 @@ smart-servlet 是一个基于 Jakarta Servlet 6.1 的轻量级 Servlet 容器，
 <Aside type="note" title="" >
     测试结果中 Tomcat 内存低于 Undertow, 很大一部分原因是 Tomcat 并发量远低于 Undertow，因此其内存需求相当较少。
 </Aside>
+
+
+## 开始使用
+
+1. **快速上手**：
+ - [下载最新版本](../release_note/)
+ - [查看安装指南](../install/)
+
+[//]: # ( - [探索示例项目]&#40;./guides/examples/&#41;)
+
+2. **获取支持**：
+ - [社区论坛](https://gitee.com/smartboot-x/smart-servlet/issues)
+ - [联系作者](/smart-servlet/zh-cn/#联系我们)
+
+---

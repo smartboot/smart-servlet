@@ -1,0 +1,167 @@
+---
+title: 1.2 安装指南
+sidebar:
+    order: 1
+---
+import {Image} from "astro:assets";
+import {CardGrid, LinkCard, TabItem, Tabs, FileTree, Aside,Steps} from '@astrojs/starlight/components';
+
+#### 安装前准备
+
+在开始安装 smart-servlet 之前，请确保以下要求已满足：
+
+- **Java 环境**：Java 17+ （推荐使用 JDK 17 或更高版本）。
+- **依赖工具**：确保已安装 Maven 或其他依赖管理工具（如 Gradle）。
+- **操作系统**：支持 Linux、Windows 等主流操作系统。
+
+---
+
+## 1.2.1 安装方式
+
+smart-servlet 提供多种安装方式，适用于不同的使用场景。
+
+### 1. springboot 工程
+
+要将 `smart-servlet` 集成到 Spring Boot 项目中，只需按照以下步骤操作：
+
+<Steps>
+    1. 修改 `pom.xml`
+
+        在 `pom.xml` 文件中，添加 `smart-servlet-spring-boot-starter` 依赖，并排除默认的 Tomcat 依赖。
+
+        ```xml
+        <dependencies>
+            <!-- 排除 Spring Boot 默认的 Tomcat 依赖 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-tomcat</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- 添加 smart-servlet 依赖 -->
+            <dependency>
+                <groupId>tech.smartboot.servlet</groupId>
+                <artifactId>smart-servlet-spring-boot-starter</artifactId>
+                <version>${latest.version}</version>
+            </dependency>
+        </dependencies>
+        ```
+
+    2. 启动应用
+
+        完成配置后，直接运行 Spring Boot 应用即可：
+
+        ```bash
+        mvn spring-boot:run
+        ```
+
+    3. 验证
+
+        访问 `http://localhost:8080`，如果看到欢迎页面或你的应用页面，说明集成成功。
+</Steps>
+
+---
+
+### 2. WAR 包部署
+
+<Steps>
+    1. 下载并解压
+
+        从 [下载最新版本](../release_note/)的 `smart-servlet` 二进制包。
+
+        解压文件：
+
+        ```bash
+        tar -xzf smart-servlet-bin-${version}.tar.gz
+        ```
+
+    2. 部署 WAR 包
+
+        将你的 WAR 包复制到 `smart-servlet` 的 `webapps` 目录中：
+
+        ```bash
+        cp your-app.war smart-servlet-bin-${version}/webapps/
+        ```
+
+    3. 启动服务
+        根据操作系统选择相应的启动脚本：
+
+        **Linux**：
+
+        ```bash
+        cd smart-servlet-bin-${version}/bin
+        ./start.sh
+        ```
+
+        **Windows**：
+
+        双击 `start.bat` 文件启动服务。
+
+    4. 访问应用
+
+        启动后，访问 `http://localhost:8080/your-app` 即可访问你的应用。
+</Steps>
+
+---
+
+### 3. **Maven 插件启动**
+<Steps>
+    1. 配置 `pom.xml`
+
+        在 `pom.xml` 文件中添加 `smart-servlet-maven-plugin` 插件：
+
+        ```xml
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>tech.smartboot.servlet</groupId>
+                    <artifactId>smart-servlet-maven-plugin</artifactId>
+                    <version>${latest.version}</version>
+                    <configuration>
+                        <port>8080</port>
+                        <path>/</path>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+        ```
+
+    2. 启动服务
+
+        在终端中运行以下命令启动服务：
+
+        ```bash
+        mvn package smart-servlet:run
+        ```
+
+    3. 验证
+
+        启动后，访问 `http://localhost:8080` 即可访问你的应用。
+</Steps>
+
+---
+
+## 1.2.2 常见问题
+
+<details>
+    <summary>安装过程中遇到依赖冲突怎么办？</summary>
+    请检查 `pom.xml` 文件，确保依赖版本与 `smart-servlet` 兼容。如果冲突无法解决，请联系技术支持。
+</details>
+
+<details>
+    <summary>WAR 包部署后无法访问怎么办？</summary>
+    1. 确保 WAR 包名称正确，且放在 `webapps` 目录下。
+    2. 检查日志文件，查看是否有错误信息。
+    3. 确保端口未被其他应用占用。
+</details>
+
+
+---
+
+
+通过以上三种方式，你可以根据自己的需求选择适合的安装和部署方式，快速上手并享受 `smart-servlet` 带来的高性能和灵活性。
