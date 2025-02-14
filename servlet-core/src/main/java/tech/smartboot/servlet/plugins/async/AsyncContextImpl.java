@@ -52,8 +52,9 @@ import java.util.concurrent.TimeUnit;
 public class AsyncContextImpl implements AsyncContext {
     private static final int DISPATCHER_STATE_INIT = 0;
     private static final int DISPATCHER_STATE_CALL = 1;
-    private static final int DISPATCHER_STATE_EXECUTING = 2;
-    private static final int DISPATCHER_STATE_COMPLETE = 3;
+    private static final int DISPATCHER_STATE_CALL_NONE = 2;
+    private static final int DISPATCHER_STATE_EXECUTING = 3;
+    private static final int DISPATCHER_STATE_COMPLETE = 4;
     private static final int DEFAULT_DISPATCHER_TIMEOUT_MILLIS = 30000;
     private static final Logger logger = LoggerFactory.getLogger(AsyncContextImpl.class);
     private final List<ListenerUnit> listeners = new LinkedList<>();
@@ -171,7 +172,7 @@ public class AsyncContextImpl implements AsyncContext {
 
     @Override
     public void dispatch(ServletContext context, String path) {
-        if (dispatchState != DISPATCHER_STATE_INIT) {
+        if (dispatchState != DISPATCHER_STATE_INIT && dispatchState != DISPATCHER_STATE_CALL_NONE) {
             throw new IllegalStateException();
         }
         if (!(context instanceof ServletContextImpl)) {
@@ -230,7 +231,11 @@ public class AsyncContextImpl implements AsyncContext {
     public synchronized void complete() {
         //启动异步后未调用dispatch,
         if (dispatchState == DISPATCHER_STATE_INIT) {
-            dispatchState = DISPATCHER_STATE_CALL;
+            dispatchState = DISPATCHER_STATE_CALL_NONE;
+            return;
+        }
+        if (dispatchState == DISPATCHER_STATE_CALL_NONE) {
+            onListenerComplete();
             return;
         }
         if (dispatchState == DISPATCHER_STATE_CALL) {
