@@ -87,7 +87,7 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         }
 
         ContainerConfig config = containerRuntime.getConfiguration();
-        config.setPort(containerConfig.getBindHttpPort()).setReadBufferSize(1024 * 1024).setHttpIdleTimeout(120000).setHost(containerConfig.getBindAddress());
+        config.setPort(containerConfig.getBindHttpPort()).setReadBufferSize(1024 * 1024).setHttpIdleTimeout(120000).setHost(containerConfig.getBindAddress()).setDefaultAsyncContextTimeout(1000);
         config.getPlugins().add(new StreamMonitorPlugin<>(StreamMonitorPlugin.BLUE_TEXT_INPUT_STREAM, StreamMonitorPlugin.RED_TEXT_OUTPUT_STREAM));
 
         if (containerConfig.isSsl()) {
@@ -133,20 +133,16 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
 
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
         try {
-            ServletContextRuntime app =
-                    appProvider.createApp(containerRuntime, archive);
+            ServletContextRuntime app = appProvider.createApp(containerRuntime, archive);
 
             app.start();
 
             webAppContextProducer.set(app);
             servletContextInstanceProducer.set(app.getServletContext());
 
-            HTTPContext httpContext = new HTTPContext(listeningHost,
-                    listeningPort);
-            for (ServletInfo servlet :
-                    app.getDeploymentInfo().getServlets().values()) {
-                httpContext.add(new Servlet(servlet.getServletName(),
-                        app.getContextPath()));
+            HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
+            for (ServletInfo servlet : app.getDeploymentInfo().getServlets().values()) {
+                httpContext.add(new Servlet(servlet.getServletName(), app.getContextPath()));
             }
             return new ProtocolMetaData().addContext(httpContext);
         } catch (Throwable e) {

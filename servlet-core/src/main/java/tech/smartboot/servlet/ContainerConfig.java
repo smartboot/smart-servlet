@@ -88,6 +88,12 @@ public class ContainerConfig {
     @Param(name = "virtualThreadEnable")
     private boolean virtualThreadEnable = false;
 
+    /**
+     * 默认异步超时时间，单位毫秒
+     */
+    @Param(name = "defaultAsyncContextTimeout")
+    private long defaultAsyncContextTimeout = 30000;
+
     private SSLContextFactory factory;
 
     ContainerConfig() {
@@ -262,5 +268,13 @@ public class ContainerConfig {
 
     public void setProxyProtocolEnable(boolean proxyProtocolEnable) {
         this.proxyProtocolEnable = proxyProtocolEnable;
+    }
+
+    public long getDefaultAsyncContextTimeout() {
+        return defaultAsyncContextTimeout;
+    }
+
+    public void setDefaultAsyncContextTimeout(long defaultAsyncContextTimeout) {
+        this.defaultAsyncContextTimeout = defaultAsyncContextTimeout;
     }
 }

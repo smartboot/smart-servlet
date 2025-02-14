@@ -111,10 +111,10 @@ public class AsyncContextImpl implements AsyncContext {
         this.future = future;
         this.preAsyncContext = preAsyncContext;
 
-        if (preAsyncContext != null && preAsyncContext.getTimeout() > DEFAULT_DISPATCHER_TIMEOUT_MILLIS) {
+        if (preAsyncContext != null && preAsyncContext.getTimeout() != runtime.getContainerRuntime().getConfiguration().getDefaultAsyncContextTimeout()) {
             setTimeout(preAsyncContext.getTimeout());
         } else {
-            setTimeout(DEFAULT_DISPATCHER_TIMEOUT_MILLIS);
+            setTimeout(runtime.getContainerRuntime().getConfiguration().getDefaultAsyncContextTimeout());
         }
     }
 
