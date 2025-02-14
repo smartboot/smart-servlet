@@ -85,7 +85,7 @@ public class Bootstrap {
 
     @GetMapping(path = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamEvents(@RequestParam("content") String content) throws IOException {
-        File file = new File("pages/src/content/docs/zh-cn/");
+        File file = new File("pages/src/content/docs/guides");
         StringBuilder docs = new StringBuilder();
         loadFile(file, docs);
 

@@ -101,14 +101,17 @@ public class BasicPlugin extends Plugin {
     @Override
     public void initPlugin(Container container) {
         loadLicense();
-        try (InputStream fileInputStream = getResource(Container.CONFIGURATION_FILE)) {
-            if (fileInputStream == null) {
-                System.err.println("smart-servlet.properties not found");
-            } else {
-                ParamReflect.reflect(fileInputStream, container.getConfiguration());
+        // springboot工程不依赖 smart-servlet.properties
+        if (!isSpringBoot()) {
+            try (InputStream fileInputStream = getResource(Container.CONFIGURATION_FILE)) {
+                if (fileInputStream == null) {
+                    System.err.println("smart-servlet.properties not found");
+                } else {
+                    ParamReflect.reflect(fileInputStream, container.getConfiguration());
+                }
+            } catch (IOException e) {
+                throw new WrappedRuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new WrappedRuntimeException(e);
         }
     }
 
