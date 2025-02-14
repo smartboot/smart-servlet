@@ -92,7 +92,7 @@ public class AsyncContextImpl implements AsyncContext {
                 }
                 if (r instanceof HttpServletResponse) {
                     try {
-                        ((HttpServletResponse) r).sendError(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                        ((HttpServletResponse) r).sendError(HttpStatus.GATEWAY_TIMEOUT.value());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -113,7 +113,7 @@ public class AsyncContextImpl implements AsyncContext {
         if (preAsyncContext != null && preAsyncContext.getTimeout() > 30000) {
             setTimeout(preAsyncContext.getTimeout());
         } else {
-            setTimeout(3000);
+            setTimeout(30000);
         }
     }
 
@@ -233,41 +233,43 @@ public class AsyncContextImpl implements AsyncContext {
             return;
         }
 
-        if (dispatchInited) {
-            if (!dispatchCalled) {
-                dispatchCalled = true;
-                servletContextRuntime.getDeploymentInfo().getExecutor().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        dispatchRunnable.run();
-                        if (timerTask != null) {
-                            timerTask.cancel();
-                            timerTask = null;
-                        }
-                        complete = true;
-                        onListenerComplete();
-                        if (preAsyncContext != null) {
-                            preAsyncContext.complete();
-                        } else {
-                            try {
-                                response.flushBuffer();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                            future.complete(null);
-                        }
-                    }
-                });
-            }
+        //启动异步后未调用dispatch,
+        if (!dispatchInited) {
+            dispatchInited = dispatchCalled = true;
             return;
         }
-        dispatchInited = dispatchCalled = true;
+
+        if (dispatchCalled) {
+            onListenerComplete();
+        } else {
+            dispatchCalled = true;
+            servletContextRuntime.getDeploymentInfo().getExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    dispatchRunnable.run();
+                    onListenerComplete();
+                }
+            });
+        }
+    }
+
+    private void onListenerComplete() {
+        if (complete) {
+            logger.warn("Async context is already complete");
+            return;
+        }
+        complete = true;
         if (timerTask != null) {
             timerTask.cancel();
             timerTask = null;
         }
-        complete = true;
-        onListenerComplete();
+        listeners.forEach(unit -> {
+            try {
+                unit.listener.onComplete(new AsyncEvent(this, unit.request, unit.response));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         if (preAsyncContext != null) {
             preAsyncContext.complete();
         } else {
@@ -278,16 +280,6 @@ public class AsyncContextImpl implements AsyncContext {
             }
             future.complete(null);
         }
-    }
-
-    private void onListenerComplete() {
-        listeners.forEach(unit -> {
-            try {
-                unit.listener.onComplete(new AsyncEvent(this, unit.request, unit.response));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @Override
