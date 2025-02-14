@@ -39,20 +39,20 @@ export default defineConfig({
             },
             plugins: [starlightImageZoomPlugin()],
             // 为此网站设置英语为默认语言。
-            defaultLocale: 'zh-cn',
+            defaultLocale: 'root',
             locales: {
-                'zh-cn': {
-                    label: '简体中文',
-                    lang: 'zh-CN',
-                },
+                // 'zh-cn': {
+                //     label: '简体中文',
+                //     lang: 'zh-CN',
+                // },
                 'en': {
                     label: 'English',
                     lang: 'en',
                 },
                 // 英文文档在 `src/content/docs/en/` 中。
                 root: {
-                    label: 'English',
-                    lang: 'en'
+                    label: '简体中文',
+                    lang: 'zh-CN',
                 }
             },
             sidebar: [
