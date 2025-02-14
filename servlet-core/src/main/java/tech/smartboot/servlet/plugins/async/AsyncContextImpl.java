@@ -50,15 +50,18 @@ import java.util.concurrent.TimeUnit;
  * @version V1.0 , 2022/11/23
  */
 public class AsyncContextImpl implements AsyncContext {
+    private static final int DISPATCHER_STATE_INIT = 0;
+    private static final int DISPATCHER_STATE_CALL = 1;
+    private static final int DISPATCHER_STATE_EXECUTING = 2;
+    private static final int DISPATCHER_STATE_COMPLETE = 3;
+    private static final int DEFAULT_DISPATCHER_TIMEOUT_MILLIS = 30000;
     private static final Logger logger = LoggerFactory.getLogger(AsyncContextImpl.class);
     private final List<ListenerUnit> listeners = new LinkedList<>();
     private final HttpServletRequestImpl originalRequest;
     private final ServletRequest request;
     private final ServletResponse response;
     private long timeout;
-    private boolean dispatchInited;
-    private boolean dispatchCalled;
-    private boolean complete;
+    private int dispatchState = DISPATCHER_STATE_INIT;
     private final ServletContextRuntime servletContextRuntime;
     private final CompletableFuture<Object> future;
     /**
@@ -71,7 +74,7 @@ public class AsyncContextImpl implements AsyncContext {
     private final Runnable timeoutTask = new Runnable() {
         @Override
         public void run() {
-            if (complete) {
+            if (dispatchState == DISPATCHER_STATE_COMPLETE) {
                 return;
             }
             listeners.forEach(unit -> {
@@ -81,11 +84,8 @@ public class AsyncContextImpl implements AsyncContext {
                     e.printStackTrace();
                 }
             });
-            if (dispatchInited) {
-                dispatchInited = false;
-            }
 //            dispatchInited = true;
-            if (!response.isCommitted()) {
+            if (dispatchState == DISPATCHER_STATE_INIT && !response.isCommitted()) {
                 ServletResponse r = response;
                 while (r instanceof ServletResponseWrapper) {
                     r = ((ServletResponseWrapper) r).getResponse();
@@ -110,10 +110,10 @@ public class AsyncContextImpl implements AsyncContext {
         this.future = future;
         this.preAsyncContext = preAsyncContext;
 
-        if (preAsyncContext != null && preAsyncContext.getTimeout() > 30000) {
+        if (preAsyncContext != null && preAsyncContext.getTimeout() > DEFAULT_DISPATCHER_TIMEOUT_MILLIS) {
             setTimeout(preAsyncContext.getTimeout());
         } else {
-            setTimeout(30000);
+            setTimeout(DEFAULT_DISPATCHER_TIMEOUT_MILLIS);
         }
     }
 
@@ -171,13 +171,13 @@ public class AsyncContextImpl implements AsyncContext {
 
     @Override
     public void dispatch(ServletContext context, String path) {
-        if (dispatchInited) {
+        if (dispatchState != DISPATCHER_STATE_INIT) {
             throw new IllegalStateException();
         }
         if (!(context instanceof ServletContextImpl)) {
             throw new IllegalStateException();
         }
-        dispatchInited = true;
+        dispatchState = DISPATCHER_STATE_CALL;
         ServletContextImpl servletContext = (ServletContextImpl) context;
         ServletRequestDispatcherWrapper wrapper = new ServletRequestDispatcherWrapper(originalRequest, DispatcherType.ASYNC, false);
         path = context.getContextPath() + path;
@@ -228,37 +228,33 @@ public class AsyncContextImpl implements AsyncContext {
 
     @Override
     public synchronized void complete() {
-        if (complete) {
-            logger.warn("Async context is already complete");
-            return;
-        }
-
         //启动异步后未调用dispatch,
-        if (!dispatchInited) {
-            dispatchInited = dispatchCalled = true;
+        if (dispatchState == DISPATCHER_STATE_INIT) {
+            dispatchState = DISPATCHER_STATE_CALL;
             return;
         }
-
-        if (dispatchCalled) {
-            onListenerComplete();
-        } else {
-            dispatchCalled = true;
-            servletContextRuntime.getDeploymentInfo().getExecutor().execute(new Runnable() {
-                @Override
-                public void run() {
-                    dispatchRunnable.run();
-                    onListenerComplete();
-                }
-            });
+        if (dispatchState == DISPATCHER_STATE_CALL) {
+            if (dispatchRunnable == null) {
+                onListenerComplete();
+            } else {
+                dispatchState = DISPATCHER_STATE_EXECUTING;
+                servletContextRuntime.getDeploymentInfo().getExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        dispatchRunnable.run();
+                        onListenerComplete();
+                    }
+                });
+            }
         }
     }
 
     private void onListenerComplete() {
-        if (complete) {
+        if (dispatchState == DISPATCHER_STATE_COMPLETE) {
             logger.warn("Async context is already complete");
             return;
         }
-        complete = true;
+        dispatchState = DISPATCHER_STATE_COMPLETE;
         if (timerTask != null) {
             timerTask.cancel();
             timerTask = null;
@@ -294,7 +290,7 @@ public class AsyncContextImpl implements AsyncContext {
 
     @Override
     public void addListener(AsyncListener listener, ServletRequest servletRequest, ServletResponse servletResponse) {
-        if (dispatchInited) {
+        if (dispatchState != DISPATCHER_STATE_INIT) {
             throw new IllegalStateException();
         }
         listeners.add(new ListenerUnit(listener, request, response));
