@@ -54,8 +54,8 @@ public class AsyncContextImpl implements AsyncContext {
     private static final int DISPATCHER_STATE_CALL = 1;
     private static final int DISPATCHER_STATE_CALL_NONE = 2;
     private static final int DISPATCHER_STATE_EXECUTING = 3;
-    private static final int DISPATCHER_STATE_COMPLETE = 4;
-    private static final int DEFAULT_DISPATCHER_TIMEOUT_MILLIS = 30000;
+    private static final int DISPATCHER_STATE_NEED_COMPLETE = 4;
+    private static final int DISPATCHER_STATE_COMPLETE = 5;
     private static final Logger logger = LoggerFactory.getLogger(AsyncContextImpl.class);
     private final List<ListenerUnit> listeners = new LinkedList<>();
     private final HttpServletRequestImpl originalRequest;
@@ -69,6 +69,8 @@ public class AsyncContextImpl implements AsyncContext {
      * 前一个异步上下文
      */
     private final AsyncContextImpl preAsyncContext;
+
+    private AsyncContextImpl nextAsyncContext;
 
     private TimerTask timerTask;
 
@@ -114,6 +116,9 @@ public class AsyncContextImpl implements AsyncContext {
         this.servletContextRuntime = runtime;
         this.future = future;
         this.preAsyncContext = preAsyncContext;
+        if (preAsyncContext != null) {
+            preAsyncContext.nextAsyncContext = this;
+        }
 
         if (preAsyncContext != null && preAsyncContext.getTimeout() != runtime.getContainerRuntime().getConfiguration().getDefaultAsyncContextTimeout()) {
             setTimeout(preAsyncContext.getTimeout());
@@ -225,8 +230,8 @@ public class AsyncContextImpl implements AsyncContext {
                 e.printStackTrace();
                 throw new WrappedRuntimeException(e);
             } finally {
-                complete();
 //                originalRequest.getInternalAsyncContext().complete();
+                complete();
             }
         };
     }
@@ -238,7 +243,7 @@ public class AsyncContextImpl implements AsyncContext {
             dispatchState = DISPATCHER_STATE_CALL_NONE;
             return;
         }
-        if (dispatchState == DISPATCHER_STATE_CALL_NONE) {
+        if (dispatchState == DISPATCHER_STATE_CALL_NONE || dispatchState == DISPATCHER_STATE_NEED_COMPLETE) {
             onListenerComplete();
             return;
         }
@@ -259,6 +264,11 @@ public class AsyncContextImpl implements AsyncContext {
     }
 
     private void onListenerComplete() {
+        if (nextAsyncContext != null) {
+            dispatchState = DISPATCHER_STATE_NEED_COMPLETE;
+            nextAsyncContext.complete();
+            return;
+        }
         if (dispatchState == DISPATCHER_STATE_COMPLETE) {
             logger.warn("Async context is already complete");
             return;
@@ -276,6 +286,7 @@ public class AsyncContextImpl implements AsyncContext {
             }
         });
         if (preAsyncContext != null) {
+            preAsyncContext.nextAsyncContext = null;
             preAsyncContext.complete();
         } else {
             try {
