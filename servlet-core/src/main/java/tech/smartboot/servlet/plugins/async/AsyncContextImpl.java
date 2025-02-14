@@ -78,6 +78,10 @@ public class AsyncContextImpl implements AsyncContext {
             if (dispatchState == DISPATCHER_STATE_COMPLETE) {
                 return;
             }
+            //已经开始执行响应
+            if (response.isCommitted()) {
+                return;
+            }
             listeners.forEach(unit -> {
                 try {
                     unit.listener.onTimeout(new AsyncEvent(AsyncContextImpl.this, unit.request, unit.response));
