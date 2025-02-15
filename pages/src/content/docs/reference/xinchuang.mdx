@@ -1,0 +1,117 @@
+---
+title: 信创指引
+---
+import { Badge,Card,LinkCard, CardGrid} from '@astrojs/starlight/components';
+import Mermaid from '../../../components/Mermaid.astro';
+
+## 1. 信创背景与挑战
+随着国家对信息技术应用创新（信创）的大力推进，国产化替代已成为各行各业数字化转型的重要方向。在 Web 服务领域，传统的 Tomcat 和 Undertow 等容器虽然功能强大，但在信创环境下存在以下挑战：
+
+- **技术依赖性**：部分组件或协议依赖国外技术栈，存在安全隐患。
+- **性能瓶颈**：在高并发、低延迟的场景下，资源占用和性能表现有待优化。
+- **生态适配**：与国产操作系统、中间件和数据库的兼容性需要进一步验证。
+
+smart-servlet 作为一款完全自主研发的 Servlet 容器，从底层架构到功能实现均基于国产化需求进行优化，为信创环境提供了更可靠的选择。
+
+
+<Mermaid code={`
+mindmap
+  root((smart-servlet))
+    适用领域
+      金融
+      政务
+      能源
+      教育
+      医疗
+      交通
+    自研底层平台
+        Feat<br/>Web服务器
+        smart-socket<br/>通信框架
+    特性
+      Jakarta Servlet 6.1
+      Websocket
+      SSE
+      AI
+    `}/>
+
+## 2. 信创适用领域
+
+smart-servlet 在信创领域的适用场景广泛，尤其适合以下行业：
+
+<CardGrid>
+    <Card title="金融" icon="seti:money">
+        支持高并发、低延迟的金融交易系统，满足证券、银行、保险等行业的信创改造需求。
+    </Card>
+    <Card title="政务" icon="seti:government">
+        适配电子政务平台、数据共享系统等场景，确保政府信息化系统的自主可控。
+    </Card>
+    <Card title="能源" icon="seti:energy">
+        为电力、石油等能源行业的生产管理系统提供稳定高效的 Web 服务支持。
+    </Card>
+    <Card title="教育" icon="seti:education">
+        支持在线教育平台、教务管理系统等场景，满足教育信息化的国产化需求。
+    </Card>
+    <Card title="医疗" icon="seti:health">
+        适配医疗信息管理系统、电子病历系统等场景，保障医疗数据的安全性。
+    </Card>
+    <Card title="交通" icon="seti:transport">
+        支持交通管理系统、智能调度平台等场景，提升交通信息化的国产化水平。
+    </Card>
+</CardGrid>
+
+---
+## 3. 自研底层平台
+
+smart-servlet 采用完全自主研发的底层架构，确保核心技术的自主可控：
+
+<CardGrid>
+    <Card title="Feat" icon="seti:rocket">
+        基于 Feat 的高性能 Web 服务器框架，支持高并发场景下的低资源占用。
+    </Card>
+    <Card title="smart-socket" icon="seti:network">
+        自研通信框架，优化 TCP/UDP 协议栈，提升网络通信效率。
+    </Card>
+</CardGrid>
+
+---
+
+## 4. 信创特性
+
+smart-servlet 在信创环境下的核心特性包括：
+
+<CardGrid>
+    <Card title="Jakarta Servlet 6.1" icon="seti:code">
+        完全适配 Jakarta Servlet 6.1 规范，支持现代化 Web 应用开发。
+    </Card>
+    <Card title="WebSocket & SSE" icon="seti:signal">
+        提供高性能的 WebSocket 和 Server-Sent Events（SSE）支持，满足实时通信需求。
+    </Card>
+    <Card title="AI 集成" icon="seti:ai">
+        支持与国产 AI 框架的无缝集成，助力智能化应用开发。
+    </Card>
+</CardGrid>
+
+---
+
+## 5. 信创服务
+
+为了更好地服务信创客户，我们提供以下支持：
+
+<CardGrid>
+    <Card title="技术支持" icon="seti:help">
+        提供专业的信创环境部署和技术指导服务。
+    </Card>
+    <Card title="定制开发" icon="seti:code">
+        根据客户需求，提供信创环境下的定制化开发服务。
+    </Card>
+    <Card title="培训服务" icon="seti:education">
+        提供信创环境下 smart-servlet 的使用和运维培训。
+    </Card>
+</CardGrid>
+
+---
+
+
+## 6. 总结
+
+smart-servlet 作为一款完全自主研发的高性能 Servlet 容器，凭借其轻量级设计、高并发性能和灵活的扩展性，正在成为信创领域的首选解决方案。我们致力于为信创客户提供更可靠的技术支持和更完善的生态适配，助力国产化替代的顺利推进。
