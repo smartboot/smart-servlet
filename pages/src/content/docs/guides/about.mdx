@@ -5,6 +5,7 @@ sidebar:
 ---
 import {Image} from "astro:assets";
 import {CardGrid, LinkCard, TabItem, Tabs, FileTree, Aside} from '@astrojs/starlight/components';
+import Mermaid from '../../../components/Mermaid.astro';
 
 smart-servlet 是一个基于 Jakarta Servlet 6.1 规范的轻量级、高性能的 Servlet 容器，专为 Java 17+ 环境设计。
 
@@ -30,7 +31,21 @@ smart-servlet 是一个基于 Jakarta Servlet 6.1 规范的轻量级、高性能
 - Github：[https://github.com/smartboot/smart-servlet](https://github.com/smartboot/smart-servlet)
 - Gitee：[https://gitee.com/smartboot/smart-servlet](https://gitee.com/smartboot/smart-servlet)
 
-
+<Mermaid code={`
+timeline
+    title smart-servlet 发展历程
+    2020 : 11月：立项  遵循Servlet 3.1规范
+         : 12月：发布首个版本
+    2021~2022 : 项目持续开发
+    2023 : 5月：引入 Servlet TCK 测试套件
+         : 10月：升级规范至Jakarta Servlet 5.0
+    2024 : 2月：支持 SSL/TLS 功能
+         : 5月：适配 Async 相关规范； TCK 测试通过数达360个
+         : 6月： 代码开源占比达 96%
+         : 7月：2.0发布 升级规范至Jakarta Servlet 6.0
+         : 11月：完成 JSP 技术预研
+    2025 : 1月：2.8发布 底层平台迁移至 Feat
+    `}/>
 
 
 
