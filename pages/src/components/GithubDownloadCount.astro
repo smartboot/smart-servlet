@@ -1,18 +1,21 @@
 ---
 // Mermaid.astro
-const { code } = Astro.props;
+const {code} = Astro.props;
 let content = await Astro.slots.render('default');
 if (!content) {
-    content=""
+    content = ""
 }
 console.log(code)
 // 调用 GitHub API 获取下载总量
-const response = await fetch('https://api.github.com/repos/smartboot/smart-servlet/releases');
+const response = await fetch('https://api.github.com/repos/smartboot/smart-servlet/releases',{
+    headers: {
+        'Authorization': 'Bearer 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',
+    }
+});
 const releases = await response.json();
-
+// console.log(releases)
 // 计算累计发版次数
 const totalReleaseCount = releases.length;
-
 // 计算下载总量
 let totalDownloadCount = 0;
 releases.forEach((release: { assets: { download_count: number }[] }) => {
@@ -24,24 +27,22 @@ releases.forEach((release: { assets: { download_count: number }[] }) => {
 
 <style>
     .stats-card {
-        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        background: linear-gradient(135deg, #f0f4ff 0%, #e0f7fa 100%); /* 浅色渐变 */
         border-radius: 16px;
         padding: 1.5rem;
-        box-shadow:
-                0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -4px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        cursor: pointer;
+        //cursor: pointer;
     }
 
     .stats-card:hover {
-        transform: perspective(1000px) rotateX(5deg) rotateY(-2deg);
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
 
     .value {
-        color: white;
-        font-size: 1.8rem;
+        color: #333; /* 深色文字 */
+        font-size: 0.8rem;
         font-weight: 700;
         font-family: 'Inter', system-ui, sans-serif;
         letter-spacing: -0.025em;
@@ -51,8 +52,9 @@ releases.forEach((release: { assets: { download_count: number }[] }) => {
 
     @media (min-width: 768px) {
         .stats-card {
-            padding: 2rem;
+            padding: 1rem;
         }
+
         .value {
             font-size: 2.2rem;
         }
@@ -61,7 +63,9 @@ releases.forEach((release: { assets: { download_count: number }[] }) => {
 
 <div class="stats-card">
     <!-- 新增data-count属性存储最终数值 -->
-    截止目前累计发布 {totalReleaseCount} 个版本，被全球用户下载 <b><span id="animatedCounter" class="value" data-count={totalDownloadCount}>0</span></b> 次
+    <b>截止目前累计发布 {totalReleaseCount} 个版本，被全球用户 <a
+            style="color: black;font-weight: bold" href="/smart-servlet/guides/release_note/"> 下载<span
+            id="animatedCounter" class="value" data-count={totalDownloadCount}>0</span></a> 次</b>
 
 </div>
 
