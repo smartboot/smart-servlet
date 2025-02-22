@@ -1,0 +1,93 @@
+---
+// Mermaid.astro
+const { code } = Astro.props;
+let content = await Astro.slots.render('default');
+if (!content) {
+    content=""
+}
+console.log(code)
+// 调用 GitHub API 获取下载总量
+const response = await fetch('https://api.github.com/repos/smartboot/smart-servlet/releases');
+const releases = await response.json();
+
+// 计算累计发版次数
+const totalReleaseCount = releases.length;
+
+// 计算下载总量
+let totalDownloadCount = 0;
+releases.forEach((release: { assets: { download_count: number }[] }) => {
+    release.assets.forEach((asset: { download_count: number }) => {
+        totalDownloadCount += asset.download_count;
+    });
+});
+---
+
+<style>
+    .stats-card {
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow:
+                0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+
+    .stats-card:hover {
+        transform: perspective(1000px) rotateX(5deg) rotateY(-2deg);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .value {
+        color: white;
+        font-size: 1.8rem;
+        font-weight: 700;
+        font-family: 'Inter', system-ui, sans-serif;
+        letter-spacing: -0.025em;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-out;
+    }
+
+    @media (min-width: 768px) {
+        .stats-card {
+            padding: 2rem;
+        }
+        .value {
+            font-size: 2.2rem;
+        }
+    }
+</style>
+
+<div class="stats-card">
+    <!-- 新增data-count属性存储最终数值 -->
+    截止目前累计发布 {totalReleaseCount} 个版本，被全球用户下载 <b><span id="animatedCounter" class="value" data-count={totalDownloadCount}>0</span></b> 次
+
+</div>
+
+<script client:load>
+    // 添加数字动画逻辑
+    const counter = document.getElementById('animatedCounter');
+    const target = parseInt(counter.dataset.count);
+    const duration = 2000; // 动画时长2秒
+    let start = 0;
+    const startTime = performance.now();
+
+    const animate = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        if (elapsed < duration) {
+            const progress = elapsed / duration;
+            // 添加缓动函数
+            const currentCount = Math.floor(easeOutQuad(progress) * target);
+            counter.textContent = currentCount.toLocaleString();
+            requestAnimationFrame(animate);
+        } else {
+            counter.textContent = target.toLocaleString();
+        }
+    };
+
+    // 缓动函数：二次淡出
+    const easeOutQuad = t => t * (2 - t);
+
+    requestAnimationFrame(animate);
+</script>
