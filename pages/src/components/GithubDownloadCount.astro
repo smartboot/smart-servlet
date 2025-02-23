@@ -5,24 +5,23 @@ let content = await Astro.slots.render('default');
 if (!content) {
     content = ""
 }
-console.log(code)
 // 调用 GitHub API 获取下载总量
-const response = await fetch('https://api.github.com/repos/smartboot/smart-servlet/releases',{
-    headers: {
-        'Authorization': 'Bearer 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',
-    }
-});
-const releases = await response.json();
-// console.log(releases)
-// 计算累计发版次数
-const totalReleaseCount = releases.length;
-// 计算下载总量
-let totalDownloadCount = 0;
-releases.forEach((release: { assets: { download_count: number }[] }) => {
-    release.assets.forEach((asset: { download_count: number }) => {
-        totalDownloadCount += asset.download_count;
-    });
-});
+// const response = await fetch('https://api.github.com/repos/smartboot/smart-servlet/releases',{
+//     headers: {
+//         'Authorization': 'Bearer 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',
+//     }
+// });
+// const releases = await response.json();
+// // console.log(releases)
+// // 计算累计发版次数
+// const totalReleaseCount = releases.length;
+// // 计算下载总量
+// let totalDownloadCount = 0;
+// releases.forEach((release: { assets: { download_count: number }[] }) => {
+//     release.assets.forEach((asset: { download_count: number }) => {
+//         totalDownloadCount += asset.download_count;
+//     });
+// });
 ---
 
 <style>
@@ -63,16 +62,34 @@ releases.forEach((release: { assets: { download_count: number }[] }) => {
 
 <div class="stats-card">
     <!-- 新增data-count属性存储最终数值 -->
-    <b>截止目前累计发布 {totalReleaseCount} 个版本，被全球用户 <a
+    <b>截止目前累计发布 <span id="totalReleaseCount">0</span> 个版本，被全球用户 <a
             style="color: black;font-weight: bold" href="/smart-servlet/guides/release_note/"> 下载<span
-            id="animatedCounter" class="value" data-count={totalDownloadCount}>0</span></a> 次</b>
+            id="animatedCounter" class="value" >0</span></a> 次</b>
 
 </div>
 
-<script client:load>
+<script>
+    const response = await fetch('https://api.github.com/repos/smartboot/smart-servlet/releases',{
+        headers: {
+            'Authorization': 'Bearer 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',
+        }
+    });
+    const releases = await response.json();
+    // console.log(releases)
+    // 计算累计发版次数
+    const totalReleaseCount = releases.length;
+    const totalReleaseCounter=document.getElementById('totalReleaseCount')
+
+    // 计算下载总量
+    let totalDownloadCount = 0;
+    releases.forEach((release: { assets: { download_count: number }[] }) => {
+        release.assets.forEach((asset: { download_count: number }) => {
+            totalDownloadCount += asset.download_count;
+        });
+    });
+
     // 添加数字动画逻辑
     const counter = document.getElementById('animatedCounter');
-    const target = parseInt(counter.dataset.count);
     const duration = 2000; // 动画时长2秒
     let start = 0;
     const startTime = performance.now();
@@ -82,11 +99,13 @@ releases.forEach((release: { assets: { download_count: number }[] }) => {
         if (elapsed < duration) {
             const progress = elapsed / duration;
             // 添加缓动函数
-            const currentCount = Math.floor(easeOutQuad(progress) * target);
+            const currentCount = Math.floor(easeOutQuad(progress) * totalDownloadCount);
             counter.textContent = currentCount.toLocaleString();
+            totalReleaseCounter.textContent = Math.floor(easeOutQuad(progress) * totalReleaseCount);
             requestAnimationFrame(animate);
         } else {
-            counter.textContent = target.toLocaleString();
+            counter.textContent = totalDownloadCount.toLocaleString();
+            totalReleaseCounter.textContent=totalReleaseCount.toLocaleString();
         }
     };
 
