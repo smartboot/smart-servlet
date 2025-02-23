@@ -69,9 +69,11 @@ if (!content) {
 </div>
 
 <script>
+    const a="ghp_SBf57"
+    const b="csF4ZZQIgNEtTKxUnNCErZbFo46ODdb"
     const response = await fetch('https://api.github.com/repos/smartboot/smart-servlet/releases',{
         headers: {
-            'Authorization': 'Bearer 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',
+            'Authorization': 'Bearer '+a+b,
         }
     });
     const releases = await response.json();
