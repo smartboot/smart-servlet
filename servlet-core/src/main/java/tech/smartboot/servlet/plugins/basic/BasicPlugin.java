@@ -25,7 +25,6 @@ import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpHandler;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpServer;
-import tech.smartboot.feat.core.server.handler.BaseHttpHandler;
 import tech.smartboot.feat.core.server.impl.HttpEndpoint;
 import tech.smartboot.feat.core.server.upgrade.http2.Http2Upgrade;
 import tech.smartboot.servlet.Container;
@@ -151,7 +150,7 @@ public class BasicPlugin extends Plugin {
                     new EnhanceAsynchronousChannelProvider(false).openAsynchronousChannelGroup(config.getThreadNum(),
                             r -> new Thread(r, "smart-servlet:Thread-" + (threadSeqNumber.getAndIncrement())));
 
-            BaseHttpHandler httpServerHandler;
+            HttpHandler httpServerHandler;
             if (config.isVirtualThreadEnable()) {
                 throw new UnsupportedOperationException();
 //                httpServerHandler = new HttpServerHandler() {
@@ -162,7 +161,7 @@ public class BasicPlugin extends Plugin {
 //                    }
 //                };
             } else {
-                httpServerHandler = new BaseHttpHandler() {
+                httpServerHandler = new HttpHandler() {
                     @Override
                     public void handle(HttpRequest request,
                                        CompletableFuture<Object> completableFuture) throws Throwable {
@@ -177,6 +176,11 @@ public class BasicPlugin extends Plugin {
                         } else {
                             container.doHandle(request, completableFuture);
                         }
+
+                    }
+
+                    @Override
+                    public void handle(HttpRequest request) {
 
                     }
                 };

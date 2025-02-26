@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <feat.version>0.6</feat.version>
+        <feat.version>0.7</feat.version>
         <smartservlet.version>2.9</smartservlet.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,26 +23,8 @@
         <dependencies>
             <dependency>
                 <groupId>tech.smartboot.feat</groupId>
-                <artifactId>feat-core</artifactId>
+                <artifactId>feat-ai</artifactId>
                 <version>${feat.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.github.smartboot.socket</groupId>
-                        <artifactId>aio-pro</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.alibaba.fastjson2</groupId>
-                        <artifactId>fastjson2</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.mybatis</groupId>
-                        <artifactId>mybatis</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>tech.smartboot.servlet</groupId>
