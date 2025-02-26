@@ -36,6 +36,7 @@ import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.multipart.MultipartConfig;
+import tech.smartboot.feat.core.common.utils.CollectionUtils;
 import tech.smartboot.feat.core.common.utils.NumberUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpRequest;
@@ -48,7 +49,6 @@ import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.plugins.security.LoginAccount;
 import tech.smartboot.servlet.plugins.security.SecurityAccount;
 import tech.smartboot.servlet.provider.SessionProvider;
-import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.DateUtil;
 
 import javax.net.ssl.SSLEngine;

@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
 import tech.smartboot.feat.core.common.enums.HttpStatus;
+import tech.smartboot.feat.core.common.utils.CollectionUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.DeploymentInfo;
@@ -27,7 +28,6 @@ import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.UrlPattern;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.provider.SecurityProvider;
-import tech.smartboot.servlet.util.CollectionUtils;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
 import java.io.IOException;

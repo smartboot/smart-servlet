@@ -22,6 +22,7 @@ import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.annotation.WebServlet;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
+import tech.smartboot.feat.core.common.utils.CollectionUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
@@ -32,7 +33,6 @@ import tech.smartboot.servlet.third.bcel.Const;
 import tech.smartboot.servlet.third.bcel.classfile.AnnotationEntry;
 import tech.smartboot.servlet.third.bcel.classfile.ClassParser;
 import tech.smartboot.servlet.third.bcel.classfile.JavaClass;
-import tech.smartboot.servlet.util.CollectionUtils;
 
 import java.io.File;
 import java.io.FileInputStream;

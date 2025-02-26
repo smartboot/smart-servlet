@@ -18,6 +18,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import tech.smartboot.feat.core.common.utils.CollectionUtils;
 import tech.smartboot.feat.core.common.utils.NumberUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.ErrorPageInfo;
@@ -31,7 +32,6 @@ import tech.smartboot.servlet.conf.UrlPattern;
 import tech.smartboot.servlet.conf.WebAppInfo;
 import tech.smartboot.servlet.conf.WebFragmentInfo;
 import tech.smartboot.servlet.enums.FilterMappingType;
-import tech.smartboot.servlet.util.CollectionUtils;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

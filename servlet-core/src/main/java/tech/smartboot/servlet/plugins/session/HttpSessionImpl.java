@@ -22,8 +22,8 @@ import jakarta.servlet.http.HttpSessionListener;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import org.smartboot.socket.timer.TimerTask;
+import tech.smartboot.feat.core.common.utils.CollectionUtils;
 import tech.smartboot.servlet.impl.ServletContextImpl;
-import tech.smartboot.servlet.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.Enumeration;
