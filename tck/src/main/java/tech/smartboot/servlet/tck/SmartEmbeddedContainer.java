@@ -87,7 +87,7 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         }
 
         ContainerConfig config = containerRuntime.getConfiguration();
-        config.setPort(containerConfig.getBindHttpPort()).setReadBufferSize(1024 * 1024).setHttpIdleTimeout(120000).setHost(containerConfig.getBindAddress()).setDefaultAsyncContextTimeout(1000);
+        config.setPort(containerConfig.getBindHttpPort()).setReadBufferSize(1024 * 1024).setHttpIdleTimeout(120000).setHost(containerConfig.getBindAddress()).setDefaultAsyncContextTimeout(5000);
         config.getPlugins().add(new StreamMonitorPlugin<>(StreamMonitorPlugin.BLUE_TEXT_INPUT_STREAM, StreamMonitorPlugin.RED_TEXT_OUTPUT_STREAM));
 
         if (containerConfig.isSsl()) {
