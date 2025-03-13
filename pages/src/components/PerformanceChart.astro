@@ -1,0 +1,69 @@
+---
+---
+<div class="performance-chart">
+  <svg width="800" height="500" viewBox="0 0 800 500">
+    <!-- 定义图例 -->
+    <g transform="translate(600, 50)">
+      <rect width="20" height="20" fill="#4CAF50" opacity="0.5"></rect>
+      <text x="30" y="15" fill="#777">Tomcat</text>
+      <rect y="30" width="20" height="20" fill="#2196F3" opacity="0.5"></rect>
+      <text x="30" y="45" fill="#777">Undertow</text>
+      <rect y="60" width="20" height="20" fill="#FF5722"></rect>
+      <text x="30" y="75" fill="#333" font-weight="bold">smart-servlet</text>
+    </g>
+
+    <!-- 坐标轴 -->
+    <g transform="translate(50, 450)">
+      <!-- X轴 -->
+      <line x1="0" y1="0" x2="500" y2="0" stroke="#333" stroke-width="2"></line>
+      <!-- Y轴 -->
+      <line x1="0" y1="0" x2="0" y2="-400" stroke="#333" stroke-width="2"></line>
+      
+      <!-- X轴刻度 -->
+      <g class="x-ticks">
+        <text x="80" y="20" text-anchor="middle">10</text>
+        <text x="240" y="20" text-anchor="middle">100</text>
+        <text x="400" y="20" text-anchor="middle">1000</text>
+        <text x="250" y="40" text-anchor="middle">并发数</text>
+      </g>
+      
+      <!-- Y轴刻度 -->
+      <g class="y-ticks">
+        <text x="-10" y="0" text-anchor="end">0</text>
+        <text x="-10" y="-100" text-anchor="end">30000</text>
+        <text x="-10" y="-200" text-anchor="end">60000</text>
+        <text x="-10" y="-300" text-anchor="end">90000</text>
+        <text x="-10" y="-400" text-anchor="end">120000</text>
+      </g>
+    </g>
+
+    <!-- 数据柱状图 -->
+    <g transform="translate(50, 450)">
+      <!-- 10并发 -->
+      <rect x="50" y="-214" width="20" height="214" fill="#4CAF50" opacity="0.5"></rect>
+      <rect x="80" y="-249" width="20" height="249" fill="#2196F3" opacity="0.5"></rect>
+      <rect x="110" y="-313" width="20" height="313" fill="#FF5722" stroke="#333" stroke-width="1"></rect>
+
+      <!-- 100并发 -->
+      <rect x="210" y="-307" width="20" height="307" fill="#4CAF50" opacity="0.5"></rect>
+      <rect x="240" y="-297" width="20" height="297" fill="#2196F3" opacity="0.5"></rect>
+      <rect x="270" y="-363" width="20" height="363" fill="#FF5722" stroke="#333" stroke-width="1"></rect>
+
+      <!-- 1000并发 -->
+      <rect x="370" y="-297" width="20" height="297" fill="#4CAF50" opacity="0.5"></rect>
+      <rect x="400" y="-341" width="20" height="341" fill="#2196F3" opacity="0.5"></rect>
+      <rect x="430" y="-371" width="20" height="371" fill="#FF5722" stroke="#333" stroke-width="1"></rect>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .performance-chart {
+    margin: 2rem auto;
+    max-width: 800px;
+  }
+  text {
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+  }
+</style>
