@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="mainGradient" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#60A5FA">
-        <animate
-                attributeName="stop-color"
-                values="#60A5FA; #34D399; #60A5FA"
-                dur="4s"
-                repeatCount="indefinite"
-        />
-      </stop>
-      <stop offset="100%" stop-color="#34D399">
-        <animate
-                attributeName="stop-color"
-                values="#34D399; #60A5FA; #34D399"
-                dur="4s"
-                repeatCount="indefinite"
-        />
-      </stop>
-    </linearGradient>
+    <!-- 黑洞效果的径向渐变 -->
+    <radialGradient id="blackHoleGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#000000"/>
+      <stop offset="40%" stop-color="#000000"/>
+      <stop offset="60%" stop-color="#60A5FA"/>
+      <stop offset="80%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
 
+    <!-- 增强的光晕效果 -->
     <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      <feGaussianBlur stdDeviation="4" result="blur1"/>
+      <feComposite in="SourceGraphic" in2="blur1" operator="over"/>
     </filter>
 
-    <animateTransform
-            id="rotate"
-            attributeName="transform"
-            type="rotate"
-            from="0 100 100"
-            to="360 100 100"
-            dur="8s"
-            repeatCount="indefinite"
-    />
+    <filter id="strongGlow">
+      <feGaussianBlur stdDeviation="8" result="blur2"/>
+      <feComposite in="SourceGraphic" in2="blur2" operator="over"/>
+    </filter>
+
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="6" result="blur3"/>
+      <feComposite in="SourceGraphic" in2="blur3" operator="over"/>
+    </filter>
+
+    <!-- 扭曲效果 -->
+    <filter id="twist">
+      <feTurbulence type="turbulence" baseFrequency="0.01" numOctaves="3" result="turbulence">
+        <animate attributeName="baseFrequency" values="0.01;0.02;0.01" dur="10s" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="10" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+
+    <!-- 横向光晕效果 -->
+    <linearGradient id="horizontalGlow" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="50%" stop-color="white" stop-opacity="0.6">
+        <animate attributeName="stop-opacity" values="0.6;0.8;0.6" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
   </defs>
 
-  <circle cx="100" cy="100" r="80" fill="url(#mainGradient)" opacity="0.1">
+  <!-- 黑洞背景 -->
+  <circle cx="100" cy="100" r="80" fill="url(#blackHoleGradient)">
     <animate
             attributeName="r"
             values="75;85;75"
@@ -45,161 +54,130 @@
     />
   </circle>
 
-  <rect
-          x="40"
-          y="40"
-          width="120"
-          height="120"
-          rx="12"
-          stroke="url(#mainGradient)"
-          stroke-width="8"
-          fill="none"
-          filter="url(#glow)"
-  >
-    <animate
-            attributeName="stroke-width"
-            values="8;10;8"
-            dur="2s"
-            repeatCount="indefinite"
-    />
-  </rect>
-
+  <!-- 多层光晕效果 -->
   <g>
-    <rect
-            x="70"
-            y="70"
-            width="60"
-            height="60"
-            transform="rotate(45 100 100)"
-            stroke="url(#mainGradient)"
-            stroke-width="4"
-            fill="none"
-            opacity="0.5"
-    >
-      <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from="45 100 100"
-              to="405 100 100"
-              dur="8s"
-              repeatCount="indefinite"
-      />
-    </rect>
-
-    <rect
-            x="80"
-            y="80"
-            width="40"
-            height="40"
-            transform="rotate(45 100 100)"
-            stroke="url(#mainGradient)"
-            stroke-width="4"
-            fill="none"
-    >
-      <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from="45 100 100"
-              to="-315 100 100"
+    <!-- 外层光晕 -->
+    <circle cx="100" cy="100" r="90" stroke="#60A5FA" stroke-width="1" fill="none" filter="url(#softGlow)" opacity="0.3">
+      <animate
+              attributeName="r"
+              values="85;95;85"
               dur="6s"
               repeatCount="indefinite"
       />
-    </rect>
+      <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from="0 100 100"
+              to="360 100 100"
+              dur="15s"
+              repeatCount="indefinite"
+      />
+    </circle>
+
+    <!-- 中层光晕 -->
+    <circle cx="100" cy="100" r="70" stroke="#60A5FA" stroke-width="2" fill="none" filter="url(#strongGlow)" opacity="0.5">
+      <animate
+              attributeName="r"
+              values="65;75;65"
+              dur="4s"
+              repeatCount="indefinite"
+      />
+      <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from="360 100 100"
+              to="0 100 100"
+              dur="12s"
+              repeatCount="indefinite"
+      />
+    </circle>
+
+    <!-- 内层光晕 -->
+    <circle cx="100" cy="100" r="50" stroke="#34D399" stroke-width="2" fill="none" filter="url(#glow)" opacity="0.7">
+      <animate
+              attributeName="r"
+              values="45;55;45"
+              dur="3s"
+              repeatCount="indefinite"
+      />
+      <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from="0 100 100"
+              to="360 100 100"
+              dur="8s"
+              repeatCount="indefinite"
+      />
+    </circle>
   </g>
 
-  <line x1="20" y1="80" x2="40" y2="80" stroke="url(#mainGradient)" stroke-width="8" stroke-linecap="round">
-    <animate
-            attributeName="stroke-width"
-            values="8;4;8"
-            dur="1.5s"
-            begin="0s"
-            repeatCount="indefinite"
-    />
-    <animate
-            attributeName="opacity"
-            values="1;0.5;1"
-            dur="1.5s"
-            begin="0s"
-            repeatCount="indefinite"
-    />
-  </line>
+  <!-- 行星公转效果 -->
+  <g>
+    <!-- 行星1 -->
+    <circle cx="160" cy="100" r="4" fill="#ffffff" filter="url(#glow)">
+      <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from="0 100 100"
+              to="360 100 100"
+              dur="8s"
+              repeatCount="indefinite"
+      />
+    </circle>
 
-  <line x1="20" y1="120" x2="40" y2="120" stroke="url(#mainGradient)" stroke-width="8" stroke-linecap="round">
-    <animate
-            attributeName="stroke-width"
-            values="8;4;8"
-            dur="1.5s"
-            begin="0.2s"
-            repeatCount="indefinite"
-    />
-    <animate
-            attributeName="opacity"
-            values="1;0.5;1"
-            dur="1.5s"
-            begin="0.2s"
-            repeatCount="indefinite"
-    />
-  </line>
+    <!-- 行星2 -->
+    <circle cx="140" cy="100" r="3" fill="#ffffff" filter="url(#glow)">
+      <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from="120 100 100"
+              to="480 100 100"
+              dur="12s"
+              repeatCount="indefinite"
+      />
+    </circle>
 
-  <line x1="160" y1="80" x2="180" y2="80" stroke="url(#mainGradient)" stroke-width="8" stroke-linecap="round">
-    <animate
-            attributeName="stroke-width"
-            values="8;4;8"
-            dur="1.5s"
-            begin="0.4s"
-            repeatCount="indefinite"
-    />
-    <animate
-            attributeName="opacity"
-            values="1;0.5;1"
-            dur="1.5s"
-            begin="0.4s"
-            repeatCount="indefinite"
-    />
-  </line>
+    <!-- 行星3 -->
+    <circle cx="120" cy="100" r="2" fill="#ffffff" filter="url(#glow)">
+      <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from="240 100 100"
+              to="600 100 100"
+              dur="15s"
+              repeatCount="indefinite"
+      />
+    </circle>
+  </g>
 
-  <line x1="160" y1="120" x2="180" y2="120" stroke="url(#mainGradient)" stroke-width="8" stroke-linecap="round">
-    <animate
-            attributeName="stroke-width"
-            values="8;4;8"
-            dur="1.5s"
-            begin="0.6s"
-            repeatCount="indefinite"
-    />
-    <animate
-            attributeName="opacity"
-            values="1;0.5;1"
-            dur="1.5s"
-            begin="0.6s"
-            repeatCount="indefinite"
-    />
-  </line>
+  <!-- 物质流动效果 -->
+  <g>
+    <circle r="2" fill="#60A5FA">
+      <animateMotion
+              path="M 180,100 A 80,80 0 1 1 100,180"
+              dur="3s"
+              repeatCount="indefinite"
+      />
+      <animate
+              attributeName="opacity"
+              values="0;1;0"
+              dur="3s"
+              repeatCount="indefinite"
+      />
+    </circle>
 
-  <circle r="3" fill="#60A5FA">
-    <animateMotion
-            path="M20,80 L180,80"
-            dur="2s"
-            repeatCount="indefinite"
-    />
-    <animate
-            attributeName="opacity"
-            values="0;1;0"
-            dur="2s"
-            repeatCount="indefinite"
-    />
-  </circle>
-
-  <circle r="3" fill="#34D399">
-    <animateMotion
-            path="M180,120 L20,120"
-            dur="2s"
-            repeatCount="indefinite"
-    />
-    <animate
-            attributeName="opacity"
-            values="0;1;0"
-            dur="2s"
-            repeatCount="indefinite"
-    />
-  </circle>
+    <circle r="2" fill="#34D399">
+      <animateMotion
+              path="M 100,20 A 80,80 0 1 1 20,100"
+              dur="4s"
+              repeatCount="indefinite"
+      />
+      <animate
+              attributeName="opacity"
+              values="0;1;0"
+              dur="4s"
+              repeatCount="indefinite"
+      />
+    </circle>
+  </g>
 </svg>
