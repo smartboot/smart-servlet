@@ -306,7 +306,7 @@ public class BasicPlugin extends Plugin {
                     ctx.Request.upgrade(new Http2Upgrade() {
                         @Override
                         public void handle(HttpRequest request, CompletableFuture<Object> completableFuture) throws Throwable {
-                            runtime.getContainerRuntime().doHandle(ctx.Request, completableFuture, runtime);
+                            runtime.getContainerRuntime().doHandle(request, completableFuture, runtime);
                         }
                     });
                 } else {
