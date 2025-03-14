@@ -49,6 +49,13 @@ public class ContainerConfig {
     private String host = "0.0.0.0";
     @Param(name = "http.idleTimeout", value = "60000")
     private int httpIdleTimeout;
+
+    /**
+     * 解析的header数量上限
+     */
+    @Param(name = "http.headerLimit", value = "100")
+    private int headerLimiter = 100;
+
     /**
      * 根上下文
      */
@@ -177,6 +184,15 @@ public class ContainerConfig {
 
     public ContainerConfig setHttpIdleTimeout(int httpIdleTimeout) {
         this.httpIdleTimeout = httpIdleTimeout;
+        return this;
+    }
+
+    public int getHeaderLimiter() {
+        return headerLimiter;
+    }
+
+    public ContainerConfig setHeaderLimiter(int headerLimiter) {
+        this.headerLimiter = headerLimiter;
         return this;
     }
 

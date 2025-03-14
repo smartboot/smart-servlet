@@ -161,6 +161,7 @@ public class BasicPlugin extends Plugin {
                             .readBufferSize(config.getReadBufferSize())
                             .serverName("smart-servlet")
                             .debug(config.isDebugEnable())
+                            .headerLimiter(config.getHeaderLimiter())
                             .bannerEnabled(false)
                             .setIdleTimeout(config.getHttpIdleTimeout())
                             .addPlugin(config.getPlugins());
