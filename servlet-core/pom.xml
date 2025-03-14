@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>tech.smartboot.feat</groupId>
-            <artifactId>feat-ai</artifactId>
+            <artifactId>feat-core</artifactId>
         </dependency>
 
         <dependency>
