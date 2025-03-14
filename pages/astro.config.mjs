@@ -10,6 +10,9 @@ export default defineConfig({
     integrations: [
         starlight({
             title: 'smart-servlet',
+            logo: {
+                src: './public/logo.svg',
+            },
             head: [
                 {
                     tag: 'meta',
