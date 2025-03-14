@@ -239,13 +239,11 @@ public class Container {
      *
      * @param request
      */
-    public void doHandle(HttpRequest request, CompletableFuture<Object> completableFuture) {
+    public void doHandle(HttpRequest request, CompletableFuture<Object> completableFuture, ServletContextRuntime runtime) {
         HttpResponse response = request.getResponse();
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         AsyncContext asyncContext = null;
         try {
-            //识别请求对应的运行时环境,必然不能为null，要求存在contextPath为"/"的container
-            ServletContextRuntime runtime = matchRuntime(request.getRequestURI());
 //            if (!runtime.isStarted()) {
 //                throw new IllegalStateException("container is not started");
 //            }

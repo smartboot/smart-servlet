@@ -27,6 +27,9 @@ import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpServer;
 import tech.smartboot.feat.core.server.impl.HttpEndpoint;
 import tech.smartboot.feat.core.server.upgrade.http2.Http2Upgrade;
+import tech.smartboot.feat.router.Context;
+import tech.smartboot.feat.router.Router;
+import tech.smartboot.feat.router.RouterHandler;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
@@ -57,6 +60,7 @@ public class BasicPlugin extends Plugin {
     private LicenseTO licenseTO;
     private License license;
     private String waringMessage = "";
+    private Router router;
 
     public static boolean isVersionSupported(String containerVersion, String supportVersion) {
         if (StringUtils.isBlank(supportVersion)) {
@@ -112,6 +116,7 @@ public class BasicPlugin extends Plugin {
                 throw new WrappedRuntimeException(e);
             }
         }
+        router = new Router();
     }
 
     @Override
@@ -149,42 +154,6 @@ public class BasicPlugin extends Plugin {
             AsynchronousChannelGroup group =
                     new EnhanceAsynchronousChannelProvider(false).openAsynchronousChannelGroup(config.getThreadNum(),
                             r -> new Thread(r, "smart-servlet:Thread-" + (threadSeqNumber.getAndIncrement())));
-
-            HttpHandler httpServerHandler;
-            if (config.isVirtualThreadEnable()) {
-                throw new UnsupportedOperationException();
-//                httpServerHandler = new HttpServerHandler() {
-//                    @Override
-//                    public void handle(HttpRequest request, HttpResponse response, CompletableFuture<Object>
-//                    completableFuture) {
-//                        Thread.startVirtualThread(() -> container.doHandle(request, response, completableFuture));
-//                    }
-//                };
-            } else {
-                httpServerHandler = new HttpHandler() {
-                    @Override
-                    public void handle(HttpRequest request,
-                                       CompletableFuture<Object> completableFuture) throws Throwable {
-                        String upgrade = request.getHeader(HeaderNameEnum.UPGRADE.getName());
-                        if (HeaderValue.Upgrade.H2C.equalsIgnoreCase(upgrade)) {
-                            request.upgrade(new Http2Upgrade() {
-                                @Override
-                                public void handle(HttpRequest request, CompletableFuture<Object> completableFuture) throws Throwable {
-                                    container.doHandle(request, completableFuture);
-                                }
-                            });
-                        } else {
-                            container.doHandle(request, completableFuture);
-                        }
-
-                    }
-
-                    @Override
-                    public void handle(HttpRequest request) {
-
-                    }
-                };
-            }
             System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
                 HttpServer httpServer = Feat.httpServer(options -> {
@@ -199,13 +168,13 @@ public class BasicPlugin extends Plugin {
                         options.proxyProtocolSupport();
                     }
                 });
-                httpServer.httpHandler(httpServerHandler).listen(config.getHost(), config.getPort());
+                httpServer.httpHandler(router).listen(config.getHost(), config.getPort());
                 System.out.println("\tHTTP is enabled, " + config.getHost() + ":" + config.getPort());
             } else {
                 System.out.println("\tHTTP is disabled.");
             }
             if (config.isSslEnable()) {
-                startSslServer(config, group, httpServerHandler);
+                startSslServer(config, group, router);
             } else {
                 System.out.println("\tHTTPS is disabled.");
             }
@@ -318,6 +287,34 @@ public class BasicPlugin extends Plugin {
             }
         } catch (ClassNotFoundException ignore) {
         }
+        String contextPath = runtime.getContextPath();
+        if (contextPath.endsWith("/")) {
+            contextPath += "*";
+        } else {
+            contextPath += "/*";
+        }
+        router.route(contextPath, new RouterHandler() {
+            @Override
+            public void handle(Context ctx) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void handle(Context ctx, CompletableFuture<Object> completableFuture) throws IOException {
+                String upgrade = ctx.Request.getHeader(HeaderNameEnum.UPGRADE.getName());
+                if (HeaderValue.Upgrade.H2C.equalsIgnoreCase(upgrade)) {
+                    ctx.Request.upgrade(new Http2Upgrade() {
+                        @Override
+                        public void handle(HttpRequest request, CompletableFuture<Object> completableFuture) throws Throwable {
+                            runtime.getContainerRuntime().doHandle(ctx.Request, completableFuture, runtime);
+                        }
+                    });
+                } else {
+                    runtime.getContainerRuntime().doHandle(ctx.Request, completableFuture, runtime);
+                }
+
+            }
+        });
     }
 
     @Override
