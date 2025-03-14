@@ -9,7 +9,8 @@ body:
       label: 版本号
       description: 请选择项目使用的 smart-servlet 版本？
       options:
-        - v2.9 (最新)
+        - v3.0 (最新)
+        - v2.9
         - v2.8
         - v2.7
         - 其他
