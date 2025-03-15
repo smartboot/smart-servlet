@@ -4,6 +4,17 @@ description: A reference page in my new Starlight docs site.
 ---
 import { LinkCard } from '@astrojs/starlight/components';
 
+## v3.0 (2025-03-15)
+- 🚀通过 Feat 的 Router 提供多 ServerContext 的路由匹配能力
+- 🚀新增配置参数 headerLimiter，用于限制header解析的数量上限
+- 🛠️移除工具类：CollectionUtils
+- 🛠️优化 AsyncContext 的规范实现
+- 🛠️移除 springboot 工程对 smart-servlet.properties 的依赖，提升使用体验
+- 🛠️升级 Feat 版本至 v0.8.2
+
+<LinkCard title="下载二进制包" description="smart-servlet-bin-3.0-release.tar.gz"
+          href="https://github.com/smartboot/smart-servlet/releases/download/v3.0/smart-servlet-bin-3.0-release.tar.gz" />
+
 ## v2.9 (2025-02-09)
 - 🛠️移除 HttpServletRequestImpl 中的 Attachment设计。
 - 🛠️优化 HttpRequest#upgrade 相关功能。
