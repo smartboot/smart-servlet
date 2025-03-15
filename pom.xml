@@ -25,6 +25,12 @@
                 <groupId>tech.smartboot.feat</groupId>
                 <artifactId>feat-core</artifactId>
                 <version>${feat.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.alibaba.fastjson2</groupId>
+                        <artifactId>fastjson2</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>tech.smartboot.servlet</groupId>
@@ -104,7 +110,7 @@
                     </execution>
                 </executions>
                 <configuration>
-<!--                    <skipSource>true</skipSource>-->
+                    <!--                    <skipSource>true</skipSource>-->
                 </configuration>
             </plugin>
             <plugin>
@@ -131,7 +137,7 @@
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
-<!--                        <phase>verify</phase>-->
+                        <!--                        <phase>verify</phase>-->
                         <phase>deploy</phase>
                         <goals>
                             <goal>sign</goal>
@@ -186,11 +192,11 @@
         </pluginManagement>
     </build>
     <repositories>
-<!--        <repository>-->
-<!--            <id>alimaven</id>-->
-<!--            <name>aliyun maven</name>-->
-<!--            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public</url>-->
-<!--        </repository>-->
+        <!--        <repository>-->
+        <!--            <id>alimaven</id>-->
+        <!--            <name>aliyun maven</name>-->
+        <!--            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public</url>-->
+        <!--        </repository>-->
         <repository>
             <id>sonatype-nexus-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
@@ -198,11 +204,11 @@
         </repository>
     </repositories>
     <pluginRepositories>
-<!--        <pluginRepository>-->
-<!--            <id>alimaven</id>-->
-<!--            <name>aliyun maven</name>-->
-<!--            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public</url>-->
-<!--        </pluginRepository>-->
+        <!--        <pluginRepository>-->
+        <!--            <id>alimaven</id>-->
+        <!--            <name>aliyun maven</name>-->
+        <!--            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public</url>-->
+        <!--        </pluginRepository>-->
         <pluginRepository>
             <id>sonatype-nexus-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
