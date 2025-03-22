@@ -20,8 +20,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.server.ServerContainer;
+import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HeaderValue;
-import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.plugins.websocket.impl.AnnotatedEndpoint;
 import tech.smartboot.servlet.plugins.websocket.impl.AnnotatedEndpointConfig;
@@ -44,7 +44,7 @@ public class WebSocketFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
-        String upgrade = req.getHeader(HeaderNameEnum.UPGRADE.getName());
+        String upgrade = req.getHeader(HeaderName.UPGRADE.getName());
         if (!HeaderValue.Upgrade.WEBSOCKET.equalsIgnoreCase(upgrade)) {
             chain.doFilter(request, response);
             return;

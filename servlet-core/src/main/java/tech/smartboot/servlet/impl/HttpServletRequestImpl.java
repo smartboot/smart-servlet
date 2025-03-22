@@ -31,8 +31,8 @@ import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.MappingMatch;
 import jakarta.servlet.http.Part;
 import jakarta.servlet.http.PushBuilder;
+import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HeaderValue;
-import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.multipart.MultipartConfig;
@@ -622,7 +622,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (characterEncoding != null) {
             return characterEncoding.name();
         }
-        String value = getHeader(HeaderNameEnum.CONTENT_TYPE.getName());
+        String value = getHeader(HeaderName.CONTENT_TYPE.getName());
         String charset = StringUtils.substringAfter(value, "charset=");
         if (StringUtils.isNotBlank(charset)) {
             return charset;
@@ -709,7 +709,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public String getServerName() {
-        String host = getHeader(HeaderNameEnum.HOST.getName());
+        String host = getHeader(HeaderName.HOST.getName());
         if (StringUtils.isBlank(host)) {
             return localAddress.getHostName();
         }
@@ -723,7 +723,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 
     @Override
     public int getServerPort() {
-        String host = getHeader(HeaderNameEnum.HOST.getName());
+        String host = getHeader(HeaderName.HOST.getName());
         if (StringUtils.isBlank(host)) {
             throw new UnsupportedOperationException();
         }
@@ -946,7 +946,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             sessionId = getRequestedSessionId();
         }
         if (sessionId != null) {
-            pushBuilder.addHeader(HeaderNameEnum.COOKIE.getName(), "JSESSIONID=" + sessionId);
+            pushBuilder.addHeader(HeaderName.COOKIE.getName(), "JSESSIONID=" + sessionId);
         }
         return new PushBuilder() {
             @Override

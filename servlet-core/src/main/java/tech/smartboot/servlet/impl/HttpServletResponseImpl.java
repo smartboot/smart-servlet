@@ -13,8 +13,8 @@ package tech.smartboot.servlet.impl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletResponse;
-import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
-import tech.smartboot.feat.core.common.enums.HttpStatus;
+import tech.smartboot.feat.core.common.HeaderName;
+import tech.smartboot.feat.core.common.HttpStatus;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.StringUtils;
@@ -137,7 +137,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (PathMatcherUtil.isAbsoluteUrl(location)) {
             redirect = location;
         } else if (location.charAt(0) == '/') {
-            redirect = request.getScheme() + "://" + request.getHeader(HeaderNameEnum.HOST.getName()) + location;
+            redirect = request.getScheme() + "://" + request.getHeader(HeaderName.HOST.getName()) + location;
         } else {
             String url = request.getRequestURL().toString();
             int last = url.lastIndexOf("/");
@@ -148,7 +148,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
             }
         }
         LOGGER.info("sendRedirect:" + redirect);
-        response.setHeader(HeaderNameEnum.LOCATION.getName(), redirect);
+        response.setHeader(HeaderName.LOCATION.getName(), redirect);
         response.close();
     }
 
@@ -423,7 +423,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
                 response.setContentType(getContentType());
             }
         }
-        setHeader(HeaderNameEnum.CONTENT_LANGUAGE.getName(), loc.getLanguage() + "-" + loc.getCountry());
+        setHeader(HeaderName.CONTENT_LANGUAGE.getName(), loc.getLanguage() + "-" + loc.getCountry());
     }
 
     @Override

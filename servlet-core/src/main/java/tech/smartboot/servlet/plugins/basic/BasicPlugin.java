@@ -16,8 +16,9 @@ import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.feat.Feat;
+import tech.smartboot.feat.core.common.FeatUtils;
+import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HeaderValue;
-import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.ParamReflect;
@@ -134,7 +135,7 @@ public class BasicPlugin extends Plugin {
             System.out.println(" ]." + ConsoleColors.RESET);
             System.out.println();
             System.out.println("\033[1mTechnical Support:\033[0m");
-            System.out.println(CommonUtil.getResourceAsString("smart-servlet/support.txt"));
+            System.out.println(FeatUtils.getResourceAsString("smart-servlet/support.txt"));
             config.setThreadNum(1);
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -302,7 +303,7 @@ public class BasicPlugin extends Plugin {
 
             @Override
             public void handle(Context ctx, CompletableFuture<Object> completableFuture) throws IOException {
-                String upgrade = ctx.Request.getHeader(HeaderNameEnum.UPGRADE.getName());
+                String upgrade = ctx.Request.getHeader(HeaderName.UPGRADE.getName());
                 if (HeaderValue.Upgrade.H2C.equalsIgnoreCase(upgrade)) {
                     ctx.Request.upgrade(new Http2Upgrade() {
                         @Override

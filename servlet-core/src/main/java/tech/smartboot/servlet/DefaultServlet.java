@@ -20,9 +20,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.MappingMatch;
+import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HttpMethod;
-import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
-import tech.smartboot.feat.core.common.enums.HttpStatus;
+import tech.smartboot.feat.core.common.HttpStatus;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.Mimetypes;
@@ -138,7 +138,7 @@ class DefaultServlet extends HttpServlet {
         //304
         long lastModifiedTime = defaultFavicon ? faviconModifyTime : file.lastModified();
         try {
-            String requestModified = request.getHeader(HeaderNameEnum.IF_MODIFIED_SINCE.getName());
+            String requestModified = request.getHeader(HeaderName.IF_MODIFIED_SINCE.getName());
             if (StringUtils.isNotBlank(requestModified) && lastModifiedTime <= sdf.get().parse(requestModified).getTime()) {
                 response.sendError(HttpStatus.NOT_MODIFIED.value(), HttpStatus.NOT_MODIFIED.getReasonPhrase());
                 return;
@@ -146,13 +146,13 @@ class DefaultServlet extends HttpServlet {
         } catch (Exception e) {
             LOGGER.info("exception", e);
         }
-        response.setHeader(HeaderNameEnum.LAST_MODIFIED.getName(), sdf.get().format(new Date(lastModifiedTime)));
+        response.setHeader(HeaderName.LAST_MODIFIED.getName(), sdf.get().format(new Date(lastModifiedTime)));
 
         if (defaultFavicon) {
             response.setContentType("image/x-icon");
         } else {
             String contentType = Mimetypes.getInstance().getMimetype(file);
-            response.setHeader(HeaderNameEnum.CONTENT_TYPE.getName(), contentType + "; charset=utf-8");
+            response.setHeader(HeaderName.CONTENT_TYPE.getName(), contentType + "; charset=utf-8");
         }
         //HEAD不输出内容
         if (HttpMethod.HEAD.equals(method)) {

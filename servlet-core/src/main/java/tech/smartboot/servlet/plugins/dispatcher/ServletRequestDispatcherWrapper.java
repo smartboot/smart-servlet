@@ -15,9 +15,8 @@ import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.MappingMatch;
-import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
+import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.utils.StringUtils;
-import org.smartboot.socket.util.Attachment;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
@@ -242,7 +241,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
     @Override
     public StringBuffer getRequestURL() {
         if (getDispatcherType() == DispatcherType.FORWARD) {
-            return new StringBuffer(getScheme() + "://" + getHeader(HeaderNameEnum.HOST.getName()) + getRequestURI());
+            return new StringBuffer(getScheme() + "://" + getHeader(HeaderName.HOST.getName()) + getRequestURI());
         }
         return super.getRequestURL();
     }

@@ -11,7 +11,6 @@
 package tech.smartboot.servlet;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.smartboot.socket.util.Attachment;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.plugins.security.LoginAccount;

@@ -14,6 +14,7 @@ import jakarta.servlet.AsyncContext;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.exception.HttpException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
@@ -140,7 +141,7 @@ public class Container {
         }
         System.out.println();
 
-        System.out.println(ConsoleColors.GREEN + CommonUtil.getResourceAsString("smart-servlet/banner.txt") + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
+        System.out.println(ConsoleColors.GREEN + FeatUtils.getResourceAsString("smart-servlet/banner.txt") + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
         for (int i = 0; i < 26; i++) {
             System.out.print('~');
         }
@@ -283,7 +284,7 @@ public class Container {
                 printWriter.close();
                 response.setHttpStatus(e.getHttpStatus());
                 OutputStream outputStream = response.getOutputStream();
-                String resp = CommonUtil.getResourceAsString("smart-servlet/error.html");
+                String resp = FeatUtils.getResourceAsString("smart-servlet/error.html");
                 StringBuilder sb = new StringBuilder(resp);
                 int index = sb.indexOf("{{statusCode}}");
                 if (index != -1) {

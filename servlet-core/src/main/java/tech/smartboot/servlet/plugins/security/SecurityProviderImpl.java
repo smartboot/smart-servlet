@@ -16,8 +16,8 @@ import jakarta.servlet.ServletResponseWrapper;
 import jakarta.servlet.annotation.ServletSecurity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import tech.smartboot.feat.core.common.enums.HeaderNameEnum;
-import tech.smartboot.feat.core.common.enums.HttpStatus;
+import tech.smartboot.feat.core.common.HeaderName;
+import tech.smartboot.feat.core.common.HttpStatus;
 import tech.smartboot.feat.core.common.utils.CollectionUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.SmartHttpServletRequest;
@@ -180,7 +180,7 @@ public class SecurityProviderImpl implements SecurityProvider {
         if (loginConfig == null) {
             response.sendError(HttpStatus.UNAUTHORIZED.value());
         } else if (StringUtils.equals(loginConfig.getAuthMethod(), SecurityAccount.AUTH_TYPE_BASIC)) {
-            response.setHeader(HeaderNameEnum.WWW_AUTHENTICATE.getName(), "Basic realm=\"" + loginConfig.getRealmName() + "\"");
+            response.setHeader(HeaderName.WWW_AUTHENTICATE.getName(), "Basic realm=\"" + loginConfig.getRealmName() + "\"");
             response.sendError(HttpStatus.UNAUTHORIZED.value());
         } else if (authorization == null && StringUtils.isNotBlank(loginConfig.getLoginPage())) {
             request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_URI, request.getRequestURI().substring(request.getContextPath().length()));
