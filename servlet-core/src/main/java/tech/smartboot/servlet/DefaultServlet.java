@@ -23,13 +23,13 @@ import jakarta.servlet.http.MappingMatch;
 import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HttpMethod;
 import tech.smartboot.feat.core.common.HttpStatus;
+import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.Mimetypes;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
-import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.impl.WriterOutputStream;
 
 import java.io.File;
@@ -132,7 +132,7 @@ class DefaultServlet extends HttpServlet {
                 return;
             }
         } catch (URISyntaxException e) {
-            throw new WrappedRuntimeException(e);
+            throw new FeatException(e);
         }
 
         //304

@@ -15,6 +15,7 @@ import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
 import tech.smartboot.feat.core.common.FeatUtils;
+import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.exception.HttpException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
@@ -27,7 +28,6 @@ import tech.smartboot.servlet.conf.OrderMeta;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.conf.WebAppInfo;
-import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.handler.FilterMatchHandler;
 import tech.smartboot.servlet.handler.HandlerContext;
 import tech.smartboot.servlet.handler.HandlerPipeline;
@@ -308,7 +308,7 @@ public class Container {
                 response.close();
             }
         } catch (Exception e) {
-            throw new WrappedRuntimeException(e);
+            throw new FeatException(e);
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
             if (asyncContext != null) {

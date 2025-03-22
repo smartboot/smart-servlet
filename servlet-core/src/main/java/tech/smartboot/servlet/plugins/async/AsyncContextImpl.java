@@ -23,14 +23,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.socket.timer.HashedWheelTimer;
 import org.smartboot.socket.timer.TimerTask;
-import tech.smartboot.feat.core.common.enums.HttpStatus;
+import tech.smartboot.feat.core.common.HttpStatus;
+import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.HttpUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
-import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.handler.HandlerContext;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.HttpServletResponseImpl;
@@ -228,7 +228,7 @@ public class AsyncContextImpl implements AsyncContext {
                 servletContext.getPipeline().handleRequest(handlerContext);
             } catch (Throwable e) {
                 e.printStackTrace();
-                throw new WrappedRuntimeException(e);
+                throw new FeatException(e);
             } finally {
 //                originalRequest.getInternalAsyncContext().complete();
                 complete();

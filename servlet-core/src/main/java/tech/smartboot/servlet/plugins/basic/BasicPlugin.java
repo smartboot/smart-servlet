@@ -19,6 +19,7 @@ import tech.smartboot.feat.Feat;
 import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HeaderValue;
+import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.ParamReflect;
@@ -35,7 +36,6 @@ import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.enums.SslCertType;
-import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.plugins.Plugin;
 
 import java.io.ByteArrayInputStream;
@@ -113,7 +113,7 @@ public class BasicPlugin extends Plugin {
                     ParamReflect.reflect(fileInputStream, container.getConfiguration());
                 }
             } catch (IOException e) {
-                throw new WrappedRuntimeException(e);
+                throw new FeatException(e);
             }
         }
         router = new Router();
@@ -182,7 +182,7 @@ public class BasicPlugin extends Plugin {
 
         } catch (Exception e) {
             LOGGER.error("initPlugin error", e);
-            throw new WrappedRuntimeException(e);
+            throw new FeatException(e);
         }
 
         if (StringUtils.isNotBlank(waringMessage)) {

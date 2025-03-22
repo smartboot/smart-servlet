@@ -28,6 +28,7 @@ import jakarta.servlet.descriptor.JspConfigDescriptor;
 import jakarta.servlet.http.HttpSessionAttributeListener;
 import jakarta.servlet.http.HttpSessionIdListener;
 import jakarta.servlet.http.HttpSessionListener;
+import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.Mimetypes;
@@ -37,7 +38,6 @@ import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.enums.ServletContextPathType;
-import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.handler.HandlerPipeline;
 
 import java.io.File;
@@ -363,7 +363,7 @@ public class ServletContextImpl implements ServletContext {
         try {
             return addServlet(servletName, (Class<? extends Servlet>) getClassLoader().loadClass(className));
         } catch (ClassNotFoundException e) {
-            throw new WrappedRuntimeException(e);
+            throw new FeatException(e);
         }
     }
 
@@ -432,7 +432,7 @@ public class ServletContextImpl implements ServletContext {
         try {
             return addFilter(filterName, (Class<? extends Filter>) getClassLoader().loadClass(className));
         } catch (ClassNotFoundException e) {
-            throw new WrappedRuntimeException(e);
+            throw new FeatException(e);
         }
     }
 
