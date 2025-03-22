@@ -38,7 +38,6 @@ import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.HttpServletResponseImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 import tech.smartboot.servlet.plugins.Plugin;
-import tech.smartboot.servlet.util.CommonUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

@@ -37,7 +37,6 @@ import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.enums.SslCertType;
 import tech.smartboot.servlet.exception.WrappedRuntimeException;
 import tech.smartboot.servlet.plugins.Plugin;
-import tech.smartboot.servlet.util.CommonUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
