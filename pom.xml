@@ -77,7 +77,7 @@
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://central.sonatype.com/repository/maven-snapshots</url>
         </snapshotRepository>
         <repository>
             <id>ossrh</id>
@@ -136,8 +136,8 @@
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
-                        <!--                        <phase>verify</phase>-->
-                        <phase>deploy</phase>
+                                                <phase>verify</phase>
+<!--                        <phase>deploy</phase>-->
                         <goals>
                             <goal>sign</goal>
                         </goals>
@@ -201,11 +201,6 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>
-        <repository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </repositories>
     <pluginRepositories>
