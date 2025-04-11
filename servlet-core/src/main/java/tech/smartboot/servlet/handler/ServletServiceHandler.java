@@ -16,7 +16,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.UnavailableException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import tech.smartboot.feat.core.common.enums.HttpStatus;
+import tech.smartboot.feat.core.common.HttpStatus;
 
 import java.io.IOException;
 

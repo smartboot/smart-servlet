@@ -58,7 +58,7 @@
         <dependency>
             <groupId>tech.smartboot.servlet</groupId>
             <artifactId>smart-servlet-spring-boot-starter</artifactId>
-            <version>3.0</version><!--最新版本 -->
+            <version>3.1-SNAPSHOT</version><!--最新版本 -->
         </dependency>
         <dependency>
             <groupId>tech.smartboot.feat</groupId>

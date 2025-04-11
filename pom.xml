@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>tech.smartboot.servlet</groupId>
     <artifactId>smart-servlet-parent</artifactId>
-    <version>3.0</version>
+    <version>3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
-        <feat.version>0.8.2</feat.version>
-        <smartservlet.version>3.0</smartservlet.version>
+        <feat.version>0.8.3-SNAPSHOT</feat.version>
+        <smartservlet.version>3.1-SNAPSHOT</smartservlet.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
@@ -90,11 +90,10 @@
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.4.0</version>
+                <version>0.7.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>ossrh</publishingServerId>
-                    <tokenAuth>true</tokenAuth>
                     <autoPublish>true</autoPublish>
                 </configuration>
             </plugin>
@@ -192,11 +191,17 @@
         </pluginManagement>
     </build>
     <repositories>
-        <!--        <repository>-->
-        <!--            <id>alimaven</id>-->
-        <!--            <name>aliyun maven</name>-->
-        <!--            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public</url>-->
-        <!--        </repository>-->
+        <repository>
+            <name>Central Portal Snapshots</name>
+            <id>central-portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
         <repository>
             <id>sonatype-nexus-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
