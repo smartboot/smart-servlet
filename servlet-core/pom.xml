@@ -22,11 +22,6 @@
     <artifactId>servlet-core</artifactId>
     <dependencies>
         <dependency>
-            <groupId>io.github.smartboot.socket</groupId>
-            <artifactId>aio-pro</artifactId>
-            <version>1.6.55</version>
-        </dependency>
-        <dependency>
             <groupId>tech.smartboot.feat</groupId>
             <artifactId>feat-core</artifactId>
         </dependency>
