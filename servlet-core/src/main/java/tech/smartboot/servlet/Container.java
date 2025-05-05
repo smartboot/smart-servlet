@@ -239,7 +239,7 @@ public class Container {
      *
      * @param request
      */
-    public void doHandle(HttpRequest request, CompletableFuture<Object> completableFuture, ServletContextRuntime runtime) {
+    public void doHandle(HttpRequest request, CompletableFuture<Void> completableFuture, ServletContextRuntime runtime) {
         HttpResponse response = request.getResponse();
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         AsyncContext asyncContext = null;

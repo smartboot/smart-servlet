@@ -119,7 +119,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private boolean asyncSupported = true;
 
     private volatile AsyncContext asyncContext = null;
-    private final CompletableFuture<Object> completableFuture;
+    private final CompletableFuture<Void> completableFuture;
 
     private ServletMappingInfo servletMappingInfo;
     private LoginAccount principal;
@@ -127,7 +127,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private final InetSocketAddress localAddress;
 
 
-    public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, CompletableFuture<Object> completableFuture) {
+    public HttpServletRequestImpl(HttpRequest request, ServletContextRuntime runtime, CompletableFuture<Void> completableFuture) {
         this.request = request;
         this.servletContext = runtime.getServletContext();
         this.runtime = runtime;
@@ -928,7 +928,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         return null;
     }
 
-    public CompletableFuture<Object> getCompletableFuture() {
+    public CompletableFuture<Void> getCompletableFuture() {
         return completableFuture;
     }
 

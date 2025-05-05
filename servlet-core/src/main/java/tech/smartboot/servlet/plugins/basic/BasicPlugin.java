@@ -301,12 +301,12 @@ public class BasicPlugin extends Plugin {
             }
 
             @Override
-            public void handle(Context ctx, CompletableFuture<Object> completableFuture) throws IOException {
+            public void handle(Context ctx, CompletableFuture<Void> completableFuture) throws IOException {
                 String upgrade = ctx.Request.getHeader(HeaderName.UPGRADE.getName());
                 if (HeaderValue.Upgrade.H2C.equalsIgnoreCase(upgrade)) {
                     ctx.Request.upgrade(new Http2Upgrade() {
                         @Override
-                        public void handle(HttpRequest request, CompletableFuture<Object> completableFuture) throws Throwable {
+                        public void handle(HttpRequest request, CompletableFuture<Void> completableFuture) throws Throwable {
                             runtime.getContainerRuntime().doHandle(request, completableFuture, runtime);
                         }
                     });

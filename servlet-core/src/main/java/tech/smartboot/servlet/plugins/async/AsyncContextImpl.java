@@ -64,7 +64,7 @@ public class AsyncContextImpl implements AsyncContext {
     private long timeout;
     private int dispatchState = DISPATCHER_STATE_INIT;
     private final ServletContextRuntime servletContextRuntime;
-    private final CompletableFuture<Object> future;
+    private final CompletableFuture<Void> future;
     /**
      * 前一个异步上下文
      */
@@ -109,7 +109,7 @@ public class AsyncContextImpl implements AsyncContext {
         }
     };
 
-    public AsyncContextImpl(ServletContextRuntime runtime, HttpServletRequestImpl originalRequest, ServletRequest request, ServletResponse response, CompletableFuture<Object> future, AsyncContextImpl preAsyncContext) {
+    public AsyncContextImpl(ServletContextRuntime runtime, HttpServletRequestImpl originalRequest, ServletRequest request, ServletResponse response, CompletableFuture<Void> future, AsyncContextImpl preAsyncContext) {
         this.originalRequest = originalRequest;
         this.request = request;
         this.response = response;
