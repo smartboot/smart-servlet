@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <feat.version>0.9.0</feat.version>
+        <feat.version>1.1.0-SNAPSHOT</feat.version>
         <smartservlet.version>3.1-SNAPSHOT</smartservlet.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -136,8 +136,8 @@
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
-                                                <phase>verify</phase>
-<!--                        <phase>deploy</phase>-->
+<!--                                                <phase>verify</phase>-->
+                        <phase>deploy</phase>
                         <goals>
                             <goal>sign</goal>
                         </goals>

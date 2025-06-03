@@ -159,7 +159,6 @@ public class BasicPlugin extends Plugin {
                 HttpServer httpServer = Feat.httpServer(options -> {
                     options.group(group)
                             .readBufferSize(config.getReadBufferSize())
-                            .serverName("smart-servlet")
                             .debug(config.isDebugEnable())
                             .headerLimiter(config.getHeaderLimiter())
                             .bannerEnabled(false)
@@ -252,7 +251,6 @@ public class BasicPlugin extends Plugin {
         HttpServer httpServer = Feat.httpServer(options -> {
             options.group(group)
                     .readBufferSize(config.getSslReadBufferSize())
-                    .serverName("smart-servlet")
                     .debug(config.isDebugEnable())
                     .bannerEnabled(false)
                     .setIdleTimeout(config.getHttpIdleTimeout())
