@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.WebConnection;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.PongMessage;
-import tech.smartboot.feat.core.common.utils.WebSocketUtil;
+import tech.smartboot.feat.core.common.codec.websocket.WebSocket;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.WebSocketRequest;
 import tech.smartboot.feat.core.server.WebSocketResponse;
@@ -43,14 +43,14 @@ public class WebSocketUpgradeHandler implements HttpUpgradeHandler {
                 try {
                     Thread.currentThread().setContextClassLoader(servletClassLoader);
                     switch (request.getFrameOpcode()) {
-                        case WebSocketUtil.OPCODE_TEXT:
+                        case WebSocket.OPCODE_TEXT:
                             if (session.getTextMessageHandler() == null) {
                                 session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "none messageHandler found"));
                             } else {
                                 WebSocketUpgradeHandler.this.handleTextMessage(session.getTextMessageHandler(), new String(request.getPayload(), StandardCharsets.UTF_8));
                             }
                             break;
-                        case WebSocketUtil.OPCODE_BINARY:
+                        case WebSocket.OPCODE_BINARY:
                             if (session.getBinaryMessageHandler() == null) {
                                 session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "none messageHandler found"));
                             } else {
@@ -58,18 +58,18 @@ public class WebSocketUpgradeHandler implements HttpUpgradeHandler {
                             }
 
                             break;
-                        case WebSocketUtil.OPCODE_CLOSE:
+                        case WebSocket.OPCODE_CLOSE:
                             try {
                                 WebSocketUpgradeHandler.this.onClose(request, response);
                             } finally {
                                 response.close();
                             }
                             break;
-                        case WebSocketUtil.OPCODE_PING:
+                        case WebSocket.OPCODE_PING:
 //                            onPing(request, response);
                             throw new UnsupportedOperationException();
 //                            break;
-                        case WebSocketUtil.OPCODE_PONG:
+                        case WebSocket.OPCODE_PONG:
                             onPong(request, session.getPongMessageHandler());
                             break;
                         default:

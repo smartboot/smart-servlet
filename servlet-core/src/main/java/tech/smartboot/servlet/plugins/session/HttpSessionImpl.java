@@ -19,10 +19,10 @@ import jakarta.servlet.http.HttpSessionBindingListener;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionIdListener;
 import jakarta.servlet.http.HttpSessionListener;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import org.smartboot.socket.timer.TimerTask;
-import tech.smartboot.feat.core.common.utils.CollectionUtils;
 import tech.smartboot.servlet.impl.ServletContextImpl;
 
 import java.util.Collections;
@@ -136,7 +136,7 @@ class HttpSessionImpl implements HttpSession {
     public void setAttribute(String name, Object value) {
         checkState();
         Object replace = attributes.put(name, value);
-        if (CollectionUtils.isNotEmpty(servletContext.getDeploymentInfo().getSessionAttributeListeners())) {
+        if (FeatUtils.isNotEmpty(servletContext.getDeploymentInfo().getSessionAttributeListeners())) {
             if (replace == null) {
                 HttpSessionBindingEvent event = new HttpSessionBindingEvent(this, name, value);
                 servletContext.getDeploymentInfo().getSessionAttributeListeners().forEach(request -> request.attributeAdded(event));
@@ -162,7 +162,7 @@ class HttpSessionImpl implements HttpSession {
     public void removeAttribute(String name) {
         checkState();
         Object o = attributes.remove(name);
-        if (CollectionUtils.isNotEmpty(servletContext.getDeploymentInfo().getSessionAttributeListeners())) {
+        if (FeatUtils.isNotEmpty(servletContext.getDeploymentInfo().getSessionAttributeListeners())) {
             HttpSessionBindingEvent event = new HttpSessionBindingEvent(this, name, o);
             servletContext.getDeploymentInfo().getSessionAttributeListeners().forEach(request -> request.attributeRemoved(event));
         }

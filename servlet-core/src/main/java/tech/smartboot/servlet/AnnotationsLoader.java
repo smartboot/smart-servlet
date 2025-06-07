@@ -20,9 +20,9 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.annotation.WebServlet;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
-import tech.smartboot.feat.core.common.utils.CollectionUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
@@ -160,7 +160,7 @@ public class AnnotationsLoader {
 
     public List<String> getAnnotations(Class clazz) {
         List<String> classes = annotations.get(clazz);
-        return CollectionUtils.isEmpty(classes) ? Collections.emptyList() : classes;
+        return FeatUtils.isEmpty(classes) ? Collections.emptyList() : classes;
     }
 
     private void processAnnotationsJar(URL url, Map<String, JavaClassCacheEntry> javaClassCache) {

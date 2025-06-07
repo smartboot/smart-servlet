@@ -16,9 +16,9 @@ import jakarta.servlet.ServletResponseWrapper;
 import jakarta.servlet.annotation.ServletSecurity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HttpStatus;
-import tech.smartboot.feat.core.common.utils.CollectionUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.DeploymentInfo;
@@ -201,7 +201,7 @@ public class SecurityProviderImpl implements SecurityProvider {
             return true;
         }
 
-        if (constraints.stream().anyMatch(securityConstraint -> (securityConstraint.getHttpMethods().isEmpty() || securityConstraint.getHttpMethods().contains(request.getMethod())) && CollectionUtils.isEmpty(securityConstraint.getRoleNames()) && securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.DENY)) {
+        if (constraints.stream().anyMatch(securityConstraint -> (securityConstraint.getHttpMethods().isEmpty() || securityConstraint.getHttpMethods().contains(request.getMethod())) && FeatUtils.isEmpty(securityConstraint.getRoleNames()) && securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.DENY)) {
             response.sendError(HttpStatus.FORBIDDEN.value());
             return false;
         }
@@ -213,19 +213,19 @@ public class SecurityProviderImpl implements SecurityProvider {
             return true;
         }
         //提取匹配HttpMethod的安全约束
-        constraints = constraints.stream().filter(securityConstraint -> CollectionUtils.isEmpty(securityConstraint.getHttpMethods()) || securityConstraint.getHttpMethods().contains(request.getMethod())).toList();
+        constraints = constraints.stream().filter(securityConstraint -> FeatUtils.isEmpty(securityConstraint.getHttpMethods()) || securityConstraint.getHttpMethods().contains(request.getMethod())).toList();
         if (constraints.isEmpty()) {
             response.sendError(HttpStatus.FORBIDDEN.value());
             return false;
         }
 
         //role为空且为DENY，或者不包含有效method
-        if (constraints.stream().anyMatch(securityConstraint -> CollectionUtils.isEmpty(securityConstraint.getRoleNames()) && securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.DENY)) {
+        if (constraints.stream().anyMatch(securityConstraint -> FeatUtils.isEmpty(securityConstraint.getRoleNames()) && securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.DENY)) {
             response.sendError(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
 
-        constraints = constraints.stream().filter(securityConstraint -> CollectionUtils.isNotEmpty(securityConstraint.getRoleNames())).toList();
+        constraints = constraints.stream().filter(securityConstraint -> FeatUtils.isNotEmpty(securityConstraint.getRoleNames())).toList();
         //全部constraints的role都为空，认证通过
         if (constraints.isEmpty()) {
             return true;
@@ -242,7 +242,7 @@ public class SecurityProviderImpl implements SecurityProvider {
 
         LoginAccount finalAccount = account;
         long count = constraints.stream().filter(securityConstraint -> {
-            if (securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.PERMIT && CollectionUtils.isEmpty(securityConstraint.getRoleNames())) {
+            if (securityConstraint.getEmptyRoleSemantic() == ServletSecurity.EmptyRoleSemantic.PERMIT && FeatUtils.isEmpty(securityConstraint.getRoleNames())) {
                 return true;
             }
             if (securityConstraint.getRoleNames().contains("*")) {

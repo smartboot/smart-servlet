@@ -19,7 +19,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.ServletResponseWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import tech.smartboot.feat.core.common.utils.HttpUtils;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
@@ -105,7 +105,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
         if (named) {
             requestWrapper.setRequestUri(requestWrapper.getRequest().getRequestURI());
             Map<String, String[]> parameters = new HashMap<>();
-            HttpUtils.decodeParamString(requestWrapper.getQueryString(), parameters);
+            FeatUtils.decodeParamString(requestWrapper.getQueryString(), parameters);
             requestWrapper.setParameters(parameters);
             handlerContext.setServletInfo(dispatcherServlet);
         } else {
@@ -121,7 +121,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
             handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
             Map<String, String[]> parameters = new HashMap<>();
             if (array.length > 1) {
-                HttpUtils.decodeParamString(array[1], parameters);
+                FeatUtils.decodeParamString(array[1], parameters);
                 requestWrapper.setParameters(parameters);
                 requestWrapper.setQueryString(array[1]);
             }
@@ -171,7 +171,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
             requestWrapper.setAttribute(INCLUDE_SERVLET_PATH, getServerPath(servletMappingInfo, array[0]));
             if (array.length > 1) {
                 Map<String, String[]> parameters = new HashMap<>();
-                HttpUtils.decodeParamString(array[1], parameters);
+                FeatUtils.decodeParamString(array[1], parameters);
                 mergeParameter(requestImpl.getParameterMap(), parameters);
                 requestWrapper.setParameters(parameters);
                 requestWrapper.setAttribute(INCLUDE_QUERY_STRING, array[1]);

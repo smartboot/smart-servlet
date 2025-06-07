@@ -18,8 +18,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import tech.smartboot.feat.core.common.utils.CollectionUtils;
-import tech.smartboot.feat.core.common.utils.NumberUtils;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.ErrorPageInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
@@ -189,9 +188,9 @@ class WebXmlParseEngine {
 
     private void parseSessionConfig(WebAppInfo webAppInfo, Element parentElement) {
         List<Node> childNodeList = getChildNodes(parentElement, "session-config");
-        if (CollectionUtils.isNotEmpty(childNodeList)) {
+        if (FeatUtils.isNotEmpty(childNodeList)) {
             Map<String, String> nodeData = getNodeValue(childNodeList.get(0), Collections.singletonList("session-timeout"));
-            webAppInfo.setSessionTimeout(NumberUtils.toInt(nodeData.get("session-timeout"), 0));
+            webAppInfo.setSessionTimeout(FeatUtils.toInt(nodeData.get("session-timeout"), 0));
         }
     }
 
@@ -238,7 +237,7 @@ class WebXmlParseEngine {
         List<Node> childNodeList = getChildNodes(parentElement, "error-page");
         for (Node node : childNodeList) {
             Map<String, String> nodeData = getNodeValue(node, Arrays.asList("error-code", "location", "exception-type"));
-            webAppInfo.addErrorPage(new ErrorPageInfo(nodeData.get("location"), NumberUtils.toInt(nodeData.get("error-code"), -1), nodeData.get("exception-type")));
+            webAppInfo.addErrorPage(new ErrorPageInfo(nodeData.get("location"), FeatUtils.toInt(nodeData.get("error-code"), -1), nodeData.get("exception-type")));
         }
     }
 
@@ -249,7 +248,7 @@ class WebXmlParseEngine {
             String filterName = nodeData.get("filter-name");
             List<String> dispatchers = getNodeValues(node, "dispatcher");
             Set<DispatcherType> dispatcherTypes = new HashSet<>();
-            if (CollectionUtils.isEmpty(dispatchers)) {
+            if (FeatUtils.isEmpty(dispatchers)) {
                 dispatcherTypes.add(DispatcherType.REQUEST);
             } else {
                 dispatchers.forEach(dispatcher -> dispatcherTypes.add(DispatcherType.valueOf(dispatcher)));
@@ -277,7 +276,7 @@ class WebXmlParseEngine {
             servletInfo.setServletName(nodeMap.get("servlet-name"));
             servletInfo.setServletClass(nodeMap.get("servlet-class"));
             servletInfo.setJspFile(nodeMap.get("jsp-file"));
-            servletInfo.setLoadOnStartup(NumberUtils.toInt(nodeMap.get("load-on-startup"), 0));
+            servletInfo.setLoadOnStartup(FeatUtils.toInt(nodeMap.get("load-on-startup"), 0));
             servletInfo.setAsyncSupported(Boolean.parseBoolean(nodeMap.get("async-supported")));
             Map<String, String> initParamMap = parseParam(node);
             initParamMap.forEach(servletInfo::addInitParam);
@@ -345,7 +344,7 @@ class WebXmlParseEngine {
 
     private MultipartConfigElement parseMultipartConfig(Node parentElement) {
         List<Node> paramElementList = getChildNodes(parentElement, "multipart-config");
-        if (CollectionUtils.isEmpty(paramElementList)) {
+        if (FeatUtils.isEmpty(paramElementList)) {
             return null;
         }
         if (paramElementList.size() > 1) {
@@ -353,7 +352,7 @@ class WebXmlParseEngine {
         }
         Node node = paramElementList.get(0);
         Map<String, String> nodeMap = getNodeValue(node, Arrays.asList("location", "max-file-size", "max-request-size", "file-size-threshold"));
-        return new MultipartConfigElement(nodeMap.get("location"), NumberUtils.toInt(nodeMap.get("max-file-size"), -1), NumberUtils.toInt(nodeMap.get("max-request-size"), -1), NumberUtils.toInt(nodeMap.get("file-size-threshold"), -1));
+        return new MultipartConfigElement(nodeMap.get("location"), FeatUtils.toInt(nodeMap.get("max-file-size"), -1), FeatUtils.toInt(nodeMap.get("max-request-size"), -1), FeatUtils.toInt(nodeMap.get("file-size-threshold"), -1));
     }
 
     private Map<String, String> parseSecurityRoleRef(Node parentElement) {
@@ -445,7 +444,7 @@ class WebXmlParseEngine {
      */
     private void parseWelcomeFile(WebAppInfo webAppInfo, Element parentElement) {
         List<Node> childNodeList = getChildNodes(parentElement, "welcome-file-list");
-        if (CollectionUtils.isEmpty(childNodeList)) {
+        if (FeatUtils.isEmpty(childNodeList)) {
             return;
         }
         List<Node> welcomeFileElement = getChildNodes(childNodeList.get(0), "welcome-file");
@@ -460,7 +459,7 @@ class WebXmlParseEngine {
      */
     private void parseLocaleEncodingMappings(WebAppInfo webAppInfo, Element parentElement) {
         List<Node> childNodeList = getChildNodes(parentElement, "locale-encoding-mapping-list");
-        if (CollectionUtils.isEmpty(childNodeList)) {
+        if (FeatUtils.isEmpty(childNodeList)) {
             return;
         }
         List<Node> mappings = getChildNodes(childNodeList.get(0), "locale-encoding-mapping");

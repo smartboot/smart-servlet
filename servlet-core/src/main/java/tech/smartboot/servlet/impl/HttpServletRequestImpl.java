@@ -31,13 +31,12 @@ import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.MappingMatch;
 import jakarta.servlet.http.Part;
 import jakarta.servlet.http.PushBuilder;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HeaderValue;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.multipart.MultipartConfig;
-import tech.smartboot.feat.core.common.utils.CollectionUtils;
-import tech.smartboot.feat.core.common.utils.NumberUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpResponse;
@@ -731,7 +730,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         if (index < 0) {
             return localAddress.getPort();
         } else {
-            return NumberUtils.toInt(host.substring(index + 1), -1);
+            return FeatUtils.toInt(host.substring(index + 1), -1);
         }
     }
 
@@ -768,7 +767,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         }
 
         Object replace = attributes.put(name, o);
-        if (CollectionUtils.isNotEmpty(runtime.getDeploymentInfo().getRequestAttributeListeners())) {
+        if (FeatUtils.isNotEmpty(runtime.getDeploymentInfo().getRequestAttributeListeners())) {
             if (replace == null) {
                 ServletRequestAttributeEvent event = new ServletRequestAttributeEvent(servletContext, this, name, o);
                 runtime.getDeploymentInfo().getRequestAttributeListeners().forEach(request -> request.attributeAdded(event));
@@ -785,7 +784,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             return;
         }
         Object o = attributes.remove(name);
-        if (CollectionUtils.isNotEmpty(runtime.getDeploymentInfo().getRequestAttributeListeners())) {
+        if (FeatUtils.isNotEmpty(runtime.getDeploymentInfo().getRequestAttributeListeners())) {
             ServletRequestAttributeEvent event = new ServletRequestAttributeEvent(servletContext, this, name, o);
             runtime.getDeploymentInfo().getRequestAttributeListeners().forEach(request -> request.attributeRemoved(event));
         }

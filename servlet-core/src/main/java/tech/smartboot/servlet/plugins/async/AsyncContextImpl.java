@@ -23,11 +23,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.smartboot.socket.timer.HashedWheelTimer;
 import org.smartboot.socket.timer.TimerTask;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HttpStatus;
 import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
-import tech.smartboot.feat.core.common.utils.HttpUtils;
 import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
@@ -195,7 +195,7 @@ public class AsyncContextImpl implements AsyncContext {
         wrapper.setRequestUri(array[0]);
         Map<String, String[]> parameters = new HashMap<>();
         if (array.length > 1) {
-            HttpUtils.decodeParamString(array[1], parameters);
+            FeatUtils.decodeParamString(array[1], parameters);
             wrapper.setParameters(parameters);
             wrapper.setQueryString(array[1]);
         }
