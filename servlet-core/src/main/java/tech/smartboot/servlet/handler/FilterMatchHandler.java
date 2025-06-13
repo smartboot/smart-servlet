@@ -19,7 +19,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
-import tech.smartboot.feat.core.common.utils.StringUtils;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
@@ -79,7 +79,7 @@ public class FilterMatchHandler extends Handler {
                 return false;
             }
             if (mappingInfo.isServletMappingType()) {
-                return handlerContext.getServletInfo() != null && StringUtils.equals(mappingInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName());
+                return handlerContext.getServletInfo() != null && FeatUtils.equals(mappingInfo.getServletNameMapping(), handlerContext.getServletInfo().getServlet().getServletConfig().getServletName());
             }
 
             String requestURI = request.getRequestURI();

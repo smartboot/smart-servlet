@@ -15,7 +15,7 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import tech.smartboot.feat.core.common.utils.StringUtils;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.impl.ServletContextImpl;
@@ -38,7 +38,7 @@ class DispatcherProviderImpl implements DispatcherProvider {
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException("");
         }
-        return new RequestDispatcherImpl(servletContext, StringUtils.isBlank(servletContext.getContextPath()) ? path : servletContext.getContextPath() + path);
+        return new RequestDispatcherImpl(servletContext, FeatUtils.isBlank(servletContext.getContextPath()) ? path : servletContext.getContextPath() + path);
     }
 
     @Override

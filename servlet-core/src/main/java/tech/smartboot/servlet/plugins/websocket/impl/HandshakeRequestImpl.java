@@ -12,6 +12,7 @@ package tech.smartboot.servlet.plugins.websocket.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.HandshakeRequest;
+
 import java.net.URI;
 import java.security.Principal;
 import java.util.Arrays;

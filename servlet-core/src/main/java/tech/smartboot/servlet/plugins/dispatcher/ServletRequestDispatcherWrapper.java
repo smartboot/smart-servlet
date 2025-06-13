@@ -15,8 +15,8 @@ import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.MappingMatch;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
@@ -207,7 +207,7 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
         switch (servletMappingInfo.getMappingMatch()) {
             case DEFAULT:
                 matchValue = "";
-                if (StringUtils.isBlank(getServletContext().getContextPath())) {
+                if (FeatUtils.isBlank(getServletContext().getContextPath())) {
                     mappingMatch = MappingMatch.CONTEXT_ROOT;
                 }
                 break;

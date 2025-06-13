@@ -16,7 +16,6 @@ import jakarta.servlet.ServletSecurityElement;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.servlet.ServletContextRuntime;
-import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 

@@ -37,7 +37,6 @@ import tech.smartboot.feat.core.common.HeaderValue;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.multipart.MultipartConfig;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.feat.core.server.impl.Upgrade;
@@ -279,7 +278,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public String getRequestedSessionId() {
         if (requestedSessionId != null) {
-            return StringUtils.EMPTY.equals(requestedSessionId) ? null : requestedSessionId;
+            return FeatUtils.EMPTY.equals(requestedSessionId) ? null : requestedSessionId;
         }
         Cookie[] cookies = getCookies();
         if (cookies != null) {
@@ -291,8 +290,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                 }
             }
         }
-        if (StringUtils.isBlank(requestedSessionId)) {
-            requestedSessionId = StringUtils.EMPTY;
+        if (FeatUtils.isBlank(requestedSessionId)) {
+            requestedSessionId = FeatUtils.EMPTY;
         }
         return getRequestedSessionId();
     }
@@ -421,7 +420,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         switch (servletMappingInfo.getMappingMatch()) {
             case DEFAULT:
                 matchValue = "";
-                if (StringUtils.isBlank(servletContext.getContextPath())) {
+                if (FeatUtils.isBlank(servletContext.getContextPath())) {
                     mappingMatch = MappingMatch.CONTEXT_ROOT;
                 }
                 break;
@@ -522,7 +521,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         File location;
         String locationStr = multipartConfigElement.getLocation();
         //未指定location，采用临时目录
-        if (StringUtils.isBlank(locationStr)) {
+        if (FeatUtils.isBlank(locationStr)) {
             location = ((File) servletContext.getAttribute(ServletContext.TEMPDIR));
         } else {
             location = new File(locationStr);
@@ -622,8 +621,8 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             return characterEncoding.name();
         }
         String value = getHeader(HeaderName.CONTENT_TYPE.getName());
-        String charset = StringUtils.substringAfter(value, "charset=");
-        if (StringUtils.isNotBlank(charset)) {
+        String charset = FeatUtils.substringAfter(value, "charset=");
+        if (FeatUtils.isNotBlank(charset)) {
             return charset;
         }
         return runtime.getServletContext().getRequestCharacterEncoding();
@@ -709,7 +708,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public String getServerName() {
         String host = getHeader(HeaderName.HOST.getName());
-        if (StringUtils.isBlank(host)) {
+        if (FeatUtils.isBlank(host)) {
             return localAddress.getHostName();
         }
         int index = host.indexOf(":");
@@ -723,7 +722,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     @Override
     public int getServerPort() {
         String host = getHeader(HeaderName.HOST.getName());
-        if (StringUtils.isBlank(host)) {
+        if (FeatUtils.isBlank(host)) {
             throw new UnsupportedOperationException();
         }
         int index = host.indexOf(":");
@@ -741,7 +740,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
                 throw new IllegalStateException("getInputStream method has been called on this request");
             }
             String character = getCharacterEncoding();
-            if (StringUtils.isBlank(character)) {
+            if (FeatUtils.isBlank(character)) {
                 reader = new BufferedReader(new InputStreamReader(getInputStream()));
             } else {
                 reader = new BufferedReader(new InputStreamReader(getInputStream(), character));

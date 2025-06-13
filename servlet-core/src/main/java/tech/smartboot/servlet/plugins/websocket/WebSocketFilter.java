@@ -20,9 +20,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.server.ServerContainer;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HeaderValue;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.plugins.websocket.impl.AnnotatedEndpoint;
 import tech.smartboot.servlet.plugins.websocket.impl.AnnotatedEndpointConfig;
 import tech.smartboot.servlet.plugins.websocket.impl.PathNode;
@@ -64,7 +64,7 @@ public class WebSocketFilter implements Filter {
                 PathNode requestNode = requestPathNodes.get(i);
                 if (node.isPatternMatching()) {
                     matchData.put(node.getNodeName(), requestNode.getNodeName());
-                } else if (!StringUtils.equals(requestNode.getNodeName(), node.getNodeName())) {
+                } else if (!FeatUtils.equals(requestNode.getNodeName(), node.getNodeName())) {
                     matched = false;
                     break;
                 }

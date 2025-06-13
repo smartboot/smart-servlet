@@ -23,7 +23,6 @@ import jakarta.servlet.annotation.WebServlet;
 import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
 import tech.smartboot.servlet.conf.SecurityConstraint;
@@ -233,7 +232,7 @@ public class AnnotationsLoader {
                     Class<?> clazz = classLoader.loadClass(className);
                     WebFilter webFilter = clazz.getAnnotation(WebFilter.class);
                     String name = webFilter.filterName();
-                    if (StringUtils.isBlank(name)) {
+                    if (FeatUtils.isBlank(name)) {
                         name = className;
                     }
                     FilterInfo filterInfo = new FilterInfo();
@@ -255,7 +254,7 @@ public class AnnotationsLoader {
                     Class<?> clazz = classLoader.loadClass(className);
                     WebServlet webServlet = clazz.getAnnotation(WebServlet.class);
                     String name = webServlet.name();
-                    if (StringUtils.isBlank(name)) {
+                    if (FeatUtils.isBlank(name)) {
                         name = className;
                     }
                     ServletInfo servletInfo = new ServletInfo();

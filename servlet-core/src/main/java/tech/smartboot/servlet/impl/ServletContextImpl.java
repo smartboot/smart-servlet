@@ -28,11 +28,11 @@ import jakarta.servlet.descriptor.JspConfigDescriptor;
 import jakarta.servlet.http.HttpSessionAttributeListener;
 import jakarta.servlet.http.HttpSessionIdListener;
 import jakarta.servlet.http.HttpSessionListener;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.Mimetypes;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
@@ -371,7 +371,7 @@ public class ServletContextImpl implements ServletContext {
     public ServletRegistration.Dynamic addServlet(String servletName, Servlet servlet) {
         checkServletContextState();
         checkContextInitializeState();
-        if (StringUtils.isBlank(servletName)) {
+        if (FeatUtils.isBlank(servletName)) {
             throw new IllegalArgumentException("servletName is null");
         }
 
@@ -441,7 +441,7 @@ public class ServletContextImpl implements ServletContext {
         checkServletContextState();
         checkContextInitializeState();
 
-        if (StringUtils.isBlank(filterName)) {
+        if (FeatUtils.isBlank(filterName)) {
             throw new IllegalArgumentException("filterName is null or an empty String");
         }
         if (deploymentInfo.getFilters().stream().anyMatch(filterInfo -> filterName.equals(filterInfo.getFilterName()))) {
@@ -624,7 +624,7 @@ public class ServletContextImpl implements ServletContext {
         checkServletContextState();
         if (roleNames != null) {
             for (String role : roleNames) {
-                if (StringUtils.isBlank(role)) {
+                if (FeatUtils.isBlank(role)) {
                     throw new IllegalArgumentException("roleName is null or an empty String");
                 }
             }

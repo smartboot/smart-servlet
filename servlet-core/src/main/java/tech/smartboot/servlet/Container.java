@@ -19,7 +19,6 @@ import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.exception.HttpException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.servlet.conf.DeploymentInfo;
@@ -345,7 +344,7 @@ public class Container {
     private ServletContextRuntime getServletRuntime(String localPath, String contextPath, ClassLoader parentClassLoader) throws Exception {
         URLClassLoader urlClassLoader = getClassLoader(localPath, parentClassLoader);
         File contextFile = new File(localPath);
-        ServletContextRuntime servletRuntime = new ServletContextRuntime(localPath, urlClassLoader, StringUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
+        ServletContextRuntime servletRuntime = new ServletContextRuntime(localPath, urlClassLoader, FeatUtils.isBlank(contextPath) ? "/" + contextFile.getName() : contextPath);
 
         WebAppInfo webAppInfo = new WebAppInfo();
         WebXmlParseEngine engine = new WebXmlParseEngine();
@@ -432,7 +431,7 @@ public class Container {
         //set session timeout
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
         deploymentInfo.setLoginConfig(webAppInfo.getLoginConfig());
-        if (StringUtils.isNotBlank(webAppInfo.getVersion())) {
+        if (FeatUtils.isNotBlank(webAppInfo.getVersion())) {
             String[] array = webAppInfo.getVersion().split("\\.");
             if (array.length == 2) {
                 deploymentInfo.setEffectiveMajorVersion(Integer.parseInt(array[0]));

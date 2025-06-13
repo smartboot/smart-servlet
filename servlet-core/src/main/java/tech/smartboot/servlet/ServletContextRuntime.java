@@ -18,9 +18,9 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.MappingMatch;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.ServletContainerInitializerInfo;
@@ -110,7 +110,7 @@ public class ServletContextRuntime {
 
     public ServletContextRuntime(String localPath, ClassLoader classLoader, String contextPath) {
         this.localPath = localPath;
-        if (StringUtils.isBlank(contextPath)) {
+        if (FeatUtils.isBlank(contextPath)) {
             this.contextPath = "/";
         } else {
             this.contextPath = contextPath;

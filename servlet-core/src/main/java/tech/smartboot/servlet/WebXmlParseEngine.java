@@ -19,7 +19,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import tech.smartboot.feat.core.common.FeatUtils;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.ErrorPageInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
@@ -291,7 +290,7 @@ class WebXmlParseEngine {
         List<Node> childNodes = new ArrayList<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node childNode = nodeList.item(i);
-            if (StringUtils.equals(nodeName, childNode.getNodeName())) {
+            if (FeatUtils.equals(nodeName, childNode.getNodeName())) {
                 childNodes.add(childNode);
             }
         }
@@ -311,7 +310,7 @@ class WebXmlParseEngine {
         Map<String, String> nodeMap = new HashMap<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node childNode = nodeList.item(i);
-            nodeNames.stream().filter(nodeName -> StringUtils.equals(nodeName, childNode.getNodeName())).forEach(nodeName -> nodeMap.put(nodeName, StringUtils.trim(childNode.getFirstChild().getNodeValue())));
+            nodeNames.stream().filter(nodeName -> FeatUtils.equals(nodeName, childNode.getNodeName())).forEach(nodeName -> nodeMap.put(nodeName, FeatUtils.trim(childNode.getFirstChild().getNodeValue())));
         }
         return nodeMap;
     }
@@ -322,7 +321,7 @@ class WebXmlParseEngine {
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node childNode = nodeList.item(i);
             if (childNode.getNodeName().equals(nodeName)) {
-                list.add(StringUtils.trim(childNode.getFirstChild().getNodeValue()));
+                list.add(FeatUtils.trim(childNode.getFirstChild().getNodeValue()));
             }
         }
         return list;
@@ -449,7 +448,7 @@ class WebXmlParseEngine {
         }
         List<Node> welcomeFileElement = getChildNodes(childNodeList.get(0), "welcome-file");
         for (Node node : welcomeFileElement) {
-            webAppInfo.addWelcomeFile(StringUtils.trim(node.getFirstChild().getNodeValue()));
+            webAppInfo.addWelcomeFile(FeatUtils.trim(node.getFirstChild().getNodeValue()));
         }
     }
 

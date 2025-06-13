@@ -23,7 +23,6 @@ import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.ParamReflect;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpHandler;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpServer;
@@ -63,7 +62,7 @@ public class BasicPlugin extends Plugin {
     private Router router;
 
     public static boolean isVersionSupported(String containerVersion, String supportVersion) {
-        if (StringUtils.isBlank(supportVersion)) {
+        if (FeatUtils.isBlank(supportVersion)) {
             return false;
         }
         // 解析支持版本范围
@@ -184,7 +183,7 @@ public class BasicPlugin extends Plugin {
             throw new FeatException(e);
         }
 
-        if (StringUtils.isNotBlank(waringMessage)) {
+        if (FeatUtils.isNotBlank(waringMessage)) {
             System.out.println(ConsoleColors.RED + waringMessage + ConsoleColors.RESET);
             waringMessage = null;
         }

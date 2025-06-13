@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HttpStatus;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.LoginConfig;
@@ -179,14 +178,14 @@ public class SecurityProviderImpl implements SecurityProvider {
         }
         if (loginConfig == null) {
             response.sendError(HttpStatus.UNAUTHORIZED.value());
-        } else if (StringUtils.equals(loginConfig.getAuthMethod(), SecurityAccount.AUTH_TYPE_BASIC)) {
+        } else if (FeatUtils.equals(loginConfig.getAuthMethod(), SecurityAccount.AUTH_TYPE_BASIC)) {
             response.setHeader(HeaderName.WWW_AUTHENTICATE.getName(), "Basic realm=\"" + loginConfig.getRealmName() + "\"");
             response.sendError(HttpStatus.UNAUTHORIZED.value());
-        } else if (authorization == null && StringUtils.isNotBlank(loginConfig.getLoginPage())) {
+        } else if (authorization == null && FeatUtils.isNotBlank(loginConfig.getLoginPage())) {
             request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_URI, request.getRequestURI().substring(request.getContextPath().length()));
             request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD, request.getMethod());
             request.getRequestDispatcher(loginConfig.getLoginPage()).forward(request, response);
-        } else if (authorization != null && StringUtils.isNotBlank(loginConfig.getErrorPage())) {
+        } else if (authorization != null && FeatUtils.isNotBlank(loginConfig.getErrorPage())) {
             request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_URI, request.getRequestURI().substring(request.getContextPath().length()));
             request.getSession().setAttribute(SecurityProvider.LOGIN_REDIRECT_METHOD, request.getMethod());
             request.getRequestDispatcher(loginConfig.getErrorPage()).forward(request, response);

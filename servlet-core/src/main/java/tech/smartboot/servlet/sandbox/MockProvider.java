@@ -24,10 +24,10 @@ import jakarta.websocket.Endpoint;
 import jakarta.websocket.Extension;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpointConfig;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HttpMethod;
 import tech.smartboot.feat.core.common.HttpStatus;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.WebSocketServerContainer;
@@ -170,7 +170,7 @@ final class MockProvider implements VendorProvider, WebsocketProvider, FaviconPr
             if (faviconBytes != null) {
                 String requestModified = req.getHeader(HeaderName.IF_MODIFIED_SINCE.getName());
                 try {
-                    if (StringUtils.isNotBlank(requestModified) && faviconModifyTime <= sdf.get().parse(requestModified).getTime()) {
+                    if (FeatUtils.isNotBlank(requestModified) && faviconModifyTime <= sdf.get().parse(requestModified).getTime()) {
                         resp.sendError(HttpStatus.NOT_MODIFIED.value(), HttpStatus.NOT_MODIFIED.getReasonPhrase());
                         return;
                     }

@@ -20,7 +20,6 @@ import jakarta.servlet.ServletResponseWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import tech.smartboot.feat.core.common.FeatUtils;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.SmartHttpServletRequest;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
@@ -114,7 +113,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
             requestWrapper.setAttribute(FORWARD_SERVLET_PATH, requestImpl.getServletPath());
             requestWrapper.setAttribute(FORWARD_PATH_INFO, requestImpl.getPathInfo());
             requestWrapper.setAttribute(FORWARD_QUERY_STRING, requestImpl.getQueryString());
-            String[] array = StringUtils.split(dispatcherURL, "?");
+            String[] array = FeatUtils.split(dispatcherURL, "?");
             requestWrapper.setRequestUri(array[0]);
             ServletMappingInfo servletMappingInfo = servletContext.getRuntime().getMappingProvider().matchWithContextPath(array[0]);
             requestWrapper.setServletMappingInfo(servletMappingInfo);
@@ -164,7 +163,7 @@ class RequestDispatcherImpl implements RequestDispatcher {
             requestWrapper.setAttribute(INCLUDE_PATH_INFO, requestImpl.getPathInfo());
             requestWrapper.setAttribute(INCLUDE_MAPPING, requestImpl.getHttpServletMapping());
 
-            String[] array = StringUtils.split(dispatcherURL, "?");
+            String[] array = FeatUtils.split(dispatcherURL, "?");
             ServletMappingInfo servletMappingInfo = servletContext.getRuntime().getMappingProvider().matchWithContextPath(array[0]);
             handlerContext.setServletInfo(servletMappingInfo.getServletInfo());
             requestWrapper.setAttribute(INCLUDE_REQUEST_URI, array[0]);

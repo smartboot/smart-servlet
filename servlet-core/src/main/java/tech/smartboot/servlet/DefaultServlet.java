@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.MappingMatch;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HttpMethod;
 import tech.smartboot.feat.core.common.HttpStatus;
@@ -27,7 +28,6 @@ import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.common.utils.Mimetypes;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.impl.WriterOutputStream;
@@ -113,7 +113,7 @@ class DefaultServlet extends HttpServlet {
         String fileName = request.getDispatcherType() == DispatcherType.INCLUDE ? (String) request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) : request.getRequestURI();
         String method = request.getMethod();
         String resource = fileName.substring(request.getContextPath().length());
-        if (StringUtils.isBlank(resource)) {
+        if (FeatUtils.isBlank(resource)) {
             resource = "/";
         }
         URL url = request.getServletContext().getResource(resource);
@@ -139,7 +139,7 @@ class DefaultServlet extends HttpServlet {
         long lastModifiedTime = defaultFavicon ? faviconModifyTime : file.lastModified();
         try {
             String requestModified = request.getHeader(HeaderName.IF_MODIFIED_SINCE.getName());
-            if (StringUtils.isNotBlank(requestModified) && lastModifiedTime <= sdf.get().parse(requestModified).getTime()) {
+            if (FeatUtils.isNotBlank(requestModified) && lastModifiedTime <= sdf.get().parse(requestModified).getTime()) {
                 response.sendError(HttpStatus.NOT_MODIFIED.value(), HttpStatus.NOT_MODIFIED.getReasonPhrase());
                 return;
             }
@@ -206,7 +206,7 @@ class DefaultServlet extends HttpServlet {
 
         response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
 //        String location = deploymentInfo.getErrorPageLocation(HttpStatus.NOT_FOUND.value());
-//        if (StringUtils.isNotBlank(location)) {
+//        if (FeatUtils.isNotBlank(location)) {
 //            request.getRequestDispatcher(location).forward(request, response);
 //            return;
 //        }

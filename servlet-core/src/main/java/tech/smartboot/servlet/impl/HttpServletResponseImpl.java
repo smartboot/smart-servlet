@@ -13,11 +13,11 @@ package tech.smartboot.servlet.impl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletMapping;
 import jakarta.servlet.http.HttpServletResponse;
+import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HttpStatus;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.feat.core.server.HttpResponse;
 import tech.smartboot.servlet.util.DateUtil;
 import tech.smartboot.servlet.util.PathMatcherUtil;
@@ -105,7 +105,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         response.setHttpStatus(sc, msg);
 
         String location = request.getServletContext().getRuntime().getDeploymentInfo().getErrorPageLocation(sc);
-        if (StringUtils.isNotBlank(location)) {
+        if (FeatUtils.isNotBlank(location)) {
             HttpServletMapping mapping = request.getHttpServletMapping();
             String servletName = null;
             if (mapping != null) {
@@ -410,7 +410,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         if (encoding == null) {
             encoding = request.getServletContext().getDeploymentInfo().getLocaleEncodingMappings().get(loc.getLanguage());
         }
-        if (!charsetFlag && StringUtils.isNotBlank(encoding)) {
+        if (!charsetFlag && FeatUtils.isNotBlank(encoding)) {
             //It also sets the response's character encoding appropriately for the locale,
             // if the character encoding has not been explicitly set using
             //  - setContentType,

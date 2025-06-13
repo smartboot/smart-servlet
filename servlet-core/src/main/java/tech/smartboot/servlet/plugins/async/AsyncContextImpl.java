@@ -28,7 +28,6 @@ import tech.smartboot.feat.core.common.HttpStatus;
 import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
-import tech.smartboot.feat.core.common.utils.StringUtils;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletMappingInfo;
 import tech.smartboot.servlet.handler.HandlerContext;
@@ -191,7 +190,7 @@ public class AsyncContextImpl implements AsyncContext {
         ServletContextImpl servletContext = (ServletContextImpl) context;
         ServletRequestDispatcherWrapper wrapper = new ServletRequestDispatcherWrapper(originalRequest, DispatcherType.ASYNC, false);
         path = context.getContextPath() + path;
-        String[] array = StringUtils.split(path, "?");
+        String[] array = FeatUtils.split(path, "?");
         wrapper.setRequestUri(array[0]);
         Map<String, String[]> parameters = new HashMap<>();
         if (array.length > 1) {
