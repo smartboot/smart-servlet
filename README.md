@@ -1,7 +1,7 @@
 # 温馨提示
 1. smart-servlet 未在信创名单上。
 2. smart-servlet 不免费。
-3. 想要免费使用 smart-servlet 的企业无需加 wx。
+3. smart-servlet 价格很便宜，想要免费使用的企业就需加 wx 打听了。
 
 ![](pages/public/smart-servlet.svg)
 # smart-servlet
