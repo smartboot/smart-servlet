@@ -1,3 +1,8 @@
+# 温馨提示
+1. smart-servlet 未在信创名单上。
+2. smart-servlet 不免费。
+3. 想要免费使用 smart-servlet 的企业无需加 wx。
+
 ![](pages/public/smart-servlet.svg)
 # smart-servlet
 smart-servlet 是一个基于 Jakarta Servlet 6.0 的轻量级 Servlet 容器，适用于 Java 17+ 环境。 
