@@ -44,8 +44,8 @@ jobs:
         uses: stCarolas/setup-maven@v5
         with:
           maven-version: '3.9.0'
-      - name: Build Feat
-        run: mvn -B install --file feat/pom.xml -Dmaven.test.skip=true -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
+#      - name: Build Feat
+#        run: mvn -B install --file feat/pom.xml -Dmaven.test.skip=true -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
       - name: Build servlet TCK with Maven
         run: mvn -B install --file jakartaee/servlet/pom.xml
       - name: Build smart-servlet with Maven
