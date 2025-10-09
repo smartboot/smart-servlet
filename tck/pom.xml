@@ -6,7 +6,7 @@
 
     <groupId>tech.smartboot.jakarta.tck</groupId>
     <artifactId>servlet-tck-run</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
 
     <name>tck-build</name>
 
@@ -27,7 +27,6 @@
         <junit.jupiter.execution.parallel.config.strategy>fixed</junit.jupiter.execution.parallel.config.strategy>
         <junit.jupiter.execution.parallel.config.fixed.parallelism>2</junit.jupiter.execution.parallel.config.fixed.parallelism>
         <junit.jupiter.extensions.autodetection.enabled>false</junit.jupiter.extensions.autodetection.enabled>
-        <smart.servlet.version>3.1-SNAPSHOT</smart.servlet.version>
     </properties>
 
     <dependencyManagement>
@@ -35,7 +34,7 @@
             <dependency>
                 <groupId>tech.smartboot.servlet</groupId>
                 <artifactId>servlet-core</artifactId>
-                <version>3.1-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.junit</groupId>
