@@ -11,6 +11,7 @@
 package tech.smartboot.springboot.starter;
 
 import jakarta.websocket.server.ServerContainer;
+import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -20,6 +21,8 @@ import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.enums.SslCertType;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import java.io.File;
 
 /**
@@ -47,7 +50,17 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
                 server.getContainer().getConfiguration().setEnabled(false);
                 server.getContainer().getConfiguration().setSslEnable(true);
                 server.getContainer().getConfiguration().setSslPort(getPort());
-                server.getContainer().getConfiguration().setFactory(() -> getSslBundle().createSslContext());
+                server.getContainer().getConfiguration().setFactory(new SSLContextFactory() {
+                    @Override
+                    public SSLContext create() {
+                        return getSslBundle().createSslContext();
+                    }
+
+                    @Override
+                    public void initSSLEngine(SSLEngine sslEngine) {
+                        sslEngine.setUseClientMode(false);
+                    }
+                });
                 server.getContainer().getConfiguration().setSslCertType(SslCertType.custom);
             } else {
                 server.getContainer().getConfiguration().setEnabled(true);
