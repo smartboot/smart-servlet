@@ -496,8 +496,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
             if (!location.isDirectory()) {
                 throw new IOException("there's no upload-file directory!");
             }
-            MultipartConfig config = new MultipartConfig(location.getAbsolutePath(), multipartConfigElement.getMaxFileSize(), multipartConfigElement.getMaxRequestSize(),
-                    multipartConfigElement.getFileSizeThreshold());
+            MultipartConfig config = new MultipartConfig(location.getAbsolutePath(), multipartConfigElement.getMaxFileSize(), multipartConfigElement.getMaxRequestSize());
             parts = new ArrayList<>();
 
             Collection<tech.smartboot.feat.core.common.multipart.Part> items = request.getParts(config);
