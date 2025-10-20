@@ -242,6 +242,12 @@ public class Container {
         HttpResponse response = request.getResponse();
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         AsyncContext asyncContext = null;
+        ServletContextImpl servletContext = runtime.getServletContext();
+        Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
+
+        //封装上下文对象
+        HttpServletRequestImpl servletRequest = new HttpServletRequestImpl(request, runtime, completableFuture);
+        HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
         try {
 //            if (!runtime.isStarted()) {
 //                throw new IllegalStateException("container is not started");
@@ -249,12 +255,7 @@ public class Container {
 //            if(true){
 //                throw new HttpException(HttpStatus.FORBIDDEN);
 //            }
-            ServletContextImpl servletContext = runtime.getServletContext();
-            Thread.currentThread().setContextClassLoader(servletContext.getClassLoader());
 
-            //封装上下文对象
-            HttpServletRequestImpl servletRequest = new HttpServletRequestImpl(request, runtime, completableFuture);
-            HttpServletResponseImpl servletResponse = new HttpServletResponseImpl(servletRequest, response);
             servletRequest.setHttpServletResponse(servletResponse);
             HandlerContext handlerContext = new HandlerContext(servletRequest, servletResponse, runtime.getServletContext(), false);
             ServletMappingInfo servletMappingInfo = runtime.getMappingProvider().matchWithContextPath(servletRequest.getRequestURI());
@@ -312,7 +313,7 @@ public class Container {
             Thread.currentThread().setContextClassLoader(classLoader);
             if (asyncContext != null) {
                 asyncContext.complete();
-            } else {
+            } else if (!servletRequest.isUpgraded()) {
                 completableFuture.complete(null);
             }
         }

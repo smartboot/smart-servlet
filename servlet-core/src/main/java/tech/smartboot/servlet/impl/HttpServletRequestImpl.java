@@ -115,6 +115,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private boolean asyncStarted = false;
 
     private boolean asyncSupported = true;
+    private boolean upgrade = false;
 
     private volatile AsyncContext asyncContext = null;
     private final CompletableFuture<Void> completableFuture;
@@ -558,50 +559,55 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
         return null;
     }
 
+    public boolean isUpgraded() {
+        return upgrade;
+    }
+
     @Override
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
-        T t = null;
         try {
-            t = handlerClass.newInstance();
-            t.init(new WebConnectionImpl(request) {
-                @Override
-                public void close() throws Exception {
-
-                }
-
-                @Override
-                public ServletInputStream getInputStream() throws IOException {
-                    return new UpgradeServletInputStream(HttpServletRequestImpl.this.request.getInputStream());
-                }
-
-                @Override
-                public ServletOutputStream getOutputStream() throws IOException {
-                    return httpServletResponse.getOutputStream();
-                }
-            });
+            T t = handlerClass.newInstance();
+            upgrade = true;
             request.upgrade(new Upgrade() {
 
                 @Override
-                public void init(HttpRequest request, HttpResponse response) throws IOException {
+                public void init(HttpRequest request, HttpResponse response) {
                     System.out.println("init...");
+                    t.init(new WebConnectionImpl(request) {
+                        @Override
+                        public void close() throws Exception {
+
+                        }
+
+                        @Override
+                        public ServletInputStream getInputStream() throws IOException {
+                            return new UpgradeServletInputStream(HttpServletRequestImpl.this.request.getInputStream());
+                        }
+
+                        @Override
+                        public ServletOutputStream getOutputStream() throws IOException {
+                            return httpServletResponse.getOutputStream();
+                        }
+                    });
+//                    if (this.request.getInputStream().getReadListener() != null) {
+//                        try {
+//                            request.getInputStream().getReadListener().onDataAvailable();
+//                        } catch (IOException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                    }
                 }
 
                 @Override
                 public void onBodyStream(ByteBuffer buffer) {
                     System.out.println("onBodyStream....");
-                    if (request.getInputStream().getReadListener() != null) {
-                        try {
-                            request.getInputStream().getReadListener().onDataAvailable();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+
                 }
             });
+            return t;
         } catch (Exception e) {
             throw new ServletException(e);
         }
-        return t;
     }
 
     @Override
