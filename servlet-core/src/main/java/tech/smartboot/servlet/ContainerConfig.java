@@ -13,9 +13,9 @@ package tech.smartboot.servlet;
 
 import org.smartboot.socket.extension.plugins.Plugin;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
-import tech.smartboot.feat.core.common.utils.Param;
 import tech.smartboot.feat.core.server.impl.HttpEndpoint;
 import tech.smartboot.servlet.enums.SslCertType;
+import tech.smartboot.servlet.util.Param;
 
 import java.util.ArrayList;
 import java.util.List;
