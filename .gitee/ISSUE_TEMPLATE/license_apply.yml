@@ -50,4 +50,4 @@ body:
       value: |
         - 完成登记后添加个人微信号: `junweiis008`（备注：smart-servlet采购申请以提交）
         
-          <img src="https://smartboot.tech/img/qrcode/personal_wx.png" width="25%"/>
+          <img src="https://gitee.com/smartboot-x/smart-servlet/raw/master/pages/public/wx.png" width="25%"/>
