@@ -11,6 +11,11 @@
 
 > ⚠️ 请务必先完成产品试用并确认满足您的需求后再提交采购申请！
 
+## 限时采购活动
+截止2025年12月31日前，凡是为 smart-servlet 捐赠 6666 元的企业，可获得smart-servlet 永久授权（至2099年） LICENSE ，并附赠 Feat 授权。
+
+> ⚠️ 注意：smart-servlet 将于2026年进行重新定价设计，当前价格为调整前的优惠价格。
+
 ![](pages/public/smart-servlet.svg)
 # smart-servlet
 smart-servlet 是一个基于 Jakarta Servlet 6.0 的轻量级 Servlet 容器，适用于 Java 17+ 环境。 
