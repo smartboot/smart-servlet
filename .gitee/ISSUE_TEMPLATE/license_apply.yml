@@ -44,5 +44,5 @@ body:
   - type: markdown
     attributes:
       value: |
-        - 添加个人微信号: `junweiis008`（备注：付费业务咨询）
-        ![微信二维码](https://smartboot.tech/img/qrcode/personal_wx.png)
+        - 添加个人微信号: `junweiis008`（备注：smart-servlet采购申请以提交）
+        <img src="https://smartboot.tech/img/qrcode/personal_wx.png" width="25%"/>
