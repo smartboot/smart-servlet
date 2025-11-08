@@ -3,6 +3,14 @@
 2. smart-servlet 不免费。
 3. smart-servlet 价格很便宜，想要免费使用的企业就无需加 wx 打听了。
 
+## 商业支持与采购指引
+如需商业支持或采购 license，请通过 Gitee Issue 系统提交申请：
+- [企业采购 License 申请](https://gitee.com/smartboot/smart-servlet/issues/new?template=license_apply.yml)
+- [License 采购咨询](https://gitee.com/smartboot/smart-servlet/issues/new?template=license_inquiry.yml)
+- [企业技术支持](https://gitee.com/smartboot/smart-servlet/issues/new?template=enterprise_support.yml)
+
+> ⚠️ 请务必先完成产品试用并确认满足您的需求后再提交采购申请！
+
 ![](pages/public/smart-servlet.svg)
 # smart-servlet
 smart-servlet 是一个基于 Jakarta Servlet 6.0 的轻量级 Servlet 容器，适用于 Java 17+ 环境。 
