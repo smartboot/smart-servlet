@@ -4,10 +4,3 @@ contact_links:
   - name: 📚使用文档
     url: https://smartboot.tech/smart-servlet/
     about: smart-servlet in Action，简单、高效、国产化
-
-template_order:
-  - license_apply.yml
-  - license_inquiry.yml
-  - enterprise_support.yml
-  - opensource_bug.yml
-
