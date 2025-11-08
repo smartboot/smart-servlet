@@ -1,4 +1,4 @@
-name: 企业License试用申请
+#name: 企业License采购申请
 description: |
       **重要提醒：**
        - smart-servlet 为个人开源项目，**未作信创认证**，且并**不是免费产品**。
@@ -6,8 +6,8 @@ description: |
        - smart-servlet 为个人开源项目，**未作信创认证**，且并**不是免费产品**。
   
       请务必先完成产品试用并确认满足您的需求后再提交采购申请！
-title: "[License]: 企业试用License申请"
-labels: ["license", "trial"]
+title: "[企业采购License申请]: xxx有限公司"
+labels: ["license", "apply"]
 body:
   - type: input
     id: company_name
