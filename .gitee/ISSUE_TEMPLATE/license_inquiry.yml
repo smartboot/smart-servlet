@@ -9,11 +9,11 @@ body:
         ## 注意事项
         在提交此咨询前，请确保您已经详细阅读并理解了我们的《[商业授权](https://smartboot.tech/smart-servlet/reference/license/)》说明。
         
-        只有在您对文档内容有充分理解但仍然存在疑问的情况下才应使用此模板。
-        
-        ❗**如果您想申请商业许可证，请不要使用此模板，而应使用[企业采购 License 申请](https://gitee.com/smartboot/smart-servlet/issues/new?template=license_apply.yml)模板。**
-        
-        ❗**如果您是已授权客户并需要技术支持，请使用[企业技术支持](https://gitee.com/smartboot/smart-servlet/issues/new?template=enterprise_support.yml)模板。**
+        只有在您对文档内容有充分理解但仍然存在疑问的情况下才应使用此模板。   
+            
+        ❗**如果您想申请商业许可证，请不要使用此模板，而应使用[企业采购 License 申请](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=license_apply.yml)模板。**
+            
+        ❗**如果您是已授权客户并需要技术支持，请使用[企业技术支持](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=enterprise_support.yml)模板。**
   - type: checkboxes
     attributes:
       label: 前置确认
