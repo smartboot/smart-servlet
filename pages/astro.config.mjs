@@ -48,10 +48,10 @@ export default defineConfig({
                 //     label: '简体中文',
                 //     lang: 'zh-CN',
                 // },
-                'en': {
-                    label: 'English',
-                    lang: 'en',
-                },
+                // 'en': {
+                //     label: 'English',
+                //     lang: 'en',
+                // },
                 // 英文文档在 `src/content/docs/en/` 中。
                 root: {
                     label: '简体中文',
