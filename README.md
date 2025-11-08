@@ -5,9 +5,9 @@
 
 ## 商业支持与采购指引
 如需商业支持或采购 license，请通过 Gitee Issue 系统提交申请：
-- [企业采购 License 申请](https://gitee.com/smartboot/smart-servlet/issues/new?template=license_apply.yml)
-- [License 采购咨询](https://gitee.com/smartboot/smart-servlet/issues/new?template=license_inquiry.yml)
-- [企业技术支持](https://gitee.com/smartboot/smart-servlet/issues/new?template=enterprise_support.yml)
+- [企业采购 License 申请](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=license_apply.yml)
+- [License 采购咨询](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=license_inquiry.yml)
+- [企业技术支持](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=enterprise_support.yml)
 
 > ⚠️ 请务必先完成产品试用并确认满足您的需求后再提交采购申请！
 
