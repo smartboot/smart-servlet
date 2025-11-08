@@ -161,8 +161,8 @@ public class BasicPlugin extends Plugin {
                             .debug(config.isDebugEnable())
                             .headerLimiter(config.getHeaderLimiter())
                             .bannerEnabled(false)
-                            .setIdleTimeout(config.getHttpIdleTimeout())
-                            .addPlugin(config.getPlugins());
+                            .setIdleTimeout(config.getHttpIdleTimeout());
+                    config.getPlugins().forEach(options::addPlugin);
                     if (config.isProxyProtocolEnable()) {
                         options.proxyProtocolSupport();
                     }
@@ -253,8 +253,8 @@ public class BasicPlugin extends Plugin {
                     .debug(config.isDebugEnable())
                     .bannerEnabled(false)
                     .setIdleTimeout(config.getHttpIdleTimeout())
-                    .addPlugin(sslPlugin)
-                    .addPlugin(config.getPlugins());
+                    .addPlugin(sslPlugin);
+            config.getPlugins().forEach(options::addPlugin);
             if (config.isProxyProtocolEnable()) {
                 options.proxyProtocolSupport();
             }
@@ -345,7 +345,7 @@ public class BasicPlugin extends Plugin {
             LicenseEntity entity = license.loadLicense(outputStream.toByteArray());
             licenseTO = loadLicense(entity);
         } catch (Exception e) {
-            LOGGER.error("License load exception", e.getMessage());
+            LOGGER.error("License load exception, reason: {}", e.getMessage());
         }
     }
 
