@@ -1,5 +1,6 @@
 name: License采购咨询
-description: 在您仔细阅读了商业授权说明但仍存疑问的情况下，可以通过此模板进行咨询。
+description: |
+    在您仔细阅读了商业授权说明但仍存疑问的情况下，可以通过此模板进行咨询。
 title: "[License咨询]: "
 labels: ["license", "question"]
 body:
