@@ -1,0 +1,48 @@
+name: 企业License试用申请
+description: |
+      **重要提醒：**
+       - smart-servlet 为个人开源项目，**未作信创认证**，且并**不是免费产品**。
+       - smart-servlet 为个人开源项目，**未作信创认证**，且并**不是免费产品**。
+       - smart-servlet 为个人开源项目，**未作信创认证**，且并**不是免费产品**。
+  
+      请务必先完成产品试用并确认满足您的需求后再提交采购申请！
+title: "[License]: 企业试用License申请"
+labels: ["license", "trial"]
+body:
+  - type: input
+    id: company_name
+    attributes:
+      label: 企业名称
+      description: 请输入完整的企业名称
+      placeholder: 例如：某某科技有限公司
+    validations:
+      required: true
+  - type: input
+    id: unified_social_credit_code
+    attributes:
+      label: 统一社会信用代码
+      description: 请输入企业的统一社会信用代码
+      placeholder: 例如：912345678901234567
+    validations:
+      required: true
+  - type: textarea
+    id: company_logo
+    attributes:
+      label: 企业Logo
+      description: 请上传企业Logo（支持PNG、JPG格式，建议尺寸不小于200*200像素）
+      placeholder: 可直接拖拽图片到此处或点击上传
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: 申请确认
+      options:
+        - label: 我承诺提供的企业信息真实有效
+          required: true
+        - label: 我知晓并确认smart-servlet为个人开源项目，无信创认证证书，且并非免费产品，需在试用后决定是否采购
+          required: true
+  - type: markdown
+    attributes:
+      value: |
+        - 添加个人微信号: `junweiis008`（备注：付费业务咨询）
+        ![微信二维码](https://smartboot.tech/img/qrcode/personal_wx.png)
