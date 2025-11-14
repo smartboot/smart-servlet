@@ -39,7 +39,7 @@ smart-servlet 是一个基于 Jakarta Servlet 6.0 的轻量级 Servlet 容器，
 ## 项目推荐
 - [smart-socket](https://gitee.com/smartboot/smart-socket)  
     极简、易用、高性能的AIO通信框架，5G时代的通信微内核，适用于IM、RPC、IoT等诸多领域
-- [smart-http](https://gitee.com/smartboot/smart-http)  
+- [feat](https://gitee.com/smartboot/feat)  
     基于smart-socket实现的轻量级http服务器
 - [smart-mqtt](https://gitee.com/smartboot/smart-mqtt)  
   基于 smart-socket 实现的 MQTT 3.1.1/5.0 Broker&Client 服务。
