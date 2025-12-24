@@ -17,7 +17,7 @@ hero:
 ---
 
 
-import {Card, CardGrid, LinkButton} from '@astrojs/starlight/components';
+import {Card, CardGrid, LinkCard} from '@astrojs/starlight/components';
 import GithubDownloadCount from '../../components/GithubDownloadCount.astro';
 import PerformanceChart from '../../components/PerformanceChart.astro';
 
@@ -181,3 +181,12 @@ import PerformanceChart from '../../components/PerformanceChart.astro';
 
     若有这方面需求的客户，可以尝试走定制化服务。
 </details>
+
+
+## 生态项目
+<CardGrid>
+    <LinkCard title="smart-socket" target="_blank" description="Java AIO 实现的支持百万级长连接通信框架" href="https://smartboot.tech/smart-socket/" />
+    <LinkCard title="feat" target="_blank" description="运行性能超 Vert.x，开发体验近似 SpringBoot ，以 AI 原生 和 云原生 双引擎驱动的现代化 Java Web 服务开发框架" href="https://smartboot.tech/feat/" />
+    <LinkCard title="smart-mqtt" target="_blank" description="一款面向物联网领域的 MQTT 消息中间件产品" href="https://smartboot.tech/smart-mqtt/enterprise.html" />
+    <LinkCard title="Redisun" target="_blank" description="基于 smart-socket 开发的轻量级 Redis 客户端，专为 Java 平台设计，支持异步非阻塞 I/O 操作" href="https://smartboot.tech/redisun/" />
+</CardGrid>
