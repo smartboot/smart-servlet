@@ -14,7 +14,7 @@
 ## 限时采购活动
 截止2025年12月31日前，凡是为 smart-servlet [捐赠](https://smartboot.tech/donation.html) **6666** 元的企业，可获得 smart-servlet 永久授权LICENSE（至2099年） ，并附赠 [Feat](https://gitee.com/smartboot/feat) 授权。
 
-> ⚠️ 注意：smart-servlet 将于2026年进行重新定价设计，当前价格或为历史最低价。
+> ⚠️ 注意：smart-servlet 将于2026年进行重新定价设计，当前价格或为历史最低价。未来不再提供年订阅制
 
 ![](pages/public/smart-servlet.svg)
 # smart-servlet
