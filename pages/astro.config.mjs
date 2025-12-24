@@ -63,10 +63,10 @@ export default defineConfig({
                     label: '指南',
                     autogenerate: {directory: 'guides'},
                 },
-                {
-                    label: '参考',
-                    autogenerate: {directory: 'reference'},
-                },
+                // {
+                //     label: '参考',
+                //     autogenerate: {directory: 'reference'},
+                // },
             ],
         }),
     ],
