@@ -22,9 +22,7 @@ import tech.smartboot.feat.core.common.HeaderValue;
 import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
-import tech.smartboot.feat.core.server.HttpHandler;
 import tech.smartboot.feat.core.server.HttpRequest;
-import tech.smartboot.feat.core.server.HttpServer;
 import tech.smartboot.feat.core.server.impl.HttpEndpoint;
 import tech.smartboot.feat.core.server.upgrade.http2.Http2Upgrade;
 import tech.smartboot.feat.router.Context;
@@ -37,15 +35,10 @@ import tech.smartboot.servlet.enums.SslCertType;
 import tech.smartboot.servlet.plugins.Plugin;
 import tech.smartboot.servlet.util.ParamReflect;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.AsynchronousChannelGroup;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -55,54 +48,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class BasicPlugin extends Plugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(BasicPlugin.class);
-    private static final LicenseTO INVALID_LICENSE = new LicenseTO();
-    private LicenseTO licenseTO;
-    private License license;
     private String waringMessage = "";
     private Router router;
-
-    public static boolean isVersionSupported(String containerVersion, String supportVersion) {
-        if (FeatUtils.isBlank(supportVersion)) {
-            return false;
-        }
-        // 解析支持版本范围
-        String[] versionRange = supportVersion.split("~");
-        String startVersion = versionRange[0];
-        String endVersion = versionRange.length == 2 ? versionRange[1] : "99.99.99";
-
-        // 将版本号转换为整数数组
-        int[] containerVersionArray = parseVersion(containerVersion);
-        int[] startVersionArray = parseVersion(startVersion);
-        int[] endVersionArray = parseVersion(endVersion);
-
-        // 比较版本号
-        return compareVersions(containerVersionArray, startVersionArray) >= 0 && compareVersions(containerVersionArray, endVersionArray) <= 0;
-    }
-
-    private static int[] parseVersion(String version) {
-        String[] parts = version.split("\\.");
-        int[] versionArray = new int[parts.length];
-        for (int i = 0; i < parts.length; i++) {
-            versionArray[i] = Integer.parseInt(parts[i]);
-        }
-        return versionArray;
-    }
-
-    private static int compareVersions(int[] version1, int[] version2) {
-        int length = Math.max(version1.length, version2.length);
-        for (int i = 0; i < length; i++) {
-            int v1 = i < version1.length ? version1[i] : 0;
-            int v2 = i < version2.length ? version2[i] : 0;
-            if (v1 != v2) {
-                return v1 - v2;
-            }
-        }
-        return 0;
-    }
+    
 
     @Override
     public void initPlugin(Container container) {
-        loadLicense();
         // springboot工程不依赖 smart-servlet.properties
         if (!isSpringBoot()) {
             try (InputStream fileInputStream = getResource(Container.CONFIGURATION_FILE)) {
@@ -121,29 +72,6 @@ public class BasicPlugin extends Plugin {
     @Override
     public void onContainerInitialized(Container container) {
         ContainerConfig config = container.getConfiguration();
-        System.out.println("\033[1mLicense Info:\033[0m");
-        if (licenseTO == null || licenseTO == INVALID_LICENSE) {
-            System.out.println("\t" + ConsoleColors.RED + "ERROR：Authorization failed!!!");
-            System.out.print("\tplease check the license file：[ ");
-            if (isSpringBoot()) {
-                System.out.print("src/main/resources/smart-servlet/License.shield");
-            } else {
-                System.out.print("${SERVLET_HOME}/conf/License.shield");
-            }
-            System.out.println(" ]." + ConsoleColors.RESET);
-            System.out.println();
-            System.out.println("\033[1mTechnical Support:\033[0m");
-            System.out.println(FeatUtils.getResourceAsString("smart-servlet/support.txt"));
-            config.setThreadNum(1);
-        } else {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            System.out.println("\t:: Licensed to " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + licenseTO.getApplicant() + ConsoleColors.ANSI_RESET + " until " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + ConsoleColors.BLUE + sdf.format(new Date(licenseTO.getExpireTime())) + ConsoleColors.ANSI_RESET);
-            System.out.println("\t:: License ID: " + ConsoleColors.BOLD + ConsoleColors.ANSI_UNDERLINE_ON + licenseTO.getSn() + ConsoleColors.RESET);
-            System.out.println("\t:: Copyright© " + licenseTO.getVendor() + " ,E-mail: " + licenseTO.getContact());
-            if (licenseTO.getTrialDuration() > 0) {
-                System.out.println(ConsoleColors.RED + "\t:: Trial: " + licenseTO.getTrialDuration() + " minutes" + ConsoleColors.RESET);
-            }
-        }
 
         if (!config.isEnabled() && !config.isSslEnable()) {
             System.err.println(ConsoleColors.RED + "WARN: smart-servlet is disabled, please check the configuration " + "file: " + Container.CONFIGURATION_FILE + ConsoleColors.RESET);
@@ -247,7 +175,7 @@ public class BasicPlugin extends Plugin {
                 throw new UnsupportedOperationException("无效证书类型");
         }
         FeatCloud.cloudServer(options -> {
-            options.setRouter( router)
+            options.setRouter(router)
                     .group(group)
                     .readBufferSize(config.getSslReadBufferSize())
                     .debug(config.isDebugEnable())
@@ -268,10 +196,8 @@ public class BasicPlugin extends Plugin {
 
     @Override
     public void addServletContext(ServletContextRuntime runtime) {
-        if (licenseTO != null) {
-            runtime.setVendorProvider(response -> {
-            });
-        }
+        runtime.setVendorProvider(response -> {
+        });
         try {
             Class clazz = runtime.getDeploymentInfo().getClassLoader().loadClass("javax.servlet.Servlet");
             if (clazz != null) {
@@ -319,51 +245,4 @@ public class BasicPlugin extends Plugin {
         containerRuntime.setFaviconProvider(runtime -> {
         });
     }
-
-    private void loadLicense() {
-        license = new License(entity -> {
-            System.err.println("License已过期");
-            licenseTO = null;
-        }, entity -> {
-            if (entity == license.getEntity()) {
-                System.err.println("The trial version License has expired.");
-                licenseTO = null;
-            }
-        }, 10000);
-
-        try (InputStream fileInputStream = getResource("License.shield")) {
-            if (fileInputStream == null) {
-                return;
-            }
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = fileInputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, len);
-            }
-            LicenseEntity entity = license.loadLicense(outputStream.toByteArray());
-            licenseTO = loadLicense(entity);
-        } catch (Exception e) {
-            LOGGER.error("License load exception, reason: {}", e.getMessage());
-        }
-    }
-
-    private LicenseTO loadLicense(LicenseEntity entity) throws IOException {
-        Properties properties = new Properties();
-        properties.load(new ByteArrayInputStream(entity.getData()));
-        LicenseTO licenseTO = new LicenseTO();
-        licenseTO.setApplicant(properties.getProperty("enterprise.license.user"));
-        licenseTO.setSn(properties.getProperty("enterprise.license.number"));
-        licenseTO.setExpireTime(entity.getExpireTime());
-        licenseTO.setTrialDuration(entity.getTrialDuration());
-        licenseTO.setContact(entity.getContact());
-        licenseTO.setVendor(entity.getApplicant());
-
-//        if (!isVersionSupported(Container.VERSION.substring(1), properties.getProperty("supportVersion"))) {
-//            return INVALID_LICENSE;
-//        }
-        return licenseTO;
-    }
-
-
 }
