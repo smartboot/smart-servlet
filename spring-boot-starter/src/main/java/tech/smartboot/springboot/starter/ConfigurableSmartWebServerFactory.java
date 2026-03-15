@@ -24,6 +24,7 @@ import tech.smartboot.servlet.enums.SslCertType;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import java.io.File;
+import java.nio.channels.AsynchronousSocketChannel;
 
 /**
  * @author 三刀
@@ -57,7 +58,7 @@ public class ConfigurableSmartWebServerFactory extends AbstractServletWebServerF
                     }
 
                     @Override
-                    public void initSSLEngine(SSLEngine sslEngine) {
+                    public void initSSLEngine(AsynchronousSocketChannel channel, SSLEngine sslEngine) {
                         sslEngine.setUseClientMode(false);
                     }
                 });

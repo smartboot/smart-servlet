@@ -15,7 +15,7 @@ import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
-import tech.smartboot.feat.Feat;
+import tech.smartboot.feat.cloud.FeatCloud;
 import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
 import tech.smartboot.feat.core.common.HeaderValue;
@@ -155,8 +155,8 @@ public class BasicPlugin extends Plugin {
                             r -> new Thread(r, "smart-servlet:Thread-" + (threadSeqNumber.getAndIncrement())));
             System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
-                HttpServer httpServer = Feat.httpServer(options -> {
-                    options.group(group)
+                FeatCloud.cloudServer(options -> {
+                    options.setRouter(router).group(group)
                             .readBufferSize(config.getReadBufferSize())
                             .debug(config.isDebugEnable())
                             .headerLimiter(config.getHeaderLimiter())
@@ -166,8 +166,7 @@ public class BasicPlugin extends Plugin {
                     if (config.isProxyProtocolEnable()) {
                         options.proxyProtocolSupport();
                     }
-                });
-                httpServer.httpHandler(router).listen(config.getHost(), config.getPort());
+                }).listen(config.getHost(), config.getPort());
                 System.out.println("\tHTTP is enabled, " + config.getHost() + ":" + config.getPort());
             } else {
                 System.out.println("\tHTTP is disabled.");
@@ -190,7 +189,7 @@ public class BasicPlugin extends Plugin {
     }
 
     private void startSslServer(ContainerConfig config, AsynchronousChannelGroup group,
-                                HttpHandler httpServerHandler) {
+                                Router router) {
         System.out.println("\tTLS enabled, port:" + config.getSslPort());
         SslPlugin<HttpEndpoint> sslPlugin;
         SslCertType type = config.getSslCertType();
@@ -247,8 +246,9 @@ public class BasicPlugin extends Plugin {
             default:
                 throw new UnsupportedOperationException("无效证书类型");
         }
-        HttpServer httpServer = Feat.httpServer(options -> {
-            options.group(group)
+        FeatCloud.cloudServer(options -> {
+            options.setRouter( router)
+                    .group(group)
                     .readBufferSize(config.getSslReadBufferSize())
                     .debug(config.isDebugEnable())
                     .bannerEnabled(false)
@@ -258,8 +258,7 @@ public class BasicPlugin extends Plugin {
             if (config.isProxyProtocolEnable()) {
                 options.proxyProtocolSupport();
             }
-        });
-        httpServer.httpHandler(httpServerHandler).listen(config.getHost(), config.getSslPort());
+        }).listen(config.getHost(), config.getSslPort());
     }
 
     @Override

@@ -13,6 +13,7 @@ package tech.smartboot.servlet;
 
 import org.smartboot.socket.extension.plugins.Plugin;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
+import tech.smartboot.feat.cloud.annotation.Bean;
 import tech.smartboot.feat.core.server.impl.HttpEndpoint;
 import tech.smartboot.servlet.enums.SslCertType;
 import tech.smartboot.servlet.util.Param;
@@ -24,6 +25,7 @@ import java.util.List;
  * @author 三刀
  * @version V1.0 , 2020/12/10
  */
+@Bean
 public class ContainerConfig {
     private final List<Plugin<HttpEndpoint>> plugins = new ArrayList<>();
     /**
