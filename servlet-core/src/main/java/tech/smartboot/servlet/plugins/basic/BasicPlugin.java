@@ -15,6 +15,7 @@ import org.smartboot.socket.extension.plugins.SslPlugin;
 import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
+import tech.smartboot.feat.Feat;
 import tech.smartboot.feat.cloud.FeatCloud;
 import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.HeaderName;
@@ -50,7 +51,7 @@ public class BasicPlugin extends Plugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(BasicPlugin.class);
     private String waringMessage = "";
     private Router router;
-    
+
 
     @Override
     public void initPlugin(Container container) {
@@ -174,9 +175,8 @@ public class BasicPlugin extends Plugin {
             default:
                 throw new UnsupportedOperationException("无效证书类型");
         }
-        FeatCloud.cloudServer(options -> {
-            options.setRouter(router)
-                    .group(group)
+        Feat.httpServer(options -> {
+            options.group(group)
                     .readBufferSize(config.getSslReadBufferSize())
                     .debug(config.isDebugEnable())
                     .bannerEnabled(false)
@@ -186,7 +186,7 @@ public class BasicPlugin extends Plugin {
             if (config.isProxyProtocolEnable()) {
                 options.proxyProtocolSupport();
             }
-        }).listen(config.getHost(), config.getSslPort());
+        }).httpHandler(router).listen(config.getHost(), config.getSslPort());
     }
 
     @Override
