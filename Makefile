@@ -1,5 +1,5 @@
 # 当需要升级版本时，执行该命令
-version=3.1-SNAPSHOT
+version=3.1
 update_version:
 	sed -i  '' 's/public static final String VERSION = ".*";/public static final String VERSION = "v${version}";/' servlet-core/src/main/java/tech/smartboot/servlet/Container.java
 	mvn versions:set -DnewVersion=${version} versions:commit clean install -DskipTests

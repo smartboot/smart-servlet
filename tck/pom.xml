@@ -6,7 +6,7 @@
 
     <groupId>tech.smartboot.jakarta.tck</groupId>
     <artifactId>servlet-tck-run</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1</version>
 
     <name>tck-build</name>
 
