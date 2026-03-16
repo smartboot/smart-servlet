@@ -19,7 +19,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>maven-plugin</packaging>
-
+    <name>smart-servlet-maven-plugin</name>
     <artifactId>smart-servlet-maven-plugin</artifactId>
 
     <dependencies>
