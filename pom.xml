@@ -20,6 +20,11 @@
                 <version>${feat.version}</version>
             </dependency>
             <dependency>
+                <groupId>tech.smartboot.feat</groupId>
+                <artifactId>feat-cloud</artifactId>
+                <version>${feat.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>tech.smartboot.servlet</groupId>
                 <artifactId>servlet-core</artifactId>
                 <version>${project.version}</version>
