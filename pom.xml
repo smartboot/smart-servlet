@@ -204,12 +204,23 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <name>Central Portal</name>
+            <id>central-portal</id>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
     <pluginRepositories>
         <!--        <pluginRepository>-->
         <!--            <id>alimaven</id>-->
         <!--            <name>aliyun maven</name>-->
-        <!--            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public</url>-->
+        <!--            <url>https://maven.aliyun.com/repository/public</url>-->
         <!--        </pluginRepository>-->
         <pluginRepository>
             <id>sonatype-nexus-snapshots</id>
