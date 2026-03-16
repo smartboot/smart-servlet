@@ -40,7 +40,7 @@ jobs:
 #      - name: Build smart-http
 #        run: mvn -B install --file smart-http/pom.xml -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
       - name: Build smart-servlet with Maven
-        run: mvn -B install --file pom.xml
+        run: FEAT_LICENSE=${{ secrets.FEAT_LICENSE }} mvn -B install --file pom.xml
 
       # 企业版打包
       - uses: actions/checkout@v4
