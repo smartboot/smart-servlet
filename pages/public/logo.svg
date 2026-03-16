@@ -1,183 +1,133 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- 黑洞效果的径向渐变 -->
-    <radialGradient id="blackHoleGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-      <stop offset="0%" stop-color="#000000"/>
-      <stop offset="40%" stop-color="#000000"/>
-      <stop offset="60%" stop-color="#60A5FA"/>
-      <stop offset="80%" stop-color="#34D399"/>
-      <stop offset="100%" stop-color="transparent"/>
-    </radialGradient>
-
-    <!-- 增强的光晕效果 -->
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="4" result="blur1"/>
-      <feComposite in="SourceGraphic" in2="blur1" operator="over"/>
-    </filter>
-
-    <filter id="strongGlow">
-      <feGaussianBlur stdDeviation="8" result="blur2"/>
-      <feComposite in="SourceGraphic" in2="blur2" operator="over"/>
-    </filter>
-
-    <filter id="softGlow">
-      <feGaussianBlur stdDeviation="6" result="blur3"/>
-      <feComposite in="SourceGraphic" in2="blur3" operator="over"/>
-    </filter>
-
-    <!-- 扭曲效果 -->
-    <filter id="twist">
-      <feTurbulence type="turbulence" baseFrequency="0.01" numOctaves="3" result="turbulence">
-        <animate attributeName="baseFrequency" values="0.01;0.02;0.01" dur="10s" repeatCount="indefinite"/>
-      </feTurbulence>
-      <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="10" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-
-    <!-- 横向光晕效果 -->
-    <linearGradient id="horizontalGlow" x1="0%" y1="50%" x2="100%" y2="50%">
-      <stop offset="0%" stop-color="transparent"/>
-      <stop offset="50%" stop-color="white" stop-opacity="0.6">
-        <animate attributeName="stop-opacity" values="0.6;0.8;0.6" dur="3s" repeatCount="indefinite"/>
-      </stop>
-      <stop offset="100%" stop-color="transparent"/>
+    <!-- 主渐变色 - 科技感蓝紫 -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="50%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#EC4899"/>
     </linearGradient>
+    
+    <!-- 内发光效果 -->
+    <radialGradient id="innerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#60A5FA" stop-opacity="0.8"/>
+      <stop offset="70%" stop-color="#3B82F6" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
+    </radialGradient>
+    
+    <!-- 柔和光晕 -->
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    
+    <!-- 强烈光晕 -->
+    <filter id="strongGlow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
   </defs>
-
-  <!-- 黑洞背景 -->
-  <circle cx="100" cy="100" r="80" fill="url(#blackHoleGradient)">
-    <animate
-            attributeName="r"
-            values="75;85;75"
-            dur="3s"
-            repeatCount="indefinite"
+  
+  <!-- 背景圆环 - 象征容器 -->
+  <circle cx="100" cy="100" r="90" stroke="url(#mainGradient)" stroke-width="2" fill="none" opacity="0.3">
+    <animateTransform
+      attributeName="transform"
+      type="rotate"
+      from="0 100 100"
+      to="360 100 100"
+      dur="20s"
+      repeatCount="indefinite"
     />
   </circle>
-
-  <!-- 多层光晕效果 -->
+  
+  <!-- 中层圆环 -->
+  <circle cx="100" cy="100" r="75" stroke="url(#mainGradient)" stroke-width="3" fill="none" opacity="0.5" filter="url(#softGlow)">
+    <animateTransform
+      attributeName="transform"
+      type="rotate"
+      from="360 100 100"
+      to="0 100 100"
+      dur="15s"
+      repeatCount="indefinite"
+    />
+  </circle>
+  
+  <!-- 内层圆环 -->
+  <circle cx="100" cy="100" r="60" stroke="url(#mainGradient)" stroke-width="2" fill="none" opacity="0.7">
+    <animateTransform
+      attributeName="transform"
+      type="rotate"
+      from="0 100 100"
+      to="360 100 100"
+      dur="10s"
+      repeatCount="indefinite"
+    />
+  </circle>
+  
+  <!-- 中心核心 - 象征 Servlet 核心 -->
+  <circle cx="100" cy="100" r="35" fill="url(#mainGradient)" filter="url(#strongGlow)"/>
+  <circle cx="100" cy="100" r="30" fill="#0F172A"/>
+  <circle cx="100" cy="100" r="25" fill="url(#innerGlow)"/>
+  
+  <!-- S 字母 - smart-servlet 的首字母 -->
+  <text x="100" y="112" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="white" text-anchor="middle" filter="url(#softGlow)">S</text>
+  
+  <!-- 动态粒子 - 象征请求流动 -->
   <g>
-    <!-- 外层光晕 -->
-    <circle cx="100" cy="100" r="90" stroke="#60A5FA" stroke-width="1" fill="none" filter="url(#softGlow)" opacity="0.3">
-      <animate
-              attributeName="r"
-              values="85;95;85"
-              dur="6s"
-              repeatCount="indefinite"
+    <!-- 粒子 1 -->
+    <circle r="4" fill="#3B82F6" filter="url(#softGlow)">
+      <animateMotion
+        path="M 100,10 A 90,90 0 0 1 190,100"
+        dur="2s"
+        repeatCount="indefinite"
       />
-      <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from="0 100 100"
-              to="360 100 100"
-              dur="15s"
-              repeatCount="indefinite"
-      />
+      <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
     </circle>
-
-    <!-- 中层光晕 -->
-    <circle cx="100" cy="100" r="70" stroke="#60A5FA" stroke-width="2" fill="none" filter="url(#strongGlow)" opacity="0.5">
-      <animate
-              attributeName="r"
-              values="65;75;65"
-              dur="4s"
-              repeatCount="indefinite"
+    
+    <!-- 粒子 2 -->
+    <circle r="3" fill="#8B5CF6" filter="url(#softGlow)">
+      <animateMotion
+        path="M 190,100 A 90,90 0 0 1 100,190"
+        dur="2.5s"
+        repeatCount="indefinite"
       />
-      <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from="360 100 100"
-              to="0 100 100"
-              dur="12s"
-              repeatCount="indefinite"
-      />
+      <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite"/>
     </circle>
-
-    <!-- 内层光晕 -->
-    <circle cx="100" cy="100" r="50" stroke="#34D399" stroke-width="2" fill="none" filter="url(#glow)" opacity="0.7">
-      <animate
-              attributeName="r"
-              values="45;55;45"
-              dur="3s"
-              repeatCount="indefinite"
+    
+    <!-- 粒子 3 -->
+    <circle r="3.5" fill="#EC4899" filter="url(#softGlow)">
+      <animateMotion
+        path="M 100,190 A 90,90 0 0 1 10,100"
+        dur="3s"
+        repeatCount="indefinite"
       />
-      <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from="0 100 100"
-              to="360 100 100"
-              dur="8s"
-              repeatCount="indefinite"
+      <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- 粒子 4 -->
+    <circle r="2.5" fill="#60A5FA" filter="url(#softGlow)">
+      <animateMotion
+        path="M 10,100 A 90,90 0 0 1 100,10"
+        dur="2.2s"
+        repeatCount="indefinite"
       />
+      <animate attributeName="opacity" values="0;1;0" dur="2.2s" repeatCount="indefinite"/>
     </circle>
   </g>
-
-  <!-- 行星公转效果 -->
-  <g>
-    <!-- 行星1 -->
-    <circle cx="160" cy="100" r="4" fill="#ffffff" filter="url(#glow)">
-      <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from="0 100 100"
-              to="360 100 100"
-              dur="8s"
-              repeatCount="indefinite"
-      />
-    </circle>
-
-    <!-- 行星2 -->
-    <circle cx="140" cy="100" r="3" fill="#ffffff" filter="url(#glow)">
-      <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from="120 100 100"
-              to="480 100 100"
-              dur="12s"
-              repeatCount="indefinite"
-      />
-    </circle>
-
-    <!-- 行星3 -->
-    <circle cx="120" cy="100" r="2" fill="#ffffff" filter="url(#glow)">
-      <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from="240 100 100"
-              to="600 100 100"
-              dur="15s"
-              repeatCount="indefinite"
-      />
-    </circle>
-  </g>
-
-  <!-- 物质流动效果 -->
-  <g>
-    <circle r="2" fill="#60A5FA">
-      <animateMotion
-              path="M 180,100 A 80,80 0 1 1 100,180"
-              dur="3s"
-              repeatCount="indefinite"
-      />
-      <animate
-              attributeName="opacity"
-              values="0;1;0"
-              dur="3s"
-              repeatCount="indefinite"
-      />
-    </circle>
-
-    <circle r="2" fill="#34D399">
-      <animateMotion
-              path="M 100,20 A 80,80 0 1 1 20,100"
-              dur="4s"
-              repeatCount="indefinite"
-      />
-      <animate
-              attributeName="opacity"
-              values="0;1;0"
-              dur="4s"
-              repeatCount="indefinite"
-      />
-    </circle>
+  
+  <!-- 连接线 - 象征网络连接 -->
+  <g opacity="0.4">
+    <line x1="100" y1="20" x2="100" y2="45" stroke="#3B82F6" stroke-width="1">
+      <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <line x1="180" y1="100" x2="155" y2="100" stroke="#8B5CF6" stroke-width="1">
+      <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+    </line>
+    <line x1="100" y1="180" x2="100" y2="155" stroke="#EC4899" stroke-width="1">
+      <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2s" repeatCount="indefinite" begin="1s"/>
+    </line>
+    <line x1="20" y1="100" x2="45" y2="100" stroke="#60A5FA" stroke-width="1">
+      <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+    </line>
   </g>
 </svg>

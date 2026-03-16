@@ -1,0 +1,352 @@
+---
+---
+
+<section class="performance-section" id="performance">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">性能测试</span>
+      <h2 class="section-title">性能对比报告</h2>
+      <p class="section-description">
+        基于 SpringBoot 项目 100 万次请求压测结果，测试代码完全开源可复现
+      </p>
+    </div>
+
+    <div class="benchmark-card">
+      <div class="chart-grid">
+        <div class="chart-item">
+          <div class="chart-label">并发 10</div>
+          <div class="chart-bars">
+            <div class="bar-wrapper">
+              <span class="bar-name">Tomcat</span>
+              <div class="bar-track">
+                <div class="bar" style="width: 68%"></div>
+              </div>
+              <span class="bar-value">64,311</span>
+            </div>
+            <div class="bar-wrapper">
+              <span class="bar-name">Undertow</span>
+              <div class="bar-track">
+                <div class="bar" style="width: 80%"></div>
+              </div>
+              <span class="bar-value">74,860</span>
+            </div>
+            <div class="bar-wrapper">
+              <span class="bar-name highlight">smart-servlet</span>
+              <div class="bar-track">
+                <div class="bar highlight" style="width: 100%"></div>
+              </div>
+              <span class="bar-value highlight">93,812</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-item">
+          <div class="chart-label">并发 100</div>
+          <div class="chart-bars">
+            <div class="bar-wrapper">
+              <span class="bar-name">Tomcat</span>
+              <div class="bar-track">
+                <div class="bar" style="width: 85%"></div>
+              </div>
+              <span class="bar-value">92,047</span>
+            </div>
+            <div class="bar-wrapper">
+              <span class="bar-name">Undertow</span>
+              <div class="bar-track">
+                <div class="bar" style="width: 82%"></div>
+              </div>
+              <span class="bar-value">89,037</span>
+            </div>
+            <div class="bar-wrapper">
+              <span class="bar-name highlight">smart-servlet</span>
+              <div class="bar-track">
+                <div class="bar highlight" style="width: 100%"></div>
+              </div>
+              <span class="bar-value highlight">108,844</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-item">
+          <div class="chart-label">并发 1000</div>
+          <div class="chart-bars">
+            <div class="bar-wrapper">
+              <span class="bar-name">Tomcat</span>
+              <div class="bar-track">
+                <div class="bar" style="width: 80%"></div>
+              </div>
+              <span class="bar-value">88,997</span>
+            </div>
+            <div class="bar-wrapper">
+              <span class="bar-name">Undertow</span>
+              <div class="bar-track">
+                <div class="bar" style="width: 92%"></div>
+              </div>
+              <span class="bar-value">102,439</span>
+            </div>
+            <div class="bar-wrapper">
+              <span class="bar-name highlight">smart-servlet</span>
+              <div class="bar-track">
+                <div class="bar highlight" style="width: 100%"></div>
+              </div>
+              <span class="bar-value highlight">111,308</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon">🚀</div>
+        <div class="metric-value">10W+</div>
+        <div class="metric-label">QPS 峰值</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">💾</div>
+        <div class="metric-value">12MB</div>
+        <div class="metric-label">初始内存</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">⚡</div>
+        <div class="metric-value">300%</div>
+        <div class="metric-label">性能提升</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">🔋</div>
+        <div class="metric-value">400MB</div>
+        <div class="metric-label">峰值内存</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .performance-section {
+    padding: 3rem 1rem;
+    background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--accent-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  :root[data-theme="light"] .section-badge {
+    background: rgba(139, 92, 246, 0.08);
+    border-color: rgba(139, 92, 246, 0.2);
+  }
+
+  .section-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem;
+  }
+
+  .section-description {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .benchmark-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  :root[data-theme="light"] .benchmark-card {
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .chart-item {
+    background: var(--bg-secondary);
+    border-radius: 0.625rem;
+    padding: 0.875rem;
+  }
+
+  :root[data-theme="light"] .chart-item {
+    background: rgba(241, 245, 249, 0.8);
+  }
+
+  .chart-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.625rem;
+    padding-bottom: 0.375rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .chart-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .bar-wrapper {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .bar-name {
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .bar-name.highlight {
+    color: #3b82f6;
+    font-weight: 600;
+  }
+
+  .bar-track {
+    height: 12px;
+    background: var(--border-color);
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+
+  .bar {
+    height: 100%;
+    background: linear-gradient(90deg, #64748b, #94a3b8);
+    border-radius: 9999px;
+  }
+
+  .bar.highlight {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  }
+
+  .bar-value {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    min-width: 45px;
+    text-align: right;
+  }
+
+  .bar-value.highlight {
+    color: #3b82f6;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+  }
+
+  .metric-card {
+    text-align: center;
+    padding: 1rem 0.75rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.625rem;
+    transition: all 0.3s ease;
+  }
+
+  :root[data-theme="light"] .metric-card {
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  .metric-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-hover);
+  }
+
+  .metric-icon {
+    font-size: 1.25rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .metric-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.125rem;
+  }
+
+  .metric-label {
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 900px) {
+    .chart-grid {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .chart-item {
+      padding: 0.75rem;
+    }
+
+    .bar-wrapper {
+      grid-template-columns: 70px 1fr auto;
+      gap: 0.5rem;
+    }
+
+    .bar-name {
+      font-size: 0.75rem;
+    }
+
+    .bar-track {
+      height: 16px;
+    }
+
+    .bar-value {
+      font-size: 0.75rem;
+      min-width: 55px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .metrics-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .metric-card {
+      padding: 0.75rem 0.5rem;
+    }
+
+    .metric-icon {
+      font-size: 1.125rem;
+    }
+
+    .metric-value {
+      font-size: 1.125rem;
+    }
+  }
+</style>

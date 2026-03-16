@@ -1,0 +1,127 @@
+---
+import Navigation from '../components/Navigation.astro';
+import HeroSection from '../components/HeroSection.astro';
+import FeaturesSection from '../components/FeaturesSection.astro';
+import PerformanceSection from '../components/PerformanceSection.astro';
+import QualityPledgeSection from '../components/QualityPledgeSection.astro';
+import EcosystemSection from '../components/EcosystemSection.astro';
+import Footer from '../components/Footer.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>smart-servlet - 更轻量、更极速的 Tomcat 替代方案</title>
+  <meta name="description" content="smart-servlet 提供一个自主可控的轻量级 Tomcat/Undertow 可替代版本，重新定义下一代 Servlet 容器!">
+  <meta name="keywords" content="信创,国产,国产化,替代,tomcat,国产Servlet容器,国产Servlet,smart-servlet,smartservlet,undertow,jetty,自研,自研Tomcat">
+  <script is:inline>
+    // Initialize theme before page renders
+    (function() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+  <ThemeToggle />
+  <Navigation />
+  <main class="landing-page">
+    <HeroSection />
+    <FeaturesSection />
+    <PerformanceSection />
+    <QualityPledgeSection />
+    <EcosystemSection />
+  </main>
+  <Footer />
+</body>
+</html>
+
+<style is:global>
+  /* CSS Variables - Dark theme (default) */
+  :root {
+    /* Base colors */
+    --sl-color-black: #0f172a;
+    --sl-color-white: #f8fafc;
+    --sl-color-gray-1: #e2e8f0;
+    --sl-color-gray-2: #cbd5e1;
+    --sl-color-gray-3: #94a3b8;
+    --sl-color-gray-4: #64748b;
+    --sl-color-gray-5: #475569;
+    --sl-color-gray-6: #1e293b;
+    --sl-color-text: #f1f5f9;
+    
+    /* Semantic colors */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-card: rgba(30, 41, 59, 0.5);
+    --bg-card-hover: rgba(30, 41, 59, 0.8);
+    --border-color: rgba(148, 163, 184, 0.1);
+    --border-hover: rgba(59, 130, 246, 0.3);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-primary: #3b82f6;
+    --accent-secondary: #8b5cf6;
+    --code-bg: rgba(15, 23, 42, 0.8);
+  }
+
+  /* Light theme */
+  :root[data-theme="light"] {
+    --sl-color-black: #ffffff;
+    --sl-color-white: #0f172a;
+    --sl-color-gray-1: #334155;
+    --sl-color-gray-2: #475569;
+    --sl-color-gray-3: #64748b;
+    --sl-color-gray-4: #94a3b8;
+    --sl-color-gray-5: #cbd5e1;
+    --sl-color-gray-6: #f1f5f9;
+    --sl-color-text: #1e293b;
+    
+    --bg-primary: #f8fafc;
+    --bg-secondary: #f1f5f9;
+    --bg-card: rgba(255, 255, 255, 0.8);
+    --bg-card-hover: rgba(255, 255, 255, 1);
+    --border-color: rgba(148, 163, 184, 0.2);
+    --border-hover: rgba(59, 130, 246, 0.5);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --code-bg: #1e293b;
+  }
+
+  /* Reset and base styles */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .landing-page {
+    min-height: 100vh;
+  }
+
+  /* Smooth transitions for theme changes */
+  * {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Section anchor offset for fixed nav */
+  section[id] {
+    scroll-margin-top: 80px;
+  }
+</style>

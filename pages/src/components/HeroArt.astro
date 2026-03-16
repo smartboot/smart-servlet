@@ -1,0 +1,197 @@
+---
+---
+
+<div class="hero-art">
+  <svg viewBox="0 0 400 400" class="art-svg">
+    <defs>
+      <!-- 极简渐变色 -->
+      <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#3B82F6"/>
+        <stop offset="100%" stop-color="#8B5CF6"/>
+      </linearGradient>
+      
+      <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#10B981"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+    </defs>
+    
+    <!-- 背景网格 -->
+    <g opacity="0.08" stroke="currentColor" fill="none">
+      <line x1="0" y1="100" x2="400" y2="100"/>
+      <line x1="0" y1="200" x2="400" y2="200"/>
+      <line x1="0" y1="300" x2="400" y2="300"/>
+      <line x1="100" y1="0" x2="100" y2="400"/>
+      <line x1="200" y1="0" x2="200" y2="400"/>
+      <line x1="300" y1="0" x2="300" y2="400"/>
+    </g>
+    
+    <!-- 核心六边形 -->
+    <g transform="translate(200, 200)">
+      <!-- 外圈六边形 -->
+      <polygon 
+        points="0,-120 104,-60 104,60 0,120 -104,60 -104,-60" 
+        fill="none" 
+        stroke="url(#lineGrad)" 
+        stroke-width="1"
+        opacity="0.3">
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="60s" repeatCount="indefinite"/>
+      </polygon>
+      
+      <!-- 中圈六边形 -->
+      <polygon 
+        points="0,-80 69,-40 69,40 0,80 -69,40 -69,-40" 
+        fill="none" 
+        stroke="url(#lineGrad)" 
+        stroke-width="1.5"
+        opacity="0.5">
+        <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="40s" repeatCount="indefinite"/>
+      </polygon>
+      
+      <!-- 内圈六边形 -->
+      <polygon 
+        points="0,-40 35,-20 35,20 0,40 -35,20 -35,-20" 
+        fill="rgba(59, 130, 246, 0.1)" 
+        stroke="#3B82F6" 
+        stroke-width="2">
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="20s" repeatCount="indefinite"/>
+      </polygon>
+      
+      <!-- 核心圆点 -->
+      <circle r="8" fill="#3B82F6">
+        <animate attributeName="r" values="8;10;8" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.6;1" dur="3s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- 对角线 -->
+    <g stroke="url(#lineGrad)" stroke-width="1" fill="none" opacity="0.4">
+      <line x1="80" y1="80" x2="140" y2="140">
+        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="4s" repeatCount="indefinite"/>
+      </line>
+      <line x1="320" y1="80" x2="260" y2="140">
+        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="4s" repeatCount="indefinite" begin="1s"/>
+      </line>
+      <line x1="80" y1="320" x2="140" y2="260">
+        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="4s" repeatCount="indefinite" begin="2s"/>
+      </line>
+      <line x1="320" y1="320" x2="260" y2="260">
+        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="4s" repeatCount="indefinite" begin="3s"/>
+      </line>
+    </g>
+    
+    <!-- 四角标记 -->
+    <g fill="none" stroke="currentColor" stroke-width="1.5">
+      <!-- 左上 -->
+      <path d="M 60,100 L 60,60 L 100,60" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+      </path>
+      <!-- 右上 -->
+      <path d="M 300,60 L 340,60 L 340,100" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite" begin="0.75s"/>
+      </path>
+      <!-- 右下 -->
+      <path d="M 340,300 L 340,340 L 300,340" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite" begin="1.5s"/>
+      </path>
+      <!-- 左下 -->
+      <path d="M 100,340 L 60,340 L 60,300" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite" begin="2.25s"/>
+      </path>
+    </g>
+    
+    <!-- 流动点 -->
+    <g fill="#3B82F6">
+      <circle r="3" opacity="0.8">
+        <animateMotion path="M 200,80 L 200,140" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="3" opacity="0.8">
+        <animateMotion path="M 320,200 L 260,200" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+      </circle>
+      <circle r="3" opacity="0.8">
+        <animateMotion path="M 200,320 L 200,260" dur="2s" repeatCount="indefinite" begin="1s"/>
+        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="1s"/>
+      </circle>
+      <circle r="3" opacity="0.8">
+        <animateMotion path="M 80,200 L 140,200" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+      </circle>
+    </g>
+    
+    <!-- 圆环装饰 -->
+    <circle cx="200" cy="200" r="160" fill="none" stroke="url(#lineGrad)" stroke-width="0.5" opacity="0.15" stroke-dasharray="10 10">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="120s" repeatCount="indefinite"/>
+    </circle>
+  </svg>
+  
+  <!-- 底部文字标签 -->
+  <div class="art-labels">
+    <div class="label">
+      <span class="label-dot" style="background: #3B82F6;"></span>
+      <span>轻量</span>
+    </div>
+    <div class="label">
+      <span class="label-dot" style="background: #8B5CF6;"></span>
+      <span>极速</span>
+    </div>
+    <div class="label">
+      <span class="label-dot" style="background: #10B981;"></span>
+      <span>可靠</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hero-art {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .art-svg {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    color: var(--text-muted);
+  }
+
+  .art-labels {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+  }
+
+  .label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .label-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 768px) {
+    .hero-art {
+      max-width: 280px;
+    }
+    
+    .art-labels {
+      gap: 1rem;
+    }
+    
+    .label {
+      font-size: 0.75rem;
+    }
+  }
+</style>
