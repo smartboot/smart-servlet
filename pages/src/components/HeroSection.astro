@@ -2,66 +2,82 @@
 ---
 
 <section class="hero-section">
+  <div class="hero-background">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+    <div class="grid-pattern"></div>
+  </div>
+  
   <div class="hero-container">
     <div class="hero-content">
+      <!-- Badge -->
       <div class="hero-badge">
-        <span class="badge-text">🚀 信创首选 · 国产替代</span>
+        <span class="badge-dot"></span>
+        <span class="badge-text">信创首选 · 国产替代</span>
+        <span class="badge-icon">🚀</span>
       </div>
+      
+      <!-- Title -->
       <h1 class="hero-title">
-        <span class="gradient-text">smart-servlet</span>
+        <span class="title-line">smart-servlet</span>
       </h1>
+      
+      <!-- Subtitle -->
       <p class="hero-subtitle">
         更轻量、更极速的 Servlet 容器
       </p>
+      
+      <!-- Description -->
       <p class="hero-description">
         自主可控的国产替代方案，完美兼容 Tomcat/Undertow
       </p>
       
-      <!-- 技术特性标签 -->
-      <div class="hero-features">
-        <div class="feature-tag">
+      <!-- Tech Tags -->
+      <div class="hero-tags">
+        <div class="tag">
           <span class="tag-icon">📋</span>
           <span>Jakarta Servlet 6.1</span>
         </div>
-        <div class="feature-tag">
+        <div class="tag">
           <span class="tag-icon">☕</span>
           <span>Java 17+</span>
         </div>
-        <div class="feature-tag">
+        <div class="tag">
           <span class="tag-icon">🍃</span>
           <span>Spring Boot 3.x</span>
         </div>
       </div>
 
-    
-
-      <!-- 授权提示横幅 -->
+      <!-- License Banner -->
       <a href="https://smartboot.tech/feat/#pricing" target="_blank" class="license-banner">
-        <span class="license-banner-icon">🔑</span>
-        <span class="license-banner-text">
-          <strong>联合授权方案</strong>
-          <span class="license-banner-desc">Feat 授权企业可免费使用 smart-servlet →</span>
-        </span>
+        <div class="banner-icon">🔑</div>
+        <div class="banner-content">
+          <span class="banner-title">联合授权方案</span>
+          <span class="banner-desc">Feat 授权企业可免费使用 smart-servlet</span>
+        </div>
+        <svg class="banner-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
       </a>
       
+      <!-- Actions -->
       <div class="hero-actions">
         <a href="./guides/about/" class="btn btn-primary">
           <span>快速开始</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
         <div class="download-dropdown">
           <button class="btn btn-secondary" id="downloadBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
             <span>下载</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="dropdown-menu" id="downloadMenu">
             <a href="https://github.com/smartboot/smart-servlet/releases" target="_blank" class="dropdown-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
               <span>GitHub Releases</span>
             </a>
             <a href="https://gitee.com/smartboot/smart-servlet/releases" target="_blank" class="dropdown-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.984 0A12.003 12.003 0 0 0 0 12a12.003 12.003 0 0 0 12.003 12 12.003 12.003 0 0 0 12-12A12.003 12.003 0 0 0 12 0zm5.752 15.697a5.317 5.317 0 0 1-5.202 4.296 5.317 5.317 0 0 1-5.317-5.317V9.903a1.05 1.05 0 0 1 1.05-1.05h1.05a1.05 1.05 0 0 1 1.05 1.05v4.773c0 .87.703 1.576 1.573 1.576a1.58 1.58 0 0 0 1.575-1.576V9.903a1.05 1.05 0 0 1 1.05-1.05h1.05a1.05 1.05 0 0 1 1.05 1.05v5.794z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.984 0A12.003 12.003 0 0 0 0 12a12.003 12.003 0 0 0 12.003 12 12.003 12.003 0 0 0 12-12A12.003 12.003 0 0 0 12 0zm5.752 15.697a5.317 5.317 0 0 1-5.202 4.296 5.317 5.317 0 0 1-5.317-5.317V9.903a1.05 1.05 0 0 1 1.05-1.05h1.05a1.05 1.05 0 0 1 1.05 1.05v4.773c0 .87.703 1.576 1.573 1.576a1.58 1.58 0 0 0 1.575-1.576V9.903a1.05 1.05 0 0 1 1.05-1.05h1.05a1.05 1.05 0 0 1 1.05 1.05v5.794z"/></svg>
               <span>Gitee Releases</span>
             </a>
           </div>
@@ -70,38 +86,113 @@
     </div>
   </div>
   
-  <!-- 底部波浪装饰 -->
+  <!-- Bottom Wave -->
   <div class="hero-wave">
-    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z" fill="var(--bg-secondary)"/>
+    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z" fill="var(--bg-primary)"/>
     </svg>
   </div>
 </section>
 
+<script>
+  (function() {
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadMenu = document.getElementById('downloadMenu');
+    
+    if (downloadBtn && downloadMenu) {
+      downloadBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        downloadMenu.classList.toggle('active');
+        downloadBtn.classList.toggle('active');
+      });
+      
+      document.addEventListener('click', (e) => {
+        if (!downloadBtn.contains(e.target)) {
+          downloadMenu.classList.remove('active');
+          downloadBtn.classList.remove('active');
+        }
+      });
+    }
+  })();
+</script>
+
 <style>
   .hero-section {
     position: relative;
-    padding: 8rem 1rem 0;
+    padding: var(--space-24) var(--space-4) var(--space-12);
     overflow: hidden;
-    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
-  .hero-section::before {
-    content: '';
+  /* Background Effects */
+  .hero-background {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background:
-      radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 40%);
     pointer-events: none;
+    overflow: hidden;
   }
 
+  .gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    animation: float 20s ease-in-out infinite;
+  }
+
+  .orb-1 {
+    width: 600px;
+    height: 600px;
+    background: var(--accent-primary);
+    top: -200px;
+    right: -100px;
+    animation-delay: 0s;
+  }
+
+  .orb-2 {
+    width: 400px;
+    height: 400px;
+    background: var(--accent-secondary);
+    bottom: 100px;
+    left: -100px;
+    animation-delay: -7s;
+  }
+
+  .orb-3 {
+    width: 300px;
+    height: 300px;
+    background: #ec4899;
+    top: 50%;
+    right: 20%;
+    animation-delay: -14s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+  }
+
+  .grid-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+  }
+
+  /* Container */
   .hero-container {
     max-width: 900px;
     margin: 0 auto;
@@ -117,236 +208,251 @@
   .hero-content {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: var(--space-5);
     text-align: center;
     align-items: center;
-    padding: 2rem 0;
+    padding: var(--space-4) 0;
   }
 
+  /* Badge */
   .hero-badge {
     display: inline-flex;
-  }
-
-  .badge-text {
-    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
-    border: 1px solid rgba(59, 130, 246, 0.25);
-    border-radius: 9999px;
-    font-size: 0.875rem;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
     font-weight: 500;
     color: var(--text-primary);
+    animation: fadeInUp 0.6s ease-out;
   }
 
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent-primary);
+    border-radius: var(--radius-full);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+  }
+
+  .badge-icon {
+    margin-left: 2px;
+  }
+
+  /* Title */
   .hero-title {
-    font-size: clamp(3rem, 8vw, 5rem);
+    font-size: clamp(3rem, 10vw, 5.5rem);
     font-weight: 800;
     line-height: 1;
     margin: 0;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
+    animation: fadeInUp 0.6s ease-out 0.1s both;
   }
 
-  .gradient-text {
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+  .title-line {
+    background: var(--accent-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
+  /* Subtitle */
   .hero-subtitle {
-    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-size: clamp(1.375rem, 3vw, 1.875rem);
     font-weight: 600;
     color: var(--text-primary);
     margin: 0;
+    animation: fadeInUp 0.6s ease-out 0.2s both;
   }
 
+  /* Description */
   .hero-description {
-    font-size: 1.125rem;
+    font-size: var(--text-lg);
     color: var(--text-secondary);
     line-height: 1.7;
-    max-width: 600px;
+    max-width: 480px;
     margin: 0;
+    animation: fadeInUp 0.6s ease-out 0.3s both;
   }
 
-  /* 技术特性标签 */
-  .hero-features {
+  /* Tags */
+  .hero-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: var(--space-3);
     justify-content: center;
-    margin-top: 0.5rem;
+    margin-top: var(--space-2);
+    animation: fadeInUp 0.6s ease-out 0.4s both;
   }
 
-  .feature-tag {
+  .tag {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
-    padding: 0.5rem 1rem;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 9999px;
-    font-size: 0.875rem;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
     color: var(--text-secondary);
-    transition: all 0.2s;
+    transition: all var(--transition-base);
   }
 
-  .feature-tag:hover {
+  .tag:hover {
     border-color: var(--border-hover);
     color: var(--text-primary);
+    transform: translateY(-1px);
   }
 
   .tag-icon {
-    font-size: 0.875rem;
+    font-size: var(--text-base);
   }
 
-  /* 信任信号 */
-  .hero-trust {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem 2rem;
-    justify-content: center;
-    margin-top: 0.5rem;
-  }
-
-  .trust-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9375rem;
-    color: var(--text-secondary);
-  }
-
-  .trust-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(135deg, #10b981, #059669);
-    border-radius: 50%;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
-
-  /* 授权提示横幅 */
+  /* License Banner */
   .license-banner {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.25rem;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    border-radius: 9999px;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(234, 179, 8, 0.06));
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: var(--radius-lg);
     text-decoration: none;
-    transition: all 0.3s ease;
-    margin-top: 0.5rem;
+    margin-top: var(--space-4);
+    transition: all var(--transition-base);
+    animation: fadeInUp 0.6s ease-out 0.5s both;
   }
 
   .license-banner:hover {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.25) 100%);
-    border-color: rgba(16, 185, 129, 0.5);
+    border-color: rgba(245, 158, 11, 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 12px 32px rgba(245, 158, 11, 0.15);
   }
 
-  .license-banner-icon {
-    font-size: 1.25rem;
+  .license-banner:hover .banner-arrow {
+    transform: translateX(4px);
   }
 
-  .license-banner-text {
+  .banner-icon {
+    font-size: var(--text-2xl);
+    flex-shrink: 0;
+  }
+
+  .banner-content {
     display: flex;
     flex-direction: column;
-    gap: 0.125rem;
+    gap: 2px;
+    text-align: left;
   }
 
-  .license-banner-text strong {
-    font-size: 0.9375rem;
+  .banner-title {
+    font-size: var(--text-sm);
     font-weight: 600;
-    color: #10b981;
+    color: #f59e0b;
   }
 
-  .license-banner-desc {
-    font-size: 0.8125rem;
+  .banner-desc {
+    font-size: var(--text-xs);
     color: var(--text-secondary);
   }
 
-  /* 按钮组 */
+  .banner-arrow {
+    color: #f59e0b;
+    transition: transform var(--transition-base);
+  }
+
+  /* Actions */
   .hero-actions {
     display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-    justify-content: center;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    animation: fadeInUp 0.6s ease-out 0.6s both;
+  }
+
+  @media (max-width: 480px) {
+    .hero-actions {
+      flex-direction: column;
+      width: 100%;
+      max-width: 280px;
+    }
   }
 
   .btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.875rem 1.75rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-base);
+    font-weight: 500;
+    border-radius: var(--radius-lg);
     text-decoration: none;
-    transition: all 0.2s;
-    font-size: 1rem;
+    transition: all var(--transition-base);
+    cursor: pointer;
+    border: none;
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     color: white;
-    border: none;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
   }
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 40px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.45);
   }
 
   .btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-card);
     color: var(--text-primary);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--border-color);
   }
 
   .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
   }
 
-  /* 下载下拉菜单样式 */
+  /* Dropdown */
   .download-dropdown {
     position: relative;
   }
 
-  .download-dropdown .chevron {
-    transition: transform 0.2s ease;
+  .btn-secondary .chevron {
+    transition: transform var(--transition-base);
   }
 
-  .download-dropdown.active .chevron {
+  .btn-secondary.active .chevron {
     transform: rotate(180deg);
   }
 
   .dropdown-menu {
     position: absolute;
-    top: calc(100% + 0.5rem);
+    top: calc(100% + var(--space-2));
     left: 0;
     right: 0;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    padding: 0.5rem;
+    border-radius: var(--radius-lg);
+    padding: var(--space-2);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.2s ease;
+    transform: translateY(-8px);
+    transition: all var(--transition-base);
     z-index: 100;
-    min-width: 200px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    min-width: 180px;
   }
 
-  .download-dropdown.active .dropdown-menu {
+  .dropdown-menu.active {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -355,120 +461,44 @@
   .dropdown-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    color: var(--text-primary);
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    color: var(--text-secondary);
     text-decoration: none;
-    border-radius: 0.5rem;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    transition: all 0.2s;
+    font-size: var(--text-sm);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
   }
 
   .dropdown-item:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: var(--accent-primary);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
   }
 
-  .dropdown-item svg {
-    flex-shrink: 0;
-  }
-
-  :root[data-theme="light"] .btn-secondary {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.1);
-  }
-
-  /* 底部波浪 */
+  /* Wave */
   .hero-wave {
-    width: 100%;
-    margin-top: auto;
-    line-height: 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    z-index: 1;
   }
 
   .hero-wave svg {
     width: 100%;
-    height: 80px;
+    height: 100%;
   }
 
-  @media (max-width: 768px) {
-    .hero-section {
-      padding: 6rem 1rem 0;
-      min-height: auto;
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
     }
-
-    .hero-content {
-      padding: 1rem 0 3rem;
-    }
-
-    .hero-trust {
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .hero-actions {
-      flex-direction: column;
-      width: 100%;
-      max-width: 300px;
-    }
-
-    .btn {
-      justify-content: center;
-    }
-
-    .license-banner {
-      width: 100%;
-      max-width: 300px;
-      justify-content: center;
-    }
-
-    .license-banner-text {
-      flex-direction: row;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .license-banner-desc {
-      display: none;
-    }
-
-    .hero-wave svg {
-      height: 60px;
-    }
-
-    .download-dropdown {
-      width: 100%;
-    }
-
-    .dropdown-menu {
-      left: 0;
-      right: 0;
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 </style>
-
-<script>
-  (function() {
-    const downloadBtn = document.getElementById('downloadBtn');
-    const downloadDropdown = document.querySelector('.download-dropdown');
-    
-    if (downloadBtn && downloadDropdown) {
-      downloadBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        downloadDropdown.classList.toggle('active');
-      });
-      
-      document.addEventListener('click', function() {
-        downloadDropdown.classList.remove('active');
-      });
-      
-      downloadDropdown.addEventListener('click', function(e) {
-        if (e.target.closest('.dropdown-item')) {
-          return;
-        }
-        e.stopPropagation();
-      });
-    }
-  })();
-</script>

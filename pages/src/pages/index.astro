@@ -56,16 +56,64 @@ import ThemeToggle from '../components/ThemeToggle.astro';
     /* Semantic colors */
     --bg-primary: #0f172a;
     --bg-secondary: #1e293b;
-    --bg-card: rgba(30, 41, 59, 0.5);
-    --bg-card-hover: rgba(30, 41, 59, 0.8);
-    --border-color: rgba(148, 163, 184, 0.1);
-    --border-hover: rgba(59, 130, 246, 0.3);
+    --bg-tertiary: #0b1221;
+    --bg-card: rgba(30, 41, 59, 0.6);
+    --bg-card-hover: rgba(30, 41, 59, 0.85);
+    --border-color: rgba(148, 163, 184, 0.12);
+    --border-hover: rgba(59, 130, 246, 0.4);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
     --accent-primary: #3b82f6;
     --accent-secondary: #8b5cf6;
+    --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
     --code-bg: rgba(15, 23, 42, 0.8);
+    
+    /* Spacing System - 8px base */
+    --space-1: 0.25rem;   /* 4px */
+    --space-2: 0.5rem;    /* 8px */
+    --space-3: 0.75rem;   /* 12px */
+    --space-4: 1rem;      /* 16px */
+    --space-5: 1.25rem;   /* 20px */
+    --space-6: 1.5rem;    /* 24px */
+    --space-8: 2rem;      /* 32px */
+    --space-10: 2.5rem;   /* 40px */
+    --space-12: 3rem;     /* 48px */
+    --space-16: 4rem;     /* 64px */
+    --space-20: 5rem;     /* 80px */
+    --space-24: 6rem;     /* 96px */
+    
+    /* Typography Scale */
+    --text-xs: 0.75rem;   /* 12px */
+    --text-sm: 0.875rem;  /* 14px */
+    --text-base: 1rem;    /* 16px */
+    --text-lg: 1.125rem;  /* 18px */
+    --text-xl: 1.25rem;   /* 20px */
+    --text-2xl: 1.5rem;   /* 24px */
+    --text-3xl: 1.875rem; /* 30px */
+    --text-4xl: 2.25rem;  /* 36px */
+    --text-5xl: 3rem;     /* 48px */
+    --text-6xl: 3.75rem;  /* 60px */
+    
+    /* Border Radius */
+    --radius-sm: 0.375rem;  /* 6px */
+    --radius-md: 0.5rem;    /* 8px */
+    --radius-lg: 0.75rem;   /* 12px */
+    --radius-xl: 1rem;      /* 16px */
+    --radius-2xl: 1.25rem;  /* 20px */
+    --radius-full: 9999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.25);
+    --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
+    
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+    --transition-slow: 350ms ease;
   }
 
   /* Light theme */
@@ -82,7 +130,8 @@ import ThemeToggle from '../components/ThemeToggle.astro';
     
     --bg-primary: #f8fafc;
     --bg-secondary: #f1f5f9;
-    --bg-card: rgba(255, 255, 255, 0.8);
+    --bg-tertiary: #e2e8f0;
+    --bg-card: rgba(255, 255, 255, 0.85);
     --bg-card-hover: rgba(255, 255, 255, 1);
     --border-color: rgba(148, 163, 184, 0.2);
     --border-hover: rgba(59, 130, 246, 0.5);
@@ -90,6 +139,12 @@ import ThemeToggle from '../components/ThemeToggle.astro';
     --text-secondary: #475569;
     --text-muted: #64748b;
     --code-bg: #1e293b;
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.15);
+    --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.1);
   }
 
   /* Reset and base styles */
@@ -108,20 +163,55 @@ import ThemeToggle from '../components/ThemeToggle.astro';
     background: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color var(--transition-base), color var(--transition-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   .landing-page {
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
-  /* Smooth transitions for theme changes */
-  * {
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  /* Section base styles */
+  section {
+    position: relative;
   }
 
   /* Section anchor offset for fixed nav */
   section[id] {
     scroll-margin-top: 80px;
+  }
+
+  /* Smooth transitions for theme changes - only specific properties */
+  .theme-transition {
+    transition: background-color var(--transition-base),
+                border-color var(--transition-base),
+                color var(--transition-base);
+  }
+
+  /* Selection color */
+  ::selection {
+    background: rgba(59, 130, 246, 0.3);
+    color: var(--text-primary);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--text-muted);
+    border-radius: var(--radius-full);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
   }
 </style>

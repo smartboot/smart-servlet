@@ -3,13 +3,27 @@
 
 <footer class="main-footer">
   <div class="footer-container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <a href="/" class="brand-link">
+          <img src="/smart-servlet/logo.svg" alt="smart-servlet" class="brand-logo" />
+          <span class="brand-name">smart-servlet</span>
+        </a>
+        <p class="brand-description">
+          自主可控的国产 Servlet 容器
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <a href="./guides/about/">文档</a>
+        <a href="https://github.com/smartboot/smart-servlet" target="_blank">GitHub</a>
+        <a href="https://gitee.com/smartboot/smart-servlet" target="_blank">Gitee</a>
+      </div>
+    </div>
+
     <div class="footer-bottom">
-      <div class="copyright">
-        <p>&copy; {new Date().getFullYear()} smartboot. 保留所有权利。</p>
-      </div>
-      <div class="legal-links">
-        <span>采用 <a href="./license/">AGPL-3.0</a> 开源协议</span>
-      </div>
+      <span class="copyright">&copy; {new Date().getFullYear()} smartboot</span>
+      <a href="./license/" class="license-link">AGPL-3.0</a>
     </div>
   </div>
 </footer>
@@ -18,7 +32,7 @@
   .main-footer {
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
-    padding: 1.5rem 1rem;
+    padding: var(--space-10) var(--space-4) var(--space-6);
   }
 
   .footer-container {
@@ -26,41 +40,89 @@
     margin: 0 auto;
   }
 
-  .footer-bottom {
+  .footer-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
+    margin-bottom: var(--space-8);
   }
 
-  .copyright p {
-    font-size: 0.875rem;
-    color: var(--text-muted);
+  @media (max-width: 640px) {
+    .footer-content {
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+    color: var(--text-primary);
+  }
+
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-name {
+    font-size: var(--text-lg);
+    font-weight: 700;
+  }
+
+  .brand-description {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
     margin: 0;
   }
 
-  .legal-links {
-    font-size: 0.875rem;
-    color: var(--text-muted);
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
   }
 
-  .legal-links a {
+  .footer-links a {
+    font-size: var(--text-sm);
     color: var(--text-secondary);
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color var(--transition-fast);
   }
 
-  .legal-links a:hover {
+  .footer-links a:hover {
     color: var(--accent-primary);
   }
 
-  @media (max-width: 768px) {
-    .footer-bottom {
-      flex-direction: column;
-      text-align: center;
-    }
+  .footer-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-color);
+  }
+
+  .copyright {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .license-link {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .license-link:hover {
+    color: var(--accent-primary);
   }
 </style>
