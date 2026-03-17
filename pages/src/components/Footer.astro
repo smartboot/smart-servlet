@@ -3,15 +3,6 @@
 
 <footer class="main-footer">
   <div class="footer-container">
-    <div class="footer-content">
-      <div class="contact-section">
-        <h3>联系我们</h3>
-        <div class="qr-code">
-          <img src="https://smartboot.tech/img/qrcode/personal_wx.png" alt="微信二维码" />
-          <span>扫码添加微信</span>
-        </div>
-      </div>
-    </div>
     <div class="footer-bottom">
       <div class="copyright">
         <p>&copy; {new Date().getFullYear()} smartboot. 保留所有权利。</p>
@@ -27,50 +18,12 @@
   .main-footer {
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
-    padding: 2rem 1rem;
+    padding: 1.5rem 1rem;
   }
 
   .footer-container {
     max-width: 1200px;
     margin: 0 auto;
-  }
-
-  .footer-content {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
-  }
-
-  .contact-section {
-    text-align: center;
-  }
-
-  .contact-section h3 {
-    font-size: 1.125rem;
-    color: var(--text-primary);
-    margin: 0 0 1rem 0;
-    font-weight: 600;
-  }
-
-  .qr-code {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .qr-code img {
-    width: 120px;
-    height: 120px;
-    border-radius: 8px;
-    border: 2px solid var(--border-color);
-    background: white;
-    padding: 4px;
-  }
-
-  .qr-code span {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
   }
 
   .footer-bottom {
@@ -105,18 +58,9 @@
   }
 
   @media (max-width: 768px) {
-    .footer-content {
-      margin-bottom: 1.5rem;
-    }
-
     .footer-bottom {
       flex-direction: column;
       text-align: center;
-    }
-
-    .qr-code img {
-      width: 100px;
-      height: 100px;
     }
   }
 </style>
