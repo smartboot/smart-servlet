@@ -10,11 +10,11 @@
 
 package tech.smartboot.servlet.plugins.basic;
 
-import org.smartboot.socket.enhance.EnhanceAsynchronousChannelProvider;
-import org.smartboot.socket.extension.plugins.SslPlugin;
-import org.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
-import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
-import org.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
+import io.github.smartboot.socket.enhance.EnhanceAsynchronousChannelProvider;
+import io.github.smartboot.socket.extension.plugins.SslPlugin;
+import io.github.smartboot.socket.extension.ssl.factory.PemServerSSLContextFactory;
+import io.github.smartboot.socket.extension.ssl.factory.SSLContextFactory;
+import io.github.smartboot.socket.extension.ssl.factory.ServerSSLContextFactory;
 import tech.smartboot.feat.Feat;
 import tech.smartboot.feat.cloud.FeatCloud;
 import tech.smartboot.feat.core.common.FeatUtils;
@@ -89,7 +89,6 @@ public class BasicPlugin extends Plugin {
                             .readBufferSize(config.getReadBufferSize())
                             .debug(config.isDebugEnable())
                             .headerLimiter(config.getHeaderLimiter())
-                            .bannerEnabled(false)
                             .setIdleTimeout(config.getHttpIdleTimeout());
                     config.getPlugins().forEach(options::addPlugin);
                     if (config.isProxyProtocolEnable()) {
@@ -179,7 +178,6 @@ public class BasicPlugin extends Plugin {
             options.group(group)
                     .readBufferSize(config.getSslReadBufferSize())
                     .debug(config.isDebugEnable())
-                    .bannerEnabled(false)
                     .setIdleTimeout(config.getHttpIdleTimeout())
                     .addPlugin(sslPlugin);
             config.getPlugins().forEach(options::addPlugin);

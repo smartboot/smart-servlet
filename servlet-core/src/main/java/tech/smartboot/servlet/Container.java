@@ -139,11 +139,6 @@ public class Container {
         }
         System.out.println();
 
-        System.out.println(ConsoleColors.GREEN + FeatUtils.getResourceAsString("smart-servlet/banner.txt") + ConsoleColors.RESET + "\r\n:: smart-servlet :: (" + VERSION + ")");
-        for (int i = 0; i < 26; i++) {
-            System.out.print('~');
-        }
-        System.out.println();
         plugins.forEach(plugin -> plugin.onContainerInitialized(this));
         for (int i = 0; i < 100; i++) {
             System.out.print('=');

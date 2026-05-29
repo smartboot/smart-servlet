@@ -10,8 +10,8 @@
 
 package tech.smartboot.springboot.starter;
 
+import io.github.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import jakarta.websocket.server.ServerContainer;
-import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;

@@ -11,8 +11,8 @@
 package tech.smartboot.servlet;
 
 
-import org.smartboot.socket.extension.plugins.Plugin;
-import org.smartboot.socket.extension.ssl.factory.SSLContextFactory;
+import io.github.smartboot.socket.Plugin;
+import io.github.smartboot.socket.extension.ssl.factory.SSLContextFactory;
 import tech.smartboot.feat.cloud.annotation.Bean;
 import tech.smartboot.feat.core.server.impl.HttpEndpoint;
 import tech.smartboot.servlet.enums.SslCertType;
