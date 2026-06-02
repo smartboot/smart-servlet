@@ -26,16 +26,17 @@ export default defineConfig({
                         property: 'description',
                         content: 'smart-servlet 提供一个自主可控的轻量级 Tomcat/Undertow 可替代版本，重新定义下一代 Servlet 容器!',
                     }
-                },{
-                tag:'script',
-                    attrs: {
-                        src: 'https://smartboot.tech/js/gitee.js'
-                    }
-                },
-                {
-                    tag:'script',
-                    content: 'if(!location.pathname.endsWith("smart-servlet/")){checkStar("smartboot-x","smart-servlet");}'
-                },
+                }
+                // ,{
+                // tag:'script',
+                //     attrs: {
+                //         src: 'https://smartboot.tech/js/gitee.js'
+                //     }
+                // },
+                // {
+                //     tag:'script',
+                //     content: 'if(!location.pathname.endsWith("smart-servlet/")){checkStar("smartboot-x","smart-servlet");}'
+                // },
             ],
             social: {
                 github: 'https://github.com/smartboot/smart-servlet',
