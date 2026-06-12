@@ -12,7 +12,7 @@
 > ⚠️ 请务必先完成产品试用并确认满足您的需求后再提交采购申请！
 
 
-![](pages/public/smart-servlet.svg)
+![](./pages/public/smart-servlet.svg)
 # smart-servlet
 smart-servlet 是一个基于 Jakarta Servlet 6.0 的轻量级 Servlet 容器，适用于 Java 17+ 环境。 
 
