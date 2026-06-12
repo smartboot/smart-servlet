@@ -80,7 +80,7 @@ public class BasicPlugin extends Plugin {
         try {
             AtomicInteger threadSeqNumber = new AtomicInteger();
             AsynchronousChannelGroup group =
-                    new EnhanceAsynchronousChannelProvider(false).openAsynchronousChannelGroup(config.getThreadNum(),
+                    new EnhanceAsynchronousChannelProvider().openAsynchronousChannelGroup(config.getThreadNum(),
                             r -> new Thread(r, "smart-servlet:Thread-" + (threadSeqNumber.getAndIncrement())));
             System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
