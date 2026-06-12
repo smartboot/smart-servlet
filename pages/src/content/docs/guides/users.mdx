@@ -1,23 +1,21 @@
 ---
-title: 1.4 授权企业公示
+title: 授权企业公示
 description: 感谢每一家认可 smart-servlet 价值并选择支持项目持续发展的企业。
 sidebar:
   order: 4
 ---
 
 
+
 import {TabItem, Tabs} from '@astrojs/starlight/components';
-import LicenseCertificate from '../../../components/LicenseCertificate.astro';
-
-# 授权企业公示
-
-自 **smart-servlet** 发布以来，我们已与数十家企业开展技术交流，并完成多轮 POC 验证，覆盖金融、政企、制造、物联网等多个领域。
-
-这些来自真实业务场景的反馈，持续推动着 smart-servlet 的完善与演进。
+import AuthorizedCompanies from '../../../components/AuthorizedCompanies.astro';
 
 <Tabs syncKey="license-info">
 
 <TabItem label="📊 项目现状">
+    自 **smart-servlet** 发布以来，我们已与数十家企业开展技术交流，并完成多轮 POC 验证，覆盖金融、政企、制造、物联网等多个领域。
+
+    这些来自真实业务场景的反馈，持续推动着 smart-servlet 的完善与演进。
 
 - 🏢 已完成技术交流与 POC 验证企业：**30+**
 - 🚀 涉及行业：金融、政企、制造、物联网等
@@ -63,11 +61,37 @@ import LicenseCertificate from '../../../components/LicenseCertificate.astro';
 
 以下企业已获得 **smart-servlet 官方商业授权**。
 
-<LicenseCertificate
-    companyName="杭州某某科技有限公司"
-    creditCode="91330100MA2XXXXXXX"
-    expireDate="2027-06-30"
-/>
+<AuthorizedCompanies/>
+
+[//]: # (<AuthorizedCompanies)
+
+[//]: # (    companies={[)
+
+[//]: # (        {)
+
+[//]: # (            companyName: '杭州某某科技有限公司',)
+
+[//]: # (            creditCode: '91330100MA2XXXXXXX',)
+
+[//]: # (            expireDate: '2025-06-30',)
+
+[//]: # (        },)
+
+[//]: # (        {)
+
+[//]: # (            companyName: '上海某某信息技术有限公司',)
+
+[//]: # (            creditCode: '91310115MA1XXXXXXX',)
+
+[//]: # (            expireDate: '2028-01-31',)
+
+[//]: # (            licenseNo: 'SSL-2026-0002',)
+
+[//]: # (        },)
+
+[//]: # (    ]})
+
+[//]: # (/>)
 
 ---
 

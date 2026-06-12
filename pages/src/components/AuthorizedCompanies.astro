@@ -1,0 +1,153 @@
+---
+interface Company {
+  companyName: string;
+  creditCode: string;
+  expireDate: string;
+  licenseNo?: string;
+}
+
+interface Props {
+  companies?: Company[];
+}
+
+const { companies = [] } = Astro.props as Props;
+const currentYear = new Date().getFullYear();
+const now = new Date();
+
+function getStatus(expireDate: string) {
+  return new Date(expireDate).getTime() < now.getTime() ? 'expired' : 'valid';
+}
+---
+
+{companies.length === 0 ? (
+  <div class="empty-state">
+    <div class="empty-icon">🏅</div>
+    <h3>暂无已公开授权企业</h3>
+    <p>感谢每一家认可 smart-servlet 价值并支持项目持续发展的企业。<br />授权信息将持续更新。</p>
+  </div>
+) : (
+  <div class="companies">
+    {companies.map((company, index) => {
+      const dialogId = `license-dialog-${index}`;
+      const licenseNo = company.licenseNo ?? `SSL-${currentYear}-${String(index + 1).padStart(4,'0')}`;
+      const status = getStatus(company.expireDate);
+      const expired = status === 'expired';
+
+      return (
+        <>
+          <button class="company-card" type="button" onclick={`document.getElementById('${dialogId}')?.showModal()`}>
+            <div class="card-header">
+              <div class="card-company">{company.companyName}</div>
+              <div class="card-right">
+                <div class="card-license">{licenseNo}</div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <span class="card-expire">有效期至 {company.expireDate}</span>
+              <span class="card-action">查看授权证书 →</span>
+            </div>
+          </button>
+
+          <dialog id={dialogId} class="certificate-dialog">
+            <button class="dialog-mask" type="button" onclick={`document.getElementById('${dialogId}')?.close()`} aria-label="关闭" />
+            <div class={`certificate ${expired ? 'expired' : ''}`}>
+              <button class="close-button" type="button" onclick={`document.getElementById('${dialogId}')?.close()`} aria-label="关闭">✕</button>
+
+              <div class="certificate-header">
+                <div>
+                  <div class="certificate-brand">smart-servlet</div>
+                  <div class="certificate-subtitle">Official Licensed Enterprise</div>
+                </div>
+                <div class="certificate-seal">
+                  {!expired && (
+                    <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="60" cy="60" r="58" fill="none" stroke="rgba(148,163,184,0.25)" stroke-width="2"/>
+                      <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(148,163,184,0.2)" stroke-width="1"/>
+                      <text x="60" y="50" text-anchor="middle" font-size="10" font-weight="700" fill="rgba(100,116,139,0.85)">官方授权</text>
+                      <text x="60" y="65" text-anchor="middle" font-size="16" font-weight="300" fill="rgba(100,116,139,0.85)">{currentYear}</text>
+                      <text x="60" y="80" text-anchor="middle" font-size="10" font-weight="700" fill="rgba(100,116,139,0.85)">LICENSED</text>
+                    </svg>
+                  )}
+                  {expired && <div class="expired-stamp">授权已过期</div>}
+                </div>
+              </div>
+
+              <div class="certificate-body">
+                <div class="certificate-label">授权企业</div>
+                <div class="certificate-company">{company.companyName}</div>
+                <p class="certificate-description">
+                  感谢贵司对 smart-servlet 项目的认可与支持。
+                  您的信任，将持续推动国产基础软件的发展。
+                </p>
+                <div class="certificate-meta">
+                  <div class="meta-item"><span>授权编号</span><strong>{licenseNo}</strong></div>
+                  <div class="meta-item"><span>统一社会信用代码</span><strong>{company.creditCode}</strong></div>
+                  <div class="meta-item"><span>授权截止日期</span><strong>{company.expireDate}</strong></div>
+                  <div class="meta-item"><span>授权状态</span><strong>{expired ? '授权已过期' : '授权有效'}</strong></div>
+                </div>
+              </div>
+
+              <div class="certificate-footer">
+                <div>smart-servlet</div>
+                <div>Lightweight • High Performance • Future Ready</div>
+              </div>
+            </div>
+          </dialog>
+        </>
+      )
+    })}
+  </div>
+)}
+
+<style>
+.companies { display:grid; gap:1rem; margin:2rem 0; }
+.company-card { width:100%; padding:1.5rem; border:1px solid var(--sl-color-gray-5); border-radius:20px; background:var(--sl-color-bg); text-align:left; cursor:pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;}
+.company-card:hover { transform:translateY(-2px); border-color: var(--sl-color-accent-high); box-shadow:0 12px 32px rgba(0,0,0,0.08);}
+.card-header { display:flex; justify-content:space-between; gap:1rem; align-items:flex-start;}
+.card-company { font-size:1.15rem; font-weight:650; line-height:1.5; }
+.card-right { display:flex; align-items:center; gap:0.5rem; }
+.card-license { font-family: monospace; font-size:0.85rem; color:var(--sl-color-gray-3); }
+.card-footer { display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem;}
+.card-expire { color: var(--sl-color-gray-3); font-size:0.9rem;}
+.card-action { color: var(--sl-color-accent); font-weight:600; font-size:0.9rem;}
+
+/* 空状态 */
+.empty-state { padding:4rem 2rem; border:1px dashed var(--sl-color-gray-5); border-radius:24px; background:var(--sl-color-bg); text-align:center; }
+.empty-icon { font-size:3rem; }
+.empty-state h3 { margin:1rem 0 0.5rem; }
+.empty-state p { color: var(--sl-color-gray-3); line-height:1.8; }
+
+/* 弹窗 */
+.certificate-dialog { position:fixed; inset:0; width:100vw; height:100vh; margin:0; padding:0; border:none; background:transparent; }
+.certificate-dialog::backdrop { background: rgba(15,23,42,0.55); backdrop-filter:blur(12px);}
+.dialog-mask { position: fixed; inset:0; border:none; background:transparent; }
+
+/* 证书 */
+.certificate { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:min(820px,calc(100vw-2rem)); padding:3rem; border:1px solid rgba(148,163,184,0.18); border-radius:32px; background: radial-gradient(circle at top right, rgba(59,130,246,0.08), transparent 30%), radial-gradient(circle at bottom left, rgba(99,102,241,0.08), transparent 30%), var(--sl-color-bg); box-shadow:0 40px 100px rgba(0,0,0,0.15); overflow:hidden;}
+.close-button { position:absolute; top:1.5rem; right:1.5rem; width:36px; height:36px; border:none; border-radius:50%; background:transparent; color:var(--sl-color-gray-3); cursor:pointer; font-size:1rem; }
+.close-button:hover { background: rgba(148,163,184,0.1); }
+
+.certificate-header { display:flex; justify-content:space-between; align-items:center; gap:2rem; }
+.certificate-brand { font-size:2rem; font-weight:750; letter-spacing:-0.03em; }
+.certificate-subtitle { margin-top:0.5rem; color:var(--sl-color-gray-3); font-size:0.95rem; letter-spacing:0.08em; text-transform:uppercase; }
+.certificate-seal { position:relative; width:140px; height:140px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.expired-stamp { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%) rotate(-12deg); padding:0.5rem 2rem; border:4px solid currentColor; border-radius:12px; font-size:2rem; font-weight:800; letter-spacing:0.4em; opacity:0.15; pointer-events:none; text-align:center; }
+
+.certificate-body { margin-top:4rem; }
+.certificate-label { color:var(--sl-color-gray-3); font-size:0.9rem; letter-spacing:0.08em; text-transform:uppercase; }
+.certificate-company { margin-top:1rem; font-size:clamp(2rem,4vw,3rem); font-weight:700; line-height:1.2; }
+.certificate-description { max-width:36rem; margin-top:1.5rem; color:var(--sl-color-gray-3); line-height:1.8; }
+.certificate-meta { display:grid; gap:1rem; margin-top:3rem; }
+.meta-item { display:flex; justify-content:space-between; gap:2rem; padding-bottom:1rem; border-bottom:1px solid rgba(148,163,184,0.15);}
+.meta-item span { color:var(--sl-color-gray-3); }
+.meta-item strong { font-family:monospace; font-weight:600; text-align:right; }
+.certificate-footer { display:flex; justify-content:space-between; align-items:center; margin-top:4rem; padding-top:2rem; border-top:1px solid rgba(148,163,184,0.15); color:var(--sl-color-gray-3); font-size:0.9rem; }
+
+/* 响应式 */
+@media (max-width:640px) {
+  .card-header, .card-footer, .certificate-header, .certificate-footer, .meta-item { flex-direction:column; align-items:flex-start; }
+  .certificate { padding:2rem; }
+  .certificate-seal { width:100px; height:100px; }
+  .certificate-body { margin-top:2.5rem; }
+}
+</style>
