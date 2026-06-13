@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <feat.version>2.1.2</feat.version>
+        <feat.version>2.1.1</feat.version>
     </properties>
 
     <dependencyManagement>
