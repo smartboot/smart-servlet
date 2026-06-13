@@ -2,5 +2,6 @@ Technical Support:
  · Document: https://smartboot.tech
  · Gitee: https://gitee.com/smartboot/smart-servlet
  · Github: https://github.com/smartboot/smart-servlet
- · E-mail: zhengjunweimail@163.com
  · 温馨提示：开源不易，拒绝盗版，请通过正规渠道获取产品授权
+ · 已授权企业公示: https://smartboot.tech/smart-servlet/users/
+ · 盗版举报：如发现盗版侵权行为，请立即举报（E-mail: zhengjunweimail@163.com），我们将依法追究责任
