@@ -64,10 +64,19 @@ export default defineConfig({
                     label: '指南',
                     autogenerate: {directory: 'guides'},
                 },
-                // {
-                //     label: '参考',
-                //     autogenerate: {directory: 'reference'},
-                // },
+                {
+                    label: '企业服务',
+                    items: [
+                        {
+                            label: '授权合作企业',
+                            link: '/users/',
+                        },
+                        {
+                            label: '法律声明与使用条款',
+                            link: '/legal/',
+                        },
+                    ],
+                },
             ],
         }),
     ],
