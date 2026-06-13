@@ -32,7 +32,7 @@ smart-servlet 已与金融、制造、政企、工业互联网等多个行业开
 - 官方授权企业公示（自愿）
 - smartboot 生态合作机会
 
-📄 [了解企业授权方案 →](https://smartboot.tech/smart-servlet/guides/users/)
+📄 [了解企业授权方案 →](https://smartboot.tech/smart-servlet/users/)
 
 ---
 
