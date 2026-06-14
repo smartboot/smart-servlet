@@ -29,6 +29,28 @@
         <dependency>
             <groupId>tech.smartboot.feat</groupId>
             <artifactId>feat-cloud</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>tech.smartboot.feat</groupId>
+                    <artifactId>feat-ai</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>tech.smartboot.feat</groupId>
+            <artifactId>feat-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba.fastjson2</groupId>
+                    <artifactId>fastjson2</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.57</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

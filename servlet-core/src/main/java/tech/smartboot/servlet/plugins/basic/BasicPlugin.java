@@ -82,7 +82,6 @@ public class BasicPlugin extends Plugin {
             AsynchronousChannelGroup group =
                     new EnhanceAsynchronousChannelProvider().openAsynchronousChannelGroup(config.getThreadNum(),
                             r -> new Thread(r, "smart-servlet:Thread-" + (threadSeqNumber.getAndIncrement())));
-            System.out.println("\033[1mWeb Info:\033[0m");
             if (config.isEnabled()) {
                 FeatCloud.cloudServer(options -> {
                     options.setRouter(router).group(group)

@@ -25,6 +25,11 @@
                 <version>${feat.version}</version>
             </dependency>
             <dependency>
+                <groupId>tech.smartboot.feat</groupId>
+                <artifactId>feat-core</artifactId>
+                <version>${feat.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>tech.smartboot.servlet</groupId>
                 <artifactId>servlet-core</artifactId>
                 <version>${project.version}</version>
