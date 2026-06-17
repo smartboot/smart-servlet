@@ -132,20 +132,22 @@ public class ServletRequestDispatcherWrapper extends HttpServletRequestWrapper i
         }
         pathInit = true;
         switch (servletMappingInfo.getMappingMatch()) {
-            case EXACT -> {
+            case EXACT : {
                 servletPath = servletMappingInfo.getUrlPattern();
                 pathInfo = null;
+                break;
             }
-            case EXTENSION -> {
+            case EXTENSION : {
                 servletPath = getRequestURI().substring(getContextPath().length());
                 pathInfo = null;
+                break;
             }
-            case PATH -> {
+            case PATH : {
                 servletPath = servletMappingInfo.getUrlPattern().substring(0, servletMappingInfo.getUrlPattern().length() - 2);
                 if (getContextPath().length() + servletPath.length() < getRequestURI().length()) {
                     pathInfo = getRequestURI().substring(getContextPath().length() + servletPath.length());
                 }
-
+                break;
             }
         }
     }

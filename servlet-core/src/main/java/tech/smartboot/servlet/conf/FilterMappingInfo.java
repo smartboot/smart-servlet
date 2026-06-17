@@ -78,13 +78,20 @@ public class FilterMappingInfo extends UrlPattern {
     }
 
     public boolean contains(DispatcherType dispatcherType) {
-        return switch (dispatcherType) {
-            case FORWARD -> (mask & DISPATCHER_FORWARD) != 0;
-            case INCLUDE -> (mask & DISPATCHER_INCLUDE) != 0;
-            case REQUEST -> (mask & DISPATCHER_REQUEST) != 0;
-            case ERROR -> (mask & DISPATCHER_ERROR) != 0;
-            case ASYNC -> (mask & DISPATCHER_ASYNC) != 0;
-        };
+        switch (dispatcherType) {
+            case FORWARD:
+                return (mask & DISPATCHER_FORWARD) != 0;
+            case INCLUDE:
+                return (mask & DISPATCHER_INCLUDE) != 0;
+            case REQUEST:
+                return (mask & DISPATCHER_REQUEST) != 0;
+            case ERROR:
+                return (mask & DISPATCHER_ERROR) != 0;
+            case ASYNC:
+                return (mask & DISPATCHER_ASYNC) != 0;
+            default:
+                return false;
+        }
     }
 
     public String getFilterName() {
