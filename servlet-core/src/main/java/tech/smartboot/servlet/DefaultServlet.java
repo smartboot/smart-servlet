@@ -171,7 +171,7 @@ class DefaultServlet extends HttpServlet {
             outputStream.write(faviconBytes);
             return;
         }
-        LOGGER.info("load file:" + fileName);
+        LOGGER.debug("load file:" + fileName);
         FileInputStream fis = new FileInputStream(file);
         FileChannel fileChannel = fis.getChannel();
         long fileSize = fileChannel.size();
