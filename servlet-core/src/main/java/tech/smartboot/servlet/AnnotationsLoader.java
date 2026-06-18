@@ -117,7 +117,8 @@ public class AnnotationsLoader {
             executorService.execute(() -> {
                 long start = System.currentTimeMillis();
                 try {
-                    if ("jar".equals(url.getProtocol()) || url.toString().endsWith(".jar")) {
+                    //忽略 jar-in-jar 方式
+                    if (("jar".equals(url.getProtocol()) || url.toString().endsWith(".jar")) && !url.toString().contains(".jar/!")) {
                         processAnnotationsJar(url, javaClassCache);
                     } else if ("file".equals(url.getProtocol())) {
                         try {
