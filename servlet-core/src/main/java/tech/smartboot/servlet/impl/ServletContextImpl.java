@@ -216,7 +216,7 @@ public class ServletContextImpl implements ServletContext {
             }
         }
         if (url == null) {
-            LOGGER.warn(path + " resource not exists");
+            LOGGER.debug("{} resource not exists", path);
         }
         return url;
     }

@@ -112,7 +112,7 @@ class HttpSessionImpl implements HttpSession {
             return;
         }
         timerTask = sessionProvider.getTimer().schedule(() -> {
-            LOGGER.info("sessionId:{} will be expired, lastAccessedTime:{} ,maxInactiveInterval:{}", sessionId, lastAccessed, maxInactiveInterval);
+            LOGGER.debug("sessionId:{} will be expired, lastAccessedTime:{} ,maxInactiveInterval:{}", sessionId, lastAccessed, maxInactiveInterval);
             invalid();
         }, maxInactiveInterval, TimeUnit.SECONDS);
     }
