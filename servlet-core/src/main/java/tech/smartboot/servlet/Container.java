@@ -478,7 +478,7 @@ public class Container {
         }
 
         for (ServletContainerInitializer containerInitializer : ServiceLoader.load(ServletContainerInitializer.class, deploymentInfo.getClassLoader())) {
-            LOGGER.info("load ServletContainerInitializer:" + containerInitializer.getClass().getName());
+            LOGGER.debug("load ServletContainerInitializer:{}", containerInitializer.getClass().getName());
             deploymentInfo.addServletContainerInitializer(containerInitializer);
         }
 //        deploymentInfo.setDynamicListenerState(true);
