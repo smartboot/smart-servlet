@@ -27,6 +27,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.mortbay.jasper</groupId>
+            <artifactId>apache-jsp</artifactId>
+            <version>10.1.16</version>
+        </dependency>
+        <dependency>
             <groupId>tech.smartboot.feat</groupId>
             <artifactId>feat-cloud</artifactId>
             <exclusions>

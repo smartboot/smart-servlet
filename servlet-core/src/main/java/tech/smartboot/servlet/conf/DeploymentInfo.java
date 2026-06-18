@@ -91,7 +91,7 @@ public class DeploymentInfo {
 
     public void addServletContainerInitializer(final ServletContainerInitializer servletContainerInitializer) {
         HandlesTypes handlesTypesAnnotation = servletContainerInitializer.getClass().getDeclaredAnnotation(HandlesTypes.class);
-        if (handlesTypesAnnotation != null) {
+        if (handlesTypesAnnotation != null && annotationsLoader != null) {
             for (Class<?> c : handlesTypesAnnotation.value()) {
                 annotationsLoader.add(servletContainerInitializer, c);
             }
