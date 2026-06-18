@@ -84,11 +84,13 @@ public class ServletContextImpl implements ServletContext {
     private String requestCharacterEncoding;
 
     private ServletContextWrapperListener currentInitializeContext;
+    private List<URL> resources;
 
     public ServletContextImpl(ServletContextRuntime runtime) {
         this.runtime = runtime;
         this.deploymentInfo = runtime.getDeploymentInfo();
         sessionCookieConfig = new SessionCookieConfigImpl(runtime);
+        resources = new StaticResourceJars().getUrls();
     }
 
     @Override
@@ -199,6 +201,19 @@ public class ServletContextImpl implements ServletContext {
             }
         } catch (URISyntaxException e) {
             LOGGER.info("path:" + pathUrl + " ，URISyntaxException:" + e.getMessage());
+        }
+        if (url == null) {
+            for (URL resource : resources) {
+                URL res = new URL(resource, "META-INF/resources" + path);
+                try {
+                    if (new File(res.toURI()).exists()) {
+                        url = res;
+                        break;
+                    }
+                } catch (URISyntaxException e) {
+                    LOGGER.info("path:" + resource + " ，URISyntaxException:" + e.getMessage());
+                }
+            }
         }
         if (url == null) {
             LOGGER.warn(path + " resource not exists");
