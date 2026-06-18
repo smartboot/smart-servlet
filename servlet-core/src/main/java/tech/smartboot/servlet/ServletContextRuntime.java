@@ -18,7 +18,6 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.MappingMatch;
-import org.apache.jasper.servlet.JspServlet;
 import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
@@ -273,11 +272,11 @@ public class ServletContextRuntime {
             deploymentInfo.setHandlesTypesLoader(null);
 //            System.out.println("scanHandleTypes use :" + (System.currentTimeMillis() - start));
         }
-        ServletInfo jspServletInfo = new ServletInfo();
-        jspServletInfo.setServletClass(JspServlet.class.getName());
-        jspServletInfo.setServletName("jsp");
-        jspServletInfo.addServletMapping("*.jsp", this);
-        deploymentInfo.addServlet(jspServletInfo);
+//        ServletInfo jspServletInfo = new ServletInfo();
+//        jspServletInfo.setServletClass(JspServlet.class.getName());
+//        jspServletInfo.setServletName("jsp");
+//        jspServletInfo.addServletMapping("*.jsp", this);
+//        deploymentInfo.addServlet(jspServletInfo);
         faviconProvider.resister(this);
 
         for (ServletContainerInitializerInfo servletContainerInitializer : deploymentInfo.getServletContainerInitializers()) {
