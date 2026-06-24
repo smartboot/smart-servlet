@@ -14,6 +14,7 @@ import jakarta.servlet.AsyncContext;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.SessionCookieConfig;
 import tech.smartboot.feat.core.common.FeatUtils;
 import tech.smartboot.feat.core.common.exception.FeatException;
 import tech.smartboot.feat.core.common.exception.HttpException;
@@ -21,6 +22,7 @@ import tech.smartboot.feat.core.common.logging.Logger;
 import tech.smartboot.feat.core.common.logging.LoggerFactory;
 import tech.smartboot.feat.core.server.HttpRequest;
 import tech.smartboot.feat.core.server.HttpResponse;
+import tech.smartboot.servlet.conf.CookieConfig;
 import tech.smartboot.servlet.conf.DeploymentInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.OrderMeta;
@@ -427,6 +429,31 @@ public class Container {
         //set session timeout
         deploymentInfo.setSessionTimeout(webAppInfo.getSessionTimeout());
         deploymentInfo.setLoginConfig(webAppInfo.getLoginConfig());
+        //set cookie config
+        CookieConfig cookieConfig = webAppInfo.getCookieConfig();
+        if (cookieConfig != null) {
+            SessionCookieConfig sessionCookieConfig = servletRuntime.getServletContext().getSessionCookieConfig();
+            if (FeatUtils.isNotBlank(cookieConfig.getName())) {
+                sessionCookieConfig.setName(cookieConfig.getName());
+            }
+            if (FeatUtils.isNotBlank(cookieConfig.getDomain())) {
+                sessionCookieConfig.setDomain(cookieConfig.getDomain());
+            }
+            if (cookieConfig.getMaxAge() != -1) {
+                sessionCookieConfig.setMaxAge(cookieConfig.getMaxAge());
+            }
+            if (cookieConfig.isSecure()) {
+                sessionCookieConfig.setSecure(cookieConfig.isSecure());
+            }
+            if (cookieConfig.isHttpOnly()) {
+                sessionCookieConfig.setHttpOnly(cookieConfig.isHttpOnly());
+            }
+            if (cookieConfig.getPath() != null) {
+                sessionCookieConfig.setPath(cookieConfig.getPath());
+            }
+            cookieConfig.getAttributes().forEach(sessionCookieConfig::setAttribute);
+        }
+
         if (FeatUtils.isNotBlank(webAppInfo.getVersion())) {
             String[] array = webAppInfo.getVersion().split("\\.");
             if (array.length == 2) {

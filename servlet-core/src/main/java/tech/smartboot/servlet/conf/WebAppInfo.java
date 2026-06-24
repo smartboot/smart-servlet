@@ -58,7 +58,7 @@ public class WebAppInfo {
     private List<String> absoluteOrdering;
     private boolean absoluteOrderingOther = false;
     private LoginConfig loginConfig;
-
+    private CookieConfig cookieConfig;
     private int sessionTimeout = 0;
 
     public void addServlet(ServletInfo servletInfo) {
@@ -200,5 +200,13 @@ public class WebAppInfo {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public CookieConfig getCookieConfig() {
+        return cookieConfig;
+    }
+
+    public void setCookieConfig(CookieConfig cookieConfig) {
+        this.cookieConfig = cookieConfig;
     }
 }

@@ -19,6 +19,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import tech.smartboot.feat.core.common.FeatUtils;
+import tech.smartboot.servlet.conf.CookieConfig;
 import tech.smartboot.servlet.conf.ErrorPageInfo;
 import tech.smartboot.servlet.conf.FilterInfo;
 import tech.smartboot.servlet.conf.FilterMappingInfo;
@@ -186,11 +187,38 @@ class WebXmlParseEngine {
     }
 
     private void parseSessionConfig(WebAppInfo webAppInfo, Element parentElement) {
-        List<Node> childNodeList = getChildNodes(parentElement, "session-config");
-        if (FeatUtils.isNotEmpty(childNodeList)) {
-            Map<String, String> nodeData = getNodeValue(childNodeList.get(0), Collections.singletonList("session-timeout"));
-            webAppInfo.setSessionTimeout(FeatUtils.toInt(nodeData.get("session-timeout"), 0));
+        Node node = getChildNode(parentElement, "session-config");
+        if (node == null) {
+            return;
         }
+        Map<String, String> nodeData = getNodeValue(node, Collections.singletonList("session-timeout"));
+        webAppInfo.setSessionTimeout(FeatUtils.toInt(nodeData.get("session-timeout"), 0));
+
+        parseCookieConfig(webAppInfo, node);
+    }
+
+    private void parseCookieConfig(WebAppInfo webAppInfo, Node parentElement) {
+        Node node = getChildNode(parentElement, "cookie-config");
+        if (node == null) {
+            return;
+        }
+        Map<String, String> config = getNodeValue(node, Arrays.asList("name", "domain", "path", "comment", "max-age", "secure", "http-only"));
+        CookieConfig cookieConfig = new CookieConfig();
+        cookieConfig.setName(config.get("name"));
+        cookieConfig.setDomain(config.get("domain"));
+        cookieConfig.setPath(config.get("path"));
+        cookieConfig.setMaxAge(FeatUtils.toInt(config.get("max-age"), -1));
+        cookieConfig.setSecure(Boolean.parseBoolean(config.get("secure")));
+        cookieConfig.setHttpOnly(Boolean.parseBoolean(config.get("http-only")));
+
+        for (Node attrNode : getChildNodes(node, "attribute")) {
+            Map<String, String> attr = getNodeValue(attrNode, Arrays.asList("attribute-name", "attribute-value"));
+            if (FeatUtils.isNotEmpty(attr)) {
+                cookieConfig.getAttributes().put(attr.get("attribute-name"), attr.get("attribute-value"));
+            }
+        }
+
+        webAppInfo.setCookieConfig(cookieConfig);
     }
 
     private void parseContextParam(WebAppInfo webAppInfo, Element parentElement) {
