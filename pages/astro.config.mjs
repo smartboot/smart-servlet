@@ -35,7 +35,7 @@ export default defineConfig({
                 // },
                 // {
                 //     tag:'script',
-                //     content: 'if(!location.pathname.endsWith("smart-servlet/")){checkStar("smartboot-x","smart-servlet");}'
+                //     content: 'if(!location.pathname.endsWith("smart-servlet/")){checkStar("smartboot","smart-servlet");}'
                 // },
             ],
             social: {

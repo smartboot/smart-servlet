@@ -1,6 +1,10 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 
+# 公开 Issue 仅提供开源生态支持；商务咨询与签约客户支持请 1 对 1 联系。
 contact_links:
-  - name: 📚使用文档
+  - name: 📚 使用文档
     url: https://smartboot.tech/smart-servlet/
     about: smart-servlet in Action，简单、高效、国产化
+  - name: 💬 企业服务咨询与签约（1 对 1）
+    url: https://smartboot.tech/smart-servlet/users/
+    about: 咨询 SLA、报价、订阅申请与签约客户技术支持，请通过邮箱 zhengjunweimail@163.com 一对一联系；公开 Issue 不受理

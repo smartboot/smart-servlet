@@ -8,14 +8,12 @@
 
 ## 开源协议
 
-**自 v3.4 起，smart-servlet 采用 [Apache License 2.0](./LICENSE) 开源协议，企业可免费用于生产与商业场景，无需采购使用授权。**
+**smart-servlet 采用 [Apache License 2.0](./LICENSE) 开源协议，企业可免费用于生产与商业场景，无需采购使用授权。**
 
 - 允许商用、修改、再分发、嵌入闭源产品、作为托管服务对外提供
-- 无并发数、部署规模、功能或试用时长的限制，社区版与企业版使用同一份代码
+- 无并发数、部署规模、功能或试用时长的限制，免费用户与企业服务订阅客户使用同一份代码
 - 再分发时需保留版权声明与 NOTICE 文件，遵守 Apache-2.0 的专利授权与商标条款
 - 商标、官方认证与兼容性标识不属于 Apache-2.0 授权范围，使用前需获得书面许可
-
-**版本边界**：v3.3 及更早版本仍适用其发布时的 AGPL-3.0 协议，协议变更不追溯已发布版本；此前已签署商业授权的客户，原授权权益继续有效，也可自愿转换为企业服务订阅。
 
 ---
 
@@ -23,7 +21,7 @@
 
 1. smart-servlet **未进入信创目录**，但核心技术 100% 自主研发，企业可进行代码审计和安全评估；订阅企业服务的客户可获得合规材料配合。
 2. 软件按"现状（AS IS）"提供，生产环境建议先完成充分测试与风险评估。
-3. **企业付费购买的是服务与责任保障，不是使用许可**：社区支持无 SLA 承诺，需要响应时效、故障兜底与长期维护的团队可选择企业服务订阅。
+3. **企业付费购买的是服务与责任保障，不是使用许可**：公开 Issue 仅提供开源生态支持（社区尽力而为、无 SLA 承诺）；签约客户提供 1 对 1 专属服务支持，按合同约定响应与解决时效、生产故障兜底与指定版本长期维护。
 
 ---
 
@@ -41,7 +39,7 @@ smart-servlet 已与金融、制造、政企、工业互联网等多个行业开
 | :--- | :---: | :---: |
 | 使用授权 | Apache-2.0，商用免费 | 相同，无需额外授权 |
 | 功能、性能、并发与部署规模 | 完全一致，无限制 | 完全一致 |
-| 问题响应 | Issue 社区支持，尽力而为 | 专属通道，合同约定响应与解决时效 |
+| 问题响应 | 公开 Issue 开源生态支持，尽力而为、无 SLA | 1 对 1 专属服务支持（专属对接人／专属群／服务工单），合同约定响应与解决时效 |
 | 生产故障处置 | 自行处理 | 优先处置、远程/现场兜底支持 |
 | 版本维护 | 跟随主干版本 | 指定版本长期维护（LTS）、安全补丁、EOL 提前通知 |
 | 大版本升级 | 自助适配 | JDK / Spring Boot / Jakarta Servlet 升级适配指导 |
@@ -55,14 +53,18 @@ smart-servlet 已与金融、制造、政企、工业互联网等多个行业开
 
 ---
 
-## 服务咨询与申请
+## 支持渠道与服务咨询
 
-通过 Gitee Issue 系统提交，我们会尽快响应：
+**公开 Issue 仅提供开源生态支持**：面向所有免费用户的 Bug 反馈、使用咨询与改进建议，由社区尽力而为，不承诺响应时效，不提供 SLA 与故障兜底。请勿在公开 Issue 提交生产故障、密钥口令、内网拓扑或业务数据。
 
-- [企业服务咨询](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=license_inquiry.yml)
-- [企业服务订阅申请](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=license_apply.yml)
-- [签约客户技术支持](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=enterprise_support.yml)
-- [开源社区问题反馈](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=opensource_bug.yml)
+- [开源生态支持（问题反馈）](https://gitee.com/smartboot/smart-servlet/issues/new?template=opensource_bug.yml)
+
+**企业服务咨询与订阅**：咨询 SLA、报价、合规材料或申请年度服务订阅，请通过 1 对 1 渠道联系商务，不在公开 Issue 提交。
+
+- 邮箱：`zhengjunweimail@163.com`
+- 服务说明与联系方式：[服务客户与生态伙伴](https://smartboot.tech/smart-servlet/users/)
+
+**已签约客户**：请使用合同约定的 **1 对 1 专属服务支持**（专属对接人／专属沟通群／服务工单），公开 Issue 不受理签约客户的报障与 SLA 诉求。
 
 > 建议先完成产品试用并确认满足业务需求，再评估是否需要订阅服务。
 
@@ -74,7 +76,7 @@ smart-servlet 已与金融、制造、政企、工业互联网等多个行业开
 - **性能优越**：搭载 smart-socket 微内核，处理高并发能力出色
 - **规范兼容**：遵循 Jakarta Servlet 6.0，兼容主流 Servlet 应用
 - **运行灵活**：支持 War 包、Spring Boot、Maven Plugin 等多种运行方式
-- **服务可选**：需要生产保障的团队可选择企业级支持与长期维护服务
+- **服务可选**：需要生产保障的团队可选择 1 对 1 企业级支持与长期维护服务
 
 ---
 
@@ -88,6 +90,6 @@ smart-servlet 已与金融、制造、政企、工业互联网等多个行业开
 
 ## 项目推荐
 
-- [smart-socket](https://gitee.com/smartboot-x/smart-socket) — 极简高性能 AIO 通信框架，适用于 IM、RPC、IoT
+- [smart-socket](https://gitee.com/smartboot/smart-socket) — 极简高性能 AIO 通信框架，适用于 IM、RPC、IoT
 - [feat](https://gitee.com/smartboot/feat) — 基于 smart-socket 的轻量级 HTTP 服务器
 - [smart-mqtt](https://gitee.com/smartboot/smart-mqtt) — 基于 smart-socket 的 MQTT 3.1.1/5.0 Broker & Client 服务

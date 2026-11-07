@@ -5,5 +5,7 @@ Resources
 
 smart-servlet 采用 Apache-2.0 开源协议，企业可免费商用，无需采购授权
   ▸ 服务客户与生态伙伴：https://smartboot.tech/smart-servlet/users/
-  ▸ 企业服务订阅咨询：https://gitee.com/smartboot/smart-servlet/issues
-  ▸ 联系邮箱：zhengjunweimail@163.com
+  ▸ 开源生态支持（公开 Issue，社区尽力而为，无 SLA）：
+      https://gitee.com/smartboot/smart-servlet/issues/new?template=opensource_bug.yml
+  ▸ 企业服务咨询、订阅与签约客户 1 对 1 支持：
+      邮箱 zhengjunweimail@163.com
