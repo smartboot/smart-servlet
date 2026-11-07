@@ -9,6 +9,7 @@
  */
 package tech.smartboot.servlet.tck;
 
+import io.github.smartboot.socket.extension.plugins.StreamMonitorPlugin;
 import jakarta.servlet.ServletContext;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
@@ -23,12 +24,19 @@ import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
-import io.github.smartboot.socket.extension.plugins.StreamMonitorPlugin;
 import tech.smartboot.servlet.Container;
 import tech.smartboot.servlet.ContainerConfig;
 import tech.smartboot.servlet.ServletContextRuntime;
 import tech.smartboot.servlet.conf.ServletInfo;
 import tech.smartboot.servlet.enums.SslCertType;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
 
 public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbeddedConfiguration> {
 
@@ -135,6 +143,8 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         try {
             ServletContextRuntime app = appProvider.createApp(containerRuntime, archive);
 
+            loadRealmProperties(app);
+
             app.start();
 
             webAppContextProducer.set(app);
@@ -154,6 +164,38 @@ public class SmartEmbeddedContainer implements DeployableContainer<SmartEmbedded
         ServletContextRuntime app = webAppContextProducer.get();
         if (app != null) {
             app.stop();
+        }
+    }
+
+    /**
+     * 加载 TCK 提供的 realm 用户库（格式：username=password[,role...]）。
+     * <p>
+     * TCK 默认配置中的证书主体名（DN）到角色的映射依赖该文件，例如 CLIENT-CERT
+     * 认证时需要据此把客户端证书身份解析为应用角色。
+     */
+    private void loadRealmProperties(ServletContextRuntime app) {
+        if (!containerConfig.isRealmPropertiesFileSet()) {
+            return;
+        }
+        File realmFile = containerConfig.getRealmProperties();
+        if (realmFile == null || !realmFile.isFile()) {
+            return;
+        }
+        Properties properties = new Properties();
+        try (InputStream inputStream = new FileInputStream(realmFile)) {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not load realm properties from " + realmFile.getAbsolutePath(), e);
+        }
+        for (String username : properties.stringPropertyNames()) {
+            String[] values = properties.getProperty(username).split(",", -1);
+            Set<String> roles = new HashSet<>();
+            for (int i = 1; i < values.length; i++) {
+                if (!values[i].trim().isEmpty()) {
+                    roles.add(values[i].trim());
+                }
+            }
+            app.getSecurityProvider().addUser(username, values[0], roles);
         }
     }
 }

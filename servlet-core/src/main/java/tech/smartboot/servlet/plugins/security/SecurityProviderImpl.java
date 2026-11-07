@@ -29,12 +29,15 @@ import tech.smartboot.servlet.impl.HttpServletRequestImpl;
 import tech.smartboot.servlet.provider.SecurityProvider;
 import tech.smartboot.servlet.util.PathMatcherUtil;
 
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.IOException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,22 +150,32 @@ public class SecurityProviderImpl implements SecurityProvider {
 //            }
         }
         if (loginConfig != null && "CLIENT-CERT".equals(loginConfig.getAuthMethod())) {
+            SSLEngine sslEngine = request.getSslEngine();
             List<X509Certificate> certificates = new ArrayList<>();
-            for (Certificate certificate : request.getSslEngine().getSession().getPeerCertificates()) {
-                if (certificate instanceof X509Certificate) {
-                    certificates.add((X509Certificate) certificate);
+            if (sslEngine != null) {
+                try {
+                    for (Certificate certificate : sslEngine.getSession().getPeerCertificates()) {
+                        if (certificate instanceof X509Certificate) {
+                            certificates.add((X509Certificate) certificate);
+                        }
+                    }
+                } catch (SSLPeerUnverifiedException e) {
+                    //客户端未提供证书，交由后续流程返回 401
                 }
             }
-            X509Certificate certificate = certificates.get(0);
-            String name = certificate.getIssuerX500Principal().getName();
-            LoginAccount account = new LoginAccount(certificate.getIssuerX500Principal().getName(), null, deploymentInfo.getSecurityRoleMapping().get(name), HttpServletRequest.CLIENT_CERT_AUTH);
-            request.setLoginAccount(account);
-            request.setAttribute("jakarta.servlet.request.X509Certificate", certificates.toArray(new X509Certificate[certificates.size()]));
-            request.setAttribute("jakarta.servlet.request.cipher_suite", request.getSslEngine().getSession().getCipherSuite());
-            request.setAttribute("jakarta.servlet.request.key_size", calculateKeySize(request.getSslEngine().getSession().getCipherSuite()));
-            byte[] sessionId = request.getSslEngine().getSession().getId();
-            request.setAttribute("jakarta.servlet.request.ssl_session_id", sessionId != null ? convertToHexString(sessionId) : null);
-            return account;
+            if (!certificates.isEmpty()) {
+                X509Certificate certificate = certificates.get(0);
+                //客户端证书以 subject 作为用户身份，issuer 仅用于证书链校验
+                String name = certificate.getSubjectX500Principal().getName();
+                LoginAccount account = new LoginAccount(name, null, resolveClientCertRoles(name), HttpServletRequest.CLIENT_CERT_AUTH);
+                request.setLoginAccount(account);
+                request.setAttribute("jakarta.servlet.request.X509Certificate", certificates.toArray(new X509Certificate[0]));
+                request.setAttribute("jakarta.servlet.request.cipher_suite", sslEngine.getSession().getCipherSuite());
+                request.setAttribute("jakarta.servlet.request.key_size", calculateKeySize(sslEngine.getSession().getCipherSuite()));
+                byte[] sessionId = sslEngine.getSession().getId();
+                request.setAttribute("jakarta.servlet.request.ssl_session_id", sessionId != null ? convertToHexString(sessionId) : null);
+                return account;
+            }
         } else {
 
         }
@@ -195,8 +208,54 @@ public class SecurityProviderImpl implements SecurityProvider {
         return null;
     }
 
-    private boolean check(SmartHttpServletRequest request, HttpServletResponse response, List<SecurityConstraint> constraints) throws IOException, ServletException {
-        if (constraints.isEmpty()) {
+    /**
+     * 解析 CLIENT-CERT 认证用户所拥有的角色。
+     * <p>
+     * 优先使用 sun-web.xml 中配置的 security-role-mapping，其次使用通过
+     * {@link #addUser(String, String, Set)} 注册的用户信息（realm 用户库）。
+     */
+    private Set<String> resolveClientCertRoles(String principalName) {
+        Set<String> roles = deploymentInfo.getSecurityRoleMapping().get(principalName);
+        if (roles == null || roles.isEmpty()) {
+            roles = deploymentInfo.getSecurityRoleMapping().get(normalizeDn(principalName));
+        }
+        if (roles != null && !roles.isEmpty()) {
+            return roles;
+        }
+        SecurityAccount account = findAccount(principalName);
+        return account == null ? Collections.emptySet() : account.getRoles();
+    }
+
+    /**
+     * 按用户名（证书 DN）查找已注册的用户信息
+     */
+    private SecurityAccount findAccount(String username) {
+        SecurityAccount account = headerSecurities.get(username);
+        if (account != null) {
+            return account;
+        }
+        String normalized = normalizeDn(username);
+        for (Map.Entry<String, SecurityAccount> entry : headerSecurities.entrySet()) {
+            if (normalizeDn(entry.getKey()).equals(normalized)) {
+                return entry.getValue();
+            }
+        }
+        for (SecurityAccount user : users) {
+            if (user.getUsername().equals(username) || normalizeDn(user.getUsername()).equals(normalized)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 规范化 X.500 主体名称：去除逗号后的空白字符，保证 "CN=a, OU=b" 与 "CN=a,OU=b" 能匹配
+     */
+    private static String normalizeDn(String dn) {
+        return dn == null ? null : dn.replaceAll(",\\s*", ",").trim();
+    }
+
+    private boolean check(SmartHttpServletRequest request, HttpServletResponse response, List<SecurityConstraint> constraints) throws IOException, ServletException {        if (constraints.isEmpty()) {
             return true;
         }
 
