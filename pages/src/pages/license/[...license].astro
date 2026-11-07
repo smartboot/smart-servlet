@@ -1,119 +1,78 @@
 ---
 export function getStaticPaths() {
-    return [
-        {
-            params: {
-                license: '2932A607C1C5B5260512F59D80D4105F',
-            },
-            props: {
-                user: 'smartboot社区开发者',
-                beginTime: '2023-01-01',
-                endTime: '2024-01-01',
-                type:'开源版',
-            }
-        },
-        {params: {license: undefined}, props: {user: '无效', beginTime: '2023-01-01', endTime: '2024-01-01'}},
-    ];
+    return [{ params: { license: undefined } }];
 }
-const {license} = Astro.params;
 ---
 <html lang="zh">
 <head>
     <meta charset="utf-8"/>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
     <meta name="viewport" content="width=device-width"/>
-    <title>授权证书-{Astro.props.user}</title>
+    <title>开源协议说明 - smart-servlet</title>
 </head>
 <body>
 <div class="container">
     <header>
-        <h1>smart-servlet 授权证书</h1>
+        <h1>smart-servlet 开源协议</h1>
+        <p class="subtitle">Apache License 2.0 · 企业免费商用</p>
     </header>
     <main>
-        <section class="certificate">
-            <div class="certificate-header">
-                <!--<h2>授权信息</h2>-->
-            </div>
-            <div class="certificate-body">
-                <p><strong>授权编号：</strong> <span id="licenseNumber">{license}</span></p>
-                <p><strong>授权用户：</strong> <span id="licenseUser">{Astro.props.user}</span></p>
-                <p><strong>授权日期：</strong> <span id="licenseDate">{Astro.props.beginTime}</span></p>
-                <p><strong>有效期至：</strong> <span id="validUntil">{Astro.props.endTime}</span></p>
-                <p><strong>授权产品：</strong> <span id="productName">{Astro.props.type}</span></p>
-            </div>
-            <div class="certificate-footer">
-                <p>本授权证书仅限于上述授权用户使用。</p>
-                <p>版权所有 ©2024 smartboot</p>
-            </div>
+        <section class="card">
+            <h2>协议摘要</h2>
+            <p>自 <strong>v3.4</strong> 起，smart-servlet 采用 <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License 2.0</a> 发布。企业可免费用于生产与商业场景，无需采购使用授权。</p>
+            <ul>
+                <li>允许商用、修改、再分发、嵌入闭源产品、以托管服务形式对外提供</li>
+                <li>无并发数、部署规模、功能或试用时长限制，所有用户使用同一份代码</li>
+                <li>再分发需保留版权声明与 NOTICE 文件，并对修改文件作出说明</li>
+                <li>协议包含专利授权与专利终止条款；不授予商标与官方认证标识的使用权</li>
+            </ul>
+            <p>完整条款以仓库根目录的 <a href="https://github.com/smartboot/smart-servlet/blob/master/LICENSE" target="_blank">LICENSE</a> 文件为准。</p>
+        </section>
+
+        <section class="card">
+            <h2>版本边界</h2>
+            <p><strong>v3.3 及更早版本</strong>仍适用其发布时的 AGPL-3.0 协议，协议变更不追溯已发布版本。此前已签署商业授权的客户，原授权权益继续有效，也可自愿转换为企业服务订阅。</p>
+        </section>
+
+        <section class="card">
+            <h2>企业服务订阅</h2>
+            <p>软件免费，服务可选。付费购买的是<strong>支持、交付与责任保障</strong>，不是使用许可：专属支持通道与合同约定的 SLA、生产故障兜底、指定版本长期维护与安全补丁、合规与信创材料配合、迁移实施与性能调优。</p>
+            <p>订阅不会限制未订阅用户使用任何功能，具体范围以双方签署的服务合同为准。</p>
+        </section>
+
+        <section class="card">
+            <h2>相关链接</h2>
+            <ul>
+                <li><a href="../legal/">开源协议与使用条款</a></li>
+                <li><a href="../users/">服务客户与生态伙伴</a></li>
+                <li><a href="https://gitee.com/smartboot/smart-servlet/issues" target="_blank">服务咨询与申请</a></li>
+            </ul>
         </section>
     </main>
+    <footer>
+        <p>版权所有 &copy; smartboot · 软件按现状（AS IS）提供，社区支持不含 SLA 承诺</p>
+    </footer>
 </div>
 </body>
 </html>
 
 <style>
-    /* styles.css */
     body {
-        font-family: Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f5f5f5;
+        background-color: #f5f7fa;
+        color: #1e293b;
     }
-
-    .container {
-        max-width: 800px;
-        margin: 50px auto;
-        padding: 20px;
-        background-color: #ffffff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    header h1 {
-        color: #333;
-        font-size: 28px;
-    }
-
-    .certificate {
-        border: 2px solid #007bff;
-        padding: 20px;
-        border-radius: 8px;
-        background-color: #ffffff;
-    }
-
-    .certificate-header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .certificate-header h2 {
-        color: #007bff;
-        font-size: 24px;
-    }
-
-    .certificate-body p {
-        margin: 10px 0;
-        font-size: 16px;
-        line-height: 1.5;
-    }
-
-    .certificate-body strong {
-        font-weight: bold;
-        color: #007bff;
-    }
-
-    .certificate-footer {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 14px;
-        color: #666;
-    }
-
-    .certificate-footer p {
-        margin: 5px 0;
-    }
+    .container { max-width: 800px; margin: 40px auto; padding: 32px; background: #ffffff; border-radius: 12px; }
+    header { text-align: center; margin-bottom: 32px; }
+    header h1 { color: #0f172a; font-size: 28px; margin: 0 0 8px; }
+    .subtitle { color: #64748b; font-size: 14px; margin: 0; }
+    .card { border: 1px solid #e2e8f0; border-left: 3px solid #2563eb; border-radius: 8px; padding: 20px 24px; margin-bottom: 16px; }
+    .card h2 { color: #0f172a; font-size: 18px; margin: 0 0 12px; }
+    .card p, .card li { font-size: 14px; line-height: 1.8; }
+    .card ul { margin: 8px 0; padding-left: 20px; }
+    a { color: #2563eb; }
+    footer { text-align: center; margin-top: 32px; font-size: 13px; color: #94a3b8; }
+    @media (max-width: 640px) { .container { margin: 0; padding: 20px; border-radius: 0; } }
 </style>

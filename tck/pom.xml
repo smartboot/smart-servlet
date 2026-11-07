@@ -20,6 +20,19 @@
         <fork.argLine>-Xmx8g -Xms4g</fork.argLine>
         <http2.timeout></http2.timeout>
 
+        <!--
+            Servlet TCK 的签名测试（servlet.tck.signature.ServletSigTest）依赖两个系统属性：
+              jimage.dir       : 用 $JAVA_HOME/bin/jimage 把 JDK modules 解压到该目录，
+                                 SigTest 在校验前会自行执行解压；为空时 jimage 的 dir 参数无值，命令会失败。
+              sigTestClasspath : 传给 sigtest 的 -Classpath。静态模式需要据此解析 java.* 父类与注解，
+                                 故必须包含解压后的 java.base（Servlet API 只用到 java.base 中的 JDK 类型）
+                                 以及被校验的 Servlet API jar。
+            不配置时，静态模式会把 java.lang.Object / java.lang.Deprecated 等全部报成差异，
+            而反射模式正常通过。可用 -Djimage.dir=... / -DsigTestClasspath=... 覆盖。
+        -->
+        <jimage.dir>${project.build.directory}/jimage</jimage.dir>
+        <sig.test.api.jar>${settings.localRepository}/jakarta/servlet/jakarta.servlet-api/${servlet.api.version}/jakarta.servlet-api-${servlet.api.version}.jar</sig.test.api.jar>
+
 
         <junit.jupiter.execution.parallel.enabled>false</junit.jupiter.execution.parallel.enabled>
         <junit.jupiter.execution.parallel.mode.default>same_thread</junit.jupiter.execution.parallel.mode.default>
@@ -172,6 +185,12 @@
                             <http2.timeout>${http2.timeout}</http2.timeout>
                             <servlet.tck.support.crossContext>false</servlet.tck.support.crossContext>
                         </systemProperties>
+                        <systemPropertyVariables>
+                            <jimage.dir>${jimage.dir}</jimage.dir>
+                            <!-- 注意：命令行/IDE 运行配置里的 -DsigTestClasspath 优先级更高，
+                                 若仍保留旧值（仅 API jar），需删除或补上 java.base，否则静态模式会失败 -->
+                            <sigTestClasspath>${jimage.dir}/java.base:${sig.test.api.jar}</sigTestClasspath>
+                        </systemPropertyVariables>
                         <!--            <includes>-->
                         <!--              <include>**/URLClient*</include>-->
                         <!--              <include>**/Client*</include>-->

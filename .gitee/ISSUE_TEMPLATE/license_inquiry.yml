@@ -1,43 +1,55 @@
-name: License采购咨询
+name: 企业服务咨询
 description: |
-    在您仔细阅读了商业授权说明但仍存疑问的情况下，可以通过此模板进行咨询。
-title: "[License咨询]: "
-labels: ["license", "question"]
+     咨询企业服务订阅的范围、SLA、报价与合规材料时使用。
+
+     smart-servlet 采用 Apache-2.0，企业免费商用，无需采购使用授权；软件使用与协议相关问题可直接查阅[开源协议与使用条款](https://smartboot.tech/smart-servlet/legal/)。
+title: "[企业服务咨询]: "
+labels: ["service", "question"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## 注意事项
-        在提交此咨询前，请确保您已经详细阅读并理解了我们的《[商业授权](https://smartboot.tech/smart-servlet/#授权方案)》说明。
-        
-        只有在您对文档内容有充分理解但仍然存在疑问的情况下才应使用此模板。   
-            
-        ❗**如果您想申请商业许可证，请不要使用此模板，而应使用[企业采购 License 申请](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=license_apply.yml)模板。**
-            
-        ❗**如果您是已授权客户并需要技术支持，请使用[企业技术支持](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=enterprise_support.yml)模板。**
+        ## 咨询前请了解
+        - 软件免费且功能完整，订阅服务不改变开源协议，也不会解锁任何功能。
+        - 付费购买的是 SLA、故障兜底、长期维护、合规材料与实施交付。
+        - 已决定申请订阅，请使用[企业服务订阅申请](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=license_apply.yml)模板。
+        - 已签约客户报障，请使用[企业技术支持](https://gitee.com/smartboot-x/smart-servlet/issues/new?template=enterprise_support.yml)模板。
+  - type: dropdown
+    id: topic
+    attributes:
+      label: 咨询主题
+      options:
+        - 服务范围与分级
+        - SLA 与故障兜底机制
+        - 报价与合同、开票流程
+        - 长期维护（LTS）与版本升级
+        - 信创、等保、代码审计等合规材料
+        - 迁移实施与定制开发
+        - 商标、兼容性认证与生态合作
+        - 其他
+    validations:
+      required: true
   - type: checkboxes
     attributes:
       label: 前置确认
       options:
-        - label: 我已仔细阅读并理解了《[商业授权](https://smartboot.tech/smart-servlet/#授权方案)》说明
-          required: true
-        - label: 我在阅读文档后仍有一些疑问需要进一步澄清
+        - label: 我已了解本项目采用 Apache-2.0，企业可免费商用，无需购买使用授权
           required: true
   - type: textarea
+    id: question
     attributes:
       label: 咨询内容
-      description: 请详细描述您对 smart-servlet 的疑问
+      description: 请描述你的场景与希望解决的问题，便于我们给出有针对性的方案
       placeholder: |
         例如：
-        1. 关于商业许可证的具体功能差异
-        2. 关于授权范围的详细解释
-        3. 关于技术支持服务的具体内容
-        4. 其他与License相关的疑问
+        1. 生产环境需要 7x24 响应，SLA 如何约定？
+        2. 我们基于 v3.3，是否可签约长期维护？
+        3. 合规审查需要哪些材料？
     validations:
       required: true
   - type: input
     id: contact
     attributes:
       label: 联系方式（可选）
-      description: 如果您希望我们通过特定方式联系您，可以留下联系方式（邮箱、微信等）
+      description: 如果希望我们通过特定方式联系你，可以留下联系方式
       placeholder: 例如：email@example.com 或 微信号：xxxxxx

@@ -3,6 +3,7 @@ Resources
   ▸ Gitee     https://gitee.com/smartboot/smart-servlet
   ▸ GitHub    https://github.com/smartboot/smart-servlet
 
-开源不易，拒绝盗版，请通过正规渠道获取授权
-  ▸ 已授权企业公示：https://smartboot.tech/smart-servlet/users/
-  ▸ 盗版举报：zhengjunweimail@163.com
+smart-servlet 采用 Apache-2.0 开源协议，企业可免费商用，无需采购授权
+  ▸ 服务客户与生态伙伴：https://smartboot.tech/smart-servlet/users/
+  ▸ 企业服务订阅咨询：https://gitee.com/smartboot/smart-servlet/issues
+  ▸ 联系邮箱：zhengjunweimail@163.com
