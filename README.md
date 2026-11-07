@@ -1,6 +1,6 @@
 # smart-servlet
 
-![](./pages/public/smart-servlet.svg)
+![](https://smartboot.tech/smart-servlet/smart-servlet.svg)
 
 轻量、高性能的 Servlet 容器，基于 Jakarta Servlet 6.1 规范，面向 Java 17+ 环境。可作为 Tomcat / Undertow 的直接替代方案，无缝运行 Spring Boot、Spring Cloud 等主流框架。
 
