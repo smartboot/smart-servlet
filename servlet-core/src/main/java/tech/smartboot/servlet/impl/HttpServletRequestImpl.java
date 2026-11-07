@@ -115,8 +115,7 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     private boolean asyncStarted = false;
 
     private boolean asyncSupported = true;
-    private boolean upgrade = false;
-
+    private HttpUpgradeHandler upgradeHandler;
     private volatile AsyncContext asyncContext = null;
     private final CompletableFuture<Void> completableFuture;
 
@@ -560,35 +559,31 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
     }
 
     public boolean isUpgraded() {
-        return upgrade;
+        return upgradeHandler != null;
     }
 
-    @Override
-    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
-        try {
-            T t = handlerClass.newInstance();
-            upgrade = true;
-            request.upgrade(new Upgrade() {
+    public void doUpgrade() throws IOException {
+        request.upgrade(new Upgrade() {
 
-                @Override
-                public void init(HttpRequest request, HttpResponse response) {
-                    System.out.println("init...");
-                    t.init(new WebConnectionImpl(request) {
-                        @Override
-                        public void close() throws Exception {
+            @Override
+            public void init(HttpRequest request, HttpResponse response) {
+                System.out.println("init...");
+                upgradeHandler.init(new WebConnectionImpl(request) {
+                    @Override
+                    public void close() throws Exception {
 
-                        }
+                    }
 
-                        @Override
-                        public ServletInputStream getInputStream() throws IOException {
-                            return new UpgradeServletInputStream(HttpServletRequestImpl.this.request.getInputStream());
-                        }
+                    @Override
+                    public ServletInputStream getInputStream() throws IOException {
+                        return new UpgradeServletInputStream(HttpServletRequestImpl.this.request.getInputStream());
+                    }
 
-                        @Override
-                        public ServletOutputStream getOutputStream() throws IOException {
-                            return httpServletResponse.getOutputStream();
-                        }
-                    });
+                    @Override
+                    public ServletOutputStream getOutputStream() throws IOException {
+                        return httpServletResponse.getOutputStream();
+                    }
+                });
 //                    if (this.request.getInputStream().getReadListener() != null) {
 //                        try {
 //                            request.getInputStream().getReadListener().onDataAvailable();
@@ -596,15 +591,22 @@ public class HttpServletRequestImpl implements SmartHttpServletRequest {
 //                            throw new RuntimeException(e);
 //                        }
 //                    }
-                }
+            }
 
-                @Override
-                public void onBodyStream(ByteBuffer buffer) {
-                    System.out.println("onBodyStream....");
+            @Override
+            public void onBodyStream(ByteBuffer buffer) {
+                System.out.println("onBodyStream....");
 
-                }
-            });
-            return t;
+            }
+        });
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
+        try {
+            T handler = handlerClass.newInstance();
+            this.upgradeHandler = handler;
+            return handler;
         } catch (Exception e) {
             throw new ServletException(e);
         }
