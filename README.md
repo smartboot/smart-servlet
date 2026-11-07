@@ -2,7 +2,104 @@
 
 ![](./pages/public/smart-servlet.svg)
 
-轻量、高性能、面向未来的 Servlet 容器，基于 Jakarta Servlet 6.0，适用于 Java 17+ 环境。
+轻量、高性能的 Servlet 容器，基于 Jakarta Servlet 6.1 规范，面向 Java 17+ 环境。可作为 Tomcat / Undertow 的直接替代方案，无缝运行 Spring Boot、Spring Cloud 等主流框架。
+
+[快速开始](#快速开始) · [性能对比](#性能对比) · [开源协议](#开源协议) · [企业服务](#企业服务订阅) · [在线文档](https://smartboot.tech/smart-servlet/)
+
+---
+
+## 为什么选择 smart-servlet
+
+- **性能优越**：搭载 smart-socket 微内核与高效 IO 模型，单机支持十万级 QPS；内存占用低至 12MB，资源受限环境同样游刃有余
+- **规范兼容**：遵循 Jakarta Servlet 6.1，通过 Servlet TCK 兼容性测试；所有遵循 Servlet 规范的框架均可直接运行
+- **轻量灵活**：核心设计精简，启动快、依赖少；提供丰富的 SPI 接口与插件机制，支持自定义协议处理、安全策略扩展与性能监控集成
+- **自主可控**：核心技术 100% 自主研发，源码完全开放，便于企业进行代码审计与长期维护
+- **接入成本低**：兼容 WAR 包、Spring Boot、Maven Plugin 等多种运行方式，现有应用几乎零改动即可切换
+
+---
+
+## 快速开始
+
+要求 Java 17+。三种接入方式，任选其一（示例版本 `3.3`，请使用[最新版本](https://smartboot.tech/smart-servlet/guides/release_note/)）。
+
+### 方式一：Spring Boot 工程
+
+替换 Spring Boot 默认的 Tomcat：
+
+```xml
+<dependencies>
+    <!-- 排除 Spring Boot 默认的 Tomcat -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <exclusions>
+            <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-tomcat</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+
+    <!-- 接入 smart-servlet -->
+    <dependency>
+        <groupId>tech.smartboot.servlet</groupId>
+        <artifactId>smart-servlet-spring-boot-starter</artifactId>
+        <version>3.3</version>
+    </dependency>
+</dependencies>
+```
+
+```bash
+mvn spring-boot:run
+```
+
+### 方式二：WAR 包部署
+
+从[下载页面](https://smartboot.tech/smart-servlet/guides/release_note/)获取发行包，将 WAR 包放入 `webapps` 目录后启动：
+
+```bash
+tar -xzf smart-servlet-bin-3.3.tar.gz
+cp your-app.war smart-servlet-bin-3.3/webapps/
+cd smart-servlet-bin-3.3/bin && ./start.sh   # Windows 双击 start.bat
+```
+
+### 方式三：Maven 插件启动
+
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>tech.smartboot.servlet</groupId>
+            <artifactId>smart-servlet-maven-plugin</artifactId>
+            <version>3.3</version>
+            <configuration>
+                <port>8080</port>
+                <path>/</path>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
+```bash
+mvn package smart-servlet:run
+```
+
+启动后访问 `http://localhost:8080` 即可。
+
+---
+
+## 性能对比
+
+测试场景：Spring Boot 工程输出纯文本，`ab -n 1000000 -k` 持续压测，数据取自压测服务端（[测试代码](https://github.com/smartboot/smart-servlet/blob/master/springboot-demo/src/main/java/org/smartboot/demo/starter/Bootstrap.java)，可自行复现）。
+
+| 并发数 | Tomcat | Undertow | smart-servlet |
+| :---: | :---: | :---: | :---: |
+| 10 | 64311 | 74860 | **93812** |
+| 100 | 92047 | 89037 | **108844** |
+| 1000 | 88997 | 102439 | **111308** |
+
+其他维度（1024 并发、wrk 持续 15 秒）：初始 Heap 内存 12MB（Tomcat 15MB / Undertow 15MB），压测 QPS 42W/s（Tomcat 10W/s / Undertow 40W/s）。
 
 ---
 
@@ -15,25 +112,13 @@
 - 再分发时需保留版权声明与 NOTICE 文件，遵守 Apache-2.0 的专利授权与商标条款
 - 商标、官方认证与兼容性标识不属于 Apache-2.0 授权范围，使用前需获得书面许可
 
----
-
-## 温馨提示
-
-1. smart-servlet **未进入信创目录**，但核心技术 100% 自主研发，企业可进行代码审计和安全评估；订阅企业服务的客户可获得合规材料配合。
-2. 软件按"现状（AS IS）"提供，生产环境建议先完成充分测试与风险评估。
-3. **企业付费购买的是答疑咨询与需求支持，不是使用许可**：公开 Issue 仅提供开源生态支持（社区尽力而为、无 SLA 承诺）；订阅客户享有 1 对 1 专属顾问答疑、功能需求评估与优先排期、生产故障协助与指定版本长期维护。
-
----
-
-## 企业实践
-
-smart-servlet 已与金融、制造、政企、工业互联网等多个行业开展技术交流与 POC 验证，累计 **30+ 次真实业务场景验证**，保障项目在生产环境中的可靠性。
+软件按"现状（AS IS）"提供，生产环境使用前建议先完成充分测试与灰度验证。详见[开源协议与使用条款](https://smartboot.tech/smart-servlet/legal/)。
 
 ---
 
 ## 企业服务订阅
 
-社区版功能完整且免费。付费服务面向在生产环境深度使用、希望获得专业答疑与需求支持的团队，按年度订阅，交付内容如下：
+社区版功能完整且免费。付费服务面向在生产环境深度使用、希望获得专业答疑与需求支持的团队，按年度订阅：
 
 | 能力 | 社区版（免费） | 企业服务订阅（付费） |
 | :--- | :---: | :---: |
@@ -41,10 +126,9 @@ smart-servlet 已与金融、制造、政企、工业互联网等多个行业开
 | 功能、性能、并发与部署规模 | 完全一致，无限制 | 完全一致 |
 | 问题响应 | 公开 Issue 开源生态支持，尽力而为、无 SLA | 1 对 1 答疑咨询（专属对接人／专属群／服务工单），及时响应、跟进到底 |
 | 需求支持 | 公开建议渠道，按社区节奏排期 | 功能需求评估、优先排期与定制化方案 |
-| 生产故障处置 | 自行处理 | 优先处置、远程/现场兜底支持 |
+| 生产故障处置 | 自行处理 | 优先处置、远程/现场支持 |
 | 版本维护 | 跟随主干版本 | 指定版本长期维护（LTS）、安全补丁、EOL 提前通知 |
 | 大版本升级 | 自助适配 | JDK / Spring Boot / Jakarta Servlet 升级适配指导 |
-| 合规与信创材料 | 文档自助 | 代码审计说明、SBOM、兼容性与国产化适配证明、供应链安全问卷及等保测评配合 |
 | 实施与调优 | 自助 | 迁移实施、上线前架构评审、压测与性能调优、培训（按人天） |
 | 生态权益 | 无 | 服务客户公示、兼容性认证、生态合作（商标使用需单独授权） |
 
@@ -60,7 +144,7 @@ smart-servlet 已与金融、制造、政企、工业互联网等多个行业开
 
 - [开源生态支持（问题反馈）](https://gitee.com/smartboot/smart-servlet/issues/new?template=opensource_bug.yml)
 
-**企业服务咨询与订阅**：咨询服务内容、报价、合规材料或申请年度服务订阅，请通过 1 对 1 渠道联系商务，不在公开 Issue 提交。
+**企业服务咨询与订阅**：咨询服务内容、报价或申请年度服务订阅，请通过 1 对 1 渠道联系商务，不在公开 Issue 提交。
 
 - 邮箱：`zhengjunweimail@163.com`
 - 服务说明与联系方式：[服务客户与生态伙伴](https://smartboot.tech/smart-servlet/users/)
@@ -68,24 +152,6 @@ smart-servlet 已与金融、制造、政企、工业互联网等多个行业开
 **订阅客户**：请使用专属的 **1 对 1 服务通道**（专属对接人／专属沟通群／服务工单），公开 Issue 不受理订阅客户的报障与 SLA 诉求。
 
 > 建议先完成产品试用并确认满足业务需求，再评估是否需要订阅服务。
-
----
-
-## 产品特色
-
-- **自主可控**：核心技术完全自主研发，便于代码审计与长期维护
-- **性能优越**：搭载 smart-socket 微内核，处理高并发能力出色
-- **规范兼容**：遵循 Jakarta Servlet 6.0，兼容主流 Servlet 应用
-- **运行灵活**：支持 War 包、Spring Boot、Maven Plugin 等多种运行方式
-- **服务可选**：需要专业答疑与需求支持的团队可选择 1 对 1 企业服务与长期维护
-
----
-
-## 目标用户
-
-1. 有国产化替代、自主可控需求的企业用户
-2. 对服务并发能力与资源利用率要求高的企业用户
-3. 需要长期技术支持、答疑咨询与合规材料保障的企业用户
 
 ---
 

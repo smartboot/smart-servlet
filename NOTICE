@@ -1,0 +1,16 @@
+smart-servlet
+Copyright (C) 2022 smartboot <zhengjunweimail@163.com>
+
+This product is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Portions of the code under
+tech.smartboot.servlet.third.bcel are derived from Apache Commons BCEL
+(https://commons.apache.org/proper/commons-bcel/),
+Copyright (c) The Apache Software Foundation, and are used under the
+Apache License, Version 2.0.
+
+Third-party dependencies are distributed under their own license terms.
+Please refer to the LICENSE / NOTICE files shipped with each dependency.
