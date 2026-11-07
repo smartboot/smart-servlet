@@ -17,9 +17,9 @@ import {Steps} from '@astrojs/starlight/components';
 
 ---
 
-## 1.2.1 安装方式
+## 安装方式
 
-smart-servlet 提供多种安装方式，适用于不同的使用场景。
+smart-servlet 提供多种安装方式，适用于不同的使用场景。示例版本为 `3.3`，请使用[最新版本](../release_note/)。
 
 ### 1. springboot 工程
 
@@ -48,7 +48,7 @@ smart-servlet 提供多种安装方式，适用于不同的使用场景。
             <dependency>
                 <groupId>tech.smartboot.servlet</groupId>
                 <artifactId>smart-servlet-spring-boot-starter</artifactId>
-                <version>${latest.version}</version>
+                <version>3.3</version>
             </dependency>
         </dependencies>
         ```
@@ -122,7 +122,7 @@ smart-servlet 提供多种安装方式，适用于不同的使用场景。
                 <plugin>
                     <groupId>tech.smartboot.servlet</groupId>
                     <artifactId>smart-servlet-maven-plugin</artifactId>
-                    <version>${latest.version}</version>
+                    <version>3.3</version>
                     <configuration>
                         <port>8080</port>
                         <path>/</path>
@@ -147,11 +147,11 @@ smart-servlet 提供多种安装方式，适用于不同的使用场景。
 
 ---
 
-## 1.2.2 常见问题
+## 常见问题
 
 <details>
     <summary>安装过程中遇到依赖冲突怎么办？</summary>
-    请检查 `pom.xml` 文件，确保依赖版本与 `smart-servlet` 兼容。如果冲突无法解决，请通过[开源生态支持（公开 Issue）](https://gitee.com/smartboot/smart-servlet/issues/new?template=opensource_bug.yml)反馈；订阅客户请使用专属的 1 对 1 服务通道。
+    请检查 `pom.xml` 文件，确保依赖版本与 `smart-servlet` 兼容。如果冲突无法解决，请通过 [Gitee Issue](https://gitee.com/smartboot/smart-servlet/issues/new?template=opensource_bug.yml) 或 [GitHub Issue](https://github.com/smartboot/smart-servlet/issues) 反馈；订阅客户请使用专属的 1 对 1 服务通道。
 </details>
 
 <details>

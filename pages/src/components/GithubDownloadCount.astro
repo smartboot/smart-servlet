@@ -1,27 +1,9 @@
 ---
-// Mermaid.astro
 const {code} = Astro.props;
 let content = await Astro.slots.render('default');
 if (!content) {
     content = ""
 }
-// 调用 GitHub API 获取下载总量
-// const response = await fetch('https://api.github.com/repos/smartboot/smart-servlet/releases',{
-//     headers: {
-//         'Authorization': 'Bearer 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',
-//     }
-// });
-// const releases = await response.json();
-// // console.log(releases)
-// // 计算累计发版次数
-// const totalReleaseCount = releases.length;
-// // 计算下载总量
-// let totalDownloadCount = 0;
-// releases.forEach((release: { assets: { download_count: number }[] }) => {
-//     release.assets.forEach((asset: { download_count: number }) => {
-//         totalDownloadCount += asset.download_count;
-//     });
-// });
 ---
 
 <style>
@@ -32,7 +14,6 @@ if (!content) {
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
         0 4px 6px -4px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        //cursor: pointer;
     }
 
     .stats-card:hover {
@@ -69,15 +50,9 @@ if (!content) {
 </div>
 
 <script>
-    const a="ghp_SBf57"
-    const b="csF4ZZQIgNEtTKxUnNCErZbFo46ODdb"
-    const response = await fetch('https://api.github.com/repos/smartboot/smart-servlet/releases',{
-        headers: {
-            'Authorization': 'Bearer '+a+b,
-        }
-    });
+    // 匿名调用 GitHub API(60 次/小时/客户端,足够计数场景使用)
+    const response = await fetch('https://api.github.com/repos/smartboot/smart-servlet/releases');
     const releases = await response.json();
-    // console.log(releases)
     // 计算累计发版次数
     const totalReleaseCount = releases.length;
     const totalReleaseCounter=document.getElementById('totalReleaseCount')

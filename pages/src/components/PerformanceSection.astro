@@ -10,7 +10,7 @@
       </span>
       <h2 class="section-title">性能对比报告</h2>
       <p class="section-description">
-        基于 SpringBoot 项目 100 万次请求压测结果，测试代码完全开源可复现
+        基于 SpringBoot 项目 plaintext 场景，ApacheBench（ab）100 万次请求压测结果，测试代码开源可复现
       </p>
     </div>
 
@@ -102,23 +102,23 @@
     <div class="metrics-grid">
       <div class="metric-card">
         <div class="metric-icon">🚀</div>
-        <div class="metric-value">10W+</div>
-        <div class="metric-label">QPS 峰值</div>
+        <div class="metric-value">11W+</div>
+        <div class="metric-label">QPS 峰值（ab 压测）</div>
       </div>
       <div class="metric-card">
         <div class="metric-icon">💾</div>
         <div class="metric-value">12MB</div>
-        <div class="metric-label">初始内存</div>
+        <div class="metric-label">初始 Heap 内存（wrk 压测）</div>
       </div>
       <div class="metric-card">
-        <div class="metric-icon">⚡</div>
-        <div class="metric-value">300%</div>
-        <div class="metric-label">性能提升</div>
+        <div class="metric-icon">✅</div>
+        <div class="metric-value">99.8%</div>
+        <div class="metric-label">Servlet TCK 测试通过率</div>
       </div>
       <div class="metric-card">
         <div class="metric-icon">🔋</div>
         <div class="metric-value">400MB</div>
-        <div class="metric-label">峰值内存</div>
+        <div class="metric-label">压测 Heap 峰值（wrk 压测）</div>
       </div>
     </div>
   </div>

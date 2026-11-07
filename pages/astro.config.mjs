@@ -17,43 +17,23 @@ export default defineConfig({
                 {
                     tag: 'meta',
                     attrs: {
-                        property: 'keywords',
-                        content: '信创,国产,国产化,替代,tomcat,国产Servlet容器,国产Servlet,smart-servlet,smartservlet,undertow,jetty,自研,自研Tomcat',
+                        name: 'keywords',
+                        content: 'smart-servlet,Servlet 容器,Tomcat 替代,轻量级,Jakarta Servlet 6.1,Spring Boot,Java,国产中间件,信创',
                     }
                 }, {
                     tag: 'meta',
                     attrs: {
-                        property: 'description',
-                        content: 'smart-servlet 提供一个自主可控的轻量级 Tomcat/Undertow 可替代版本，重新定义下一代 Servlet 容器!',
+                        name: 'description',
+                        content: 'smart-servlet 是基于 Jakarta Servlet 6.1 的轻量级高性能 Servlet 容器，可作为 Tomcat / Undertow 的替代方案，无缝运行 Spring Boot 应用。',
                     }
                 }
-                // ,{
-                // tag:'script',
-                //     attrs: {
-                //         src: 'https://smartboot.tech/js/gitee.js'
-                //     }
-                // },
-                // {
-                //     tag:'script',
-                //     content: 'if(!location.pathname.endsWith("smart-servlet/")){checkStar("smartboot","smart-servlet");}'
-                // },
             ],
             social: {
                 github: 'https://github.com/smartboot/smart-servlet',
             },
             plugins: [starlightImageZoomPlugin()],
-            // 为此网站设置英语为默认语言。
             defaultLocale: 'root',
             locales: {
-                // 'zh-cn': {
-                //     label: '简体中文',
-                //     lang: 'zh-CN',
-                // },
-                // 'en': {
-                //     label: 'English',
-                //     lang: 'en',
-                // },
-                // 英文文档在 `src/content/docs/en/` 中。
                 root: {
                     label: '简体中文',
                     lang: 'zh-CN',

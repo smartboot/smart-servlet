@@ -308,59 +308,6 @@
     font-size: var(--text-base);
   }
 
-  /* License Banner */
-  .license-banner {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-4) var(--space-5);
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(234, 179, 8, 0.06));
-    border: 1px solid rgba(245, 158, 11, 0.2);
-    border-radius: var(--radius-lg);
-    text-decoration: none;
-    margin-top: var(--space-4);
-    transition: all var(--transition-base);
-    animation: fadeInUp 0.6s ease-out 0.5s both;
-  }
-
-  .license-banner:hover {
-    border-color: rgba(245, 158, 11, 0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(245, 158, 11, 0.15);
-  }
-
-  .license-banner:hover .banner-arrow {
-    transform: translateX(4px);
-  }
-
-  .banner-icon {
-    font-size: var(--text-2xl);
-    flex-shrink: 0;
-  }
-
-  .banner-content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    text-align: left;
-  }
-
-  .banner-title {
-    font-size: var(--text-sm);
-    font-weight: 600;
-    color: #f59e0b;
-  }
-
-  .banner-desc {
-    font-size: var(--text-xs);
-    color: var(--text-secondary);
-  }
-
-  .banner-arrow {
-    color: #f59e0b;
-    transition: transform var(--transition-base);
-  }
-
   /* Actions */
   .hero-actions {
     display: flex;
