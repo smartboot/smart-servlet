@@ -84,43 +84,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 使用场景 -->
-    <div class="use-cases">
-      <div class="use-cases-header">
-        <h3 class="use-cases-title">适用场景</h3>
-        <p class="use-cases-subtitle">为不同场景量身定制</p>
-      </div>
-      <div class="use-cases-grid">
-        <div class="use-case-card">
-          <div class="use-case-icon-wrapper">
-            <span class="use-case-icon">🏢</span>
-          </div>
-          <div class="use-case-content">
-            <h4>国产替代</h4>
-            <p>无缝替换 Tomcat/Undertow，核心技术 100% 自研，源码可审计</p>
-          </div>
-        </div>
-        <div class="use-case-card">
-          <div class="use-case-icon-wrapper">
-            <span class="use-case-icon">☁️</span>
-          </div>
-          <div class="use-case-content">
-            <h4>云原生部署</h4>
-            <p>极低内存占用，完美适配 Kubernetes 等容器化环境</p>
-          </div>
-        </div>
-        <div class="use-case-card">
-          <div class="use-case-icon-wrapper">
-            <span class="use-case-icon">📈</span>
-          </div>
-          <div class="use-case-content">
-            <h4>高并发场景</h4>
-            <p>十万级 QPS 支持，从容应对流量高峰</p>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -328,84 +291,5 @@
 
   .proof-tag a:hover {
     text-decoration: underline;
-  }
-
-  /* Use Cases */
-  .use-cases {
-    padding-top: var(--space-12);
-    border-top: 1px solid var(--border-color);
-  }
-
-  .use-cases-header {
-    text-align: center;
-    margin-bottom: var(--space-10);
-  }
-
-  .use-cases-title {
-    font-size: var(--text-2xl);
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 0 var(--space-2);
-  }
-
-  .use-cases-subtitle {
-    font-size: var(--text-base);
-    color: var(--text-secondary);
-    margin: 0;
-  }
-
-  .use-cases-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-5);
-  }
-
-  @media (max-width: 768px) {
-    .use-cases-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .use-case-card {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-4);
-    padding: var(--space-5);
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    transition: all var(--transition-base);
-  }
-
-  .use-case-card:hover {
-    border-color: var(--border-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
-
-  .use-case-icon-wrapper {
-    flex-shrink: 0;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-md);
-    font-size: var(--text-xl);
-  }
-
-  .use-case-content h4 {
-    font-size: var(--text-base);
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 0 var(--space-1);
-  }
-
-  .use-case-content p {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.6;
   }
 </style>
