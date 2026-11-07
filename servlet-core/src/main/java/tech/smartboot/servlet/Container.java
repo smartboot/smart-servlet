@@ -56,9 +56,13 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -399,22 +403,8 @@ public class Container {
                     list.add(orderMeta);
                 }
             }
-            list.sort((o1, o2) -> {
-                if (o1.getBefore() != null && o1.getBefore().contains(o2.getName())) {
-                    return -1;
-                }
-                if (o1.isBeforeOthers()) {
-                    return -1;
-                }
-                if (o1.isAfterOthers()) {
-                    return 1;
-                }
-                if (o1.getAfter() != null && o1.getAfter().contains(o2.getName())) {
-                    return 1;
-                }
-                return 0;
-            });
-            for (var order : list) {
+            List<OrderMeta> sortedList = sortFragmentsByRelativeOrdering(list);
+            for (var order : sortedList) {
                 try (InputStream inputStream = order.getUrl().openStream()) {
                     engine.loadFragment(webAppInfo, inputStream);
                 }
@@ -495,6 +485,7 @@ public class Container {
 
         webAppInfo.getSecurityConstraints().forEach(deploymentInfo::addSecurityConstraint);
         deploymentInfo.getSecurityRoleMapping().putAll(webAppInfo.getSecurityRoleMapping());
+        deploymentInfo.getSecurityRoles().addAll(webAppInfo.getSecurityRoles().keySet());
 
         deploymentInfo.setContextUrl(contextFile.toURI().toURL());
 
@@ -545,6 +536,132 @@ public class Container {
         return configuration;
     }
 
+    /**
+     * 按照《Servlet 规范》8.2.2 节对 web-fragment 进行相对排序（topological sorting）。
+     * <p>
+     * 排序规则：
+     * <ul>
+     *     <li>{@code <before><name>X</name></before>}：当前 fragment 必须排在 X 之前；</li>
+     *     <li>{@code <after><name>X</name></after>}：当前 fragment 必须排在 X 之后；</li>
+     *     <li>{@code <before><others/></before>}：当前 fragment 排在所有未与其声明显式顺序关系的 fragment 之前；</li>
+     *     <li>{@code <after><others/></after>}：当前 fragment 排在所有未与其声明显式顺序关系的 fragment 之后；</li>
+     *     <li>显式的 name 关系优先于 others 关系；</li>
+     *     <li>无顺序约束的 fragment 按 name 字母序排列，保证结果确定性；</li>
+     *     <li>检测到循环依赖时记录告警（规范要求部署失败，此处保持兼容仅降级处理）。</li>
+     * </ul>
+     */
+    private static List<OrderMeta> sortFragmentsByRelativeOrdering(List<OrderMeta> fragments) {
+        int size = fragments.size();
+        Map<String, Integer> indexMap = new HashMap<>();
+        for (int i = 0; i < size; i++) {
+            OrderMeta meta = fragments.get(i);
+            if (meta.getName() != null) {
+                indexMap.putIfAbsent(meta.getName(), i);
+            }
+        }
+        //构建依赖图：successors[i] 表示必须排在 fragments[i] 之后的 fragment 集合
+        List<Set<Integer>> successors = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            successors.add(new LinkedHashSet<>());
+        }
+        int[] inDegree = new int[size];
+        for (int i = 0; i < size; i++) {
+            OrderMeta meta = fragments.get(i);
+            if (meta.getBefore() != null) {
+                for (String name : meta.getBefore()) {
+                    Integer target = indexMap.get(name);
+                    if (target != null && target != i) {
+                        addOrderingEdge(successors, inDegree, i, target);
+                    }
+                }
+            }
+            if (meta.getAfter() != null) {
+                for (String name : meta.getAfter()) {
+                    Integer target = indexMap.get(name);
+                    if (target != null && target != i) {
+                        addOrderingEdge(successors, inDegree, target, i);
+                    }
+                }
+            }
+        }
+        //处理 <others/>：与其他 fragment 存在显式 name 关系时，others 语义不生效
+        for (int i = 0; i < size; i++) {
+            OrderMeta meta = fragments.get(i);
+            if (!meta.isBeforeOthers() && !meta.isAfterOthers()) {
+                continue;
+            }
+            for (int j = 0; j < size; j++) {
+                if (j == i || hasExplicitOrdering(meta, fragments.get(j))) {
+                    continue;
+                }
+                if (meta.isBeforeOthers()) {
+                    addOrderingEdge(successors, inDegree, i, j);
+                } else {
+                    addOrderingEdge(successors, inDegree, j, i);
+                }
+            }
+        }
+        //拓扑排序：无约束时按 fragment name 字母序保证确定性
+        PriorityQueue<Integer> queue = new PriorityQueue<>((a, b) -> {
+            String nameA = fragments.get(a).getName();
+            String nameB = fragments.get(b).getName();
+            if (nameA == null && nameB == null) {
+                return 0;
+            } else if (nameA == null) {
+                return 1;
+            } else if (nameB == null) {
+                return -1;
+            }
+            return nameA.compareTo(nameB);
+        });
+        for (int i = 0; i < size; i++) {
+            if (inDegree[i] == 0) {
+                queue.add(i);
+            }
+        }
+        List<OrderMeta> sorted = new ArrayList<>(size);
+        while (!queue.isEmpty()) {
+            int i = queue.poll();
+            sorted.add(fragments.get(i));
+            for (int j : successors.get(i)) {
+                if (--inDegree[j] == 0) {
+                    queue.add(j);
+                }
+            }
+        }
+        if (sorted.size() < size) {
+            LOGGER.warn("web-fragment relative ordering contains circular dependencies: " + (size - sorted.size())
+                    + " fragments can not be sorted, they will be appended in declaration order");
+            Set<OrderMeta> sortedSet = new HashSet<>(sorted);
+            for (OrderMeta meta : fragments) {
+                if (!sortedSet.contains(meta)) {
+                    sorted.add(meta);
+                }
+            }
+        }
+        return sorted;
+    }
+
+    private static void addOrderingEdge(List<Set<Integer>> successors, int[] inDegree, int before, int after) {
+        if (successors.get(before).add(after)) {
+            inDegree[after]++;
+        }
+    }
+
+    /**
+     * 判断两个 fragment 之间是否声明了显式的 before/after 顺序关系
+     */
+    private static boolean hasExplicitOrdering(OrderMeta source, OrderMeta target) {
+        String targetName = target.getName();
+        String sourceName = source.getName();
+        if (targetName != null && ((source.getBefore() != null && source.getBefore().contains(targetName))
+                || (source.getAfter() != null && source.getAfter().contains(targetName)))) {
+            return true;
+        }
+        return sourceName != null && ((target.getBefore() != null && target.getBefore().contains(sourceName))
+                || (target.getAfter() != null && target.getAfter().contains(sourceName)));
+    }
+
     private URLClassLoader getClassLoader(String localPath, ClassLoader parentClassLoader) throws MalformedURLException {
         List<URL> list = new ArrayList<>();
         File libDir = new File(localPath, "WEB-INF" + File.separator + "lib/");
@@ -565,27 +682,5 @@ public class Container {
         URL[] urls = new URL[list.size()];
         list.toArray(urls);
         return new URLClassLoader(urls, parentClassLoader);
-    }
-
-    static class ConsoleColors {
-        /**
-         * 重置颜色
-         */
-        public static final String RESET = "\033[0m";
-        /**
-         * 蓝色
-         */
-        public static final String BLUE = "\033[34;1m";
-
-        /**
-         * 红色
-         */
-        public static final String RED = "\033[31m";
-
-        /**
-         * 绿色
-         */
-        public static final String GREEN = "\033[32;1m";
-
     }
 }
