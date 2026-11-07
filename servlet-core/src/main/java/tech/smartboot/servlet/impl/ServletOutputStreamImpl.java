@@ -108,7 +108,7 @@ public class ServletOutputStreamImpl extends ServletOutputStream {
         if (writeListener == null || anyAreSet(state, FLAG_IN_CALLBACK)) {
             response.getOutputStream().write(b, off, len);
         } else {
-            response.getOutputStream().write(b, off, len, bufferOutputStream -> {
+            response.getOutputStream().write(b, off, len, () -> {
                 try {
                     setFlags(FLAG_IN_CALLBACK);
                     writeListener.onWritePossible();
