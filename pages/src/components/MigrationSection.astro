@@ -1,0 +1,271 @@
+---
+---
+
+<section class="migration-section" id="migration">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">
+        <span class="badge-dot"></span>
+        迁移成本
+      </span>
+      <h2 class="section-title">换掉 Tomcat，只需要两步</h2>
+      <p class="section-description">
+        同样遵循 Jakarta Servlet 6.1 规范，Spring Boot 工程只改 pom.xml，无需改动业务代码。
+      </p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-number">1</span>
+          <div class="step-title">
+            <h3>排除 Spring Boot 默认的 Tomcat</h3>
+            <p>在 <code>pom.xml</code> 中移除内嵌容器依赖</p>
+          </div>
+        </div>
+        <pre class="step-code"><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;exclusions&gt;
+        &lt;exclusion&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
+        &lt;/exclusion&gt;
+    &lt;/exclusions&gt;
+&lt;/dependency&gt;</code></pre>
+      </div>
+
+      <div class="step-card step-highlight">
+        <div class="step-head">
+          <span class="step-number">2</span>
+          <div class="step-title">
+            <h3>引入 smart-servlet 依赖</h3>
+            <p>示例版本 3.3，请使用最新版本</p>
+          </div>
+        </div>
+        <pre class="step-code"><code>&lt;dependency&gt;
+    &lt;groupId&gt;tech.smartboot.servlet&lt;/groupId&gt;
+    &lt;artifactId&gt;smart-servlet-spring-boot-starter&lt;/artifactId&gt;
+    &lt;version&gt;3.3&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+      </div>
+    </div>
+
+    <div class="migration-proof">
+      <div class="proof-item">
+        <strong>99.9%</strong>
+        <span>Servlet TCK 测试通过率，规范行为与 Tomcat 对齐</span>
+      </div>
+      <div class="proof-item">
+        <strong>0 行</strong>
+        <span>业务代码改动，只改 pom.xml</span>
+      </div>
+      <div class="proof-item">
+        <strong>3.x</strong>
+        <span>Spring Boot 3.x 实测兼容，Shiro 等主流框架直接运行</span>
+      </div>
+    </div>
+
+    <div class="migration-cta">
+      <a href="./guides/install/" class="migration-link">
+        查看完整安装指南（含 WAR 部署与 Maven 插件方式）
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .migration-section {
+    padding: var(--space-24) var(--space-4);
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: var(--space-12);
+  }
+
+  .section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-6);
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent-primary);
+    border-radius: var(--radius-full);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.1); }
+  }
+
+  .section-title {
+    font-size: var(--text-4xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-4);
+    letter-spacing: -0.02em;
+  }
+
+  .section-description {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    max-width: 620px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+    margin-bottom: var(--space-12);
+  }
+
+  @media (max-width: 900px) {
+    .steps-grid { grid-template-columns: 1fr; }
+  }
+
+  .step-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    transition: border-color var(--transition-base), transform var(--transition-base);
+  }
+
+  .step-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-3px);
+  }
+
+  .step-highlight {
+    border: 2px solid rgba(59, 130, 246, 0.5);
+    background: linear-gradient(160deg, rgba(59, 130, 246, 0.08), transparent 55%), var(--bg-card);
+  }
+
+  .step-head {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+
+  .step-number {
+    flex: 0 0 2.25rem;
+    height: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    background: var(--accent-gradient);
+    color: #fff;
+    font-weight: 700;
+    font-size: var(--text-lg);
+  }
+
+  .step-title h3 {
+    margin: 0 0 var(--space-1);
+    font-size: var(--text-xl);
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .step-title p {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+
+  .step-title code {
+    font-size: 0.9em;
+    color: var(--accent-primary);
+  }
+
+  .step-code {
+    margin: 0;
+    padding: var(--space-5);
+    background: var(--code-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+  }
+
+  .step-code code {
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+    white-space: pre;
+  }
+
+  .migration-proof {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    padding: var(--space-6) 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  @media (max-width: 768px) {
+    .migration-proof { grid-template-columns: 1fr; }
+  }
+
+  .proof-item {
+    text-align: center;
+    display: grid;
+    gap: var(--space-1);
+    justify-items: center;
+  }
+
+  .proof-item strong {
+    font-size: var(--text-2xl);
+    color: var(--accent-primary);
+  }
+
+  .proof-item span {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 300px;
+  }
+
+  .migration-cta {
+    text-align: center;
+    margin-top: var(--space-8);
+  }
+
+  .migration-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--accent-primary);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: var(--text-base);
+  }
+
+  .migration-link:hover { text-decoration: underline; }
+</style>

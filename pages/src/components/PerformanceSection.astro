@@ -10,7 +10,7 @@
       </span>
       <h2 class="section-title">性能对比报告</h2>
       <p class="section-description">
-        基于 SpringBoot 项目 plaintext 场景，ApacheBench（ab）100 万次请求压测结果，测试代码开源可复现
+        基于 SpringBoot 项目 plaintext 场景，ApacheBench（ab）100 万次请求压测结果
       </p>
     </div>
 
@@ -120,6 +120,13 @@
         <div class="metric-value">400MB</div>
         <div class="metric-label">压测 Heap 峰值（wrk 压测）</div>
       </div>
+    </div>
+
+    <div class="benchmark-link">
+      <a href="./guides/benchmark/">
+        测试方法、环境说明与更多数据见性能基准报告
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
     </div>
   </div>
 </section>
@@ -376,4 +383,21 @@
     color: var(--text-secondary);
     font-weight: 500;
   }
+
+  .benchmark-link {
+    text-align: center;
+    margin-top: var(--space-10);
+  }
+
+  .benchmark-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--accent-primary);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: var(--text-base);
+  }
+
+  .benchmark-link a:hover { text-decoration: underline; }
 </style>

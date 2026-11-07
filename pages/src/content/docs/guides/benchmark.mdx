@@ -1,0 +1,48 @@
+---
+title: 性能基准报告
+description: smart-servlet 与 Tomcat、Undertow 的压测对比数据与测试方法，全站性能数字的权威出处。
+sidebar:
+    order: 3
+---
+
+import {Aside} from '@astrojs/starlight/components';
+
+本页是 smart-servlet 全站性能数据的唯一权威出处。所有宣传中的数字均以本页数据为准，并标注测试工具与场景。
+
+## 测试场景一：wrk 高并发压测
+
+**压测对象**：工程中的 `springboot-demo` 模块（Spring Boot 3.3.1 应用，`/plaintext` 接口）。
+
+**压测方法**：wrk，1024 个并发连接持续 15 秒。Tomcat 与 Undertow 使用 Spring Boot 3.3.1 starter 内置版本。
+
+| 产品名称 | smart-servlet | Tomcat | Undertow |
+| --- | --- | --- | --- |
+| 初始 Heap 内存 | 12MB | 15MB | 15MB |
+| 初始 Metaspace | 29MB | 30MB | 30MB |
+| 压测 QPS | 42W/s | 10W/s | 40W/s |
+| 压测 Heap 峰值 | 400MB | 550MB | 750MB |
+| 结论 | 性能高、内存低 | 性能弱、内存中等 | 性能高、内存高 |
+
+<Aside type="note" title="说明">
+测试结果中 Tomcat 内存低于 Undertow，很大一部分原因是 Tomcat 并发量远低于 Undertow，因此其内存需求相对较少。
+</Aside>
+
+## 测试场景二：ApacheBench（ab）百万次请求压测
+
+**压测对象**：同一个 `springboot-demo` 模块的 `/plaintext` 接口，100 万次 keepalive 请求。
+
+**服务端测试代码**：[Bootstrap.java](https://github.com/smartboot/smart-servlet/blob/master/springboot-demo/src/main/java/org/smartboot/demo/starter/Bootstrap.java)
+
+| concurrency | Tomcat | Undertow | smart-servlet | 压测指令 |
+|:---|:---:|:---:|:---:|---|
+| 10 | 64311 | 74860 | 93812 | `ab -n 1000000 -c 10 -k http://127.0.0.1:8080/plaintext` |
+| 100 | 92047 | 89037 | 108844 | `ab -n 1000000 -c 100 -k http://127.0.0.1:8080/plaintext` |
+| 1000 | 88997 | 102439 | 111308 | `ab -n 1000000 -c 1000 -k http://127.0.0.1:8080/plaintext` |
+
+## 复现
+
+压测工程与测试代码均在开源仓库的 `springboot-demo` 模块中，更换 `pom.xml` 中的容器依赖即可对三种容器分别执行上述指令复现结果。
+
+<Aside type="tip" title="两个场景的区别">
+wrk 场景（1024 并发）展示高并发吞吐上限，ab 场景（keepalive 长连接）展示典型 Web 服务的稳态吞吐，两组数据适用于不同的容量规划语境，请按需引用。
+</Aside>
