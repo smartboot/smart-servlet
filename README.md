@@ -67,7 +67,7 @@
 - 生产故障优先处置、指定版本长期维护（LTS）与安全补丁
 - JDK / Spring Boot 大版本升级适配指导
 
-服务内容与报价详见[服务客户与生态伙伴](https://smartboot.tech/smart-servlet/users/)，或邮件联系 `zhengjunweimail@163.com`。
+服务咨询与报价请邮件联系 `zhengjunweimail@163.com`。
 
 ---
 

@@ -68,10 +68,6 @@ export default defineConfig({
                     label: '企业服务',
                     items: [
                         {
-                            label: '服务客户与生态伙伴',
-                            link: '/users/',
-                        },
-                        {
                             label: '法律声明与使用条款',
                             link: '/legal/',
                         },
