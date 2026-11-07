@@ -86,11 +86,12 @@ import PerformanceChart from '../../components/PerformanceChart.astro';
 <div style="flex: 1; min-width: 300px; max-width: 500px; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; background: #f8fafc;">
 
 <h3 style="font-size:1.25rem;font-weight:600;margin:0 0 0.5rem;">企业服务订阅（按年付费）</h3>
-<div style="color:#64748b;font-size:0.9rem;">付费购买的是责任与交付，不是使用许可</div>
+<div style="color:#64748b;font-size:0.9rem;">付费购买的是答疑咨询与需求支持，不是使用许可</div>
 
 <h4 style="font-size:1.1rem;font-weight:600;margin:1.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid #e2e8f0;">服务与保障</h4>
 <ul style="list-style:none;padding:0;margin:0;line-height:2;">
-<li>✓ 1 对 1 专属服务支持：专属对接人／专属群／服务工单，合同约定 SLA</li>
+<li>✓ 1 对 1 答疑咨询：专属对接人／专属群／服务工单，及时响应、跟进到底</li>
+<li>✓ 需求支持：功能需求评估、优先排期与定制化方案</li>
 <li>✓ 生产故障优先处置与远程/现场兜底</li>
 <li>✓ 指定版本长期维护（LTS）、安全补丁、EOL 通知</li>
 <li>✓ JDK / Spring Boot 大版本升级适配指导</li>
@@ -99,7 +100,7 @@ import PerformanceChart from '../../components/PerformanceChart.astro';
 </ul>
 
 <h4 style="font-size:1.1rem;font-weight:600;margin:1.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid #e2e8f0;">计费</h4>
-<p style="font-size:0.9rem;color:#475569;line-height:1.8;">按部署规模与支持等级年度订阅；实施、定制与驻场按人天计价。具体范围与 SLA 以双方签署的服务合同为准。订阅不会限制未订阅用户使用任何功能。</p>
+<p style="font-size:0.9rem;color:#475569;line-height:1.8;">按部署规模与支持等级年度订阅；实施、定制与驻场按人天计价。具体范围与响应时效以双方确认的服务方案为准。订阅不会限制未订阅用户使用任何功能。</p>
 
 <div style="text-align:center;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #e2e8f0;">
 <a href="./users/" style="display:inline-block;padding:0.6rem 1.2rem;border-radius:6px;font-weight:600;text-decoration:none;background:#dbeafe;color:#1e40af;margin-right:0.5rem;">了解企业服务</a>
@@ -110,7 +111,7 @@ import PerformanceChart from '../../components/PerformanceChart.astro';
 
 </div>
 
-> **支持渠道**：公开 Issue 仅提供开源生态支持（面向所有免费用户，社区尽力而为、无 SLA）；已签约客户使用合同约定的 1 对 1 专属服务支持，公开 Issue 不受理签约客户报障。请勿在公开 Issue 提交生产故障与敏感信息。
+> **支持渠道**：公开 Issue 仅提供开源生态支持（面向所有免费用户，社区尽力而为、无 SLA）；订阅客户使用专属的 1 对 1 服务通道，公开 Issue 不受理订阅客户报障。请勿在公开 Issue 提交生产故障与敏感信息。
 
 ## 常见问题
 
@@ -126,12 +127,12 @@ import PerformanceChart from '../../components/PerformanceChart.astro';
 
 <details>
     <summary><b>那付费买到的是什么？</b></summary>
-    支持与责任保障：1 对 1 专属服务支持、合同约定的响应与解决时效（SLA）、生产故障兜底、指定版本长期维护与安全补丁、信创与等保合规材料配合，以及迁移实施、架构评审、压测调优与培训。软件按现状提供，公开 Issue 的开源生态支持不含 SLA 承诺。
+    答疑咨询与需求支持：1 对 1 专属顾问答疑（及时响应、跟进到底）、功能需求评估与优先排期、生产故障优先处置、指定版本长期维护与安全补丁、信创与等保合规材料配合，以及迁移实施、架构评审、压测调优与培训。软件按现状提供，公开 Issue 的开源生态支持不含 SLA 承诺。
 </details>
 
 <details>
-    <summary><b>技术支持在哪里提交？签约客户可以在公开 Issue 报障吗？</b></summary>
-    公开 Issue 仅提供<strong>开源生态支持</strong>：面向所有免费用户的 Bug 反馈、使用咨询与改进建议，社区尽力而为，不承诺响应时效，也不提供 SLA 与故障兜底。已签约客户请使用合同约定的 <strong>1 对 1 专属服务支持</strong>（专属对接人／专属沟通群／服务工单），公开 Issue 不受理签约客户的报障与 SLA 诉求，也请勿在此提交生产故障、密钥口令或业务数据。商务咨询、订阅申请与签约客户支持均通过 1 对 1 渠道联系（邮箱 `zhengjunweimail@163.com`），不在公开 Issue 提交。详见[开源协议与使用条款](./legal/)中的「支持渠道与 SLA 边界」。
+    <summary><b>技术支持在哪里提交？订阅客户可以在公开 Issue 报障吗？</b></summary>
+    公开 Issue 仅提供<strong>开源生态支持</strong>：面向所有免费用户的 Bug 反馈、使用咨询与改进建议，社区尽力而为，不承诺响应时效，也不提供 SLA 与故障兜底。订阅客户请使用专属的 <strong>1 对 1 服务通道</strong>（专属对接人／专属沟通群／服务工单），公开 Issue 不受理订阅客户的报障与 SLA 诉求，也请勿在此提交生产故障、密钥口令或业务数据。商务咨询、订阅申请与订阅客户支持均通过 1 对 1 渠道联系（邮箱 `zhengjunweimail@163.com`），不在公开 Issue 提交。详见[开源协议与使用条款](./legal/)中的「支持渠道与 SLA 边界」。
 </details>
 
 <details>
@@ -141,7 +142,7 @@ import PerformanceChart from '../../components/PerformanceChart.astro';
 
 <details>
     <summary><b>服务订阅如何计费？</b></summary>
-    按部署规模与支持等级年度订阅，实施、定制开发与驻场按人天计价。请通过邮箱 1 对 1 联系，我们会提供方案与报价，最终以双方签署的服务合同为准。
+    按部署规模与支持等级年度订阅，实施、定制开发与驻场按人天计价。请通过邮箱 1 对 1 联系，我们会提供方案与报价，最终以双方确认的服务方案为准。
 </details>
 
 <details>
