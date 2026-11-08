@@ -8,17 +8,45 @@ sidebar:
 
 
 
+
 import {LinkCard} from '@astrojs/starlight/components';
 
 
-## v3.3 (2025-06-24)
+## v4.0 (2026-11-08)
+- 🚀Servlet TCK 通过率提升至 99.9%（1732 项用例中 1731 项通过）
+- 🚀完善客户端证书认证（CLIENT-CERT）流程
+- 🛠️将 HTTP 协议升级操作延迟到请求处理完成后执行，提升协议升级稳定性
+- 🛠️web-fragment 排序改为拓扑排序实现
+- 🛠️升级 Feat 版本至 v2.4.2
+
+<LinkCard title="下载二进制包" description="smart-servlet-bin-4.0-release.tar.gz"
+          href="https://github.com/smartboot/smart-servlet/releases/download/v4.0/smart-servlet-bin-4.0-release.tar.gz" />
+
+## v3.3 (2026-06-24)
 - 修复 HTTP2 协议下 Cookie 编码错误问题
 - 适配 web.xml cookie-config 规范
+- 🚀支持静态资源 JAR 包
+- 🐛修复 jar-in-jar 场景下的注解扫描问题
 - 🛠️升级 Feat 版本至 v2.1.2
 
 发版详情：[https://mp.weixin.qq.com/s/tuYBrOY8-R0i_AmpvKQdYA](https://mp.weixin.qq.com/s/tuYBrOY8-R0i_AmpvKQdYA)
 <LinkCard title="下载二进制包" description="smart-servlet-bin-3.3-release.tar.gz"
           href="https://github.com/smartboot/smart-servlet/releases/download/v3.3/smart-servlet-bin-3.3-release.tar.gz" />
+
+## v3.2 (2026-06-14)
+- 🛠️升级 Feat 版本至 v2.1.1
+- 🛠️依赖治理：排除 feat-ai 与 fastjson2 版本冲突，fastjson2 调整为 provided 作用域
+
+<LinkCard title="下载二进制包" description="smart-servlet-bin-v3.2.zip"
+          href="https://github.com/smartboot/smart-servlet/releases/download/v3.2/smart-servlet-bin-v3.2.zip" />
+
+## v3.1 (2026-03-16)
+- 🛠️底层依赖从 feat-core 切换至 feat-cloud
+- 🛠️优化基础插件的 HTTP 服务器配置
+- 🛠️发布渠道接入 Maven Central Portal
+
+<LinkCard title="下载二进制包" description="smart-servlet-bin-v3.1.zip"
+          href="https://github.com/smartboot/smart-servlet/releases/download/v3.1/smart-servlet-bin-v3.1.zip" />
 
 ## v3.0 (2025-03-15)
 - 🚀通过 Feat 的 Router 提供多 ServerContext 的路由匹配能力
@@ -37,8 +65,7 @@ import {LinkCard} from '@astrojs/starlight/components';
 - 🛠️优化 url pattern 相关实现。
 - 🛠️升级 Feat 版本，提升服务稳定性。
 - 🛠️改进容器内部实例存储结构，节省内存。
-<LinkCard title="下载二进制包" description="smart-servlet-bin-2.9-release.tar.gz"
-          href="https://github.com/smartboot/smart-servlet/releases/download/v2.9/smart-servlet-bin-2.9-release.tar.gz" />
+**下载：~~smart-servlet-bin-2.9-release.tar.gz~~**
 
 ## v2.8 (2025-01-16)
 - 🚀新增 PROXY Protocol 特性。
@@ -48,8 +75,7 @@ import {LinkCard} from '@astrojs/starlight/components';
 - 🛠️优化 HttpServletResponse#setLocale 实现规范。
 - 🛠️优化 WebSocketContainer 实现规范。
 
-<LinkCard title="下载二进制包" description="smart-servlet-bin-2.8-release.tar.gz"
-          href="https://github.com/smartboot/smart-servlet/releases/download/v2.8/smart-servlet-bin-2.8-release.tar.gz" />
+**下载：~~smart-servlet-bin-2.8-release.tar.gz~~**
 
 
 ## v2.7 (2024-12-28)
@@ -63,8 +89,7 @@ import {LinkCard} from '@astrojs/starlight/components';
 - 🛠️ ServletOutputStream 默认缓冲区调整为8k。
 - 🐛修复未指定响应编码情况下的中文乱码问题。
 
-<LinkCard title="下载二进制包" description="smart-servlet-bin-2.7-release.tar.gz"
-          href="https://github.com/smartboot/smart-servlet/releases/download/v2.7/smart-servlet-bin-2.7-release.tar.gz" />
+**下载：~~smart-servlet-bin-2.7-release.tar.gz~~**
 
 ## v2.6 (2024-12-10)
 - 🚀进一步减少服务基础内存开销。
@@ -77,8 +102,7 @@ import {LinkCard} from '@astrojs/starlight/components';
 - 🐛修复 PushBuilder 中 Cookie 缺失问题。
 
 [//]: # (<CardGrid>)
-<LinkCard title="下载二进制包" description="smart-servlet-bin-2.6-release.tar.gz"
-          href="https://github.com/smartboot/smart-servlet/releases/download/v2.6/smart-servlet-bin-2.6-release.tar.gz" />
+**下载：~~smart-servlet-bin-2.6-release.tar.gz~~**
 
 [//]: # (</CardGrid>)
 
@@ -93,7 +117,7 @@ import {LinkCard} from '@astrojs/starlight/components';
 - 优化监听器的初始化策略
 - 屏蔽启动时的调试性日志打印
 
-**下载：[smart-servlet-bin-2.4-release.tar.gz](https://github.com/smartboot/smart-servlet/releases/download/v2.4/smart-servlet-bin-2.4-release.tar.gz)**
+**下载：~~smart-servlet-bin-2.4-release.tar.gz~~**
 
 ## v2.3（2024-11-10）
 - 升级 `jakarta.servlet-api` 适配版本至 `6.1.0`

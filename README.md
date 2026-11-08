@@ -20,7 +20,7 @@
 
 ## 5 分钟替换
 
-要求 Java 17+，示例版本 `3.3`（请使用[最新版本](https://smartboot.tech/smart-servlet/guides/release_note/)）。业务代码零改动，只改 `pom.xml`：
+要求 Java 17+，示例版本 `4.0`（请使用[最新版本](https://smartboot.tech/smart-servlet/guides/release_note/)）。业务代码零改动，只改 `pom.xml`：
 
 ```xml
 <dependencies>
@@ -40,7 +40,7 @@
     <dependency>
         <groupId>tech.smartboot.servlet</groupId>
         <artifactId>smart-servlet-spring-boot-starter</artifactId>
-        <version>3.3</version>
+        <version>4.0</version>
     </dependency>
 </dependencies>
 ```
