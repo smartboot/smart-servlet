@@ -22,7 +22,7 @@
 
     <groupId>tech.smartboot.servlet</groupId>
     <artifactId>springboot-demo</artifactId>
-    <version>3.3</version>
+    <version>4.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
