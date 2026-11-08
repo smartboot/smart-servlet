@@ -12,23 +12,52 @@
     </div>
 
     <div class="steps-grid reveal">
-      <div class="step-card">
-        <div class="step-head">
-          <span class="step-number">1</span>
-          <div class="step-title">
-            <h3>排除 Spring Boot 默认的 Tomcat <span class="diff-tag diff-remove">− remove</span></h3>
-            <p>在 <code>pom.xml</code> 中移除内嵌容器依赖</p>
+      <div class="step-list">
+        <div class="step-card step-remove">
+          <div class="step-head">
+            <span class="step-number">1</span>
+            <div class="step-title">
+              <h3>排除 Spring Boot 默认的 Tomcat <span class="diff-tag diff-remove">− remove</span></h3>
+              <p>在 <code>pom.xml</code> 中移除内嵌容器依赖</p>
+            </div>
           </div>
         </div>
-        <div class="code-window">
-          <div class="code-titlebar">
-            <span class="code-filename">pom.xml</span>
-            <button class="copy-btn" type="button" aria-label="复制代码">
-              <svg class="icon-copy" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-              <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-            </button>
+
+        <div class="step-card step-highlight step-add">
+          <div class="step-head">
+            <span class="step-number">2</span>
+            <div class="step-title">
+              <h3>引入 smart-servlet 依赖 <span class="diff-tag diff-add">+ add</span></h3>
+              <p>示例版本 3.3，请使用最新版本。原有 <code>server.port</code> 等配置继续生效，无需新增专属配置。</p>
+            </div>
           </div>
-          <pre class="step-code"><code><span class="x-t">&lt;dependency&gt;</span>
+        </div>
+
+        <div class="proof-strip">
+          <div class="proof-item">
+            <strong class="stat-value stat-accent">2 处</strong>
+            <span class="stat-label">pom.xml 依赖调整（一删一增）</span>
+          </div>
+          <div class="proof-item">
+            <strong class="stat-value">0 行</strong>
+            <span class="stat-label">业务代码改动</span>
+          </div>
+          <div class="proof-item">
+            <strong class="stat-value">3.x</strong>
+            <span class="stat-label">Spring Boot 实测兼容，Shiro 等主流框架直接运行</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-window">
+        <div class="code-titlebar">
+          <span class="code-filename">pom.xml</span>
+          <button class="copy-btn" type="button" aria-label="复制代码">
+            <svg class="icon-copy" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </button>
+        </div>
+        <pre class="step-code"><code><span class="code-block code-block-remove"><span class="x-t">&lt;dependency&gt;</span>
     <span class="x-t">&lt;groupId&gt;</span>org.springframework.boot<span class="x-t">&lt;/groupId&gt;</span>
     <span class="x-t">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="x-t">&lt;/artifactId&gt;</span>
     <span class="x-t">&lt;exclusions&gt;</span>
@@ -37,47 +66,13 @@
             <span class="x-t">&lt;artifactId&gt;</span><span class="x-del">spring-boot-starter-tomcat</span><span class="x-t">&lt;/artifactId&gt;</span>
         <span class="x-t">&lt;/exclusion&gt;</span>
     <span class="x-t">&lt;/exclusions&gt;</span>
-<span class="x-t">&lt;/dependency&gt;</span></code></pre>
-        </div>
-      </div>
+<span class="x-t">&lt;/dependency&gt;</span></span>
 
-      <div class="step-card step-highlight">
-        <div class="step-head">
-          <span class="step-number">2</span>
-          <div class="step-title">
-            <h3>引入 smart-servlet 依赖 <span class="diff-tag diff-add">+ add</span></h3>
-            <p>示例版本 3.3，请使用最新版本</p>
-          </div>
-        </div>
-        <div class="code-window">
-          <div class="code-titlebar">
-            <span class="code-filename">pom.xml</span>
-            <button class="copy-btn" type="button" aria-label="复制代码">
-              <svg class="icon-copy" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-              <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-            </button>
-          </div>
-          <pre class="step-code"><code><span class="x-t">&lt;dependency&gt;</span>
+<span class="code-block code-block-add"><span class="x-t">&lt;dependency&gt;</span>
     <span class="x-t">&lt;groupId&gt;</span>tech.smartboot.servlet<span class="x-t">&lt;/groupId&gt;</span>
     <span class="x-t">&lt;artifactId&gt;</span><span class="x-add">smart-servlet-spring-boot-starter</span><span class="x-t">&lt;/artifactId&gt;</span>
     <span class="x-t">&lt;version&gt;</span><span class="x-v">3.3</span><span class="x-t">&lt;/version&gt;</span>
-<span class="x-t">&lt;/dependency&gt;</span></code></pre>
-        </div>
-      </div>
-    </div>
-
-    <div class="migration-proof reveal">
-      <div class="proof-item">
-        <strong class="stat-value">2 处</strong>
-        <span class="stat-label">pom.xml 依赖调整（一删一增）</span>
-      </div>
-      <div class="proof-item">
-        <strong class="stat-value">0 行</strong>
-        <span class="stat-label">业务代码改动</span>
-      </div>
-      <div class="proof-item">
-        <strong class="stat-value">3.x</strong>
-        <span class="stat-label">Spring Boot 实测兼容，Shiro 等主流框架直接运行</span>
+<span class="x-t">&lt;/dependency&gt;</span></span></code></pre>
       </div>
     </div>
 
@@ -104,6 +99,45 @@
       }
     });
   });
+
+  // 悬停步骤卡片时高亮对应的 pom.xml 代码块,悬停代码块时反向联动步骤卡片
+  const migrationSection = document.getElementById('migration');
+  if (migrationSection) {
+    const codeRemove = migrationSection.querySelector('.code-block-remove');
+    const codeAdd = migrationSection.querySelector('.code-block-add');
+    const cardRemove = migrationSection.querySelector('.step-remove');
+    const cardAdd = migrationSection.querySelector('.step-add');
+
+    // which: 'remove' | 'add' | null(恢复默认)
+    const setActive = (which) => {
+      [codeRemove, codeAdd].forEach((block) => block?.classList.remove('active', 'dimmed'));
+      [cardRemove, cardAdd].forEach((card) => card?.classList.remove('card-active'));
+      if (which === 'remove') {
+        codeRemove?.classList.add('active');
+        codeAdd?.classList.add('dimmed');
+        cardRemove?.classList.add('card-active');
+      } else if (which === 'add') {
+        codeAdd?.classList.add('active');
+        codeRemove?.classList.add('dimmed');
+        cardAdd?.classList.add('card-active');
+      }
+    };
+
+    [
+      [cardRemove, 'remove'],
+      [cardAdd, 'add'],
+    ].forEach(([card, which]) => {
+      card?.addEventListener('mouseenter', () => setActive(which));
+      card?.addEventListener('mouseleave', () => setActive(null));
+    });
+    [
+      [codeRemove, 'remove'],
+      [codeAdd, 'add'],
+    ].forEach(([block, which]) => {
+      block?.addEventListener('mouseenter', () => setActive(which));
+      block?.addEventListener('mouseleave', () => setActive(null));
+    });
+  }
 </script>
 
 <style>
@@ -153,22 +187,38 @@
     line-height: 1.7;
   }
 
+  /* 左侧合并代码窗口 + 右侧步骤说明,两侧高度一致,避免留白 */
   .steps-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     gap: var(--space-6);
     margin-bottom: var(--space-10);
+    align-items: stretch;
   }
+
+  /* 代码窗口置于左列(移动端恢复步骤在前的阅读顺序) */
+  .code-window { order: -1; }
 
   @media (max-width: 900px) {
     .steps-grid { grid-template-columns: 1fr; }
+    .code-window { order: 0; }
+    .step-card { flex: 0 0 auto; }
+  }
+
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
   }
 
   .step-card {
+    flex: 1;
+    display: flex;
+    align-items: center;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
-    padding: var(--space-8);
+    padding: var(--space-6);
     transition: border-color var(--transition-base), transform var(--transition-base);
   }
 
@@ -186,7 +236,6 @@
     display: flex;
     align-items: flex-start;
     gap: var(--space-4);
-    margin-bottom: var(--space-5);
   }
 
   .step-number {
@@ -335,31 +384,59 @@
     padding: 0 2px;
   }
 
-  .migration-proof {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-4);
-    padding: var(--space-6) 0;
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
+  /* 悬停联动:对应的代码块着色,另一块淡出 */
+  .code-block {
+    display: block;
+    border-left: 2px solid transparent;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin: 0 -8px;
+    transition: opacity var(--transition-base), background-color var(--transition-base),
+      border-color var(--transition-base);
   }
 
-  @media (max-width: 768px) {
-    .migration-proof { grid-template-columns: 1fr; }
+  .code-block.dimmed { opacity: 0.35; }
+
+  .code-block-remove.active {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+  }
+
+  .code-block-add.active {
+    background: rgba(34, 197, 94, 0.1);
+    border-left-color: #22c55e;
+  }
+
+  /* 反向联动:悬停代码块时,对应步骤卡片同步描边 */
+  .step-card.card-active {
+    transform: translateY(-2px);
+  }
+
+  .step-remove.card-active {
+    border-color: rgba(239, 68, 68, 0.5);
+  }
+
+  .step-add.card-active {
+    border-color: rgba(34, 197, 94, 0.5);
+  }
+
+  /* 统计条:与步骤说明同列,紧凑三等分 */
+  .proof-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border-color);
+  }
+
+  @media (max-width: 480px) {
+    .proof-strip { grid-template-columns: 1fr; }
   }
 
   .proof-item {
-    text-align: center;
     display: grid;
     gap: var(--space-1);
-    justify-items: center;
-  }
-
-  .proof-item span {
-    font-size: var(--text-xs);
-    color: var(--text-secondary);
-    line-height: 1.6;
-    max-width: 300px;
+    justify-items: start;
   }
 
   .migration-cta {
