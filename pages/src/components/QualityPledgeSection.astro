@@ -8,7 +8,7 @@ const tckPoints = [
   { v: 'v2.4', rate: '99.7%', y: 35 },
   { v: 'v2.8', rate: '99.8%', y: 33 },
   { v: 'v3.3', rate: '99.8%', y: 33 },
-  { v: 'v4.0', rate: '99.9%', y: 32 },
+  { v: 'v4.0', rate: '100%', y: 30 },
 ];
 ---
 
@@ -16,7 +16,7 @@ const tckPoints = [
   <div class="container">
     <div class="section-header">
       <span class="section-badge">质量证据</span>
-      <h2 class="section-title">两年，从 88.4% 到 99.9%</h2>
+      <h2 class="section-title">两年，从 88.4% 到 100%</h2>
       <p class="section-description">
         自 2024 年引入 Servlet TCK 起，每个版本公开发布测试报告
       </p>
@@ -29,12 +29,12 @@ const tckPoints = [
           <span class="stat-label">当前版本 TCK 用例总数</span>
         </div>
         <div class="tck-summary-item">
-          <strong class="stat-value">1731</strong>
-          <span class="stat-label">通过用例，仅 1 个未通过</span>
+          <strong class="stat-value">1732</strong>
+          <span class="stat-label">通过用例，全部通过</span>
         </div>
       </div>
 
-      <div class="tck-chart" role="img" aria-label="TCK 通过率从 2024 年 7 月的 88.4% 提升至 2026 年 11 月的 99.9%">
+      <div class="tck-chart" role="img" aria-label="TCK 通过率从 2024 年 7 月的 88.4% 提升至 2026 年 11 月的 100%">
         <svg viewBox="0 0 720 240" preserveAspectRatio="xMidYMid meet">
           <!-- 网格线与纵轴刻度(88%–100%) -->
           {[
@@ -53,7 +53,7 @@ const tckPoints = [
           ))}
 
           <!-- 演进折线 -->
-          <polyline class="tck-line" points="60,204 151,113 243,56 334,38 426,35 517,33 609,33 700,32" />
+          <polyline class="tck-line" points="60,204 151,113 243,56 334,38 426,35 517,33 609,33 700,30" />
 
           <!-- 数据点与横轴标签 -->
           {tckPoints.map((p, i) => {
@@ -68,7 +68,7 @@ const tckPoints = [
 
           <!-- 首末点数值标注 -->
           <text class="point-label" x="60" y="192" text-anchor="start">88.4%</text>
-          <text class="point-label point-label-end" x="700" y="18" text-anchor="end">99.9%</text>
+          <text class="point-label point-label-end" x="700" y="18" text-anchor="end">100%</text>
         </svg>
       </div>
 
@@ -106,7 +106,7 @@ const tckPoints = [
         <li class="milestone-item">
           <span class="milestone-dot"></span>
           <strong class="timeline-value">2026-11</strong>
-          <span>4.0 发布，TCK 通过率 99.9%</span>
+          <span>4.0 发布，TCK 100% 通过</span>
         </li>
       </ol>
     </div>

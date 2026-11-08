@@ -8,7 +8,7 @@
 
 把 Spring Boot 里的 Tomcat，换成 12MB 的 smart-servlet。
 
-**Servlet TCK 通过率 99.9% · 42W QPS（wrk 压测） · 初始 Heap 12MB · Apache-2.0 免费商用**
+**Servlet TCK 通过率 100%（1732 项用例全部通过） · 42W QPS（wrk 压测） · 初始 Heap 12MB · Apache-2.0 免费商用**
 
 ---
 
@@ -49,7 +49,7 @@
 
 ## 证据
 
-- **规范兼容**：遵循 Jakarta Servlet 6.1，Servlet TCK 通过率 99.9%（1732 项用例中 1731 项通过）→ [TCK 测试报告](https://smartboot.tech/smart-servlet/guides/tck_report/)
+- **规范兼容**：遵循 Jakarta Servlet 6.1，Servlet TCK 通过率 100%（1732 项用例全部通过）→ [TCK 测试报告](https://smartboot.tech/smart-servlet/guides/tck_report/)
 - **性能数据**：wrk / ApacheBench 压测对比与测试方法 → [性能基准报告](https://smartboot.tech/smart-servlet/guides/benchmark/)
 
 ## 协议
