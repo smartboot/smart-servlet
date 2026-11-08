@@ -1,20 +1,20 @@
 ---
-import GithubDownloadCount from './GithubDownloadCount.astro';
 ---
 
 <section class="hero-section">
   <div class="hero-background">
     <div class="gradient-orb orb-1"></div>
     <div class="gradient-orb orb-2"></div>
-    <div class="gradient-orb orb-3"></div>
     <div class="grid-pattern"></div>
   </div>
-  
+
   <div class="hero-container">
     <div class="hero-content">
       <!-- Badge -->
       <div class="hero-badge">
         <span class="badge-dot"></span>
+        <span class="badge-spec">Jakarta Servlet 6.1 · Java 17+</span>
+        <span class="badge-divider" aria-hidden="true"></span>
         <span class="badge-text">开源免费商用 · Apache-2.0</span>
       </div>
 
@@ -25,29 +25,33 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
 
       <!-- Subtitle -->
       <p class="hero-subtitle">
-        把 Spring Boot 里的 Tomcat，换成 12MB 的 smart-servlet
+        把 Spring Boot 里的 Tomcat，换成初始内存仅 <span class="subtitle-accent">12MB</span> 的 smart-servlet
       </p>
 
       <!-- Description -->
       <p class="hero-description">
-        基于 Jakarta Servlet 6.1 规范，Servlet TCK 通过率 99.9%，可作为 Tomcat / Undertow 的直接替代方案，无缝运行 Spring Boot 应用。
+        只改 pom.xml 依赖 · Tomcat / Undertow 直接替代 · 兼容 Spring Boot 3.x / Spring Cloud / Shiro
       </p>
 
-      <!-- Proof strip -->
-      <div class="hero-tags">
-        <div class="tag tag-proof">
-          <span class="tag-value">99.9%</span>
-          <span>Servlet TCK 通过率</span>
+      <!-- Stat strip -->
+      <dl class="hero-stats">
+        <div class="hero-stat">
+          <dt class="stat-label">Servlet TCK 通过率</dt>
+          <dd class="stat-value">99.9%</dd>
         </div>
-        <div class="tag tag-proof">
-          <span class="tag-value">42W</span>
-          <span>QPS（wrk 压测）</span>
+        <div class="hero-stat">
+          <dt class="stat-label">QPS（wrk 压测）</dt>
+          <dd class="stat-value">42W</dd>
         </div>
-        <div class="tag tag-proof">
-          <span class="tag-value">12MB</span>
-          <span>初始 Heap 内存</span>
+        <div class="hero-stat">
+          <dt class="stat-label">初始 Heap 内存</dt>
+          <dd class="stat-value">12MB</dd>
         </div>
-      </div>
+        <div class="hero-stat">
+          <dt class="stat-label">业务代码改动</dt>
+          <dd class="stat-value">0 行</dd>
+        </div>
+      </dl>
 
       <!-- Actions -->
       <div class="hero-actions">
@@ -55,13 +59,10 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
           <span>5 分钟替换 Tomcat</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
-        <a href="mailto:zhengjunweimail@163.com?subject=smart-servlet%20%E4%BC%81%E4%B8%9A%E6%9C%8D%E5%8A%A1%E5%92%A8%E8%AF%A2" class="btn btn-secondary">
-          <span>商务咨询</span>
+        <a href="#performance" class="btn btn-secondary">
+          <span>查看性能对比数据</span>
         </a>
       </div>
-
-      <!-- Download counter -->
-      <GithubDownloadCount/>
     </div>
   </div>
 
@@ -76,12 +77,9 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
 <style>
   .hero-section {
     position: relative;
-    padding: var(--space-24) var(--space-4) var(--space-12);
+    padding: var(--space-20) var(--space-4) var(--space-16);
     overflow: hidden;
     background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
   }
 
   /* Background Effects */
@@ -99,7 +97,7 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
     position: absolute;
     border-radius: 50%;
     filter: blur(80px);
-    opacity: 0.15;
+    opacity: 0.10;
     animation: float 20s ease-in-out infinite;
   }
 
@@ -121,15 +119,6 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
     animation-delay: -7s;
   }
 
-  .orb-3 {
-    width: 300px;
-    height: 300px;
-    background: #ec4899;
-    top: 50%;
-    right: 20%;
-    animation-delay: -14s;
-  }
-
   @keyframes float {
     0%, 100% { transform: translate(0, 0) scale(1); }
     33% { transform: translate(30px, -30px) scale(1.1); }
@@ -142,7 +131,7 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: 
+    background-image:
       linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
     background-size: 60px 60px;
@@ -156,7 +145,6 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
     position: relative;
     z-index: 1;
     width: 100%;
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -175,6 +163,8 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
   .hero-badge {
     display: inline-flex;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
     background: rgba(59, 130, 246, 0.08);
@@ -184,6 +174,16 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
     font-weight: 500;
     color: var(--text-primary);
     animation: fadeInUp 0.6s ease-out;
+  }
+
+  .badge-spec {
+    color: var(--text-secondary);
+  }
+
+  .badge-divider {
+    width: 1px;
+    height: 12px;
+    background: var(--border-color);
   }
 
   .badge-dot {
@@ -218,60 +218,72 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
 
   /* Subtitle */
   .hero-subtitle {
-    font-size: clamp(1.375rem, 3vw, 1.875rem);
+    font-size: clamp(1.125rem, 2.25vw, 1.375rem);
     font-weight: 600;
     color: var(--text-primary);
+    line-height: 1.5;
     margin: 0;
+    text-wrap: balance;
     animation: fadeInUp 0.6s ease-out 0.2s both;
   }
 
-  /* Description */
-  .hero-description {
-    font-size: var(--text-lg);
-    color: var(--text-secondary);
-    line-height: 1.7;
-    max-width: 480px;
-    margin: 0;
-    animation: fadeInUp 0.6s ease-out 0.3s both;
-  }
-
-  /* Tags */
-  .hero-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-    justify-content: center;
-    margin-top: var(--space-2);
-    animation: fadeInUp 0.6s ease-out 0.4s both;
-  }
-
-  .tag {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-4);
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-full);
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    transition: all var(--transition-base);
-  }
-
-  .tag:hover {
-    border-color: var(--border-hover);
-    color: var(--text-primary);
-    transform: translateY(-1px);
-  }
-
-  .tag-proof .tag-value {
-    font-size: var(--text-lg);
-    font-weight: 700;
-    color: var(--accent-primary);
+  .subtitle-accent {
     background: var(--accent-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Description */
+  .hero-description {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+    animation: fadeInUp 0.6s ease-out 0.3s both;
+  }
+
+  /* Stat strip:数字 + 标签,以分隔线分区 */
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: var(--space-2) 0 0;
+    padding: var(--space-5) var(--space-8);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    max-width: 640px;
+    width: 100%;
+    animation: fadeInUp 0.6s ease-out 0.4s both;
+  }
+
+  .hero-stat {
+    display: grid;
+    gap: var(--space-1);
+    justify-items: center;
+    text-align: center;
+    padding: 0 var(--space-2);
+  }
+
+  .hero-stat + .hero-stat {
+    border-left: 1px solid var(--border-color);
+  }
+
+  .hero-stat dd {
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .hero-stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-5) 0;
+      padding: var(--space-5) var(--space-4);
+    }
+
+    .hero-stat:nth-child(3) {
+      border-left: none;
+    }
   }
 
   /* Actions */
@@ -326,6 +338,7 @@ import GithubDownloadCount from './GithubDownloadCount.astro';
   .btn-secondary:hover {
     background: var(--bg-card-hover);
     border-color: var(--border-hover);
+    transform: translateY(-2px);
   }
 
   /* Wave */

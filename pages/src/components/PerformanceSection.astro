@@ -1,124 +1,146 @@
 ---
+const series = {
+  Tomcat: 'tomcat',
+  Undertow: 'undertow',
+  'smart-servlet': 'smart',
+};
+
+const legend = [
+  { name: 'Tomcat', cls: 'tomcat' },
+  { name: 'Undertow', cls: 'undertow' },
+  { name: 'smart-servlet', cls: 'smart' },
+];
+
+const abCharts = [
+  {
+    label: '并发 10',
+    aria: '并发 10 下 smart-servlet QPS 93,812',
+    bars: [
+      { name: 'Tomcat', width: 68, value: '64,311' },
+      { name: 'Undertow', width: 80, value: '74,860' },
+      { name: 'smart-servlet', width: 100, value: '93,812', gain: '+46%' },
+    ],
+  },
+  {
+    label: '并发 100',
+    aria: '并发 100 下 smart-servlet QPS 108,844',
+    bars: [
+      { name: 'Tomcat', width: 85, value: '92,047' },
+      { name: 'Undertow', width: 82, value: '89,037' },
+      { name: 'smart-servlet', width: 100, value: '108,844', gain: '+18%' },
+    ],
+  },
+  {
+    label: '并发 1000',
+    aria: '并发 1000 下 smart-servlet QPS 111,308',
+    bars: [
+      { name: 'Tomcat', width: 80, value: '88,997' },
+      { name: 'Undertow', width: 92, value: '102,439' },
+      { name: 'smart-servlet', width: 100, value: '111,308', gain: '+25%' },
+    ],
+  },
+];
+
+const wrkQps = [
+  { name: 'Tomcat', width: 24, value: '10W' },
+  { name: 'Undertow', width: 95, value: '40W' },
+  { name: 'smart-servlet', width: 100, value: '42W', gain: '+320%' },
+];
+
+const wrkHeap = [
+  { name: 'Tomcat', width: 73, value: '550MB' },
+  { name: 'Undertow', width: 100, value: '750MB' },
+  { name: 'smart-servlet', width: 53, value: '400MB', gain: '-27%' },
+];
 ---
 
 <section class="performance-section" id="performance">
   <div class="container">
     <div class="section-header">
-      <span class="section-badge">
-        <span class="badge-dot"></span>
-        性能测试
-      </span>
+      <span class="section-badge">性能测试</span>
       <h2 class="section-title">性能对比报告</h2>
       <p class="section-description">
-        基于 SpringBoot 项目 plaintext 场景，ApacheBench（ab）100 万次请求压测结果
+        Spring Boot plaintext 场景，ab（100 万次请求）与 wrk（1024 并发）两组压测，同机对比、全部可复现
       </p>
     </div>
 
-    <div class="benchmark-card">
+    <div class="benchmark-card reveal">
+      <ul class="chart-legend">
+        {legend.map((item) => (
+          <li><span class={`legend-swatch swatch-${item.cls}`}></span>{item.name}</li>
+        ))}
+      </ul>
       <div class="chart-grid">
-        <div class="chart-item">
-          <div class="chart-label">并发 10</div>
-          <div class="chart-bars">
-            <div class="bar-wrapper">
-              <span class="bar-name">Tomcat</span>
-              <div class="bar-track">
-                <div class="bar" style="width: 68%"></div>
-              </div>
-              <span class="bar-value">64,311</span>
-            </div>
-            <div class="bar-wrapper">
-              <span class="bar-name">Undertow</span>
-              <div class="bar-track">
-                <div class="bar" style="width: 80%"></div>
-              </div>
-              <span class="bar-value">74,860</span>
-            </div>
-            <div class="bar-wrapper">
-              <span class="bar-name highlight">smart-servlet</span>
-              <div class="bar-track">
-                <div class="bar highlight" style="width: 100%"></div>
-              </div>
-              <span class="bar-value highlight">93,812</span>
+        {abCharts.map((chart) => (
+          <div class="chart-item">
+            <div class="chart-label">{chart.label}</div>
+            <div class="chart-bars">
+              {chart.bars.map((bar) => (
+                <div class="bar-wrapper" role="img" aria-label={`${chart.label} 下 ${bar.name} QPS ${bar.value}`}>
+                  <div class="bar-meta">
+                    <span class="bar-value">
+                      {bar.value}
+                      {bar.gain && <span class="gain-chip">{bar.gain}</span>}
+                    </span>
+                  </div>
+                  <div class="bar-track">
+                    <div class={`bar bar-${series[bar.name]}`} style={`--w: ${bar.width}%`}></div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-
-        <div class="chart-item">
-          <div class="chart-label">并发 100</div>
-          <div class="chart-bars">
-            <div class="bar-wrapper">
-              <span class="bar-name">Tomcat</span>
-              <div class="bar-track">
-                <div class="bar" style="width: 85%"></div>
-              </div>
-              <span class="bar-value">92,047</span>
-            </div>
-            <div class="bar-wrapper">
-              <span class="bar-name">Undertow</span>
-              <div class="bar-track">
-                <div class="bar" style="width: 82%"></div>
-              </div>
-              <span class="bar-value">89,037</span>
-            </div>
-            <div class="bar-wrapper">
-              <span class="bar-name highlight">smart-servlet</span>
-              <div class="bar-track">
-                <div class="bar highlight" style="width: 100%"></div>
-              </div>
-              <span class="bar-value highlight">108,844</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="chart-item">
-          <div class="chart-label">并发 1000</div>
-          <div class="chart-bars">
-            <div class="bar-wrapper">
-              <span class="bar-name">Tomcat</span>
-              <div class="bar-track">
-                <div class="bar" style="width: 80%"></div>
-              </div>
-              <span class="bar-value">88,997</span>
-            </div>
-            <div class="bar-wrapper">
-              <span class="bar-name">Undertow</span>
-              <div class="bar-track">
-                <div class="bar" style="width: 92%"></div>
-              </div>
-              <span class="bar-value">102,439</span>
-            </div>
-            <div class="bar-wrapper">
-              <span class="bar-name highlight">smart-servlet</span>
-              <div class="bar-track">
-                <div class="bar highlight" style="width: 100%"></div>
-              </div>
-              <span class="bar-value highlight">111,308</span>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
+      <p class="chart-footnote">QPS，越高越好 · 增益为 smart-servlet 相对 Tomcat 的提升幅度</p>
     </div>
 
-    <div class="metrics-grid">
-      <div class="metric-card">
-        <div class="metric-icon">🚀</div>
-        <div class="metric-value">11W+</div>
-        <div class="metric-label">QPS 峰值（ab 压测）</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-icon">💾</div>
-        <div class="metric-value">12MB</div>
-        <div class="metric-label">初始 Heap 内存（wrk 压测）</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-icon">✅</div>
-        <div class="metric-value">99.9%</div>
-        <div class="metric-label">Servlet TCK 测试通过率</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-icon">🔋</div>
-        <div class="metric-value">400MB</div>
-        <div class="metric-label">压测 Heap 峰值（wrk 压测）</div>
+    <div class="benchmark-card reveal">
+      <ul class="chart-legend">
+        {legend.map((item) => (
+          <li><span class={`legend-swatch swatch-${item.cls}`}></span>{item.name}</li>
+        ))}
+      </ul>
+      <div class="wrk-grid">
+        <div class="chart-item">
+          <div class="chart-label">QPS · wrk · 1024 并发</div>
+          <div class="chart-bars">
+            {wrkQps.map((bar) => (
+              <div class="bar-wrapper" role="img" aria-label={`wrk 1024 并发下 ${bar.name} QPS ${bar.value}`}>
+                <div class="bar-meta">
+                  <span class="bar-value">
+                    {bar.value}
+                    {bar.gain && <span class="gain-chip">{bar.gain}</span>}
+                  </span>
+                </div>
+                <div class="bar-track">
+                  <div class={`bar bar-${series[bar.name]}`} style={`--w: ${bar.width}%`}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p class="chart-footnote">越高越好 · 相对 Tomcat +320%</p>
+        </div>
+
+        <div class="chart-item">
+          <div class="chart-label">压测 Heap 峰值 · wrk</div>
+          <div class="chart-bars">
+            {wrkHeap.map((bar) => (
+              <div class="bar-wrapper" role="img" aria-label={`wrk 压测下 ${bar.name} Heap 峰值 ${bar.value}`}>
+                <div class="bar-meta">
+                  <span class="bar-value">
+                    {bar.value}
+                    {bar.gain && <span class="gain-chip gain-green">{bar.gain}</span>}
+                  </span>
+                </div>
+                <div class="bar-track">
+                  <div class={`bar bar-${series[bar.name]}`} style={`--w: ${bar.width}%`}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p class="chart-footnote">越低越好 · 相对 Tomcat -27%</p>
+        </div>
       </div>
     </div>
 
@@ -133,7 +155,11 @@
 
 <style>
   .performance-section {
-    padding: var(--space-24) var(--space-4);
+    /* 系列标识色:三色均通过 CVD 与对比度校验,明暗主题共用 */
+    --series-tomcat: #8b5cf6;
+    --series-undertow: #d95926;
+    --series-smart: #3b82f6;
+    padding: var(--space-16) var(--space-4);
     background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 30%, var(--bg-secondary) 70%, var(--bg-primary) 100%);
     position: relative;
   }
@@ -156,39 +182,20 @@
 
   .section-header {
     text-align: center;
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-10);
   }
 
   .section-badge {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
-    background: rgba(139, 92, 246, 0.08);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
     border-radius: var(--radius-full);
     font-size: var(--text-sm);
     font-weight: 500;
-    color: var(--accent-secondary);
+    color: var(--accent-primary);
     margin-bottom: var(--space-6);
-  }
-
-  .badge-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--accent-secondary);
-    border-radius: var(--radius-full);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.1); }
-  }
-
-  :root[data-theme="light"] .section-badge {
-    background: rgba(139, 92, 246, 0.06);
-    border-color: rgba(139, 92, 246, 0.15);
   }
 
   .section-title {
@@ -212,7 +219,7 @@
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
     padding: var(--space-8);
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-6);
     backdrop-filter: blur(8px);
   }
 
@@ -227,8 +234,15 @@
     gap: var(--space-6);
   }
 
+  .wrk-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+
   @media (max-width: 900px) {
-    .chart-grid {
+    .chart-grid,
+    .wrk-grid {
       grid-template-columns: 1fr;
     }
   }
@@ -253,6 +267,47 @@
     border-bottom: 1px solid var(--border-color);
   }
 
+  .chart-footnote {
+    margin: var(--space-4) 0 0;
+    text-align: center;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  .chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2) var(--space-6);
+    margin: 0 0 var(--space-6);
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+
+  .chart-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .chart-legend + .chart-grid,
+  .chart-legend + .wrk-grid {
+    margin-top: 0;
+  }
+
+  .legend-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex: none;
+  }
+
+  .swatch-tomcat { background: var(--series-tomcat); }
+  .swatch-undertow { background: var(--series-undertow); }
+  .swatch-smart { background: var(--series-smart); }
+
   .chart-bars {
     display: flex;
     flex-direction: column;
@@ -261,21 +316,14 @@
 
   .bar-wrapper {
     display: grid;
-    grid-template-columns: 90px 1fr 70px;
+    gap: var(--space-2);
+  }
+
+  .bar-meta {
+    display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: var(--space-3);
-  }
-
-  .bar-name {
-    font-size: var(--text-sm);
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-align: right;
-  }
-
-  .bar-name.highlight {
-    color: var(--accent-primary);
-    font-weight: 600;
   }
 
   .bar-track {
@@ -290,103 +338,52 @@
     background: rgba(203, 213, 225, 0.4);
   }
 
+  /* 条形长度由 --w 提供,滚动进入视口后一次性生长;颜色按系列固定 */
   .bar {
     height: 100%;
-    background: linear-gradient(90deg, #64748b, #94a3b8);
-    border-radius: var(--radius-full);
-    transition: width 1s ease-out;
+    width: 0;
+    border-radius: 0 5px 5px 0;
+    transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
     position: relative;
   }
 
-  .bar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    animation: shimmer 2s infinite;
+  .benchmark-card.revealed .bar {
+    width: var(--w);
   }
 
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
-
-  .bar.highlight {
-    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-  }
+  .bar-tomcat { background: var(--series-tomcat); }
+  .bar-undertow { background: var(--series-undertow); }
+  .bar-smart { background: var(--series-smart); }
 
   .bar-value {
     font-size: var(--text-sm);
     font-weight: 600;
     color: var(--text-secondary);
-    font-family: 'SF Mono', Monaco, monospace;
+    font-family: var(--font-mono);
+    white-space: nowrap;
   }
 
-  .bar-value.highlight {
+  .gain-chip {
+    display: inline-block;
+    margin-left: var(--space-1);
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-full);
+    background: rgba(59, 130, 246, 0.12);
     color: var(--accent-primary);
+    font-size: var(--text-xs);
+    font-weight: 600;
   }
 
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-5);
+  .gain-chip.gain-green {
+    background: rgba(34, 197, 94, 0.12);
+    color: #22c55e;
   }
 
-  @media (max-width: 768px) {
-    .metrics-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
 
-  @media (max-width: 480px) {
-    .metrics-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .metric-card {
-    text-align: center;
-    padding: var(--space-6);
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    transition: all var(--transition-base);
-  }
-
-  .metric-card:hover {
-    transform: translateY(-2px);
-    border-color: var(--border-hover);
-    box-shadow: var(--shadow-md);
-  }
-
-  .metric-icon {
-    font-size: var(--text-3xl);
-    margin-bottom: var(--space-3);
-  }
-
-  .metric-value {
-    font-size: var(--text-3xl);
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: var(--space-1);
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .metric-label {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    font-weight: 500;
-  }
 
   .benchmark-link {
     text-align: center;
-    margin-top: var(--space-10);
+    margin-top: var(--space-8);
   }
 
   .benchmark-link a {
@@ -400,4 +397,11 @@
   }
 
   .benchmark-link a:hover { text-decoration: underline; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bar {
+      width: var(--w);
+      transition: none;
+    }
+  }
 </style>

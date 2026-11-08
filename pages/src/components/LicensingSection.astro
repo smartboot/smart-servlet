@@ -43,13 +43,16 @@ const mailto = 'mailto:zhengjunweimail@163.com?subject=smart-servlet%20%E4%BC%81
         </div>
 
         <ul class="plan-list">
+          <li class="list-group-head">答疑与需求</li>
           <li><span class="mark yes">✓</span>1 对 1 答疑咨询：专属对接人／专属群／服务工单</li>
           <li><span class="mark yes">✓</span>需求支持：功能需求评估、优先排期与定制化方案</li>
+          <li class="list-group-head">生产保障</li>
           <li><span class="mark yes">✓</span>生产故障优先处置与远程／现场兜底</li>
           <li><span class="mark yes">✓</span>指定版本长期维护（LTS）、安全补丁、EOL 通知</li>
           <li><span class="mark yes">✓</span>JDK / Spring Boot 大版本升级适配指导</li>
+          <li class="list-group-head">合规与增值（按人天）</li>
           <li><span class="mark yes">✓</span>代码审计说明、SBOM、供应链安全问卷配合</li>
-          <li><span class="mark yes">✓</span>迁移实施、架构评审、压测调优与培训（按人天）</li>
+          <li><span class="mark yes">✓</span>迁移实施、架构评审、压测调优与培训</li>
         </ul>
 
         <p class="plan-note">
@@ -64,10 +67,10 @@ const mailto = 'mailto:zhengjunweimail@163.com?subject=smart-servlet%20%E4%BC%81
     </div>
 
     <div class="trust-strip">
-      <div class="trust-item"><strong>12MB</strong><span>内存占用，资源友好</span></div>
-      <div class="trust-item"><strong>99.9%</strong><span>Servlet TCK 测试通过率</span></div>
-      <div class="trust-item"><strong>0</strong><span>功能差异，所有人同一份代码</span></div>
-      <div class="trust-item"><strong>1对1</strong><span>专属答疑咨询与需求支持通道</span></div>
+      <div class="trust-item"><strong class="stat-value">12MB</strong><span class="stat-label">内存占用，资源友好</span></div>
+      <div class="trust-item"><strong class="stat-value">5 年+</strong><span class="stat-label">2020 年立项，持续维护迭代</span></div>
+      <div class="trust-item"><strong class="stat-value stat-green">0</strong><span class="stat-label">功能差异，所有人同一份代码</span></div>
+      <div class="trust-item"><strong class="stat-value">1对1</strong><span class="stat-label">专属答疑咨询与需求支持通道</span></div>
     </div>
 
     <div class="faq">
@@ -97,7 +100,7 @@ const mailto = 'mailto:zhengjunweimail@163.com?subject=smart-servlet%20%E4%BC%81
 
 <style>
   .licensing-section {
-    padding: var(--space-24) var(--space-4);
+    padding: var(--space-16) var(--space-4);
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
@@ -158,7 +161,7 @@ const mailto = 'mailto:zhengjunweimail@163.com?subject=smart-servlet%20%E4%BC%81
     transition: border-color var(--transition-base), transform var(--transition-base);
   }
 
-  .plan:hover { transform: translateY(-4px); border-color: var(--border-hover); }
+  .plan:hover { transform: translateY(-2px); border-color: var(--border-hover); }
 
   .plan-enterprise {
     border: 2px solid rgba(59, 130, 246, 0.5);
@@ -202,6 +205,22 @@ const mailto = 'mailto:zhengjunweimail@163.com?subject=smart-servlet%20%E4%BC%81
     color: var(--text-primary);
   }
 
+  /* 服务条目分组小标题 */
+  .plan-list .list-group-head {
+    display: block;
+    margin-top: var(--space-2);
+    padding-bottom: var(--space-1);
+    border-bottom: 1px dashed var(--border-color);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .plan-list .list-group-head:first-child {
+    margin-top: 0;
+  }
+
   .mark {
     flex: 0 0 1.25rem;
     font-weight: 700;
@@ -241,8 +260,12 @@ const mailto = 'mailto:zhengjunweimail@163.com?subject=smart-servlet%20%E4%BC%81
 
   .plan-cta:hover { transform: translateY(-2px); }
 
-  .plan-cta-primary { background: #2563eb; color: #fff; }
-  .plan-cta-primary:hover { background: #1d4ed8; }
+  .plan-cta-primary {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: #fff;
+  }
+
+  .plan-cta-primary:hover { opacity: 0.92; }
 
   .plan-cta-ghost {
     border: 1px solid var(--border-color);
@@ -261,9 +284,8 @@ const mailto = 'mailto:zhengjunweimail@163.com?subject=smart-servlet%20%E4%BC%81
     border-bottom: 1px solid var(--border-color);
   }
 
-  .trust-item { text-align: center; display: grid; gap: var(--space-1); }
-  .trust-item strong { font-size: var(--text-2xl); color: var(--accent-primary); }
-  .trust-item span { font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.6; }
+  .trust-item { text-align: center; display: grid; gap: var(--space-1); justify-items: center; }
+  .trust-item .stat-green { color: #22c55e; }
 
   .faq { max-width: 860px; margin: 0 auto; }
   .faq h3 { text-align: center; font-size: var(--text-2xl); margin: 0 0 var(--space-6); }
@@ -295,6 +317,16 @@ const mailto = 'mailto:zhengjunweimail@163.com?subject=smart-servlet%20%E4%BC%81
   }
 
   details[open] summary::after { content: '−'; }
+
+  /* FAQ 展开时内容渐入,避免瞬跳 */
+  details[open] p {
+    animation: fadeInUp 0.3s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   details p {
     margin: 0;

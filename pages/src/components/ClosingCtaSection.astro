@@ -1,0 +1,161 @@
+---
+const mailto = 'mailto:zhengjunweimail@163.com?subject=smart-servlet%20%E4%BC%81%E4%B8%9A%E6%9C%8D%E5%8A%A1%E8%AE%A2%E9%98%85%E5%92%A8%E8%AF%A2';
+---
+
+<section class="closing-cta-section">
+  <div class="cta-background">
+    <div class="gradient-orb cta-orb"></div>
+    <div class="grid-pattern"></div>
+  </div>
+
+  <div class="cta-container">
+    <h2 class="cta-title">两步 pom 修改，5 分钟换掉 Tomcat</h2>
+    <p class="cta-description">
+      0 行业务代码改动 · 42W QPS · Apache-2.0 免费商用
+    </p>
+
+    <div class="cta-actions">
+      <a href="./guides/install/" class="btn btn-primary">
+        <span>开始替换</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+      <a href={mailto} class="btn btn-secondary">
+        <span>企业服务咨询</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .closing-cta-section {
+    position: relative;
+    padding: var(--space-16) var(--space-4);
+    background: var(--bg-primary);
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .cta-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.10;
+    animation: cta-float 20s ease-in-out infinite;
+  }
+
+  .cta-orb {
+    width: 480px;
+    height: 480px;
+    background: var(--accent-primary);
+    bottom: -240px;
+    left: 50%;
+    margin-left: -240px;
+  }
+
+  @keyframes cta-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(0, -20px) scale(1.05); }
+  }
+
+  .grid-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+  }
+
+  .cta-container {
+    max-width: 640px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .cta-title {
+    font-size: clamp(1.75rem, 4vw, var(--text-4xl));
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .cta-description {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  .cta-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  @media (max-width: 480px) {
+    .cta-actions {
+      flex-direction: column;
+      width: 100%;
+      max-width: 280px;
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-base);
+    font-weight: 500;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-base);
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.45);
+  }
+
+  .btn-secondary {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+  }
+
+  .btn-secondary:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+  }
+</style>

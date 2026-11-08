@@ -4,65 +4,80 @@
 <section class="migration-section" id="migration">
   <div class="container">
     <div class="section-header">
-      <span class="section-badge">
-        <span class="badge-dot"></span>
-        迁移成本
-      </span>
+      <span class="section-badge">迁移成本</span>
       <h2 class="section-title">换掉 Tomcat，只需要两步</h2>
       <p class="section-description">
-        同样遵循 Jakarta Servlet 6.1 规范，Spring Boot 工程只改 pom.xml，无需改动业务代码。
+        Spring Boot 工程结构保持不变，规范行为与 Tomcat 对齐，业务代码零改动。
       </p>
     </div>
 
-    <div class="steps-grid">
+    <div class="steps-grid reveal">
       <div class="step-card">
         <div class="step-head">
           <span class="step-number">1</span>
           <div class="step-title">
-            <h3>排除 Spring Boot 默认的 Tomcat</h3>
+            <h3>排除 Spring Boot 默认的 Tomcat <span class="diff-tag diff-remove">− remove</span></h3>
             <p>在 <code>pom.xml</code> 中移除内嵌容器依赖</p>
           </div>
         </div>
-        <pre class="step-code"><code>&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-    &lt;exclusions&gt;
-        &lt;exclusion&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
-        &lt;/exclusion&gt;
-    &lt;/exclusions&gt;
-&lt;/dependency&gt;</code></pre>
+        <div class="code-window">
+          <div class="code-titlebar">
+            <span class="code-filename">pom.xml</span>
+            <button class="copy-btn" type="button" aria-label="复制代码">
+              <svg class="icon-copy" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </button>
+          </div>
+          <pre class="step-code"><code><span class="x-t">&lt;dependency&gt;</span>
+    <span class="x-t">&lt;groupId&gt;</span>org.springframework.boot<span class="x-t">&lt;/groupId&gt;</span>
+    <span class="x-t">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="x-t">&lt;/artifactId&gt;</span>
+    <span class="x-t">&lt;exclusions&gt;</span>
+        <span class="x-t">&lt;exclusion&gt;</span>
+            <span class="x-t">&lt;groupId&gt;</span>org.springframework.boot<span class="x-t">&lt;/groupId&gt;</span>
+            <span class="x-t">&lt;artifactId&gt;</span><span class="x-del">spring-boot-starter-tomcat</span><span class="x-t">&lt;/artifactId&gt;</span>
+        <span class="x-t">&lt;/exclusion&gt;</span>
+    <span class="x-t">&lt;/exclusions&gt;</span>
+<span class="x-t">&lt;/dependency&gt;</span></code></pre>
+        </div>
       </div>
 
       <div class="step-card step-highlight">
         <div class="step-head">
           <span class="step-number">2</span>
           <div class="step-title">
-            <h3>引入 smart-servlet 依赖</h3>
+            <h3>引入 smart-servlet 依赖 <span class="diff-tag diff-add">+ add</span></h3>
             <p>示例版本 3.3，请使用最新版本</p>
           </div>
         </div>
-        <pre class="step-code"><code>&lt;dependency&gt;
-    &lt;groupId&gt;tech.smartboot.servlet&lt;/groupId&gt;
-    &lt;artifactId&gt;smart-servlet-spring-boot-starter&lt;/artifactId&gt;
-    &lt;version&gt;3.3&lt;/version&gt;
-&lt;/dependency&gt;</code></pre>
+        <div class="code-window">
+          <div class="code-titlebar">
+            <span class="code-filename">pom.xml</span>
+            <button class="copy-btn" type="button" aria-label="复制代码">
+              <svg class="icon-copy" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </button>
+          </div>
+          <pre class="step-code"><code><span class="x-t">&lt;dependency&gt;</span>
+    <span class="x-t">&lt;groupId&gt;</span>tech.smartboot.servlet<span class="x-t">&lt;/groupId&gt;</span>
+    <span class="x-t">&lt;artifactId&gt;</span><span class="x-add">smart-servlet-spring-boot-starter</span><span class="x-t">&lt;/artifactId&gt;</span>
+    <span class="x-t">&lt;version&gt;</span><span class="x-v">3.3</span><span class="x-t">&lt;/version&gt;</span>
+<span class="x-t">&lt;/dependency&gt;</span></code></pre>
+        </div>
       </div>
     </div>
 
-    <div class="migration-proof">
+    <div class="migration-proof reveal">
       <div class="proof-item">
-        <strong>99.9%</strong>
-        <span>Servlet TCK 测试通过率，规范行为与 Tomcat 对齐</span>
+        <strong class="stat-value">2 处</strong>
+        <span class="stat-label">pom.xml 依赖调整（一删一增）</span>
       </div>
       <div class="proof-item">
-        <strong>0 行</strong>
-        <span>业务代码改动，只改 pom.xml</span>
+        <strong class="stat-value">0 行</strong>
+        <span class="stat-label">业务代码改动</span>
       </div>
       <div class="proof-item">
-        <strong>3.x</strong>
-        <span>Spring Boot 3.x 实测兼容，Shiro 等主流框架直接运行</span>
+        <strong class="stat-value">3.x</strong>
+        <span class="stat-label">Spring Boot 实测兼容，Shiro 等主流框架直接运行</span>
       </div>
     </div>
 
@@ -75,9 +90,25 @@
   </div>
 </section>
 
+<script>
+  // 复制代码到剪贴板,成功后 1.5s 内切换为对勾反馈
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const code = btn.closest('.code-window')?.querySelector('code')?.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(code.trim());
+        btn.classList.add('copied');
+        setTimeout(() => btn.classList.remove('copied'), 1500);
+      } catch (e) {
+        // 剪贴板不可用(如非 https 环境)时静默失败
+      }
+    });
+  });
+</script>
+
 <style>
   .migration-section {
-    padding: var(--space-24) var(--space-4);
+    padding: var(--space-16) var(--space-4);
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
@@ -90,13 +121,12 @@
 
   .section-header {
     text-align: center;
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-10);
   }
 
   .section-badge {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
     background: rgba(59, 130, 246, 0.08);
     border: 1px solid rgba(59, 130, 246, 0.2);
@@ -105,19 +135,6 @@
     font-weight: 500;
     color: var(--accent-primary);
     margin-bottom: var(--space-6);
-  }
-
-  .badge-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--accent-primary);
-    border-radius: var(--radius-full);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.1); }
   }
 
   .section-title {
@@ -140,7 +157,7 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-6);
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-10);
   }
 
   @media (max-width: 900px) {
@@ -157,11 +174,11 @@
 
   .step-card:hover {
     border-color: var(--border-hover);
-    transform: translateY(-3px);
+    transform: translateY(-2px);
   }
 
   .step-highlight {
-    border: 2px solid rgba(59, 130, 246, 0.5);
+    border: 1px solid rgba(59, 130, 246, 0.5);
     background: linear-gradient(160deg, rgba(59, 130, 246, 0.08), transparent 55%), var(--bg-card);
   }
 
@@ -179,8 +196,9 @@
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-full);
-    background: var(--accent-gradient);
-    color: #fff;
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    color: var(--accent-primary);
     font-weight: 700;
     font-size: var(--text-lg);
   }
@@ -190,6 +208,10 @@
     font-size: var(--text-xl);
     color: var(--text-primary);
     line-height: 1.4;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
   .step-title p {
@@ -203,22 +225,114 @@
     color: var(--accent-primary);
   }
 
+  /* diff 语义标签:红=删除依赖,绿=新增依赖 */
+  .diff-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+
+  .diff-remove {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+
+  .diff-add {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+  }
+
+  /* 代码窗口:titlebar + pre,两种主题下均为深色底浅色字 */
+  .code-window {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .code-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-4);
+    background: rgba(30, 41, 59, 0.9);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  }
+
+  .code-filename {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: #94a3b8;
+  }
+
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: var(--radius-sm);
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all var(--transition-base);
+  }
+
+  .copy-btn:hover {
+    color: #e2e8f0;
+    border-color: rgba(148, 163, 184, 0.4);
+  }
+
+  .copy-btn .icon-check {
+    display: none;
+  }
+
+  .copy-btn.copied {
+    color: #22c55e;
+    border-color: rgba(34, 197, 94, 0.4);
+  }
+
+  .copy-btn.copied .icon-copy {
+    display: none;
+  }
+
+  .copy-btn.copied .icon-check {
+    display: block;
+  }
+
   .step-code {
     margin: 0;
     padding: var(--space-5);
     background: var(--code-bg);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
     overflow-x: auto;
   }
 
-  /* 代码块背景在明暗主题下均为深色,文字固定浅色,不跟随 --text-primary */
   .step-code code {
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    font-family: var(--font-mono);
     font-size: 0.8rem;
     line-height: 1.7;
     color: #e2e8f0;
     white-space: pre;
+  }
+
+  /* Maven XML 手写高亮(深色代码底上固定浅色系) */
+  .step-code .x-t { color: #93c5fd; }
+  .step-code .x-v { color: #a5b4fc; }
+  .step-code .x-del {
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.12);
+    border-radius: 3px;
+    padding: 0 2px;
+  }
+  .step-code .x-add {
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.12);
+    border-radius: 3px;
+    padding: 0 2px;
   }
 
   .migration-proof {
@@ -239,11 +353,6 @@
     display: grid;
     gap: var(--space-1);
     justify-items: center;
-  }
-
-  .proof-item strong {
-    font-size: var(--text-2xl);
-    color: var(--accent-primary);
   }
 
   .proof-item span {

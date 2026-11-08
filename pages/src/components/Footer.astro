@@ -3,27 +3,46 @@
 
 <footer class="main-footer">
   <div class="footer-container">
-    <div class="footer-content">
+    <div class="footer-grid">
       <div class="footer-brand">
         <a href="/" class="brand-link">
           <img src="/smart-servlet/logo.svg" alt="smart-servlet" class="brand-logo" />
           <span class="brand-name">smart-servlet</span>
         </a>
         <p class="brand-description">
-          自主可控的国产 Servlet 容器
+          自主可控的国产 Servlet 容器，Tomcat / Undertow 的直接替代
         </p>
       </div>
 
-      <div class="footer-links">
-        <a href="./guides/about/">文档</a>
+      <nav class="footer-col" aria-label="文档">
+        <h4 class="footer-heading">文档</h4>
+        <a href="./guides/about/">项目概述</a>
+        <a href="./guides/install/">安装指南</a>
+        <a href="./guides/benchmark/">性能基准报告</a>
+        <a href="./guides/tck_report/">TCK 测试报告</a>
+        <a href="./guides/release_note/">发版记录</a>
+      </nav>
+
+      <nav class="footer-col" aria-label="生态">
+        <h4 class="footer-heading">技术生态</h4>
+        <a href="https://smartboot.tech/smart-socket/" target="_blank">smart-socket<span class="col-note">网络通信</span></a>
+        <a href="https://smartboot.tech/feat/" target="_blank">feat<span class="col-note">Web 框架</span></a>
+        <a href="https://smartboot.tech/smart-mqtt/" target="_blank">smart-mqtt<span class="col-note">物联网</span></a>
+        <a href="https://smartboot.tech/redisun/" target="_blank">Redisun<span class="col-note">Redis 客户端</span></a>
+      </nav>
+
+      <nav class="footer-col" aria-label="资源与联系">
+        <h4 class="footer-heading">资源与联系</h4>
         <a href="https://github.com/smartboot/smart-servlet" target="_blank">GitHub</a>
         <a href="https://gitee.com/smartboot/smart-servlet" target="_blank">Gitee</a>
-      </div>
+        <a href="./license/">开源协议</a>
+        <a href="mailto:zhengjunweimail@163.com">商务咨询</a>
+      </nav>
     </div>
 
     <div class="footer-bottom">
       <span class="copyright">&copy; {new Date().getFullYear()} smartboot</span>
-      <a href="./license/" class="license-link">Apache-2.0</a>
+      <span class="footer-spec">Apache-2.0 · Jakarta Servlet 6.1 · Java 17+</span>
     </div>
   </div>
 </footer>
@@ -32,7 +51,7 @@
   .main-footer {
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
-    padding: var(--space-10) var(--space-4) var(--space-6);
+    padding: var(--space-12) var(--space-4) var(--space-6);
   }
 
   .footer-container {
@@ -40,24 +59,31 @@
     margin: 0 auto;
   }
 
-  .footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-8);
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: var(--space-10);
+    margin-bottom: var(--space-10);
   }
 
-  @media (max-width: 640px) {
-    .footer-content {
-      flex-direction: column;
-      gap: var(--space-6);
+  @media (max-width: 900px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-8);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
     }
   }
 
   .footer-brand {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: var(--space-4);
+    align-items: flex-start;
   }
 
   .brand-link {
@@ -82,27 +108,44 @@
     font-size: var(--text-sm);
     color: var(--text-secondary);
     margin: 0;
+    line-height: 1.7;
+    max-width: 280px;
   }
 
-  .footer-links {
+  /* 生态列链接的项目说明小字 */
+  .col-note {
+    margin-left: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  .footer-col {
     display: flex;
-    align-items: center;
-    gap: var(--space-6);
+    flex-direction: column;
+    gap: var(--space-3);
   }
 
-  .footer-links a {
+  .footer-heading {
+    margin: 0 0 var(--space-1);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-col a {
     font-size: var(--text-sm);
     color: var(--text-secondary);
     text-decoration: none;
     transition: color var(--transition-fast);
   }
 
-  .footer-links a:hover {
+  .footer-col a:hover {
     color: var(--accent-primary);
   }
 
   .footer-bottom {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: var(--space-4);
@@ -115,14 +158,10 @@
     color: var(--text-muted);
   }
 
-  .license-link {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color var(--transition-fast);
-  }
-
-  .license-link:hover {
-    color: var(--accent-primary);
+  .footer-spec {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
   }
 </style>

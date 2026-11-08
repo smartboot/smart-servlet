@@ -6,7 +6,8 @@ import FeaturesSection from '../components/FeaturesSection.astro';
 import PerformanceSection from '../components/PerformanceSection.astro';
 import QualityPledgeSection from '../components/QualityPledgeSection.astro';
 import LicensingSection from '../components/LicensingSection.astro';
-import EcosystemSection from '../components/EcosystemSection.astro';
+import TrustBarSection from '../components/TrustBarSection.astro';
+import ClosingCtaSection from '../components/ClosingCtaSection.astro';
 import Footer from '../components/Footer.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 ---
@@ -32,14 +33,39 @@ import ThemeToggle from '../components/ThemeToggle.astro';
   <Navigation />
   <main class="landing-page">
     <HeroSection />
+    <TrustBarSection />
     <MigrationSection />
     <FeaturesSection />
     <PerformanceSection />
     <QualityPledgeSection />
     <LicensingSection />
-    <EcosystemSection />
+    <ClosingCtaSection />
   </main>
   <Footer />
+
+  <script>
+    // Scroll-reveal:一次性触发的入场动效
+    (function () {
+      const els = document.querySelectorAll('.reveal');
+      if (!els.length) return;
+      if (!('IntersectionObserver' in window)) {
+        els.forEach((el) => el.classList.add('revealed'));
+        return;
+      }
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed');
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: '0px 0px -10% 0px', threshold: 0.05 }
+      );
+      els.forEach((el) => io.observe(el));
+    })();
+  </script>
 </body>
 </html>
 
@@ -118,6 +144,9 @@ import ThemeToggle from '../components/ThemeToggle.astro';
     --transition-fast: 150ms ease;
     --transition-base: 250ms ease;
     --transition-slow: 350ms ease;
+
+    /* Monospace stack(代码/数字场景统一) */
+    --font-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
   }
 
   /* Light theme */
@@ -217,5 +246,72 @@ import ThemeToggle from '../components/ThemeToggle.astro';
 
   ::-webkit-scrollbar-thumb:hover {
     background: var(--text-secondary);
+  }
+
+  /* ===== 首页公共层:统计数字/入场动效/共享关键帧 ===== */
+
+  /* 数字统一等宽数字,避免跳动 */
+  .stat-value,
+  .stat-label,
+  .metric-value,
+  .bar-value,
+  .trust-item strong,
+  .tag-value,
+  .proof-item strong,
+  .timeline-value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 大数字 + 小标签:Hero / Migration / Performance / Licensing 共用 */
+  .stat-value {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  .stat-value.stat-accent {
+    color: var(--accent-primary);
+  }
+
+  .stat-label {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* Scroll-reveal 一次性入场 */
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* 共享关键帧(各组件亦可保留自己的局部定义) */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 无障碍:用户偏好减少动态效果时,动效全部静止 */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .gradient-orb,
+    .badge-dot {
+      animation: none !important;
+    }
   }
 </style>
